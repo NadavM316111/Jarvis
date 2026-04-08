@@ -1,0 +1,75 @@
+
+================================================================================
+                    NADAV'S HOME NETWORK - DEVICE INVENTORY
+                    Scanned: 4/7/2026, 9:14:12 PM
+================================================================================
+
+NETWORK INFRASTRUCTURE (Nadav's)
+--------------------------------------------------------------------------------
+192.168.4.1    | dc-69-b5-9b-49-32 | Cisco/Linksys Router - Main Gateway
+192.168.4.28   | dc-69-b5-9b-60-72 | Cisco/Linksys WiFi Access Point/Extender
+192.168.4.30   | dc-69-b5-9c-09-92 | Cisco/Linksys WiFi Access Point/Extender  
+192.168.4.119  | dc-69-b5-9b-32-f2 | Cisco/Linksys WiFi Access Point/Extender
+
+ENTERTAINMENT - TVs (Nadav's)
+--------------------------------------------------------------------------------
+192.168.4.54   | 48-e2-44-5d-18-bd | Sony Bravia 75" TV (Living Room)
+                                   | PSK: 6465, Supports Bravia API
+192.168.4.68   | f8-28-19-22-02-76 | Sharp Roku TV 65" (Bedroom)
+                                   | Supports Roku ECP on port 8060, AirPlay
+192.168.4.25   | ec-93-7d-93-e9-d2 | Technicolor/Fision TV (Guest Bedroom)
+                                   | Supports Google Cast on port 8008
+
+ENTERTAINMENT - Sonos Speakers (Nadav's)
+--------------------------------------------------------------------------------
+192.168.4.93   | 5c-aa-fd-2e-59-f2 | Sonos Kitchen
+192.168.4.95   | 5c-aa-fd-9b-50-fc | Sonos Dining Room
+192.168.4.97   | 5c-aa-fd-70-66-04 | Sonos Bedroom
+192.168.4.120  | 5c-aa-fd-9b-50-f4 | Sonos Outside
+
+OFFICE EQUIPMENT (Nadav's)
+--------------------------------------------------------------------------------
+192.168.4.53   | 40-b0-34-d2-f0-2b | HP OfficeJet Pro Printer
+192.168.4.115  | (This PC)         | Nadav's Windows Computer
+
+SMART HOME DEVICES (Nadav's)
+--------------------------------------------------------------------------------
+192.168.4.50   | 4c-17-44-a5-d3-11 | Wyze/Xiaomi Smart Device (Camera?)
+                                   | MAC prefix indicates Wyze camera or similar
+
+MOBILE DEVICES - SAMSUNG
+--------------------------------------------------------------------------------
+192.168.4.46   | 64-16-66-2a-82-83 | Samsung Phone/Tablet
+                                   | Likely Nadav's phone
+192.168.4.149  | 94-cd-fd-d0-ae-12 | Samsung Phone/Tablet
+                                   | Could be Nadav or guest device
+
+UNKNOWN/GUEST DEVICES (Randomized MACs)
+--------------------------------------------------------------------------------
+192.168.4.42   | 1a-7e-12-22-c1-06 | Mobile device with randomized MAC
+                                   | Could be iPhone/iPad or Android with MAC privacy
+192.168.4.102  | 4e-6d-93-d7-cb-4f | Mobile device with randomized MAC
+                                   | Could be iPhone/iPad or Android with MAC privacy
+
+================================================================================
+SUMMARY
+================================================================================
+Total Devices Found: 17
+
+By Category:
+  - Network Equipment: 4 (router + 3 access points)
+  - TVs: 3
+  - Sonos Speakers: 4
+  - Printers: 1
+  - Computers: 1 (this PC)
+  - Smart Home: 1 (Wyze camera)
+  - Mobile Phones/Tablets: 2 Samsung devices
+  - Unknown Mobile: 2 (randomized MACs - likely iPhones or guests)
+
+Notes:
+  - Two devices (192.168.4.42 and 192.168.4.102) have randomized MAC addresses
+    which modern phones use for privacy. These could be Nadav's iPhone or
+    guest devices.
+  - The Samsung devices could be Nadav's phone(s) or family/guest devices.
+  - Sonos Den (192.168.4.94) was not responding during this scan.
+================================================================================

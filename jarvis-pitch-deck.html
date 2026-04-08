@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JARVIS AI - Pitch Deck</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3a 100%); color: white; }
+        .slide { min-height: 100vh; padding: 60px 80px; display: flex; flex-direction: column; justify-content: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        h1 { font-size: 4rem; margin-bottom: 20px; background: linear-gradient(90deg, #00d4ff, #7b2fef); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        h2 { font-size: 2.5rem; margin-bottom: 40px; color: #00d4ff; }
+        h3 { font-size: 1.8rem; color: #ccc; margin-bottom: 30px; }
+        .subtitle { font-size: 1.5rem; color: #888; margin-bottom: 40px; }
+        .logo { width: 80px; height: 80px; background: linear-gradient(135deg, #7b2fef, #00d4ff); border-radius: 50%; margin-bottom: 30px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 24px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; margin-top: 40px; }
+        .card { background: rgba(255,255,255,0.05); border-radius: 20px; padding: 40px; border: 1px solid rgba(255,255,255,0.1); transition: transform 0.3s; }
+        .card:hover { transform: translateY(-5px); }
+        .card h4 { font-size: 1.4rem; color: #00d4ff; margin-bottom: 15px; }
+        .card p { color: #aaa; line-height: 1.8; }
+        .stat { font-size: 3.5rem; font-weight: bold; background: linear-gradient(90deg, #00d4ff, #7b2fef); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .stat-label { color: #888; margin-top: 10px; }
+        .chart-container { background: rgba(255,255,255,0.05); border-radius: 20px; padding: 30px; max-width: 800px; margin: 20px auto; }
+        .comparison-table { width: 100%; border-collapse: collapse; margin-top: 30px; }
+        .comparison-table th, .comparison-table td { padding: 20px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .comparison-table th { color: #00d4ff; font-size: 1.1rem; }
+        .comparison-table td { color: #ccc; }
+        .check { color: #00ff88; font-size: 1.5rem; }
+        .x { color: #ff4466; font-size: 1.5rem; }
+        .partial { color: #ffaa00; font-size: 1.2rem; }
+        .highlight { background: rgba(0,212,255,0.1); }
+        .cta { background: linear-gradient(90deg, #7b2fef, #00d4ff); padding: 20px 50px; border-radius: 50px; font-size: 1.3rem; color: white; text-decoration: none; display: inline-block; margin-top: 30px; }
+        .team-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
+        .team-member { text-align: center; }
+        .team-avatar { width: 100px; height: 100px; background: linear-gradient(135deg, #7b2fef, #00d4ff); border-radius: 50%; margin: 0 auto 20px; }
+        .market-size { display: flex; align-items: center; gap: 60px; }
+        .market-circle { width: 250px; height: 250px; border-radius: 50%; background: conic-gradient(#00d4ff 0% 35%, #7b2fef 35% 60%, #ff6b6b 60% 100%); display: flex; align-items: center; justify-content: center; }
+        .market-inner { width: 150px; height: 150px; background: #0a0a1a; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-direction: column; }
+        .legend-item { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
+        .legend-color { width: 20px; height: 20px; border-radius: 4px; }
+        ul { list-style: none; }
+        ul li { padding: 15px 0; color: #ccc; font-size: 1.2rem; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        ul li::before { content: ">"; color: #00d4ff; margin-right: 15px; }
+    </style>
+</head>
+<body>
+
+<!-- Slide 1: Title -->
+<div class="slide" style="text-align: center;">
+    <div class="logo" style="margin: 0 auto 30px;">J</div>
+    <h1>JARVIS AI</h1>
+    <p class="subtitle">Your Autonomous AI Assistant That Actually Does Things</p>
+    <p style="color: #666; margin-top: 60px;">Pitch Deck 2025</p>
+</div>
+
+<!-- Slide 2: The Problem -->
+<div class="slide">
+    <h2>The Problem</h2>
+    <h3>Current AI assistants are glorified search engines</h3>
+    <div class="grid">
+        <div class="card">
+            <h4>No Real Action</h4>
+            <p>ChatGPT, Claude, and others can only talk. They can't actually DO anything on your computer or in your life.</p>
+        </div>
+        <div class="card">
+            <h4>Context Amnesia</h4>
+            <p>Every conversation starts from zero. They forget your preferences, your devices, your entire history.</p>
+        </div>
+        <div class="card">
+            <h4>Integration Hell</h4>
+            <p>Want AI to control your smart home, play music, and manage your calendar? Good luck with 10 different apps.</p>
+        </div>
+        <div class="card">
+            <h4>Manual Everything</h4>
+            <p>Users spend hours on tasks that should be automated. Copy-paste, switch apps, repeat forever.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 3: The Solution -->
+<div class="slide">
+    <h2>The Solution: JARVIS</h2>
+    <h3>An AI that sees, remembers, and acts autonomously</h3>
+    <div class="grid">
+        <div class="card">
+            <div class="stat">100%</div>
+            <p class="stat-label">Autonomous Execution</p>
+            <p style="margin-top: 15px; color: #888;">Say "play AC/DC on Sonos" and it discovers your speakers and plays immediately.</p>
+        </div>
+        <div class="card">
+            <div class="stat">Infinite</div>
+            <p class="stat-label">Memory</p>
+            <p style="margin-top: 15px; color: #888;">Remembers your contacts, preferences, devices, and every important detail forever.</p>
+        </div>
+        <div class="card">
+            <div class="stat">Real-Time</div>
+            <p class="stat-label">Screen Awareness</p>
+            <p style="margin-top: 15px; color: #888;">Sees your screen, understands context, and takes action without you explaining everything.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 4: Competitive Comparison Chart -->
+<div class="slide">
+    <h2>Competitive Analysis</h2>
+    <h3>JARVIS vs. The Market</h3>
+    <div class="chart-container" style="max-width: 900px;">
+        <canvas id="comparisonChart"></canvas>
+    </div>
+</div>
+
+<!-- Slide 5: Feature Comparison Table -->
+<div class="slide">
+    <h2>Feature Comparison</h2>
+    <table class="comparison-table">
+        <tr>
+            <th>Feature</th>
+            <th class="highlight">JARVIS</th>
+            <th>ChatGPT</th>
+            <th>Claude</th>
+            <th>Siri/Alexa</th>
+            <th>Rabbit R1</th>
+        </tr>
+        <tr>
+            <td>Execute Code Autonomously</td>
+            <td class="highlight"><span class="check">YES</span></td>
+            <td><span class="partial">Limited</span></td>
+            <td><span class="partial">Limited</span></td>
+            <td><span class="x">NO</span></td>
+            <td><span class="x">NO</span></td>
+        </tr>
+        <tr>
+            <td>Control Smart Home</td>
+            <td class="highlight"><span class="check">YES</span></td>
+            <td><span class="x">NO</span></td>
+            <td><span class="x">NO</span></td>
+            <td><span class="partial">Limited</span></td>
+            <td><span class="partial">Limited</span></td>
+        </tr>
+        <tr>
+            <td>Persistent Memory</td>
+            <td class="highlight"><span class="check">YES</span></td>
+            <td><span class="partial">Limited</span></td>
+            <td><span class="x">NO</span></td>
+            <td><span class="x">NO</span></td>
+            <td><span class="x">NO</span></td>
+        </tr>
+        <tr>
+            <td>Screen Awareness</td>
+            <td class="highlight"><span class="check">YES</span></td>
+            <td><span class="x">NO</span></td>
+            <td><span class="x">NO</span></td>
+            <td><span class="x">NO</span></td>
+            <td><span class="partial">Limited</span></td>
+        </tr>
+        <tr>
+            <td>Web Browsing & Research</td>
+            <td class="highlight"><span class="check">YES</span></td>
+            <td><span class="check">YES</span></td>
+            <td><span class="check">YES</span></td>
+            <td><span class="partial">Basic</span></td>
+            <td><span class="check">YES</span></td>
+        </tr>
+        <tr>
+            <td>Computer Control</td>
+            <td class="highlight"><span class="check">YES</span></td>
+            <td><span class="x">NO</span></td>
+            <td><span class="x">NO</span></td>
+            <td><span class="x">NO</span></td>
+            <td><span class="x">NO</span></td>
+        </tr>
+        <tr>
+            <td>Voice + Visual Interface</td>
+            <td class="highlight"><span class="check">YES</span></td>
+            <td><span class="partial">Voice Only</span></td>
+            <td><span class="x">NO</span></td>
+            <td><span class="check">YES</span></td>
+            <td><span class="check">YES</span></td>
+        </tr>
+    </table>
+</div>
+
+<!-- Slide 6: Market Opportunity -->
+<div class="slide">
+    <h2>Market Opportunity</h2>
+    <div class="market-size">
+        <div>
+            <div class="market-circle">
+                <div class="market-inner">
+                    <div class="stat" style="font-size: 2rem;">$200B+</div>
+                    <div style="color: #888; font-size: 0.9rem;">TAM by 2030</div>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #00d4ff;"></div>
+                <div><strong style="color: white;">$70B</strong> <span style="color: #888;">- AI Assistant Market</span></div>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #7b2fef;"></div>
+                <div><strong style="color: white;">$50B</strong> <span style="color: #888;">- Smart Home Automation</span></div>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #ff6b6b;"></div>
+                <div><strong style="color: white;">$80B</strong> <span style="color: #888;">- Enterprise Automation</span></div>
+            </div>
+            <p style="color: #888; margin-top: 40px; max-width: 400px;">
+                JARVIS sits at the intersection of AI assistants, home automation, and enterprise productivity - a massive, converging market.
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 7: Capability Score Chart -->
+<div class="slide">
+    <h2>Capability Score by Category</h2>
+    <div class="chart-container" style="max-width: 700px;">
+        <canvas id="radarChart"></canvas>
+    </div>
+</div>
+
+<!-- Slide 8: Traction -->
+<div class="slide">
+    <h2>Traction & Roadmap</h2>
+    <div class="grid" style="grid-template-columns: repeat(4, 1fr);">
+        <div class="card" style="text-align: center;">
+            <div class="stat">MVP</div>
+            <p class="stat-label">Built & Working</p>
+        </div>
+        <div class="card" style="text-align: center;">
+            <div class="stat">50+</div>
+            <p class="stat-label">Integrations</p>
+        </div>
+        <div class="card" style="text-align: center;">
+            <div class="stat">Real-time</div>
+            <p class="stat-label">Voice + Vision</p>
+        </div>
+        <div class="card" style="text-align: center;">
+            <div class="stat">Local</div>
+            <p class="stat-label">Privacy-First</p>
+        </div>
+    </div>
+    <h3 style="margin-top: 60px;">Roadmap</h3>
+    <ul>
+        <li>Q2 2025: Launch beta with 100 early adopters</li>
+        <li>Q3 2025: Mobile app + enterprise features</li>
+        <li>Q4 2025: API marketplace for third-party integrations</li>
+        <li>2026: Hardware partnerships (always-on JARVIS device)</li>
+    </ul>
+</div>
+
+<!-- Slide 9: Business Model -->
+<div class="slide">
+    <h2>Business Model</h2>
+    <div class="grid" style="grid-template-columns: repeat(3, 1fr);">
+        <div class="card">
+            <h4>Personal</h4>
+            <div class="stat">$29</div>
+            <p class="stat-label">/month</p>
+            <ul style="margin-top: 20px;">
+                <li>Unlimited commands</li>
+                <li>Smart home control</li>
+                <li>Personal memory</li>
+                <li>Basic automations</li>
+            </ul>
+        </div>
+        <div class="card" style="border: 2px solid #00d4ff;">
+            <h4>Pro</h4>
+            <div class="stat">$79</div>
+            <p class="stat-label">/month</p>
+            <ul style="margin-top: 20px;">
+                <li>Everything in Personal</li>
+                <li>Advanced automations</li>
+                <li>API access</li>
+                <li>Priority support</li>
+            </ul>
+        </div>
+        <div class="card">
+            <h4>Enterprise</h4>
+            <div class="stat">Custom</div>
+            <p class="stat-label">pricing</p>
+            <ul style="margin-top: 20px;">
+                <li>On-premise deployment</li>
+                <li>Custom integrations</li>
+                <li>Team management</li>
+                <li>SLA guarantee</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 10: The Ask -->
+<div class="slide" style="text-align: center;">
+    <h2>The Ask</h2>
+    <div class="stat" style="font-size: 5rem; margin: 40px 0;">$2M Seed</div>
+    <h3>To build the AI assistant that actually assists</h3>
+    <div class="grid" style="max-width: 800px; margin: 40px auto;">
+        <div class="card">
+            <h4>40% Engineering</h4>
+            <p>Expand the team, improve core AI capabilities</p>
+        </div>
+        <div class="card">
+            <h4>30% Growth</h4>
+            <p>Beta launch, marketing, community building</p>
+        </div>
+        <div class="card">
+            <h4>20% Infrastructure</h4>
+            <p>Scale servers, improve reliability</p>
+        </div>
+        <div class="card">
+            <h4>10% Operations</h4>
+            <p>Legal, admin, runway buffer</p>
+        </div>
+    </div>
+    <a href="#" class="cta">Let's Talk: nadav@jarvis.ai</a>
+</div>
+
+<script>
+// Comparison Bar Chart
+const ctx1 = document.getElementById('comparisonChart').getContext('2d');
+new Chart(ctx1, {
+    type: 'bar',
+    data: {
+        labels: ['JARVIS', 'ChatGPT', 'Claude', 'Siri', 'Alexa', 'Rabbit R1'],
+        datasets: [{
+            label: 'Autonomy Score',
+            data: [95, 35, 30, 45, 50, 55],
+            backgroundColor: ['#00d4ff', '#74aa9c', '#d4a574', '#ff6b6b', '#00caff', '#ff9f43'],
+            borderRadius: 10,
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { display: false },
+            title: { display: true, text: 'Autonomy & Action Capability (0-100)', color: '#fff', font: { size: 16 } }
+        },
+        scales: {
+            y: { beginAtZero: true, max: 100, ticks: { color: '#888' }, grid: { color: 'rgba(255,255,255,0.1)' } },
+            x: { ticks: { color: '#fff' }, grid: { display: false } }
+        }
+    }
+});
+
+// Radar Chart
+const ctx2 = document.getElementById('radarChart').getContext('2d');
+new Chart(ctx2, {
+    type: 'radar',
+    data: {
+        labels: ['Autonomy', 'Memory', 'Smart Home', 'Productivity', 'Voice Interface', 'Privacy'],
+        datasets: [{
+            label: 'JARVIS',
+            data: [95, 90, 85, 88, 92, 80],
+            backgroundColor: 'rgba(0, 212, 255, 0.2)',
+            borderColor: '#00d4ff',
+            pointBackgroundColor: '#00d4ff',
+        }, {
+            label: 'ChatGPT',
+            data: [35, 40, 10, 75, 60, 50],
+            backgroundColor: 'rgba(116, 170, 156, 0.2)',
+            borderColor: '#74aa9c',
+            pointBackgroundColor: '#74aa9c',
+        }, {
+            label: 'Alexa',
+            data: [50, 30, 70, 40, 85, 35],
+            backgroundColor: 'rgba(0, 202, 255, 0.2)',
+            borderColor: '#00caff',
+            pointBackgroundColor: '#00caff',
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { labels: { color: '#fff' } }
+        },
+        scales: {
+            r: {
+                angleLines: { color: 'rgba(255,255,255,0.1)' },
+                grid: { color: 'rgba(255,255,255,0.1)' },
+                pointLabels: { color: '#fff' },
+                ticks: { display: false }
+            }
+        }
+    }
+});
+</script>
+
+</body>
+</html>
