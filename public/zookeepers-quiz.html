@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zookeeper's Wife Quiz - Chapters 1-7</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f23 100%);
+            min-height: 100vh;
+            color: #e0e0e0;
+            line-height: 1.7;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            color: #c9a227;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(201, 162, 39, 0.3);
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #888;
+            margin-bottom: 40px;
+            font-style: italic;
+        }
+        
+        .tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .tab {
+            padding: 12px 24px;
+            background: rgba(201, 162, 39, 0.1);
+            border: 1px solid rgba(201, 162, 39, 0.3);
+            color: #c9a227;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            font-size: 1rem;
+        }
+        
+        .tab:hover, .tab.active {
+            background: rgba(201, 162, 39, 0.3);
+            box-shadow: 0 0 15px rgba(201, 162, 39, 0.2);
+        }
+        
+        .section {
+            display: none;
+        }
+        
+        .section.active {
+            display: block;
+        }
+        
+        .quiz-container {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 15px;
+            padding: 30px;
+            border: 1px solid rgba(201, 162, 39, 0.2);
+        }
+        
+        .question {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            border-left: 3px solid #c9a227;
+        }
+        
+        .question-text {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+        
+        .question-number {
+            color: #c9a227;
+            font-weight: bold;
+        }
+        
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .option {
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .option:hover {
+            background: rgba(201, 162, 39, 0.1);
+            border-color: rgba(201, 162, 39, 0.3);
+        }
+        
+        .option.selected {
+            background: rgba(201, 162, 39, 0.2);
+            border-color: #c9a227;
+        }
+        
+        .option.correct {
+            background: rgba(39, 174, 96, 0.3);
+            border-color: #27ae60;
+        }
+        
+        .option.incorrect {
+            background: rgba(231, 76, 60, 0.3);
+            border-color: #e74c3c;
+        }
+        
+        .explanation {
+            margin-top: 10px;
+            padding: 12px;
+            background: rgba(201, 162, 39, 0.1);
+            border-radius: 8px;
+            font-style: italic;
+            display: none;
+        }
+        
+        .explanation.show {
+            display: block;
+        }
+        
+        .short-response {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            border-left: 3px solid #c9a227;
+        }
+        
+        .short-response textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: #e0e0e0;
+            font-family: inherit;
+            font-size: 1rem;
+            resize: vertical;
+            margin-top: 10px;
+        }
+        
+        .short-response textarea:focus {
+            outline: none;
+            border-color: #c9a227;
+        }
+        
+        .sample-answer {
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(39, 174, 96, 0.1);
+            border: 1px solid rgba(39, 174, 96, 0.3);
+            border-radius: 8px;
+            display: none;
+        }
+        
+        .sample-answer.show {
+            display: block;
+        }
+        
+        .sample-answer h4 {
+            color: #27ae60;
+            margin-bottom: 10px;
+        }
+        
+        .btn {
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            margin: 5px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #c9a227, #d4af37);
+            color: #1a1a2e;
+            font-weight: bold;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(201, 162, 39, 0.4);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #c9a227;
+            border: 1px solid #c9a227;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(201, 162, 39, 0.2);
+        }
+        
+        .buttons {
+            text-align: center;
+            margin-top: 30px;
+        }
+        
+        .results {
+            text-align: center;
+            padding: 30px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            margin-top: 30px;
+            display: none;
+        }
+        
+        .results.show {
+            display: block;
+        }
+        
+        .score {
+            font-size: 3rem;
+            color: #c9a227;
+            font-weight: bold;
+        }
+        
+        .score-label {
+            font-size: 1.2rem;
+            color: #888;
+            margin-top: 10px;
+        }
+        
+        .performance {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        
+        .performance.excellent {
+            background: rgba(39, 174, 96, 0.2);
+            color: #27ae60;
+        }
+        
+        .performance.good {
+            background: rgba(201, 162, 39, 0.2);
+            color: #c9a227;
+        }
+        
+        .performance.needs-work {
+            background: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+        }
+        
+        /* Study Guide Styles */
+        .study-section {
+            margin-bottom: 40px;
+        }
+        
+        .study-section h2 {
+            color: #c9a227;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(201, 162, 39, 0.3);
+        }
+        
+        .study-section h3 {
+            color: #d4af37;
+            margin: 20px 0 10px;
+        }
+        
+        .key-point {
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border-left: 3px solid #c9a227;
+            margin-bottom: 15px;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .key-point strong {
+            color: #c9a227;
+        }
+        
+        .character-card {
+            display: inline-block;
+            padding: 15px 20px;
+            background: rgba(201, 162, 39, 0.1);
+            border: 1px solid rgba(201, 162, 39, 0.3);
+            border-radius: 10px;
+            margin: 5px;
+        }
+        
+        .character-card .name {
+            color: #c9a227;
+            font-weight: bold;
+        }
+        
+        .character-card .role {
+            color: #888;
+            font-size: 0.9rem;
+        }
+        
+        .theme-box {
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(201, 162, 39, 0.1), rgba(201, 162, 39, 0.05));
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .theme-box h4 {
+            color: #c9a227;
+            margin-bottom: 10px;
+        }
+        
+        .quote-box {
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-left: 4px solid #c9a227;
+            font-style: italic;
+            margin: 15px 0;
+        }
+        
+        .quote-box .source {
+            margin-top: 10px;
+            color: #888;
+            font-style: normal;
+            font-size: 0.9rem;
+        }
+        
+        .timeline-item {
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+        }
+        
+        .timeline-date {
+            color: #c9a227;
+            font-weight: bold;
+            min-width: 100px;
+        }
+        
+        .likely-tested {
+            background: rgba(231, 76, 60, 0.1);
+            border: 1px solid rgba(231, 76, 60, 0.3);
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            color: #e74c3c;
+            margin-left: 10px;
+        }
+        
+        @media (max-width: 600px) {
+            h1 { font-size: 1.8rem; }
+            .container { padding: 20px 15px; }
+            .tabs { flex-direction: column; }
+            .tab { width: 100%; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>The Zookeeper's Wife</h1>
+        <p class="subtitle">Chapters 1-7 Study & Quiz</p>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="showSection('quiz')">Take Quiz</button>
+            <button class="tab" onclick="showSection('study')">Study Guide</button>
+            <button class="tab" onclick="showSection('likely')">Likely Test Topics</button>
+        </div>
+        
+        <!-- QUIZ SECTION -->
+        <div id="quiz" class="section active">
+            <div class="quiz-container">
+                <div id="mcq-container"></div>
+                <div id="short-response-container"></div>
+                
+                <div class="buttons">
+                    <button class="btn btn-primary" onclick="submitQuiz()">Submit Quiz</button>
+                    <button class="btn btn-secondary" onclick="generateNewQuiz()">Generate New Quiz</button>
+                </div>
+                
+                <div id="results" class="results">
+                    <div class="score" id="score-display">0/20</div>
+                    <div class="score-label">Multiple Choice Score</div>
+                    <div class="performance" id="performance-msg"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- STUDY GUIDE SECTION -->
+        <div id="study" class="section">
+            <div class="quiz-container">
+                <div class="study-section">
+                    <h2>Chapter Summaries</h2>
+                    
+                    <h3>Chapter 1: Summer 1935</h3>
+                    <div class="key-point">
+                        Introduces Antonina Zabinska and the Warsaw Zoo. She has an extraordinary ability to connect with animals, sensing their emotions and needs. The zoo is a thriving place where she lives with her husband Jan, the zoo director.
+                    </div>
+                    
+                    <h3>Chapter 2: 1935-1939</h3>
+                    <div class="key-point">
+                        Details the zoo's operations and the Zabinskis' daily life. Jan is a skilled zoologist focused on breeding programs. Their son Ryszard (Rys) is born. The zoo becomes one of Europe's finest, with rare species and scientific importance.
+                    </div>
+                    
+                    <h3>Chapter 3: September 1939</h3>
+                    <div class="key-point">
+                        <strong>Germany invades Poland.</strong> The Luftwaffe bombs Warsaw, including the zoo. Many animals are killed or escape. Antonina must make heartbreaking decisions about which animals to save. The chapter captures the terror and chaos of the invasion.
+                    </div>
+                    
+                    <h3>Chapter 4: Fall 1939</h3>
+                    <div class="key-point">
+                        Nazi zoologist <strong>Lutz Heck</strong> arrives to confiscate the zoo's most valuable animals for his breeding programs in Germany. He's obsessed with "back-breeding" extinct species like the aurochs. The Zabinskis must cooperate while hiding their true feelings.
+                    </div>
+                    
+                    <h3>Chapter 5: Winter 1939-1940</h3>
+                    <div class="key-point">
+                        The occupation tightens. Jews are forced to wear armbands and face increasing restrictions. Jan begins to see opportunities to resist. The empty zoo cages become symbols of loss and potential.
+                    </div>
+                    
+                    <h3>Chapter 6: 1940</h3>
+                    <div class="key-point">
+                        Jan proposes converting the zoo into a pig farm to supply the German army - secretly, this gives him an excuse to enter the Warsaw Ghetto to collect food scraps. This is the beginning of their resistance work.
+                    </div>
+                    
+                    <h3>Chapter 7: The Ghetto</h3>
+                    <div class="key-point">
+                        The Warsaw Ghetto is established. Over 400,000 Jews are crammed into a small area. Jan witnesses the horrific conditions firsthand during his "pig farm" visits. The Zabinskis begin planning how to help.
+                    </div>
+                </div>
+                
+                <div class="study-section">
+                    <h2>Key Characters</h2>
+                    <div class="character-card">
+                        <div class="name">Antonina Zabinska</div>
+                        <div class="role">Zookeeper's wife, empath with animals, diary writer</div>
+                    </div>
+                    <div class="character-card">
+                        <div class="name">Jan Zabinski</div>
+                        <div class="role">Zoo director, zoologist, resistance fighter</div>
+                    </div>
+                    <div class="character-card">
+                        <div class="name">Ryszard (Rys)</div>
+                        <div class="role">Their young son</div>
+                    </div>
+                    <div class="character-card">
+                        <div class="name">Lutz Heck</div>
+                        <div class="role">Nazi zoologist, takes animals for back-breeding</div>
+                    </div>
+                </div>
+                
+                <div class="study-section">
+                    <h2>Major Themes</h2>
+                    
+                    <div class="theme-box">
+                        <h4>Human-Animal Connection</h4>
+                        <p>Antonina's deep empathy with animals mirrors her later compassion for human refugees. The book suggests that kindness to animals and humans stems from the same source.</p>
+                    </div>
+                    
+                    <div class="theme-box">
+                        <h4>Nazi Ideology & Science</h4>
+                        <p>Lutz Heck's "back-breeding" program to recreate extinct "pure" species parallels Nazi racial ideology. Both seek to return to an imagined "pure" past.</p>
+                    </div>
+                    
+                    <div class="theme-box">
+                        <h4>Moral Courage</h4>
+                        <p>The Zabinskis risk everything to help others. Their courage develops gradually - they don't start as heroes but become them through choices.</p>
+                    </div>
+                    
+                    <div class="theme-box">
+                        <h4>Home & Sanctuary</h4>
+                        <p>The zoo transforms from animal sanctuary to human sanctuary. The concept of "home" and "safety" becomes central as the war destroys both.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- LIKELY TEST TOPICS -->
+        <div id="likely" class="section">
+            <div class="quiz-container">
+                <div class="study-section">
+                    <h2>Most Likely Test Topics</h2>
+                    <p style="color: #888; margin-bottom: 20px;">Based on chapters 1-7, these are the topics most likely to appear on your formative:</p>
+                    
+                    <div class="key-point">
+                        <strong>1. The September 1939 Bombing</strong> <span class="likely-tested">HIGH PRIORITY</span>
+                        <p style="margin-top: 10px;">Know: Date of invasion (Sept 1, 1939), what happened to the zoo animals, Antonina's emotional response, specific animals mentioned (elephants, etc.)</p>
+                    </div>
+                    
+                    <div class="key-point">
+                        <strong>2. Lutz Heck's Role</strong> <span class="likely-tested">HIGH PRIORITY</span>
+                        <p style="margin-top: 10px;">Know: Who he was (Nazi zoologist), what he wanted (valuable animals for back-breeding), what "back-breeding" means (recreating extinct species like aurochs), how this connects to Nazi ideology</p>
+                    </div>
+                    
+                    <div class="key-point">
+                        <strong>3. The Pig Farm Plan</strong> <span class="likely-tested">HIGH PRIORITY</span>
+                        <p style="margin-top: 10px;">Know: Why Jan proposed it (excuse to enter ghetto), how it worked (collecting food scraps), what it enabled (smuggling people/supplies), the irony of helping Nazis while resisting them</p>
+                    </div>
+                    
+                    <div class="key-point">
+                        <strong>4. Antonina's Character</strong> <span class="likely-tested">MEDIUM PRIORITY</span>
+                        <p style="margin-top: 10px;">Know: Her special ability with animals, her role as diary keeper (source of the book), how her empathy with animals foreshadows her later actions</p>
+                    </div>
+                    
+                    <div class="key-point">
+                        <strong>5. Warsaw Ghetto Conditions</strong> <span class="likely-tested">HIGH PRIORITY</span>
+                        <p style="margin-top: 10px;">Know: When established (1940), population (~400,000), conditions Jan witnessed, why Jews couldn't easily escape, the yellow star/armband requirement</p>
+                    </div>
+                    
+                    <div class="key-point">
+                        <strong>6. Symbolism of the Zoo</strong> <span class="likely-tested">MEDIUM PRIORITY</span>
+                        <p style="margin-top: 10px;">Know: Empty cages as symbols of loss, the zoo as sanctuary (first for animals, later for humans), the parallel between caged animals and trapped Jews</p>
+                    </div>
+                    
+                    <div class="key-point">
+                        <strong>7. Historical Context</strong> <span class="likely-tested">MEDIUM PRIORITY</span>
+                        <p style="margin-top: 10px;">Know: Germany invaded Poland Sept 1, 1939 starting WWII, the occupation structure, how Poland was treated vs other countries</p>
+                    </div>
+                </div>
+                
+                <div class="study-section">
+                    <h2>Potential Short Response Topics</h2>
+                    
+                    <div class="theme-box">
+                        <h4>Analyze the connection between Nazi animal breeding programs and Nazi racial ideology.</h4>
+                        <p style="margin-top: 10px; color: #888;">Key points: Both seek "purity," Heck's aurochs program mirrors Aryan ideology, irony of caring about animal genetics while committing genocide</p>
+                    </div>
+                    
+                    <div class="theme-box">
+                        <h4>How does Antonina's relationship with animals prepare her for her later role in the resistance?</h4>
+                        <p style="margin-top: 10px; color: #888;">Key points: Empathy, reading non-verbal cues, providing sanctuary, nurturing instinct, seeing worth in all creatures</p>
+                    </div>
+                    
+                    <div class="theme-box">
+                        <h4>Explain how the pig farm plan demonstrates the Zabinskis' moral courage and strategic thinking.</h4>
+                        <p style="margin-top: 10px; color: #888;">Key points: Using Nazi system against itself, creating legitimate cover, gradual escalation of resistance, personal risk</p>
+                    </div>
+                    
+                    <div class="theme-box">
+                        <h4>Describe the transformation of the Warsaw Zoo from chapters 1-7.</h4>
+                        <p style="margin-top: 10px; color: #888;">Key points: From thriving zoo to bombed ruins to pig farm, from animal sanctuary to potential human sanctuary, loss of innocence</p>
+                    </div>
+                </div>
+                
+                <div class="study-section">
+                    <h2>Key Quotes to Remember</h2>
+                    
+                    <div class="quote-box">
+                        "The war would last only a few weeks... the world wouldn't allow Germany to savage Poland."
+                        <div class="source">- Reflects Polish optimism before invasion; dramatic irony</div>
+                    </div>
+                    
+                    <div class="quote-box">
+                        "One could configure an animal's personality based on just a few simple traits."
+                        <div class="source">- About Antonina's gift; foreshadows her ability to read people</div>
+                    </div>
+                </div>
+                
+                <div class="study-section">
+                    <h2>Timeline of Key Events</h2>
+                    
+                    <div class="timeline-item">
+                        <span class="timeline-date">1935</span>
+                        <span>Antonina and Jan run thriving Warsaw Zoo; Rys is born</span>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="timeline-date">Sept 1, 1939</span>
+                        <span>Germany invades Poland; WWII begins</span>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="timeline-date">Sept 1939</span>
+                        <span>Luftwaffe bombs Warsaw Zoo; many animals killed/escape</span>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="timeline-date">Fall 1939</span>
+                        <span>Lutz Heck confiscates valuable zoo animals</span>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="timeline-date">1940</span>
+                        <span>Jan proposes pig farm; begins entering ghetto</span>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="timeline-date">Nov 1940</span>
+                        <span>Warsaw Ghetto officially sealed</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Massive question bank for MCQ
+        const questionBank = [
+            {
+                question: "What was Antonina Zabinska's special ability?",
+                options: ["She could speak multiple languages", "She had an extraordinary connection with animals", "She was a trained veterinarian", "She could predict the weather"],
+                correct: 1,
+                explanation: "Antonina had an almost supernatural ability to sense animals' emotions and needs, which Ackerman describes throughout the book as a form of empathy that later extends to the human refugees she helps."
+            },
+            {
+                question: "Who was Jan Zabinski?",
+                options: ["A Nazi officer", "A Polish resistance leader only", "The director of the Warsaw Zoo", "A German zoologist"],
+                correct: 2,
+                explanation: "Jan Zabinski was the director of the Warsaw Zoo and Antonina's husband. He was also a trained zoologist who later became involved in the Polish resistance."
+            },
+            {
+                question: "What was Lutz Heck's goal at the Warsaw Zoo?",
+                options: ["To destroy all the animals", "To take valuable animals for his back-breeding programs", "To convert it to a military base", "To study Polish wildlife"],
+                correct: 1,
+                explanation: "Lutz Heck was a Nazi zoologist obsessed with 'back-breeding' - trying to recreate extinct species like the aurochs. He confiscated the zoo's most valuable animals for his programs in Germany."
+            },
+            {
+                question: "What is 'back-breeding' as described in the book?",
+                options: ["Breeding animals in reverse order", "Attempting to recreate extinct species through selective breeding", "Breeding animals for meat production", "A type of Nazi propaganda"],
+                correct: 1,
+                explanation: "Back-breeding was Lutz Heck's program to recreate extinct species like the aurochs by selectively breeding existing cattle that showed 'primitive' traits. This connects to Nazi ideology about racial purity."
+            },
+            {
+                question: "When did Germany invade Poland?",
+                options: ["September 1, 1938", "September 1, 1939", "June 6, 1940", "December 7, 1941"],
+                correct: 1,
+                explanation: "Germany invaded Poland on September 1, 1939, marking the beginning of World War II in Europe."
+            },
+            {
+                question: "What happened to the Warsaw Zoo during the German invasion?",
+                options: ["It was left untouched", "It was bombed by the Luftwaffe", "It was immediately converted to a prison", "All animals were safely evacuated"],
+                correct: 1,
+                explanation: "The Luftwaffe (German air force) bombed Warsaw, including the zoo. Many animals were killed in the bombing, others escaped, and some had to be put down."
+            },
+            {
+                question: "What was Jan's plan for the empty zoo?",
+                options: ["Abandon it completely", "Convert it to a pig farm", "Turn it into a hospital", "Make it a German headquarters"],
+                correct: 1,
+                explanation: "Jan proposed converting the zoo into a pig farm to raise pigs for the German army. This gave him a legitimate excuse to enter the Warsaw Ghetto to collect food scraps, enabling future resistance work."
+            },
+            {
+                question: "Why was the pig farm plan strategically important?",
+                options: ["It made money for the family", "It gave Jan access to the Warsaw Ghetto", "It pleased the Nazi officers", "It saved the remaining zoo animals"],
+                correct: 1,
+                explanation: "The pig farm gave Jan a legitimate reason to enter the Warsaw Ghetto regularly to collect food scraps, which later allowed him to smuggle people and supplies."
+            },
+            {
+                question: "What was the name of the Zabinskis' son?",
+                options: ["Lutz", "Ryszard (Rys)", "Heinrich", "Piotr"],
+                correct: 1,
+                explanation: "Their son was named Ryszard, nicknamed Rys, who grew up in the zoo and witnessed many of the events described in the book."
+            },
+            {
+                question: "How many Jews were crammed into the Warsaw Ghetto?",
+                options: ["About 50,000", "About 100,000", "About 400,000", "About 1 million"],
+                correct: 2,
+                explanation: "Over 400,000 Jews were forced into the Warsaw Ghetto, a small area of the city, creating horrifically overcrowded and inhumane conditions."
+            },
+            {
+                question: "What were Jews required to wear under Nazi occupation?",
+                options: ["Yellow hats", "Armbands with the Star of David", "Special shoes", "Numbered badges"],
+                correct: 1,
+                explanation: "Jews were required to wear armbands featuring the Star of David, making them immediately identifiable and subject to Nazi persecution."
+            },
+            {
+                question: "What is the primary source for much of the book's information about Antonina's experiences?",
+                options: ["Nazi records", "Jan's military reports", "Antonina's diary", "Newspaper articles"],
+                correct: 2,
+                explanation: "Diane Ackerman drew heavily from Antonina's personal diary, which provides intimate details about daily life at the zoo and her emotional experiences."
+            },
+            {
+                question: "What animal was Lutz Heck particularly obsessed with recreating?",
+                options: ["The mammoth", "The aurochs", "The dodo", "The saber-tooth tiger"],
+                correct: 1,
+                explanation: "Lutz Heck was obsessed with recreating the aurochs, an extinct wild ox, through back-breeding. He believed this connected to ancient Germanic heritage."
+            },
+            {
+                question: "How does the book connect Heck's animal breeding to Nazi ideology?",
+                options: ["It doesn't make any connection", "Both sought to create 'pure' or 'original' forms", "Heck opposed Nazi ideology", "The connection was only about funding"],
+                correct: 1,
+                explanation: "Both Heck's back-breeding and Nazi racial ideology shared the goal of returning to an imagined 'pure' original state - whether in animals or in humans (the Aryan race)."
+            },
+            {
+                question: "What was Warsaw's status before WWII in terms of its Jewish population?",
+                options: ["It had very few Jews", "It had one of the largest Jewish communities in the world", "Jews were already banned from Warsaw", "Only converted Jews could live there"],
+                correct: 1,
+                explanation: "Before WWII, Warsaw had one of the largest Jewish populations of any city in the world, making the establishment of the ghetto and later deportations even more devastating."
+            },
+            {
+                question: "What was the mood of many Poles before the German invasion?",
+                options: ["Terrified and prepared for war", "Optimistic that any war would be short", "Already surrendered", "Allied with Germany"],
+                correct: 1,
+                explanation: "Many Poles, including those at the zoo, were optimistic that any conflict would be brief and that the world wouldn't allow Germany to 'savage Poland.' This proved tragically wrong."
+            },
+            {
+                question: "What symbolism do the empty zoo cages represent?",
+                options: ["Freedom", "German efficiency", "Loss and the potential for future sanctuary", "Economic depression"],
+                correct: 2,
+                explanation: "The empty cages symbolize both the devastating losses of the invasion and, ironically, the potential space that would later shelter human refugees - transforming from animal sanctuary to human sanctuary."
+            },
+            {
+                question: "How did the author, Diane Ackerman, research this book?",
+                options: ["She made everything up", "She used only German sources", "She used Antonina's diary and historical records", "She only interviewed survivors"],
+                correct: 2,
+                explanation: "Ackerman used multiple sources including Antonina's personal diary, historical records, interviews, and on-site research in Warsaw to create this detailed account."
+            },
+            {
+                question: "What genre is 'The Zookeeper's Wife'?",
+                options: ["Historical fiction", "Creative nonfiction/narrative nonfiction", "Pure memoir", "Fantasy"],
+                correct: 1,
+                explanation: "The book is creative nonfiction or narrative nonfiction - it tells a true story using literary techniques to bring the history to life."
+            },
+            {
+                question: "In the early chapters, what is the zoo described as?",
+                options: ["Run-down and neglected", "One of Europe's finest zoos", "A small private collection", "A traveling circus"],
+                correct: 1,
+                explanation: "The Warsaw Zoo under Jan's direction was described as one of Europe's finest, with important scientific breeding programs and rare species."
+            },
+            {
+                question: "What does Antonina's empathy with animals foreshadow?",
+                options: ["Her death", "Her later compassion for human refugees", "Her betrayal of Jan", "Her conversion to Nazism"],
+                correct: 1,
+                explanation: "Antonina's extraordinary ability to sense and respond to animals' needs foreshadows her later role in caring for the human 'guests' hidden at the zoo."
+            },
+            {
+                question: "What happened to many zoo animals during the initial bombing?",
+                options: ["They were all safely evacuated", "Some were killed, some escaped, some were later confiscated", "They were all taken by the Germans immediately", "They all survived untouched"],
+                correct: 1,
+                explanation: "The bombing caused chaos - some animals were killed directly, others escaped into the city, and later the Germans (specifically Lutz Heck) confiscated the most valuable survivors."
+            },
+            {
+                question: "What river runs through Warsaw near the zoo?",
+                options: ["The Rhine", "The Danube", "The Vistula", "The Seine"],
+                correct: 2,
+                explanation: "The Vistula River runs through Warsaw, and the zoo was located near it, which becomes relevant to later escape routes in the book."
+            },
+            {
+                question: "Why did the Zabinskis have to be careful around Lutz Heck?",
+                options: ["He was their friend", "He was a Nazi with power over their zoo who they needed to deceive", "He was Antonina's brother", "He had no power over them"],
+                correct: 1,
+                explanation: "Lutz Heck was a high-ranking Nazi zoologist. The Zabinskis had to appear cooperative and friendly while hiding their true feelings and later their resistance activities."
+            },
+            {
+                question: "What was the relationship between caring for animals and resistance in the book?",
+                options: ["They were completely separate", "The skills and spaces used for animals were repurposed for helping humans", "Animals were used as weapons", "There was no connection"],
+                correct: 1,
+                explanation: "The zoo infrastructure (cages, tunnels, the Zabinskis' animal care expertise) and Antonina's empathetic nature were all repurposed to shelter and care for human refugees."
+            },
+            {
+                question: "When was the Warsaw Ghetto officially sealed?",
+                options: ["September 1939", "November 1940", "January 1942", "March 1943"],
+                correct: 1,
+                explanation: "The Warsaw Ghetto was officially sealed in November 1940, trapping hundreds of thousands of Jews inside its walls."
+            },
+            {
+                question: "What did Jan witness during his visits to collect food scraps?",
+                options: ["A thriving community", "The horrific conditions and suffering in the ghetto", "Nazi officers being kind", "Jews leaving freely"],
+                correct: 1,
+                explanation: "Jan's visits to the ghetto exposed him to the horrific conditions - starvation, disease, overcrowding, and brutality - which motivated the Zabinskis' resistance work."
+            },
+            {
+                question: "What was ironic about Jan's pig farm serving the German army?",
+                options: ["Pigs are not kosher", "He was using a Nazi-approved project to enable resistance against Nazis", "The pigs escaped", "Germans don't eat pork"],
+                correct: 1,
+                explanation: "The irony is that Jan used a German-approved agricultural project as cover for his resistance activities, essentially using Nazi permission to work against them."
+            },
+            {
+                question: "How does Ackerman describe Antonina's personality?",
+                options: ["Cold and distant", "Warm, nurturing, and deeply empathetic", "Angry and vengeful", "Indifferent to suffering"],
+                correct: 1,
+                explanation: "Ackerman portrays Antonina as warm, nurturing, and possessing an almost mystical empathy - qualities that made her perfect for sheltering terrified refugees."
+            },
+            {
+                question: "What does the title 'The Zookeeper's Wife' emphasize?",
+                options: ["Jan's importance", "Antonina's central role in the story", "The importance of marriage", "A job description"],
+                correct: 1,
+                explanation: "The title centers Antonina's perspective and role, emphasizing that while Jan was the official zookeeper, it was Antonina whose diary and daily nurturing made the rescue operations possible."
+            }
+        ];
+        
+        const shortResponseQuestions = [
+            {
+                question: "Analyze the connection between Lutz Heck's animal breeding programs and Nazi racial ideology. How do they reflect similar beliefs?",
+                sampleAnswer: "Lutz Heck's back-breeding program and Nazi racial ideology share a fundamental belief in returning to an imagined 'pure' original state. Heck believed he could recreate the extinct aurochs by breeding cattle that showed 'primitive' traits, essentially trying to reverse evolution to reach a pure, original form. This mirrors Nazi ideology about the Aryan race - the belief that there was a pure, original Germanic race that had been 'corrupted' through mixing, and that this purity could be restored through selective breeding (eugenics) and elimination of 'impure' elements. Both ideologies romanticize an imaginary past and use pseudo-science to justify their programs. The dark irony is that Heck showed more concern for animal genetic purity than human life, carefully preserving 'valuable' animals while supporting a regime committing genocide."
+            },
+            {
+                question: "How does Antonina's relationship with animals in the early chapters prepare her for her later role in the resistance?",
+                sampleAnswer: "Antonina's extraordinary empathy with animals directly prepares her for sheltering human refugees. Her ability to sense animals' emotions and needs - knowing when they're frightened, sick, or need comfort - translates into her ability to care for traumatized people. She learned to read non-verbal cues, provide safety and sanctuary, and create calm in the midst of danger. The zoo itself trained her in managing a complex household of vulnerable beings with different needs. Her nurturing instinct, developed through raising baby animals and caring for sick creatures, becomes essential when she must hide terrified people who've escaped the ghetto. The book suggests that compassion is not species-specific - someone who truly cares for animal welfare is naturally inclined toward human welfare as well. Her experience creating safe spaces for animals becomes the foundation for creating a human sanctuary."
+            },
+            {
+                question: "Explain how the pig farm plan demonstrates the Zabinskis' moral courage and strategic thinking.",
+                sampleAnswer: "The pig farm plan shows both the Zabinskis' cleverness and their commitment to resistance. Strategically, Jan created a perfect cover: a legitimate, German-approved agricultural project that required regular trips to the ghetto to collect food scraps. This gave him legal access to an otherwise sealed area and a reason to drive a vehicle in and out - both essential for smuggling. The plan used the Nazi system against itself, exploiting German efficiency and bureaucracy. Morally, the plan required tremendous courage because it meant actively deceiving dangerous occupiers while appearing to serve them. Every trip to the ghetto was a risk, and the plan would eventually escalate to hiding people in the zoo itself. The Zabinskis had to maintain a friendly facade with Nazi officials like Lutz Heck while secretly working against everything they represented. This required both moral clarity about what was right and the courage to act on it despite the deadly consequences of being caught."
+            },
+            {
+                question: "Describe the transformation of the Warsaw Zoo from chapters 1-7 and what this transformation symbolizes.",
+                sampleAnswer: "The Warsaw Zoo undergoes a profound transformation that mirrors the larger tragedy of the war. In 1935, it's a thriving sanctuary - one of Europe's finest zoos, filled with rare animals and representing scientific achievement and human care for nature. The September 1939 bombing shatters this Eden: animals die, escape, or go mad; the beautiful grounds become a wasteland. Then comes Heck's confiscation, stripping away the remaining treasures. Finally, the zoo becomes a pig farm - a degradation from conservation to mere agricultural production for the occupiers. Yet within this degradation lies hope: the empty cages and abandoned spaces that once held animals will soon shelter humans. The transformation symbolizes the destruction of innocence and civilization, the adaptability required for survival, and the possibility of repurposing loss into resistance. The zoo moves from animal sanctuary to human sanctuary, suggesting that the compassion the Zabinskis showed animals would now extend to the ultimate test: risking everything to save human lives."
+            },
+            {
+                question: "What role does Antonina's diary play in the book, and why is personal testimony important for understanding the Holocaust?",
+                sampleAnswer: "Antonina's diary is the primary source that makes this book possible, providing intimate, day-to-day details that historical records cannot capture. It reveals her emotions, fears, and small moments of hope - the human texture of living under occupation. Personal testimony like this is crucial for understanding the Holocaust because it transforms statistics into individuals. We can read that six million Jews died, but that number is incomprehensible. Through Antonina's diary, we experience the war through one person's eyes - the terror of the bombing, the heartbreak of losing animals, the moral dilemmas of cooperating with Nazis while secretly resisting. Personal accounts preserve details that official histories miss: what people ate, how they felt, what gave them strength. They also honor individual voices in an event designed to erase individuality. Antonina's diary ensures that her story, and the stories of those she helped, survive as human experiences rather than mere historical facts."
+            },
+            {
+                question: "How does Diane Ackerman use the setting of the zoo to explore themes of captivity, freedom, and sanctuary?",
+                sampleAnswer: "Ackerman uses the zoo setting to create powerful parallels between animals and humans regarding captivity and freedom. Initially, the zoo represents benevolent captivity - animals are confined but cared for, safe from predators. The German invasion inverts this: suddenly the animals' cages cannot protect them from bombs, and 'freedom' (escape) means danger in an unfamiliar city. As the occupation tightens, Jews face a similar situation - confined to the ghetto, supposedly for their 'protection,' but actually for their destruction. The zoo's empty cages become symbols of both loss and potential: spaces that once held captive animals can now shelter escaping humans. Sanctuary is revealed as precarious and requiring constant vigilance. Ackerman also explores how the Zabinskis themselves become captive to the occupation while their home becomes a secret space of freedom for refugees. The boundary between captivity and sanctuary, between prison and protection, is shown to depend entirely on who controls the space and for what purpose."
+            }
+        ];
+        
+        let currentQuestions = [];
+        let currentShortResponses = [];
+        let quizSubmitted = false;
+        
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+        
+        function generateNewQuiz() {
+            quizSubmitted = false;
+            document.getElementById('results').classList.remove('show');
+            
+            // Select 20 random MCQ questions
+            const shuffled = shuffleArray(questionBank);
+            currentQuestions = shuffled.slice(0, 20);
+            
+            // Select 2 random short response questions
+            const shuffledShort = shuffleArray(shortResponseQuestions);
+            currentShortResponses = shuffledShort.slice(0, 2);
+            
+            renderQuiz();
+        }
+        
+        function renderQuiz() {
+            const mcqContainer = document.getElementById('mcq-container');
+            const srContainer = document.getElementById('short-response-container');
+            
+            // Render MCQ
+            mcqContainer.innerHTML = '<h2 style="color: #c9a227; margin-bottom: 20px;">Multiple Choice (20 Questions)</h2>';
+            
+            currentQuestions.forEach((q, qIndex) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question';
+                questionDiv.innerHTML = `
+                    <div class="question-text"><span class="question-number">Q${qIndex + 1}.</span> ${q.question}</div>
+                    <div class="options">
+                        ${q.options.map((opt, oIndex) => `
+                            <div class="option" data-question="${qIndex}" data-option="${oIndex}" onclick="selectOption(this, ${qIndex}, ${oIndex})">
+                                ${String.fromCharCode(65 + oIndex)}. ${opt}
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="explanation" id="explanation-${qIndex}">${q.explanation}</div>
+                `;
+                mcqContainer.appendChild(questionDiv);
+            });
+            
+            // Render Short Response
+            srContainer.innerHTML = '<h2 style="color: #c9a227; margin: 40px 0 20px;">Short Response (2 Questions)</h2>';
+            
+            currentShortResponses.forEach((q, qIndex) => {
+                const srDiv = document.createElement('div');
+                srDiv.className = 'short-response';
+                srDiv.innerHTML = `
+                    <div class="question-text"><span class="question-number">SR${qIndex + 1}.</span> ${q.question}</div>
+                    <textarea id="sr-${qIndex}" placeholder="Write your response here..."></textarea>
+                    <div class="sample-answer" id="sample-${qIndex}">
+                        <h4>Sample Answer:</h4>
+                        <p>${q.sampleAnswer}</p>
+                    </div>
+                `;
+                srContainer.appendChild(srDiv);
+            });
+        }
+        
+        function selectOption(element, questionIndex, optionIndex) {
+            if (quizSubmitted) return;
+            
+            // Remove selected class from all options in this question
+            const options = element.parentElement.querySelectorAll('.option');
+            options.forEach(opt => opt.classList.remove('selected'));
+            
+            // Add selected class to clicked option
+            element.classList.add('selected');
+        }
+        
+        function submitQuiz() {
+            if (quizSubmitted) return;
+            quizSubmitted = true;
+            
+            let score = 0;
+            
+            currentQuestions.forEach((q, qIndex) => {
+                const options = document.querySelectorAll(`[data-question="${qIndex}"]`);
+                const explanation = document.getElementById(`explanation-${qIndex}`);
+                let answered = false;
+                
+                options.forEach((opt, oIndex) => {
+                    if (opt.classList.contains('selected')) {
+                        answered = true;
+                        if (oIndex === q.correct) {
+                            opt.classList.add('correct');
+                            score++;
+                        } else {
+                            opt.classList.add('incorrect');
+                            options[q.correct].classList.add('correct');
+                        }
+                    }
+                });
+                
+                if (!answered) {
+                    options[q.correct].classList.add('correct');
+                }
+                
+                explanation.classList.add('show');
+            });
+            
+            // Show sample answers for short responses
+            currentShortResponses.forEach((q, qIndex) => {
+                document.getElementById(`sample-${qIndex}`).classList.add('show');
+            });
+            
+            // Show results
+            const resultsDiv = document.getElementById('results');
+            const scoreDisplay = document.getElementById('score-display');
+            const performanceMsg = document.getElementById('performance-msg');
+            
+            scoreDisplay.textContent = `${score}/20`;
+            
+            const percentage = (score / 20) * 100;
+            if (percentage >= 90) {
+                performanceMsg.className = 'performance excellent';
+                performanceMsg.textContent = 'Excellent! You know this material very well. Focus on reviewing the questions you missed.';
+            } else if (percentage >= 70) {
+                performanceMsg.className = 'performance good';
+                performanceMsg.textContent = 'Good work! Review the explanations for questions you missed and check the Study Guide for those topics.';
+            } else {
+                performanceMsg.className = 'performance needs-work';
+                performanceMsg.textContent = 'You should spend more time with the material. Read through the Study Guide and Likely Test Topics, then try another quiz.';
+            }
+            
+            resultsDiv.classList.add('show');
+            resultsDiv.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function showSection(sectionId) {
+            // Update tabs
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Update sections
+            document.querySelectorAll('.section').forEach(section => section.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+        }
+        
+        // Initialize quiz on load
+        generateNewQuiz();
+    </script>
+</body>
+</html>

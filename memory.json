@@ -1,0 +1,31 @@
+{
+  "userName": "Nadav",
+  "facts": [],
+  "contacts": {
+    "nadav_phone": "954-829-4070",
+    "dad_phone": "954-663-1538",
+    "nadav_email": "nadavmenkiewicz@gmail.com"
+  },
+  "projects": {},
+  "devices": {
+    "sonos_den": "Nadav has a Sonos speaker in the Den",
+    "hp_printer": "HP OfficeJet Pro at 192.168.4.53",
+    "thermostat": "Google Nest thermostat",
+    "sonos_speakers": "Sonos speakers: Outside (192.168.4.120), Dining Room (192.168.4.95), Kitchen (192.168.4.93), Bedroom (192.168.4.97), Den (192.168.4.94)",
+    "sony_tv": "Sony Bravia KDL-75W850C at 192.168.4.54, Pre-Shared Key: 6465",
+    "guest_bedroom_tv": "Fision TV Plus (Technicolor) at 192.168.4.25, supports Google Cast/DIAL protocol on port 8008, name: Guest Bedroom TV",
+    "sharp_roku_tv": "65\" Sharp Roku TV (LC-65LBU591U) at 192.168.4.68, located in Bedroom, supports AirPlay, full Roku ECP control via port 8060",
+    "wyze_camera": "Wyze camera at 192.168.4.50, MAC 4c-17-44-a5-d3-11, port 8888 open (control), RTSP not currently enabled - needs to be turned on in Wyze app for local streaming"
+  },
+  "preferences": {
+    "printing": "When printing, always create clean HTML/PDF first - never send raw text to printer. One page only, no garbled text."
+  },
+  "apis": {
+    "twilio": "Account SID: AC863114fabe9cc65036e18d0024b601a8, Phone: +15054776732"
+  },
+  "dailyChecks": [
+    "Check the weather and adjust AC based on the weather — check this every day",
+    "Check the weather every day — check this every day and send a proactive_update with the result",
+    "Regarding my daily check \"Check the weather every day\": should I cancel my outdoor plans tomorrow?"
+  ]
+}

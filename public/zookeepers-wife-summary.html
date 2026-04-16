@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Zookeeper's Wife - Chapters 1-7 Summary</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2c3e50;
+            --accent: #8b4513;
+            --gold: #c9a227;
+            --cream: #f5f0e6;
+            --dark: #1a1a2e;
+        }
+
+        body {
+            font-family: 'Lora', serif;
+            background: var(--cream);
+            color: var(--dark);
+            line-height: 1.8;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            background: linear-gradient(135deg, rgba(26, 26, 46, 0.9), rgba(44, 62, 80, 0.85)),
+                        url('https://images.unsplash.com/photo-1474511320723-9a56873571b7?w=1920') center/cover;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: white;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 150px;
+            background: linear-gradient(transparent, var(--cream));
+        }
+
+        .hero-content {
+            z-index: 1;
+            max-width: 800px;
+        }
+
+        .hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.3);
+        }
+
+        .hero .subtitle {
+            font-size: 1.5rem;
+            color: var(--gold);
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+
+        .hero .author {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+        }
+
+        .hero .badge {
+            display: inline-block;
+            background: var(--gold);
+            color: var(--dark);
+            padding: 0.5rem 1.5rem;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2;
+            animation: bounce 2s infinite;
+        }
+
+        .scroll-indicator svg {
+            width: 30px;
+            height: 30px;
+            fill: white;
+            opacity: 0.7;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
+            40% { transform: translateX(-50%) translateY(-10px); }
+            60% { transform: translateX(-50%) translateY(-5px); }
+        }
+
+        /* Navigation */
+        nav {
+            background: var(--dark);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.2);
+        }
+
+        nav ul {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            list-style: none;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        nav a {
+            color: var(--cream);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+
+        nav a:hover, nav a.active {
+            background: var(--gold);
+            color: var(--dark);
+        }
+
+        /* Main Content */
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+
+        /* Overview Section */
+        .overview {
+            background: white;
+            border-radius: 20px;
+            padding: 3rem;
+            margin-bottom: 4rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .overview::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--accent), var(--gold));
+        }
+
+        .overview h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            color: var(--accent);
+            margin-bottom: 1.5rem;
+        }
+
+        .overview p {
+            margin-bottom: 1rem;
+        }
+
+        /* Characters Section */
+        .characters {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .character-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            transition: transform 0.3s;
+        }
+
+        .character-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .character-card .avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--gold));
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .character-card h3 {
+            font-family: 'Playfair Display', serif;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .character-card p {
+            font-size: 0.95rem;
+            color: #666;
+        }
+
+        /* Chapter Sections */
+        .chapter {
+            background: white;
+            border-radius: 20px;
+            margin-bottom: 3rem;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        .chapter-header {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .chapter-number {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            opacity: 0.8;
+            margin-bottom: 0.5rem;
+        }
+
+        .chapter-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        .chapter-date {
+            position: absolute;
+            top: 1.5rem;
+            right: 2rem;
+            background: rgba(255,255,255,0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+
+        .chapter-content {
+            padding: 2rem;
+        }
+
+        .chapter-content p {
+            margin-bottom: 1rem;
+        }
+
+        .key-events {
+            background: var(--cream);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .key-events h4 {
+            font-family: 'Playfair Display', serif;
+            color: var(--accent);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .key-events ul {
+            list-style: none;
+        }
+
+        .key-events li {
+            padding: 0.5rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .key-events li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0.9rem;
+            width: 8px;
+            height: 8px;
+            background: var(--gold);
+            border-radius: 50%;
+        }
+
+        /* Quote Callout */
+        .quote {
+            background: linear-gradient(135deg, var(--dark), var(--primary));
+            color: white;
+            padding: 3rem;
+            border-radius: 20px;
+            margin: 4rem 0;
+            text-align: center;
+            position: relative;
+        }
+
+        .quote::before {
+            content: '"';
+            font-family: 'Playfair Display', serif;
+            font-size: 8rem;
+            position: absolute;
+            top: -20px;
+            left: 30px;
+            opacity: 0.2;
+            color: var(--gold);
+        }
+
+        .quote p {
+            font-size: 1.3rem;
+            font-style: italic;
+            max-width: 700px;
+            margin: 0 auto 1rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .quote cite {
+            color: var(--gold);
+            font-style: normal;
+        }
+
+        /* Themes Section */
+        .themes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 3rem 0;
+        }
+
+        .theme-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            border-left: 4px solid var(--gold);
+        }
+
+        .theme-card h4 {
+            font-family: 'Playfair Display', serif;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .theme-card p {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+            margin: 2rem 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(to bottom, var(--gold), var(--accent));
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-bottom: 2rem;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -34px;
+            top: 5px;
+            width: 12px;
+            height: 12px;
+            background: var(--gold);
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 0 0 3px var(--gold);
+        }
+
+        .timeline-item .date {
+            color: var(--accent);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        /* Section Headers */
+        .section-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .section-header h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .section-header .line {
+            width: 60px;
+            height: 3px;
+            background: var(--gold);
+            margin: 0 auto;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--dark);
+            color: white;
+            text-align: center;
+            padding: 3rem 2rem;
+        }
+
+        footer p {
+            opacity: 0.8;
+        }
+
+        footer .book-info {
+            margin-top: 1rem;
+            color: var(--gold);
+            font-style: italic;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .chapter-date {
+                position: static;
+                display: inline-block;
+                margin-top: 1rem;
+            }
+            
+            nav ul {
+                gap: 0.5rem;
+            }
+            
+            nav a {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <span class="badge">STUDY GUIDE</span>
+            <h1>The Zookeeper's Wife</h1>
+            <p class="subtitle">A War Story</p>
+            <p class="author">by Diane Ackerman</p>
+            <p style="opacity: 0.9; margin-top: 1rem;">Chapters 1-7 Summary & Analysis</p>
+        </div>
+        <div class="scroll-indicator">
+            <svg viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
+        </div>
+    </section>
+
+    <!-- Navigation -->
+    <nav>
+        <ul>
+            <li><a href="#overview">Overview</a></li>
+            <li><a href="#characters">Characters</a></li>
+            <li><a href="#ch1">Ch 1</a></li>
+            <li><a href="#ch2">Ch 2</a></li>
+            <li><a href="#ch3">Ch 3</a></li>
+            <li><a href="#ch4">Ch 4</a></li>
+            <li><a href="#ch5">Ch 5</a></li>
+            <li><a href="#ch6">Ch 6</a></li>
+            <li><a href="#ch7">Ch 7</a></li>
+            <li><a href="#themes">Themes</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <!-- Overview Section -->
+        <section id="overview" class="overview">
+            <h2>Book Overview</h2>
+            <p><strong>The Zookeeper's Wife</strong> is a remarkable work of narrative nonfiction by Diane Ackerman, published in 2007. It tells the true story of <strong>Jan and Antonina Zabinski</strong>, who ran the Warsaw Zoo in Poland before and during World War II. When Nazi Germany invaded Poland in September 1939, the Zabinskis' world was shattered--but from the ashes of their destroyed zoo, they built a secret refuge for hundreds of Jews escaping the Warsaw Ghetto.</p>
+            <p>The first seven chapters establish the idyllic pre-war life at the zoo, introduce us to the remarkable Zabinski family, and chronicle the devastating German invasion that would transform the zoo from a sanctuary for animals into a sanctuary for human lives.</p>
+            <p>Ackerman's prose weaves together Antonina's personal diaries, historical research, and vivid descriptions of nature to create a portrait of courage, compassion, and the profound bond between humans and animals.</p>
+        </section>
+
+        <!-- Characters Section -->
+        <section id="characters">
+            <div class="section-header">
+                <h2>Key Characters</h2>
+                <div class="line"></div>
+            </div>
+            <div class="characters">
+                <div class="character-card">
+                    <div class="avatar">A</div>
+                    <h3>Antonina Zabinska</h3>
+                    <p>The zookeeper's wife, a gifted woman with an extraordinary ability to connect with animals. Orphaned at age 9 when her parents were killed during the Russian Revolution, she finds solace in the natural world.</p>
+                </div>
+                <div class="character-card">
+                    <div class="avatar">J</div>
+                    <h3>Jan Zabinski</h3>
+                    <p>Director of the Warsaw Zoo and Antonina's husband. A zoologist with a doctorate, he is 11 years older than Antonina. He shares her love for animals and art, and later becomes active in the Polish Resistance.</p>
+                </div>
+                <div class="character-card">
+                    <div class="avatar">R</div>
+                    <h3>Ryszard "Rys" Zabinski</h3>
+                    <p>The Zabinskis' young son who grows up surrounded by animals, considering the zoo's creatures his personal pets. He plays an important role in maintaining normalcy during the war years.</p>
+                </div>
+                <div class="character-card">
+                    <div class="avatar">L</div>
+                    <h3>Lutz Heck</h3>
+                    <p>Director of the Berlin Zoo and a Nazi zoologist. He arrives after the invasion to confiscate the Warsaw Zoo's most valuable animals for Germany, representing the Nazi appropriation of Polish culture.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quote -->
+        <div class="quote">
+            <p>The zoo hosted several mated pairs, and gibbon couples yodel formal songs complete with overture, codas, interludes, duets, and solos.</p>
+            <cite>- Chapter 1, describing the morning sounds of the Warsaw Zoo</cite>
+        </div>
+
+        <!-- Chapter 1 -->
+        <section id="ch1" class="chapter">
+            <div class="chapter-header">
+                <div class="chapter-number">Chapter One</div>
+                <div class="chapter-title">Summer, 1935</div>
+                <div class="chapter-date">Pre-War Warsaw</div>
+            </div>
+            <div class="chapter-content">
+                <p>The book opens in the summer of 1935, painting a vivid portrait of life at the Warsaw Zoo. We are introduced to <strong>Antonina Zabinska</strong>, who awakens each morning to the symphony of zoo animals--gibbons whooping, wolves howling, lions roaring. The sensory experience of the zoo comes alive through Ackerman's lyrical prose.</p>
+                <p>Antonina's backstory is revealed: she was orphaned at age nine when her parents, members of the Polish intelligentsia, were executed during the Russian Revolution in 1917. After her parents' deaths, her grandmother sent her to study piano at a conservatory in Tashkent, Uzbekistan, where she graduated at fifteen.</p>
+                <p>She later moved to Warsaw, studied foreign languages and art, and met <strong>Jan Zabinski</strong> while working at Warsaw's College of Agriculture. Jan, a zoologist eleven years her senior, shared her passion for both animals and art. When the position of zoo director opened in 1929, they seized the opportunity. They married in 1931 and moved into the villa on the zoo grounds in the Praga district.</p>
+                <div class="key-events">
+                    <h4>Key Elements</h4>
+                    <ul>
+                        <li>Introduction to the Zabinskis and their life at the Warsaw Zoo</li>
+                        <li>Antonina's tragic past: orphaned during the Russian Revolution</li>
+                        <li>The couple's shared love of animals and art</li>
+                        <li>Description of the villa and its terrace overlooking the zoo grounds</li>
+                        <li>Rich sensory details of zoo life--sounds, smells, and daily rhythms</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Chapter 2 -->
+        <section id="ch2" class="chapter">
+            <div class="chapter-header">
+                <div class="chapter-number">Chapter Two</div>
+                <div class="chapter-title">The Golden Age</div>
+                <div class="chapter-date">1935-1939</div>
+            </div>
+            <div class="chapter-content">
+                <p>This chapter expands on the flourishing of the Warsaw Zoo under Jan's direction. The zoo becomes one of the largest in Europe, home to rare and exotic animals from around the world. Jan's vision transforms it into not just a place of entertainment, but a center for conservation and scientific study.</p>
+                <p>Antonina's unique gift with animals becomes apparent. She has an almost mystical ability to calm distressed creatures, from baby lynxes to newborn badgers. The villa often houses orphaned or sick animals that need special care, and young Rys grows up in this extraordinary environment where a baby hyena might share breakfast with the family.</p>
+                <p>The chapter also introduces the vibrant cultural and social life of pre-war Warsaw. The Zabinskis host scientists, artists, and dignitaries. The zoo becomes a beloved destination for Warsaw's citizens, a green oasis in the industrial Praga district.</p>
+                <div class="key-events">
+                    <h4>Key Elements</h4>
+                    <ul>
+                        <li>The Warsaw Zoo grows into one of Europe's finest</li>
+                        <li>Antonina's remarkable ability to connect with animals</li>
+                        <li>The villa becomes a nursery for orphaned zoo babies</li>
+                        <li>Young Rys' idyllic childhood among the animals</li>
+                        <li>The vibrant cultural life of pre-war Poland</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Chapter 3 -->
+        <section id="ch3" class="chapter">
+            <div class="chapter-header">
+                <div class="chapter-number">Chapter Three</div>
+                <div class="chapter-title">The Storm Gathers</div>
+                <div class="chapter-date">1938-1939</div>
+            </div>
+            <div class="chapter-content">
+                <p>As political tensions rise across Europe, the shadow of Nazi Germany begins to loom over Poland. The chapter chronicles the growing anxiety as Hitler's regime expands--the annexation of Austria, the dismemberment of Czechoslovakia. Polish citizens watch with growing dread.</p>
+                <p>Jan, aware of the dangers, begins making contingency plans for the zoo. Meanwhile, Antonina focuses on maintaining normalcy for Rys and the animals, though the atmosphere becomes increasingly tense. The chapter explores how ordinary people continued their lives even as catastrophe approached.</p>
+                <p>The connections between German and Polish zoological institutions are explored, including Jan's professional relationships with German colleagues. This foreshadows the complex dynamics that will emerge when war begins.</p>
+                <div class="key-events">
+                    <h4>Key Elements</h4>
+                    <ul>
+                        <li>Rising political tensions across Europe</li>
+                        <li>Jan's preparations for potential conflict</li>
+                        <li>The fragile peace of the zoo's final pre-war days</li>
+                        <li>Professional connections with German zoologists</li>
+                        <li>The Zabinskis' determination to protect their family and animals</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Chapter 4 -->
+        <section id="ch4" class="chapter">
+            <div class="chapter-header">
+                <div class="chapter-number">Chapter Four</div>
+                <div class="chapter-title">September 1, 1939</div>
+                <div class="chapter-date">The Invasion</div>
+            </div>
+            <div class="chapter-content">
+                <p><strong>On September 1, 1939, Nazi Germany invades Poland.</strong> The bombing of Warsaw begins immediately, and the zoo--located near the Vistula River and close to military targets--is caught in the devastation. Bombs fall on the zoo grounds, killing animals and destroying enclosures.</p>
+                <p>The chapter vividly describes the chaos: terrified animals, collapsed buildings, fires spreading across the grounds. Antonina and Jan work desperately to save what they can, even as the world they built crumbles around them. Some animals escape into the streets of Warsaw, creating surreal scenes of lions and monkeys wandering through rubble.</p>
+                <p>Jan joins the Polish army to defend Warsaw, leaving Antonina alone with Rys to manage the devastated zoo. The chapter captures her courage and resourcefulness as she tries to care for surviving animals while bombs continue to fall.</p>
+                <div class="key-events">
+                    <h4>Key Elements</h4>
+                    <ul>
+                        <li>German invasion begins on September 1, 1939</li>
+                        <li>Warsaw and the zoo are bombed heavily</li>
+                        <li>Many animals are killed; others escape into the city</li>
+                        <li>Jan joins the Polish army; Antonina stays at the zoo</li>
+                        <li>The destruction of the Zabinskis' life's work begins</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Chapter 5 -->
+        <section id="ch5" class="chapter">
+            <div class="chapter-header">
+                <div class="chapter-number">Chapter Five</div>
+                <div class="chapter-title">Warsaw Falls</div>
+                <div class="chapter-date">September 1939</div>
+            </div>
+            <div class="chapter-content">
+                <p>After fierce resistance, Warsaw falls to the German forces. Poland is partitioned between Nazi Germany and the Soviet Union. Jan returns from the brief, doomed military campaign to find the zoo in ruins--but his family is alive.</p>
+                <p>The German occupation begins immediately. Nazi officials survey Warsaw's resources, and it becomes clear that the zoo's remaining animals are valuable commodities. The chapter introduces <strong>Lutz Heck</strong>, the director of the Berlin Zoo and a high-ranking Nazi, who arrives to assess the collection.</p>
+                <p>Heck, though a fellow zoologist, represents everything the Zabinskis fear. He is obsessed with "back-breeding" extinct species like the aurochs (ancient wild cattle), seeing his work as part of the Nazi vision of restoring a mythical Germanic past. His arrival signals a new chapter in the zoo's story.</p>
+                <div class="key-events">
+                    <h4>Key Elements</h4>
+                    <ul>
+                        <li>Warsaw surrenders after weeks of bombardment</li>
+                        <li>German occupation begins; Poland is divided</li>
+                        <li>Jan returns from military service</li>
+                        <li>Lutz Heck arrives from the Berlin Zoo</li>
+                        <li>The surviving animals face an uncertain fate</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Chapter 6 -->
+        <section id="ch6" class="chapter">
+            <div class="chapter-header">
+                <div class="chapter-number">Chapter Six</div>
+                <div class="chapter-title">The Confiscation</div>
+                <div class="chapter-date">Late 1939</div>
+            </div>
+            <div class="chapter-content">
+                <p>Lutz Heck confiscates the Warsaw Zoo's most valuable animals for the Berlin Zoo. Under the guise of "protecting" them, he ships prize specimens to Germany--elephants, big cats, rare birds, and primates that Jan and Antonina had spent years acquiring and caring for.</p>
+                <p>The chapter explores Heck's twisted ideology. He believes in creating a "pure" nature to match the Nazi vision of racial purity, attempting to breed back extinct species like the tarpan (wild horse) and aurochs. The Warsaw Zoo's animals become raw material for his experiments.</p>
+                <p>Jan and Antonina must watch helplessly as their beloved animals are taken. However, Jan begins to see strategic value in maintaining a relationship with Heck--a connection that might later prove useful for resistance activities.</p>
+                <div class="key-events">
+                    <h4>Key Elements</h4>
+                    <ul>
+                        <li>Heck confiscates the zoo's most valuable animals</li>
+                        <li>Animals are shipped to Berlin under German "protection"</li>
+                        <li>Heck's obsession with back-breeding extinct species</li>
+                        <li>The Zabinskis' devastation at losing their animals</li>
+                        <li>Jan begins strategizing about maintaining useful connections</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Chapter 7 -->
+        <section id="ch7" class="chapter">
+            <div class="chapter-header">
+                <div class="chapter-number">Chapter Seven</div>
+                <div class="chapter-title">New Year's Massacre</div>
+                <div class="chapter-date">January 1940</div>
+            </div>
+            <div class="chapter-content">
+                <p>On New Year's Eve 1939, German soldiers organize a hunting party at the Warsaw Zoo. The animals that Lutz Heck deemed unworthy of transport to Berlin--those not rare or valuable enough--become targets for sport. Drunken soldiers shoot the remaining animals for entertainment.</p>
+                <p>The massacre is devastating. Animals the Zabinskis had raised and cared for are slaughtered in their enclosures. The chapter presents this as both a personal tragedy for the family and a symbol of Nazi cruelty--the wanton destruction of innocent life for amusement.</p>
+                <p>After this horror, the zoo stands nearly empty. But from this devastation, Jan and Antonina begin to envision a new purpose for the abandoned grounds and empty cages. The seeds of their resistance work--hiding Jews escaping the Warsaw Ghetto--begin to take root.</p>
+                <div class="key-events">
+                    <h4>Key Elements</h4>
+                    <ul>
+                        <li>German soldiers conduct a hunting party at the zoo</li>
+                        <li>Remaining animals are shot for sport on New Year's Eve</li>
+                        <li>The zoo is left nearly empty after the massacre</li>
+                        <li>The Zabinskis' grief transforms into determination</li>
+                        <li>First hints of the resistance work to come</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Themes Section -->
+        <section id="themes">
+            <div class="section-header">
+                <h2>Major Themes (Chapters 1-7)</h2>
+                <div class="line"></div>
+            </div>
+            <div class="themes">
+                <div class="theme-card">
+                    <h4>Human-Animal Connection</h4>
+                    <p>Antonina's profound bond with animals suggests the deep connections possible between humans and nature, and how this empathy extends to compassion for all living beings.</p>
+                </div>
+                <div class="theme-card">
+                    <h4>Loss and Resilience</h4>
+                    <p>From Antonina's orphaning to the destruction of the zoo, the characters face tremendous loss but continue to find strength and purpose.</p>
+                </div>
+                <div class="theme-card">
+                    <h4>Home and Sanctuary</h4>
+                    <p>The zoo villa transforms from a physical home into a symbol of safety--first for animals, and soon for human refugees.</p>
+                </div>
+                <div class="theme-card">
+                    <h4>Nazi Ideology and Nature</h4>
+                    <p>Lutz Heck's obsession with "pure" breeds mirrors Nazi racial ideology, showing how fascism infected even scientific pursuits.</p>
+                </div>
+                <div class="theme-card">
+                    <h4>Courage in Darkness</h4>
+                    <p>As the occupation begins, the Zabinskis demonstrate quiet courage, setting the stage for their later heroism.</p>
+                </div>
+                <div class="theme-card">
+                    <h4>The Power of Art and Culture</h4>
+                    <p>Music, painting, and the love of beauty persist even in wartime, representing the human spirit's resistance to destruction.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Timeline -->
+        <div class="overview" style="margin-top: 4rem;">
+            <h2>Timeline of Events</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="date">1917</div>
+                    <p>Antonina's parents are killed during the Russian Revolution. She is 9 years old.</p>
+                </div>
+                <div class="timeline-item">
+                    <div class="date">1929</div>
+                    <p>Jan becomes director of the Warsaw Zoo.</p>
+                </div>
+                <div class="timeline-item">
+                    <div class="date">1931</div>
+                    <p>Jan and Antonina marry and move into the villa at the zoo.</p>
+                </div>
+                <div class="timeline-item">
+                    <div class="date">1935</div>
+                    <p>The story opens with the zoo at its peak--a golden era for the Zabinski family.</p>
+                </div>
+                <div class="timeline-item">
+                    <div class="date">September 1, 1939</div>
+                    <p>Germany invades Poland. Warsaw and the zoo are bombed.</p>
+                </div>
+                <div class="timeline-item">
+                    <div class="date">September 1939</div>
+                    <p>Warsaw falls. Lutz Heck arrives and begins confiscating animals.</p>
+                </div>
+                <div class="timeline-item">
+                    <div class="date">New Year's Eve 1939</div>
+                    <p>German soldiers massacre the remaining zoo animals.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>Study Guide for The Zookeeper's Wife by Diane Ackerman</p>
+        <p class="book-info">Chapters 1-7 Summary - Created for Nadav's World History Honors Class</p>
+        <p style="margin-top: 1rem; font-size: 0.85rem; opacity: 0.6;">Based on the 2007 nonfiction book - New York Times Bestseller</p>
+    </footer>
+
+    <script>
+        // Smooth scrolling for navigation
+        document.querySelectorAll('nav a').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // Highlight active nav item on scroll
+        const sections = document.querySelectorAll('section[id], .chapter[id]');
+        const navLinks = document.querySelectorAll('nav a');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop - 100;
+                if (scrollY >= sectionTop) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stickman Duel</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            background: #1a1a2e; 
+            overflow: hidden;
+        }
+        canvas { 
+            border: 3px solid #e94560; 
+            cursor: crosshair;
+            box-shadow: 0 0 30px rgba(233, 69, 96, 0.5);
+        }
+        #ui {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            font-size: 24px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            display: flex;
+            gap: 50px;
+        }
+        #gameOver {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #e94560;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            font-size: 48px;
+            text-shadow: 0 0 20px rgba(233, 69, 96, 0.8);
+            display: none;
+            text-align: center;
+        }
+        #restart {
+            margin-top: 20px;
+            padding: 15px 40px;
+            font-size: 24px;
+            background: #e94560;
+            border: none;
+            color: white;
+            cursor: pointer;
+            border-radius: 10px;
+        }
+        #restart:hover { background: #ff6b6b; }
+        .health-bar {
+            width: 150px;
+            height: 20px;
+            background: #333;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+        .health-fill {
+            height: 100%;
+            transition: width 0.3s;
+        }
+        #playerHealth .health-fill { background: #4ade80; }
+        #enemyHealth .health-fill { background: #e94560; }
+    </style>
+</head>
+<body>
+    <div id="ui">
+        <div>
+            <div>YOU</div>
+            <div class="health-bar" id="playerHealth"><div class="health-fill" style="width: 100%"></div></div>
+        </div>
+        <div>Score: <span id="score">0</span></div>
+        <div>
+            <div>ENEMY</div>
+            <div class="health-bar" id="enemyHealth"><div class="health-fill" style="width: 100%"></div></div>
+        </div>
+    </div>
+    <canvas id="game"></canvas>
+    <div id="gameOver">
+        <div id="gameOverText">GAME OVER</div>
+        <button id="restart">Play Again</button>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('game');
+        const ctx = canvas.getContext('2d');
+        canvas.width = 1000;
+        canvas.height = 600;
+
+        let score = 0;
+        let gameRunning = true;
+        let mouseX = 0, mouseY = 0;
+
+        // Player
+        const player = {
+            x: 150,
+            y: canvas.height - 100,
+            width: 40,
+            height: 80,
+            health: 100,
+            maxHealth: 100,
+            shootCooldown: 0
+        };
+
+        // Enemy
+        let enemy = {
+            x: 0,
+            y: 0,
+            width: 40,
+            height: 80,
+            health: 100,
+            maxHealth: 100,
+            shootCooldown: 0,
+            shootInterval: 90, // frames between shots
+            alive: true
+        };
+
+        // Bullets
+        let playerBullets = [];
+        let enemyBullets = [];
+
+        // Spawn enemy at random position on right side
+        function spawnEnemy() {
+            enemy = {
+                x: canvas.width - 150,
+                y: 150 + Math.random() * (canvas.height - 300),
+                width: 40,
+                height: 80,
+                health: 100 + score * 10,
+                maxHealth: 100 + score * 10,
+                shootCooldown: 60,
+                shootInterval: Math.max(30, 90 - score * 5),
+                alive: true
+            };
+            updateHealthBars();
+        }
+
+        // Draw stickman
+        function drawStickman(x, y, color, facingLeft = false) {
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 4;
+            ctx.lineCap = 'round';
+            
+            // Head
+            ctx.beginPath();
+            ctx.arc(x, y - 50, 15, 0, Math.PI * 2);
+            ctx.stroke();
+            
+            // Body
+            ctx.beginPath();
+            ctx.moveTo(x, y - 35);
+            ctx.lineTo(x, y + 10);
+            ctx.stroke();
+            
+            // Arms
+            ctx.beginPath();
+            ctx.moveTo(x, y - 25);
+            if (facingLeft) {
+                ctx.lineTo(x - 25, y - 15);
+            } else {
+                ctx.lineTo(x + 25, y - 15);
+            }
+            ctx.stroke();
+            
+            // Back arm
+            ctx.beginPath();
+            ctx.moveTo(x, y - 25);
+            if (facingLeft) {
+                ctx.lineTo(x + 15, y - 30);
+            } else {
+                ctx.lineTo(x - 15, y - 30);
+            }
+            ctx.stroke();
+            
+            // Legs
+            ctx.beginPath();
+            ctx.moveTo(x, y + 10);
+            ctx.lineTo(x - 15, y + 40);
+            ctx.moveTo(x, y + 10);
+            ctx.lineTo(x + 15, y + 40);
+            ctx.stroke();
+            
+            // Gun
+            ctx.fillStyle = '#666';
+            ctx.fillRect(facingLeft ? x - 35 : x + 15, y - 20, 20, 8);
+        }
+
+        // Draw bullet
+        function drawBullet(bullet, color) {
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.arc(bullet.x, bullet.y, 5, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Trail
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 2;
+            ctx.globalAlpha = 0.5;
+            ctx.beginPath();
+            ctx.moveTo(bullet.x, bullet.y);
+            ctx.lineTo(bullet.x - bullet.vx * 3, bullet.y - bullet.vy * 3);
+            ctx.stroke();
+            ctx.globalAlpha = 1;
+        }
+
+        // Player shoot towards mouse
+        function playerShoot() {
+            if (player.shootCooldown > 0) return;
+            
+            const angle = Math.atan2(mouseY - (player.y - 20), mouseX - player.x);
+            playerBullets.push({
+                x: player.x + 25,
+                y: player.y - 20,
+                vx: Math.cos(angle) * 12,
+                vy: Math.sin(angle) * 12
+            });
+            player.shootCooldown = 15;
+        }
+
+        // Enemy shoot at player
+        function enemyShoot() {
+            if (!enemy.alive || enemy.shootCooldown > 0) return;
+            
+            const angle = Math.atan2(player.y - 20 - enemy.y, player.x - enemy.x);
+            // Add some inaccuracy
+            const spread = (Math.random() - 0.5) * 0.3;
+            enemyBullets.push({
+                x: enemy.x - 25,
+                y: enemy.y - 20,
+                vx: Math.cos(angle + spread) * 8,
+                vy: Math.sin(angle + spread) * 8
+            });
+            enemy.shootCooldown = enemy.shootInterval;
+        }
+
+        // Update health bars
+        function updateHealthBars() {
+            document.querySelector('#playerHealth .health-fill').style.width = 
+                (player.health / player.maxHealth * 100) + '%';
+            document.querySelector('#enemyHealth .health-fill').style.width = 
+                (enemy.health / enemy.maxHealth * 100) + '%';
+        }
+
+        // Check collision
+        function checkHit(bullet, target) {
+            return bullet.x > target.x - 25 && bullet.x < target.x + 25 &&
+                   bullet.y > target.y - 60 && bullet.y < target.y + 40;
+        }
+
+        // Game loop
+        function gameLoop() {
+            if (!gameRunning) return;
+            
+            // Clear
+            ctx.fillStyle = '#16213e';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw ground
+            ctx.fillStyle = '#0f3460';
+            ctx.fillRect(0, canvas.height - 50, canvas.width, 50);
+            
+            // Draw player (facing right)
+            drawStickman(player.x, player.y, '#4ade80', false);
+            
+            // Draw enemy (facing left)
+            if (enemy.alive) {
+                drawStickman(enemy.x, enemy.y, '#e94560', true);
+            }
+            
+            // Update cooldowns
+            if (player.shootCooldown > 0) player.shootCooldown--;
+            if (enemy.shootCooldown > 0) enemy.shootCooldown--;
+            
+            // Enemy shoots
+            enemyShoot();
+            
+            // Update player bullets
+            for (let i = playerBullets.length - 1; i >= 0; i--) {
+                const b = playerBullets[i];
+                b.x += b.vx;
+                b.y += b.vy;
+                drawBullet(b, '#4ade80');
+                
+                // Check hit on enemy
+                if (enemy.alive && checkHit(b, enemy)) {
+                    enemy.health -= 25;
+                    playerBullets.splice(i, 1);
+                    updateHealthBars();
+                    
+                    if (enemy.health <= 0) {
+                        enemy.alive = false;
+                        score++;
+                        document.getElementById('score').textContent = score;
+                        setTimeout(spawnEnemy, 1000);
+                    }
+                    continue;
+                }
+                
+                // Remove if off screen
+                if (b.x < 0 || b.x > canvas.width || b.y < 0 || b.y > canvas.height) {
+                    playerBullets.splice(i, 1);
+                }
+            }
+            
+            // Update enemy bullets
+            for (let i = enemyBullets.length - 1; i >= 0; i--) {
+                const b = enemyBullets[i];
+                b.x += b.vx;
+                b.y += b.vy;
+                drawBullet(b, '#e94560');
+                
+                // Check hit on player
+                if (checkHit(b, player)) {
+                    player.health -= 15;
+                    enemyBullets.splice(i, 1);
+                    updateHealthBars();
+                    
+                    if (player.health <= 0) {
+                        gameOver();
+                    }
+                    continue;
+                }
+                
+                // Remove if off screen
+                if (b.x < 0 || b.x > canvas.width || b.y < 0 || b.y > canvas.height) {
+                    enemyBullets.splice(i, 1);
+                }
+            }
+            
+            // Draw crosshair
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(mouseX, mouseY, 15, 0, Math.PI * 2);
+            ctx.moveTo(mouseX - 20, mouseY);
+            ctx.lineTo(mouseX + 20, mouseY);
+            ctx.moveTo(mouseX, mouseY - 20);
+            ctx.lineTo(mouseX, mouseY + 20);
+            ctx.stroke();
+            
+            requestAnimationFrame(gameLoop);
+        }
+
+        function gameOver() {
+            gameRunning = false;
+            document.getElementById('gameOver').style.display = 'block';
+            document.getElementById('gameOverText').textContent = 'GAME OVER - Score: ' + score;
+        }
+
+        function restart() {
+            player.health = player.maxHealth;
+            score = 0;
+            document.getElementById('score').textContent = '0';
+            playerBullets = [];
+            enemyBullets = [];
+            gameRunning = true;
+            document.getElementById('gameOver').style.display = 'none';
+            spawnEnemy();
+            updateHealthBars();
+            gameLoop();
+        }
+
+        // Controls
+        canvas.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            mouseX = e.clientX - rect.left;
+            mouseY = e.clientY - rect.top;
+        });
+
+        canvas.addEventListener('click', () => {
+            if (gameRunning) playerShoot();
+        });
+
+        // Allow holding mouse to shoot
+        let mouseDown = false;
+        canvas.addEventListener('mousedown', () => { mouseDown = true; });
+        canvas.addEventListener('mouseup', () => { mouseDown = false; });
+        setInterval(() => {
+            if (mouseDown && gameRunning) playerShoot();
+        }, 100);
+
+        // Move player up/down with W/S
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'w' || e.key === 'W') {
+                player.y = Math.max(100, player.y - 30);
+            }
+            if (e.key === 's' || e.key === 'S') {
+                player.y = Math.min(canvas.height - 60, player.y + 30);
+            }
+        });
+
+        document.getElementById('restart').addEventListener('click', restart);
+
+        // Start
+        spawnEnemy();
+        gameLoop();
+    </script>
+</body>
+</html>

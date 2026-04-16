@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stickman Shooter</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #1a1a2e;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            font-family: 'Arial', sans-serif;
+        }
+        #gameContainer {
+            position: relative;
+        }
+        canvas {
+            background: linear-gradient(to bottom, #16213e 0%, #1a1a2e 100%);
+            border: 3px solid #e94560;
+            border-radius: 10px;
+            cursor: crosshair;
+        }
+        #hud {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: #fff;
+            font-size: 18px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        #gameOver {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.9);
+            padding: 40px;
+            border-radius: 15px;
+            text-align: center;
+            display: none;
+            border: 2px solid #e94560;
+        }
+        #gameOver h1 { color: #e94560; margin-bottom: 20px; }
+        #gameOver p { color: #fff; margin-bottom: 20px; font-size: 20px; }
+        #restartBtn {
+            background: #e94560;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        #restartBtn:hover { background: #ff6b6b; transform: scale(1.1); }
+        #instructions {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #888;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer">
+        <canvas id="gameCanvas" width="1000" height="600"></canvas>
+        <div id="hud">
+            <div>Health: <span id="health">100</span></div>
+            <div>Score: <span id="score">0</span></div>
+            <div>Kills: <span id="kills">0</span></div>
+        </div>
+        <div id="gameOver">
+            <h1>GAME OVER</h1>
+            <p>Final Score: <span id="finalScore">0</span></p>
+            <p>Enemies Killed: <span id="finalKills">0</span></p>
+            <button id="restartBtn">Play Again</button>
+        </div>
+        <div id="instructions">WASD to move | Mouse to aim | Click to shoot</div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Game state
+        let player = {
+            x: canvas.width / 2,
+            y: canvas.height / 2,
+            width: 30,
+            height: 60,
+            speed: 5,
+            health: 100,
+            angle: 0
+        };
+        
+        let enemy = null;
+        let bullets = [];
+        let enemyBullets = [];
+        let score = 0;
+        let kills = 0;
+        let gameRunning = true;
+        let keys = {};
+        let mouseX = 0, mouseY = 0;
+        
+        // Spawn single enemy at random position
+        function spawnEnemy() {
+            if (enemy !== null) return; // Only one enemy at a time
+            
+            let x, y;
+            const side = Math.floor(Math.random() * 4);
+            switch(side) {
+                case 0: x = Math.random() * canvas.width; y = -50; break;
+                case 1: x = canvas.width + 50; y = Math.random() * canvas.height; break;
+                case 2: x = Math.random() * canvas.width; y = canvas.height + 50; break;
+                case 3: x = -50; y = Math.random() * canvas.height; break;
+            }
+            
+            enemy = {
+                x: x,
+                y: y,
+                width: 25,
+                height: 50,
+                speed: 1.5 + Math.random() * 1.5,
+                health: 30 + kills * 5, // Gets tougher each kill
+                maxHealth: 30 + kills * 5,
+                shootTimer: 0,
+                shootInterval: 80 - Math.min(kills * 5, 50) // Shoots faster each kill
+            };
+        }
+        
+        // Draw stickman
+        function drawStickman(x, y, angle, color, isPlayer, health, maxHealth) {
+            ctx.save();
+            ctx.translate(x, y);
+            
+            // Draw health bar
+            const barWidth = 40;
+            const barHeight = 5;
+            ctx.fillStyle = '#333';
+            ctx.fillRect(-barWidth/2, -45, barWidth, barHeight);
+            ctx.fillStyle = isPlayer ? '#4ade80' : '#ef4444';
+            ctx.fillRect(-barWidth/2, -45, (health/maxHealth) * barWidth, barHeight);
+            
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 3;
+            ctx.lineCap = 'round';
+            
+            // Head
+            ctx.beginPath();
+            ctx.arc(0, -25, 12, 0, Math.PI * 2);
+            ctx.stroke();
+            
+            // Body
+            ctx.beginPath();
+            ctx.moveTo(0, -13);
+            ctx.lineTo(0, 15);
+            ctx.stroke();
+            
+            // Arms - point toward mouse/player
+            ctx.save();
+            ctx.translate(0, -5);
+            ctx.rotate(angle);
+            ctx.beginPath();
+            ctx.moveTo(-15, 0);
+            ctx.lineTo(25, 0);
+            ctx.stroke();
+            
+            // Gun
+            ctx.fillStyle = '#666';
+            ctx.fillRect(15, -4, 15, 8);
+            ctx.restore();
+            
+            // Legs
+            ctx.beginPath();
+            ctx.moveTo(0, 15);
+            ctx.lineTo(-12, 35);
+            ctx.moveTo(0, 15);
+            ctx.lineTo(12, 35);
+            ctx.stroke();
+            
+            ctx.restore();
+        }
+        
+        // Draw bullet
+        function drawBullet(bullet, color) {
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.arc(bullet.x, bullet.y, 5, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Glow effect
+            ctx.shadowColor = color;
+            ctx.shadowBlur = 10;
+            ctx.fill();
+            ctx.shadowBlur = 0;
+        }
+        
+        // Player shoot
+        function playerShoot() {
+            const angle = Math.atan2(mouseY - player.y, mouseX - player.x);
+            bullets.push({
+                x: player.x + Math.cos(angle) * 30,
+                y: player.y - 5 + Math.sin(angle) * 30,
+                vx: Math.cos(angle) * 12,
+                vy: Math.sin(angle) * 12
+            });
+        }
+        
+        // Enemy shoot
+        function enemyShoot(e) {
+            const angle = Math.atan2(player.y - e.y, player.x - e.x);
+            enemyBullets.push({
+                x: e.x + Math.cos(angle) * 25,
+                y: e.y - 5 + Math.sin(angle) * 25,
+                vx: Math.cos(angle) * 6,
+                vy: Math.sin(angle) * 6
+            });
+        }
+        
+        // Update game
+        function update() {
+            if (!gameRunning) return;
+            
+            // Player movement
+            if (keys['w'] || keys['W']) player.y -= player.speed;
+            if (keys['s'] || keys['S']) player.y += player.speed;
+            if (keys['a'] || keys['A']) player.x -= player.speed;
+            if (keys['d'] || keys['D']) player.x += player.speed;
+            
+            // Keep player in bounds
+            player.x = Math.max(20, Math.min(canvas.width - 20, player.x));
+            player.y = Math.max(40, Math.min(canvas.height - 40, player.y));
+            
+            // Player angle
+            player.angle = Math.atan2(mouseY - player.y, mouseX - player.x);
+            
+            // Spawn enemy if none exists
+            if (enemy === null) {
+                spawnEnemy();
+            }
+            
+            // Update enemy
+            if (enemy) {
+                const angle = Math.atan2(player.y - enemy.y, player.x - enemy.x);
+                enemy.x += Math.cos(angle) * enemy.speed;
+                enemy.y += Math.sin(angle) * enemy.speed;
+                enemy.angle = angle;
+                
+                // Enemy shooting
+                enemy.shootTimer++;
+                if (enemy.shootTimer >= enemy.shootInterval) {
+                    enemyShoot(enemy);
+                    enemy.shootTimer = 0;
+                }
+            }
+            
+            // Update player bullets
+            bullets = bullets.filter(b => {
+                b.x += b.vx;
+                b.y += b.vy;
+                
+                // Check enemy hit
+                if (enemy) {
+                    const dx = b.x - enemy.x;
+                    const dy = b.y - enemy.y;
+                    if (Math.sqrt(dx*dx + dy*dy) < 25) {
+                        enemy.health -= 10;
+                        if (enemy.health <= 0) {
+                            score += 100 + kills * 10;
+                            kills++;
+                            enemy = null; // Remove enemy, new one will spawn
+                            updateHUD();
+                        }
+                        return false;
+                    }
+                }
+                
+                return b.x > 0 && b.x < canvas.width && b.y > 0 && b.y < canvas.height;
+            });
+            
+            // Update enemy bullets
+            enemyBullets = enemyBullets.filter(b => {
+                b.x += b.vx;
+                b.y += b.vy;
+                
+                // Check player hit
+                const dx = b.x - player.x;
+                const dy = b.y - player.y;
+                if (Math.sqrt(dx*dx + dy*dy) < 20) {
+                    player.health -= 10;
+                    updateHUD();
+                    if (player.health <= 0) {
+                        gameOver();
+                    }
+                    return false;
+                }
+                
+                return b.x > 0 && b.x < canvas.width && b.y > 0 && b.y < canvas.height;
+            });
+        }
+        
+        // Draw everything
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw floor grid
+            ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+            ctx.lineWidth = 1;
+            for (let i = 0; i < canvas.width; i += 50) {
+                ctx.beginPath();
+                ctx.moveTo(i, 0);
+                ctx.lineTo(i, canvas.height);
+                ctx.stroke();
+            }
+            for (let i = 0; i < canvas.height; i += 50) {
+                ctx.beginPath();
+                ctx.moveTo(0, i);
+                ctx.lineTo(canvas.width, i);
+                ctx.stroke();
+            }
+            
+            // Draw player
+            drawStickman(player.x, player.y, player.angle, '#4ade80', true, player.health, 100);
+            
+            // Draw enemy
+            if (enemy) {
+                drawStickman(enemy.x, enemy.y, enemy.angle, '#ef4444', false, enemy.health, enemy.maxHealth);
+            }
+            
+            // Draw bullets
+            bullets.forEach(b => drawBullet(b, '#4ade80'));
+            enemyBullets.forEach(b => drawBullet(b, '#ef4444'));
+            
+            // Draw "WAITING" indicator if no enemy
+            if (!enemy) {
+                ctx.fillStyle = 'rgba(255,255,255,0.3)';
+                ctx.font = '20px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('Enemy incoming...', canvas.width/2, 50);
+            }
+        }
+        
+        function updateHUD() {
+            document.getElementById('health').textContent = player.health;
+            document.getElementById('score').textContent = score;
+            document.getElementById('kills').textContent = kills;
+        }
+        
+        function gameOver() {
+            gameRunning = false;
+            document.getElementById('finalScore').textContent = score;
+            document.getElementById('finalKills').textContent = kills;
+            document.getElementById('gameOver').style.display = 'block';
+        }
+        
+        function restart() {
+            player = {
+                x: canvas.width / 2,
+                y: canvas.height / 2,
+                width: 30,
+                height: 60,
+                speed: 5,
+                health: 100,
+                angle: 0
+            };
+            enemy = null;
+            bullets = [];
+            enemyBullets = [];
+            score = 0;
+            kills = 0;
+            gameRunning = true;
+            document.getElementById('gameOver').style.display = 'none';
+            updateHUD();
+        }
+        
+        // Game loop
+        function gameLoop() {
+            update();
+            draw();
+            requestAnimationFrame(gameLoop);
+        }
+        
+        // Event listeners
+        document.addEventListener('keydown', e => keys[e.key] = true);
+        document.addEventListener('keyup', e => keys[e.key] = false);
+        
+        canvas.addEventListener('mousemove', e => {
+            const rect = canvas.getBoundingClientRect();
+            mouseX = e.clientX - rect.left;
+            mouseY = e.clientY - rect.top;
+        });
+        
+        canvas.addEventListener('click', () => {
+            if (gameRunning) playerShoot();
+        });
+        
+        document.getElementById('restartBtn').addEventListener('click', restart);
+        
+        // Start game
+        updateHUD();
+        gameLoop();
+    </script>
+</body>
+</html>

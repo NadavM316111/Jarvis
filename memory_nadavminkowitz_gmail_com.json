@@ -1,0 +1,33 @@
+{
+  "userName": "Nadav",
+  "facts": [
+    {
+      "key": "age",
+      "value": "15 years old"
+    },
+    {
+      "key": "age",
+      "value": "15 years old"
+    }
+  ],
+  "contacts": {
+    "nadavPhone": "9546631538"
+  },
+  "projects": {},
+  "devices": {
+    "guestBedroomTV": "{\"name\": \"Guest Bedroom TV\", \"ip\": \"192.168.4.25\", \"type\": \"Fision TV Plus\", \"manufacturer\": \"Technicolor\", \"protocol\": \"DIAL\", \"port\": 8008}"
+  },
+  "preferences": {
+    "designStudioUrl": "http://localhost:3001/design",
+    "designStudio": "http://localhost:3001/design"
+  },
+  "apis": {},
+  "dailyChecks": [
+    "Every morning at 8am, automatically read my Gmail inbox, summarize the most important emails, check my Google Calendar for today's events, and send me a proactive update with a full briefing — who emailed, what's urgent, what's on my schedule. Run this every day automatically"
+  ],
+  "credentials": {
+    "amazon": "danielmink@gmail.com",
+    "canvasToken": "8256~DUzQ63z2Y4JnzVUHQ8KJzAhWL8xF28MJH4NHh96eTtVeCh6ZLf2z4nutGMCMA8KJ",
+    "canvasUrl": "posnackschool.instructure.com"
+  }
+}

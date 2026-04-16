@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Zookeeper's Wife - Chapters 1-7 Quiz</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f23 100%);
+            min-height: 100vh;
+            color: #e8e8e8;
+            line-height: 1.7;
+        }
+        .container { max-width: 900px; margin: 0 auto; padding: 40px 20px; }
+        h1 { text-align: center; font-size: 2.2rem; margin-bottom: 10px; color: #d4af37; }
+        .subtitle { text-align: center; color: #888; margin-bottom: 30px; font-style: italic; }
+        .warning {
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            padding: 15px; border-radius: 8px; margin-bottom: 30px;
+            text-align: center; color: #d4af37;
+        }
+        .tabs { display: flex; gap: 10px; margin-bottom: 30px; flex-wrap: wrap; justify-content: center; }
+        .tab {
+            padding: 12px 24px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 8px; cursor: pointer; transition: all 0.3s; color: #ccc;
+        }
+        .tab:hover, .tab.active { background: rgba(212, 175, 55, 0.2); color: #d4af37; border-color: #d4af37; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .question-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px; padding: 25px; margin-bottom: 20px;
+        }
+        .question-num { color: #d4af37; font-weight: bold; margin-bottom: 10px; }
+        .question-text { font-size: 1.1rem; margin-bottom: 15px; color: #fff; }
+        .options { display: flex; flex-direction: column; gap: 10px; }
+        .option {
+            padding: 12px 15px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px; cursor: pointer; transition: all 0.3s;
+        }
+        .option:hover { background: rgba(212, 175, 55, 0.1); border-color: rgba(212, 175, 55, 0.3); }
+        .option.selected { background: rgba(212, 175, 55, 0.2); border-color: #d4af37; }
+        .option.correct { background: rgba(76, 175, 80, 0.2); border-color: #4CAF50; }
+        .option.incorrect { background: rgba(244, 67, 54, 0.2); border-color: #f44336; }
+        .explanation {
+            margin-top: 15px; padding: 15px;
+            background: rgba(212, 175, 55, 0.1);
+            border-radius: 8px; display: none; font-style: italic;
+            border-left: 3px solid #d4af37;
+        }
+        .btn {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #d4af37, #aa8a2e);
+            color: #1a1a2e; border: none; border-radius: 8px;
+            font-size: 1rem; font-weight: bold; cursor: pointer;
+            display: block; margin: 30px auto;
+        }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(212, 175, 55, 0.4); }
+        .results {
+            text-align: center; padding: 30px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px; margin-top: 20px; display: none;
+        }
+        .score { font-size: 3rem; color: #d4af37; margin-bottom: 10px; }
+        .score-text { font-size: 1.2rem; color: #ccc; }
+        .response-box {
+            width: 100%; min-height: 150px; padding: 15px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px; color: #e8e8e8;
+            font-family: Georgia, serif; font-size: 1rem; resize: vertical; margin-bottom: 15px;
+        }
+        .response-box:focus { outline: none; border-color: #d4af37; }
+        .sample-answer {
+            padding: 15px; background: rgba(76, 175, 80, 0.1);
+            border-left: 3px solid #4CAF50; border-radius: 8px;
+            margin-top: 10px; display: none;
+        }
+        .study-section { margin-bottom: 30px; }
+        .study-section h3 { color: #d4af37; margin-bottom: 15px; border-bottom: 1px solid rgba(212,175,55,0.3); padding-bottom: 10px; }
+        .study-section ul { padding-left: 20px; }
+        .study-section li { margin-bottom: 10px; }
+        .topic-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 8px; padding: 20px; margin-bottom: 15px;
+        }
+        .topic-card h4 { color: #d4af37; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>The Zookeeper's Wife</h1>
+        <p class="subtitle">Chapters 1-7 Study Quiz - by Diane Ackerman</p>
+        
+        <div class="warning">
+            All questions are based ONLY on Chapters 1-7. Good luck on your formative!
+        </div>
+        
+        <div class="tabs">
+            <div class="tab active" onclick="showTab('quiz')">Quiz (20 MCQ)</div>
+            <div class="tab" onclick="showTab('short')">Short Response</div>
+            <div class="tab" onclick="showTab('study')">Study Guide</div>
+            <div class="tab" onclick="showTab('topics')">Likely Test Topics</div>
+        </div>
+        
+        <div id="quiz" class="tab-content active">
+            <div id="questions-container"></div>
+            <button class="btn" id="submit-btn" onclick="submitQuiz()">Submit Quiz</button>
+            <button class="btn" id="new-quiz-btn" style="display:none" onclick="generateNewQuiz()">Generate New Quiz</button>
+            <div class="results" id="results">
+                <div class="score" id="score">0/20</div>
+                <div class="score-text" id="score-text"></div>
+            </div>
+        </div>
+        
+        <div id="short" class="tab-content">
+            <div class="question-card">
+                <div class="question-num">Short Response 1</div>
+                <div class="question-text" id="sr1-question"></div>
+                <textarea class="response-box" id="sr1-answer" placeholder="Write your response here..."></textarea>
+                <button class="btn" onclick="showSampleAnswer(1)">Show Sample Answer</button>
+                <div class="sample-answer" id="sr1-sample"></div>
+            </div>
+            <div class="question-card">
+                <div class="question-num">Short Response 2</div>
+                <div class="question-text" id="sr2-question"></div>
+                <textarea class="response-box" id="sr2-answer" placeholder="Write your response here..."></textarea>
+                <button class="btn" onclick="showSampleAnswer(2)">Show Sample Answer</button>
+                <div class="sample-answer" id="sr2-sample"></div>
+            </div>
+            <button class="btn" onclick="generateNewShortResponses()">Generate New Questions</button>
+        </div>
+        
+        <div id="study" class="tab-content">
+            <div class="study-section">
+                <h3>Chapter 1: Summer 1935</h3>
+                <ul>
+                    <li>Introduces the Warsaw Zoo and the Zabinskis' life before the war</li>
+                    <li>The zoo was one of the largest in Europe with rare species</li>
+                    <li>Antonina had a special bond with animals - could sense their emotions</li>
+                    <li>The villa was built of stucco with a peaked red tile roof</li>
+                    <li>Their son Rys could roam freely and play with baby animals</li>
+                </ul>
+            </div>
+            <div class="study-section">
+                <h3>Chapter 2: Antonina's Background</h3>
+                <ul>
+                    <li>Born in St. Petersburg, Russia (1908)</li>
+                    <li>Her parents were shot in 1917 during the Russian Revolution</li>
+                    <li>Raised by relatives, studied music and foreign languages</li>
+                    <li>Attended school in Tashkent at age 15</li>
+                    <li>Jan was 11 years older than Antonina</li>
+                    <li>They shared a white birch bed from their first apartment</li>
+                </ul>
+            </div>
+            <div class="study-section">
+                <h3>Chapter 3: Lutz Heck</h3>
+                <ul>
+                    <li>Director of the Berlin Zoo</li>
+                    <li>Working on "back-breeding" - recreating extinct animals (aurochs, tarpan horses)</li>
+                    <li>Believed in Nazi ideology about racial purity</li>
+                    <li>Had a strange fascination with Antonina</li>
+                    <li>His brother Heinz directed the Munich Zoo</li>
+                </ul>
+            </div>
+            <div class="study-section">
+                <h3>Chapter 4-5: The Invasion</h3>
+                <ul>
+                    <li>September 1, 1939 - Germany invades Poland</li>
+                    <li>The zoo was bombed - many animals killed or escaped</li>
+                    <li>Jan joined the Polish army as a lieutenant</li>
+                    <li>Antonina stayed to protect the animals</li>
+                    <li>Some dangerous animals (like the eagle) had to be shot for safety</li>
+                    <li>Warsaw surrendered on September 27, 1939</li>
+                </ul>
+            </div>
+            <div class="study-section">
+                <h3>Chapter 6-7: German Occupation</h3>
+                <ul>
+                    <li>Lutz Heck arrived to "collect" valuable zoo animals for Berlin</li>
+                    <li>He shot many animals for sport, calling it "culling"</li>
+                    <li>The Zabinskis proposed a pig farm to save the zoo grounds</li>
+                    <li>Pigs would be fed garbage from the Warsaw Ghetto</li>
+                    <li>This gave Jan a cover to enter the ghetto and begin rescue operations</li>
+                    <li>The empty cages would later hide Jewish refugees</li>
+                </ul>
+            </div>
+            <div class="study-section">
+                <h3>Key Characters</h3>
+                <ul>
+                    <li><strong>Antonina Zabinska</strong> - Zookeeper's wife, had deep empathy for animals</li>
+                    <li><strong>Jan Zabinski</strong> - Zoo director, zoologist, resistance fighter</li>
+                    <li><strong>Rys</strong> - Their young son who grew up among animals</li>
+                    <li><strong>Lutz Heck</strong> - Nazi Berlin Zoo director, interested in back-breeding</li>
+                    <li><strong>Heinz Heck</strong> - Lutz's brother, Munich Zoo director</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div id="topics" class="tab-content">
+            <h3 style="color:#d4af37; margin-bottom:20px;">Most Likely Test Topics</h3>
+            
+            <div class="topic-card">
+                <h4>1. Antonina's Background</h4>
+                <p>Her parents were shot in 1917 during the Russian Revolution. She was born in St. Petersburg in 1908. She studied music and languages, attended school in Tashkent at 15. Jan was 11 years older than her. They shared a white birch bed from their first apartment.</p>
+            </div>
+            
+            <div class="topic-card">
+                <h4>2. Lutz Heck's Back-Breeding Project</h4>
+                <p>Lutz Heck was trying to recreate extinct animals like the aurochs (ancient cattle) and tarpan (wild horse) by selectively breeding modern animals. This connected to Nazi beliefs about racial purity - if you could bring back "pure" animals, the same logic could apply to humans.</p>
+            </div>
+            
+            <div class="topic-card">
+                <h4>3. The Pig Farm Plan</h4>
+                <p>After Lutz Heck killed most of the zoo animals, Jan proposed converting the zoo into a pig farm. The pigs would be fed garbage collected from the Warsaw Ghetto. This was strategic - it gave Jan a legitimate reason to enter the ghetto regularly, which he used to help smuggle Jews to safety.</p>
+            </div>
+            
+            <div class="topic-card">
+                <h4>4. The Warsaw Zoo Before the War</h4>
+                <p>One of the largest zoos in Europe, home to rare species. The villa had a stucco exterior with a peaked red tile roof. Rys could roam freely and play with baby animals. Antonina had an almost mystical connection with the animals.</p>
+            </div>
+            
+            <div class="topic-card">
+                <h4>5. The September 1939 Invasion</h4>
+                <p>Germany invaded Poland on September 1, 1939. The zoo was bombed heavily. Some animals escaped, others were killed. Jan served as a lieutenant. Warsaw surrendered September 27. The eagle had to be shot because it was dangerous when loose.</p>
+            </div>
+            
+            <div class="topic-card">
+                <h4>6. Symbolism and Themes</h4>
+                <p><strong>Animals as innocents:</strong> Like the Jews who would be persecuted, animals are innocent victims of war.<br>
+                <strong>The empty cages:</strong> Foreshadow their future use as hiding places.<br>
+                <strong>Back-breeding:</strong> Parallels Nazi eugenics and racial ideology.<br>
+                <strong>Antonina's empathy:</strong> Her ability to understand animals reflects her later compassion for refugees.</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // All questions from Chapters 1-7 ONLY
+        const allQuestions = [
+            {
+                q: "In what year were Antonina's parents shot?",
+                options: ["1914", "1917", "1920", "1912"],
+                correct: 1,
+                explanation: "Antonina's parents were shot in 1917 during the Russian Revolution, leaving her an orphan."
+            },
+            {
+                q: "Where was Antonina born?",
+                options: ["Warsaw, Poland", "Berlin, Germany", "St. Petersburg, Russia", "Tashkent, Uzbekistan"],
+                correct: 2,
+                explanation: "Antonina was born in St. Petersburg, Russia in 1908."
+            },
+            {
+                q: "How much older was Jan than Antonina?",
+                options: ["5 years", "8 years", "11 years", "15 years"],
+                correct: 2,
+                explanation: "Jan was 11 years older than Antonina."
+            },
+            {
+                q: "What type of bed did Jan and Antonina share from their first apartment?",
+                options: ["Oak bed", "Iron bed", "White birch bed", "Mahogany bed"],
+                correct: 2,
+                explanation: "They shared a white birch bed from their first apartment, which held sentimental value."
+            },
+            {
+                q: "At what age did Antonina attend school in Tashkent?",
+                options: ["12", "15", "18", "10"],
+                correct: 1,
+                explanation: "Antonina attended school in Tashkent at age 15."
+            },
+            {
+                q: "What was Lutz Heck's position?",
+                options: ["Director of Warsaw Zoo", "Director of Berlin Zoo", "German military officer", "Polish resistance leader"],
+                correct: 1,
+                explanation: "Lutz Heck was the Director of the Berlin Zoo."
+            },
+            {
+                q: "What is 'back-breeding'?",
+                options: ["Training animals to perform tricks", "Attempting to recreate extinct animals through selective breeding", "Breeding animals for meat production", "Crossbreeding different species"],
+                correct: 1,
+                explanation: "Back-breeding is the attempt to recreate extinct animals (like aurochs and tarpan) by selectively breeding modern animals that carry ancient traits."
+            },
+            {
+                q: "Which extinct animal was Lutz Heck trying to recreate?",
+                options: ["Mammoth", "Aurochs", "Dodo", "Saber-toothed tiger"],
+                correct: 1,
+                explanation: "Lutz Heck was trying to recreate the aurochs, an ancient form of cattle, as well as the tarpan horse."
+            },
+            {
+                q: "What was the exterior of the Zabinskis' villa made of?",
+                options: ["Brick", "Wood", "Stucco", "Stone"],
+                correct: 2,
+                explanation: "The villa was built of stucco with a peaked red tile roof."
+            },
+            {
+                q: "What color was the tile roof of the Zabinskis' villa?",
+                options: ["Brown", "Gray", "Red", "Black"],
+                correct: 2,
+                explanation: "The villa had a peaked red tile roof."
+            },
+            {
+                q: "What was the name of Jan and Antonina's son?",
+                options: ["Rys", "Piotr", "Adam", "Marek"],
+                correct: 0,
+                explanation: "Their son was named Rys, who grew up playing freely with animals at the zoo."
+            },
+            {
+                q: "On what date did Germany invade Poland?",
+                options: ["August 15, 1939", "September 1, 1939", "October 10, 1939", "September 15, 1939"],
+                correct: 1,
+                explanation: "Germany invaded Poland on September 1, 1939, marking the start of World War II."
+            },
+            {
+                q: "What military rank did Jan hold when he joined the Polish army?",
+                options: ["Captain", "Sergeant", "Lieutenant", "Colonel"],
+                correct: 2,
+                explanation: "Jan joined the Polish army as a lieutenant."
+            },
+            {
+                q: "When did Warsaw surrender to the Germans?",
+                options: ["September 15, 1939", "September 27, 1939", "October 5, 1939", "September 20, 1939"],
+                correct: 1,
+                explanation: "Warsaw surrendered on September 27, 1939."
+            },
+            {
+                q: "What did Lutz Heck do to many of the zoo animals?",
+                options: ["Transported them all to Berlin", "Released them into the wild", "Shot them for sport", "Sold them to other zoos"],
+                correct: 2,
+                explanation: "Lutz Heck shot many of the zoo animals for sport, calling it 'culling' to sound official."
+            },
+            {
+                q: "What type of farm did the Zabinskis propose to create at the zoo?",
+                options: ["Chicken farm", "Cattle farm", "Pig farm", "Sheep farm"],
+                correct: 2,
+                explanation: "The Zabinskis proposed a pig farm, which would give Jan access to the Warsaw Ghetto for garbage collection."
+            },
+            {
+                q: "Where would the pigs' food come from?",
+                options: ["Local markets", "German army supplies", "The Warsaw Ghetto", "Nearby farms"],
+                correct: 2,
+                explanation: "The pigs would be fed garbage collected from the Warsaw Ghetto, giving Jan a cover to enter the ghetto."
+            },
+            {
+                q: "Who was Heinz Heck?",
+                options: ["A Polish resistance fighter", "Lutz Heck's brother and Munich Zoo director", "A German military commander", "Jan's assistant"],
+                correct: 1,
+                explanation: "Heinz Heck was Lutz's brother who directed the Munich Zoo."
+            },
+            {
+                q: "What special ability did Antonina have with animals?",
+                options: ["She could train any animal", "She could sense their emotions and communicate with them", "She was immune to animal attacks", "She could predict when they would give birth"],
+                correct: 1,
+                explanation: "Antonina had an almost mystical ability to sense animal emotions and connect with them deeply."
+            },
+            {
+                q: "Why did the eagle at the zoo have to be shot during the bombing?",
+                options: ["It was injured beyond help", "It was dangerous when loose", "The Germans ordered it", "It attacked Antonina"],
+                correct: 1,
+                explanation: "The eagle had to be shot because it was dangerous when loose after escaping during the bombing."
+            },
+            {
+                q: "What subjects did Antonina study as a young woman?",
+                options: ["Science and mathematics", "Music and foreign languages", "Medicine and biology", "Art and literature"],
+                correct: 1,
+                explanation: "Antonina studied music and foreign languages when she was young."
+            },
+            {
+                q: "How did Lutz Heck's back-breeding connect to Nazi ideology?",
+                options: ["It had no connection", "It paralleled beliefs about racial purity", "It was purely scientific", "It was meant to feed soldiers"],
+                correct: 1,
+                explanation: "Back-breeding connected to Nazi beliefs about racial purity - recreating 'pure' ancient animals paralleled ideas about human racial purity."
+            },
+            {
+                q: "What happened to the Warsaw Zoo during the invasion?",
+                options: ["It was untouched", "It was heavily bombed", "It was immediately taken over peacefully", "All animals were evacuated safely"],
+                correct: 1,
+                explanation: "The Warsaw Zoo was heavily bombed during the invasion, killing many animals and allowing others to escape."
+            },
+            {
+                q: "What would the empty animal cages later be used for?",
+                options: ["Storing weapons", "Hiding Jewish refugees", "Growing vegetables", "Housing German soldiers"],
+                correct: 1,
+                explanation: "The empty cages would later be used to hide Jewish refugees that the Zabinskis helped rescue."
+            },
+            {
+                q: "Why was the pig farm plan strategic for the resistance?",
+                options: ["It provided food for fighters", "It gave Jan legitimate access to the Warsaw Ghetto", "It funded resistance operations", "It distracted German soldiers"],
+                correct: 1,
+                explanation: "The pig farm gave Jan a legitimate reason to regularly enter the Warsaw Ghetto to collect garbage, which he used as cover for rescue operations."
+            },
+            {
+                q: "What was notable about the Warsaw Zoo before the war?",
+                options: ["It was the smallest in Europe", "It was one of the largest in Europe with rare species", "It only had Polish animals", "It was privately owned"],
+                correct: 1,
+                explanation: "The Warsaw Zoo was one of the largest zoos in Europe and was home to many rare species."
+            },
+            {
+                q: "How did young Rys spend his childhood at the zoo?",
+                options: ["Locked in the house for safety", "Roaming freely and playing with baby animals", "Attending school in the city", "Working as an animal keeper"],
+                correct: 1,
+                explanation: "Rys could roam freely around the zoo and play with baby animals."
+            },
+            {
+                q: "What did Lutz Heck call his shooting of zoo animals?",
+                options: ["Hunting", "Culling", "Extermination", "Sport"],
+                correct: 1,
+                explanation: "Lutz Heck called his shooting of animals 'culling' to make it sound like an official, necessary action."
+            },
+            {
+                q: "What type of horse was Lutz Heck trying to recreate through back-breeding?",
+                options: ["Arabian horse", "Tarpan", "Clydesdale", "Mustang"],
+                correct: 1,
+                explanation: "Lutz Heck was trying to recreate the tarpan, an extinct wild horse."
+            },
+            {
+                q: "Who raised Antonina after her parents died?",
+                options: ["An orphanage", "Her relatives", "A foster family", "She raised herself"],
+                correct: 1,
+                explanation: "After her parents were shot in 1917, Antonina was raised by relatives."
+            }
+        ];
+        
+        const allShortResponses = [
+            {
+                question: "Explain how Lutz Heck's back-breeding project connects to Nazi ideology about racial purity.",
+                sample: "Lutz Heck's back-breeding project attempted to recreate 'pure' ancient animals like the aurochs and tarpan by selectively breeding modern animals. This directly paralleled Nazi ideology about racial purity - if ancient, 'pure' animal species could be recreated through selective breeding, the same logic could theoretically apply to humans. The Nazis believed in creating a 'pure' Aryan race, and Heck's work provided a scientific-seeming justification for these beliefs. His project showed how Nazi ideology infiltrated even zoology and science."
+            },
+            {
+                question: "Describe the strategic importance of the pig farm plan and how it would help the Zabinskis' future rescue efforts.",
+                sample: "The pig farm plan was brilliant because it solved multiple problems at once. First, it gave the Zabinskis a reason to keep the zoo grounds after the animals were killed. Second, and most importantly, it required collecting garbage from the Warsaw Ghetto to feed the pigs. This gave Jan a legitimate, German-approved reason to regularly enter the ghetto. He could use these trips to make contact with Jews, gather information, and eventually smuggle people out. The empty animal cages could also be used to hide refugees. What appeared to be simple farming was actually the foundation for a rescue operation."
+            },
+            {
+                question: "How does Antonina's background - being orphaned during the Russian Revolution - prepare her for the challenges ahead?",
+                sample: "Antonina's early trauma of losing both parents to violence during the 1917 Russian Revolution shaped her into someone who understood loss and survival. Having been raised by relatives after becoming an orphan, she knew what it meant to be vulnerable and dependent on the kindness of others. This personal experience with tragedy and displacement gave her deep empathy for those who would later need her help. Her ability to survive childhood trauma and rebuild her life demonstrated resilience that would be essential during the Nazi occupation."
+            },
+            {
+                question: "Analyze the symbolism of the zoo animals in relation to the Jewish people who would later be persecuted.",
+                sample: "The zoo animals serve as powerful symbols for the Jewish victims of Nazi persecution. Like the Jews, the animals were innocent beings whose lives were disrupted by Nazi violence. Lutz Heck's 'culling' of animals mirrors the Nazi extermination of Jews - both were systematic killings justified with cold, official-sounding language. The empty cages, once homes to living creatures, would later shelter Jewish refugees, creating a direct symbolic connection. Antonina's deep empathy for animals foreshadows her compassion for human refugees. The destruction of the zoo parallels the destruction of Jewish communities."
+            },
+            {
+                question: "Describe the relationship between Jan and Antonina and how their different strengths complemented each other.",
+                sample: "Jan and Antonina had complementary strengths that made them an effective team. Jan, 11 years older, was the practical scientist and zoo director who dealt with official matters and would later handle the dangerous resistance work. Antonina had an almost mystical emotional intelligence, especially with animals, and created a warm, nurturing home environment. While Jan planned and strategized, Antonina provided emotional support and had instincts about whom to trust. Their white birch bed from their first apartment symbolized their enduring partnership. Together, they combined logic and intuition, action and compassion."
+            },
+            {
+                question: "How did the September 1939 invasion change life at the Warsaw Zoo?",
+                sample: "The September 1939 invasion completely transformed the Warsaw Zoo from a peaceful sanctuary into a war zone. The heavy bombing killed many animals and allowed others to escape, creating chaos and danger. Jan left to serve as a lieutenant in the Polish army, leaving Antonina alone to protect what remained. Some dangerous animals like the eagle had to be shot for safety. After Warsaw surrendered on September 27, Lutz Heck arrived and shot many surviving animals for sport. The zoo went from being one of Europe's largest and finest to a decimated shell. This destruction, however, set the stage for its transformation into a hiding place."
+            }
+        ];
+        
+        let currentQuestions = [];
+        let currentShortResponses = [];
+        let quizSubmitted = false;
+        
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+        
+        function generateNewQuiz() {
+            quizSubmitted = false;
+            currentQuestions = shuffleArray(allQuestions).slice(0, 20);
+            
+            // Shuffle options for each question
+            currentQuestions = currentQuestions.map(q => {
+                const optionsWithIndex = q.options.map((opt, i) => ({ text: opt, isCorrect: i === q.correct }));
+                const shuffledOpts = shuffleArray(optionsWithIndex);
+                const newCorrect = shuffledOpts.findIndex(o => o.isCorrect);
+                return {
+                    ...q,
+                    shuffledOptions: shuffledOpts,
+                    shuffledCorrect: newCorrect
+                };
+            });
+            
+            renderQuiz();
+            generateNewShortResponses();
+            
+            document.getElementById('results').style.display = 'none';
+            document.getElementById('submit-btn').style.display = 'block';
+            document.getElementById('new-quiz-btn').style.display = 'none';
+        }
+        
+        function generateNewShortResponses() {
+            currentShortResponses = shuffleArray(allShortResponses).slice(0, 2);
+            renderShortResponses();
+        }
+        
+        function renderQuiz() {
+            const container = document.getElementById('questions-container');
+            container.innerHTML = '';
+            
+            currentQuestions.forEach((q, index) => {
+                const card = document.createElement('div');
+                card.className = 'question-card';
+                card.innerHTML = `
+                    <div class="question-num">Question ${index + 1}</div>
+                    <div class="question-text">${q.q}</div>
+                    <div class="options">
+                        ${q.shuffledOptions.map((opt, i) => `
+                            <div class="option" data-question="${index}" data-option="${i}" onclick="selectOption(this)">
+                                ${String.fromCharCode(65 + i)}. ${opt.text}
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="explanation" id="explanation-${index}">${q.explanation}</div>
+                `;
+                container.appendChild(card);
+            });
+        }
+        
+        function renderShortResponses() {
+            document.getElementById('sr1-question').textContent = currentShortResponses[0].question;
+            document.getElementById('sr1-sample').innerHTML = '<strong>Sample Answer:</strong><br>' + currentShortResponses[0].sample;
+            document.getElementById('sr2-question').textContent = currentShortResponses[1].question;
+            document.getElementById('sr2-sample').innerHTML = '<strong>Sample Answer:</strong><br>' + currentShortResponses[1].sample;
+            
+            document.getElementById('sr1-answer').value = '';
+            document.getElementById('sr2-answer').value = '';
+            document.getElementById('sr1-sample').style.display = 'none';
+            document.getElementById('sr2-sample').style.display = 'none';
+        }
+        
+        function selectOption(element) {
+            if (quizSubmitted) return;
+            
+            const questionIndex = element.dataset.question;
+            const options = document.querySelectorAll(`.option[data-question="${questionIndex}"]`);
+            options.forEach(opt => opt.classList.remove('selected'));
+            element.classList.add('selected');
+        }
+        
+        function submitQuiz() {
+            quizSubmitted = true;
+            let score = 0;
+            
+            currentQuestions.forEach((q, index) => {
+                const selected = document.querySelector(`.option[data-question="${index}"].selected`);
+                const options = document.querySelectorAll(`.option[data-question="${index}"]`);
+                const explanation = document.getElementById(`explanation-${index}`);
+                
+                options.forEach((opt, i) => {
+                    if (i === q.shuffledCorrect) {
+                        opt.classList.add('correct');
+                    }
+                });
+                
+                if (selected) {
+                    const selectedIndex = parseInt(selected.dataset.option);
+                    if (selectedIndex === q.shuffledCorrect) {
+                        score++;
+                    } else {
+                        selected.classList.add('incorrect');
+                    }
+                }
+                
+                explanation.style.display = 'block';
+            });
+            
+            document.getElementById('score').textContent = score + '/20';
+            
+            let message = '';
+            if (score >= 18) message = "Excellent! You're ready for the test!";
+            else if (score >= 15) message = "Great job! Review the ones you missed.";
+            else if (score >= 12) message = "Good effort! Study the explanations carefully.";
+            else if (score >= 8) message = "Keep studying - focus on the Study Guide tab.";
+            else message = "You need more review - use the Study Guide and Likely Topics tabs.";
+            
+            document.getElementById('score-text').textContent = message;
+            document.getElementById('results').style.display = 'block';
+            document.getElementById('submit-btn').style.display = 'none';
+            document.getElementById('new-quiz-btn').style.display = 'block';
+            
+            window.scrollTo({ top: document.getElementById('results').offsetTop - 100, behavior: 'smooth' });
+        }
+        
+        function showSampleAnswer(num) {
+            document.getElementById('sr' + num + '-sample').style.display = 'block';
+        }
+        
+        function showTab(tabName) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+        }
+        
+        // Initialize
+        generateNewQuiz();
+    </script>
+</body>
+</html>

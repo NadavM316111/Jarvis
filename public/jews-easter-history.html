@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Hidden History: Jews and Easter</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cormorant Garamond', serif;
+            background: #0a0a0a;
+            color: #e8e4d9;
+            overflow-x: hidden;
+        }
+
+        /* Cinematic Intro */
+        #intro {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 1.5s ease;
+        }
+
+        #intro.fade-out {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .intro-text {
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            color: #c9a227;
+            text-align: center;
+            max-width: 800px;
+            padding: 0 40px;
+            opacity: 0;
+            transform: translateY(30px);
+            line-height: 2;
+            letter-spacing: 2px;
+        }
+
+        .intro-text.visible {
+            animation: fadeInUp 2s forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .star-of-david {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 40px;
+            opacity: 0;
+            animation: starReveal 3s forwards;
+        }
+
+        @keyframes starReveal {
+            0% { opacity: 0; transform: scale(0.5) rotate(-180deg); }
+            100% { opacity: 1; transform: scale(1) rotate(0deg); }
+        }
+
+        .skip-btn {
+            position: absolute;
+            bottom: 40px;
+            right: 40px;
+            background: transparent;
+            border: 1px solid #c9a227;
+            color: #c9a227;
+            padding: 10px 30px;
+            font-family: 'Cinzel', serif;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .skip-btn:hover {
+            background: #c9a227;
+            color: #000;
+        }
+
+        /* Main Content */
+        .main-content {
+            display: none;
+        }
+
+        .main-content.visible {
+            display: block;
+            animation: contentFade 1s forwards;
+        }
+
+        @keyframes contentFade {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)), 
+                        url('https://images.unsplash.com/photo-1548013146-72479768bada?w=1920') center/cover;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+        }
+
+        .hero h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 4rem;
+            color: #c9a227;
+            text-shadow: 0 0 60px rgba(201, 162, 39, 0.5);
+            margin-bottom: 20px;
+            letter-spacing: 8px;
+        }
+
+        .hero .subtitle {
+            font-size: 1.5rem;
+            font-style: italic;
+            color: #a89a7a;
+            max-width: 600px;
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 40px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(15px); }
+        }
+
+        .scroll-indicator svg {
+            width: 40px;
+            height: 40px;
+            fill: #c9a227;
+        }
+
+        /* Timeline Section */
+        .section {
+            padding: 100px 5%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-family: 'Cinzel', serif;
+            font-size: 2.5rem;
+            color: #c9a227;
+            text-align: center;
+            margin-bottom: 60px;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 100px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #c9a227, transparent);
+            margin: 20px auto 0;
+        }
+
+        /* Cards */
+        .history-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 40px;
+        }
+
+        .history-card {
+            background: linear-gradient(145deg, #1a1a1a, #0d0d0d);
+            border: 1px solid #2a2a2a;
+            border-radius: 10px;
+            overflow: hidden;
+            transition: all 0.5s ease;
+            transform-style: preserve-3d;
+        }
+
+        .history-card:hover {
+            transform: translateY(-10px);
+            border-color: #c9a227;
+            box-shadow: 0 20px 60px rgba(201, 162, 39, 0.2);
+        }
+
+        .card-image {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            filter: sepia(30%) brightness(0.8);
+            transition: filter 0.5s;
+        }
+
+        .history-card:hover .card-image {
+            filter: sepia(0%) brightness(1);
+        }
+
+        .card-content {
+            padding: 30px;
+        }
+
+        .card-era {
+            color: #c9a227;
+            font-family: 'Cinzel', serif;
+            font-size: 0.9rem;
+            letter-spacing: 3px;
+            margin-bottom: 10px;
+        }
+
+        .card-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            color: #e8e4d9;
+            margin-bottom: 15px;
+        }
+
+        .card-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #a89a7a;
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding: 40px 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, transparent, #c9a227, #c9a227, transparent);
+            transform: translateX(-50%);
+        }
+
+        .timeline-item {
+            display: flex;
+            justify-content: flex-end;
+            padding-right: calc(50% + 40px);
+            position: relative;
+            margin-bottom: 60px;
+        }
+
+        .timeline-item:nth-child(even) {
+            justify-content: flex-start;
+            padding-right: 0;
+            padding-left: calc(50% + 40px);
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 20px;
+            width: 20px;
+            height: 20px;
+            background: #c9a227;
+            border-radius: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 0 20px rgba(201, 162, 39, 0.5);
+        }
+
+        .timeline-content {
+            background: linear-gradient(145deg, #1a1a1a, #0d0d0d);
+            border: 1px solid #2a2a2a;
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 500px;
+            transition: all 0.3s;
+        }
+
+        .timeline-content:hover {
+            border-color: #c9a227;
+        }
+
+        .timeline-year {
+            color: #c9a227;
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+
+        .timeline-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+        }
+
+        .timeline-text {
+            color: #a89a7a;
+            line-height: 1.8;
+        }
+
+        /* Quote Section */
+        .quote-section {
+            background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)),
+                        url('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1920') center/cover fixed;
+            padding: 150px 5%;
+            text-align: center;
+        }
+
+        .quote {
+            font-size: 2rem;
+            font-style: italic;
+            color: #c9a227;
+            max-width: 900px;
+            margin: 0 auto 30px;
+            line-height: 1.8;
+        }
+
+        .quote-author {
+            font-family: 'Cinzel', serif;
+            color: #a89a7a;
+            letter-spacing: 3px;
+        }
+
+        /* Gallery */
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 5px;
+        }
+
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            aspect-ratio: 1;
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.1);
+        }
+
+        .gallery-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .gallery-item:hover .gallery-overlay {
+            opacity: 1;
+        }
+
+        .gallery-overlay span {
+            color: #c9a227;
+            font-family: 'Cinzel', serif;
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* Remembrance Section */
+        .remembrance {
+            background: linear-gradient(to bottom, #0a0a0a, #1a1a1a);
+            padding: 100px 5%;
+            text-align: center;
+        }
+
+        .candles {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 60px;
+        }
+
+        .candle {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .flame {
+            width: 20px;
+            height: 40px;
+            background: linear-gradient(to top, #ff6b00, #ffcc00, #fff);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            animation: flicker 0.5s infinite alternate;
+            box-shadow: 0 0 30px #ff9500, 0 0 60px #ff6b00;
+        }
+
+        @keyframes flicker {
+            0% { transform: scale(1) rotate(-2deg); }
+            100% { transform: scale(1.1) rotate(2deg); }
+        }
+
+        .candle-body {
+            width: 30px;
+            height: 80px;
+            background: linear-gradient(90deg, #f0e6d3, #fff, #f0e6d3);
+            border-radius: 0 0 5px 5px;
+        }
+
+        /* Footer */
+        footer {
+            background: #050505;
+            padding: 60px 5%;
+            text-align: center;
+            border-top: 1px solid #1a1a1a;
+        }
+
+        footer p {
+            color: #666;
+            font-size: 1rem;
+            line-height: 2;
+        }
+
+        footer .message {
+            color: #c9a227;
+            font-family: 'Cinzel', serif;
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.5rem; }
+            .timeline::before { left: 20px; }
+            .timeline-item { padding-right: 0; padding-left: 60px; justify-content: flex-start; }
+            .timeline-item:nth-child(even) { padding-left: 60px; }
+            .timeline-item::before { left: 20px; }
+            .gallery { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Cinematic Intro -->
+<div id="intro">
+    <svg class="star-of-david" viewBox="0 0 100 100">
+        <polygon points="50,5 61,35 95,35 67,55 78,90 50,70 22,90 33,55 5,35 39,35" fill="none" stroke="#c9a227" stroke-width="2"/>
+    </svg>
+    <div class="intro-text" id="introText1">
+        "Those who cannot remember the past are condemned to repeat it."
+    </div>
+    <div class="intro-text" id="introText2" style="margin-top: 40px;">
+        A story of persecution, resilience, and the shadows cast by religious conflict
+    </div>
+    <div class="intro-text" id="introText3" style="margin-top: 40px;">
+        The connection between Easter and centuries of Jewish suffering
+    </div>
+    <button class="skip-btn" onclick="skipIntro()">Skip Intro</button>
+</div>
+
+<!-- Main Content -->
+<div class="main-content" id="mainContent">
+    
+    <!-- Hero -->
+    <section class="hero">
+        <h1>THE HIDDEN HISTORY</h1>
+        <p class="subtitle">Exploring the dark connection between Easter celebrations and the persecution of Jewish communities throughout history</p>
+        <div class="scroll-indicator">
+            <svg viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
+        </div>
+    </section>
+
+    <!-- Introduction -->
+    <section class="section">
+        <h2 class="section-title">The Easter-Passover Connection</h2>
+        <div class="history-grid">
+            <div class="history-card">
+                <img src="https://images.unsplash.com/photo-1519681393784-d120267933ba?w=800" alt="Ancient Times" class="card-image">
+                <div class="card-content">
+                    <div class="card-era">THE ORIGINS</div>
+                    <h3 class="card-title">Passover and Easter</h3>
+                    <p class="card-text">Easter and Passover occur around the same time, creating a historical intersection that often turned deadly for Jewish communities. The Christian Holy Week, commemorating the crucifixion, frequently sparked violence against Jews who were falsely blamed for the death of Jesus.</p>
+                </div>
+            </div>
+            <div class="history-card">
+                <img src="https://images.unsplash.com/photo-1461360370896-922624d12a74?w=800" alt="Medieval Era" class="card-image">
+                <div class="card-content">
+                    <div class="card-era">MEDIEVAL EUROPE</div>
+                    <h3 class="card-title">Blood Libel Accusations</h3>
+                    <p class="card-text">One of the most horrific accusations was the "blood libel" - the false claim that Jews murdered Christian children to use their blood in Passover rituals. This baseless lie led to countless massacres, particularly during the Easter season.</p>
+                </div>
+            </div>
+            <div class="history-card">
+                <img src="https://images.unsplash.com/photo-1518998053901-5348d3961a04?w=800" alt="Persecution" class="card-image">
+                <div class="card-content">
+                    <div class="card-era">RECURRING VIOLENCE</div>
+                    <h3 class="card-title">Easter Pogroms</h3>
+                    <p class="card-text">For centuries, Jewish communities lived in fear as Easter approached. Mobs, often incited by religious sermons, would attack Jewish neighborhoods, burning synagogues and homes. These "Easter pogroms" occurred across Europe from Spain to Russia.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quote -->
+    <section class="quote-section">
+        <blockquote class="quote">
+            "The Jews are not hated because they have evil qualities; evil qualities are found in them because they are hated."
+        </blockquote>
+        <p class="quote-author">- Max Nordau</p>
+    </section>
+
+    <!-- Timeline -->
+    <section class="section">
+        <h2 class="section-title">Timeline of Persecution</h2>
+        <div class="timeline">
+            <div class="timeline-item">
+                <div class="timeline-content">
+                    <div class="timeline-year">1096 CE</div>
+                    <h3 class="timeline-title">First Crusade Massacres</h3>
+                    <p class="timeline-text">Crusaders en route to the Holy Land massacred Jewish communities in the Rhineland. Thousands were killed in Mainz, Worms, and Cologne during the spring season.</p>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-content">
+                    <div class="timeline-year">1144 CE</div>
+                    <h3 class="timeline-title">First Blood Libel</h3>
+                    <p class="timeline-text">In Norwich, England, Jews were accused of murdering a Christian boy named William before Easter. This marked the first recorded blood libel accusation.</p>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-content">
+                    <div class="timeline-year">1190 CE</div>
+                    <h3 class="timeline-title">York Massacre</h3>
+                    <p class="timeline-text">The entire Jewish community of York was massacred during the Easter season. 150 Jews took refuge in Clifford's Tower before choosing death over forced conversion.</p>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-content">
+                    <div class="timeline-year">1290 CE</div>
+                    <h3 class="timeline-title">Expulsion from England</h3>
+                    <p class="timeline-text">King Edward I expelled all Jews from England, following decades of persecution and blood libel accusations. They would not return for nearly 400 years.</p>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-content">
+                    <div class="timeline-year">1492 CE</div>
+                    <h3 class="timeline-title">Spanish Expulsion</h3>
+                    <p class="timeline-text">The Alhambra Decree expelled all Jews from Spain, ending centuries of Jewish presence. Many who remained and converted (conversos) faced the Inquisition.</p>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-content">
+                    <div class="timeline-year">1903 CE</div>
+                    <h3 class="timeline-title">Kishinev Pogrom</h3>
+                    <p class="timeline-text">During Easter in Kishinev (modern Moldova), a devastating pogrom killed 49 Jews and injured hundreds. It was sparked by blood libel accusations in local newspapers.</p>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-content">
+                    <div class="timeline-year">1933-1945</div>
+                    <h3 class="timeline-title">The Holocaust</h3>
+                    <p class="timeline-text">The culmination of centuries of antisemitism. Six million Jews were systematically murdered by Nazi Germany, with deep roots in the religious hatred cultivated over centuries.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery -->
+    <section>
+        <div class="gallery">
+            <div class="gallery-item">
+                <img src="https://images.unsplash.com/photo-1548013146-72479768bada?w=600" alt="History">
+                <div class="gallery-overlay"><span>Ancient Synagogues</span></div>
+            </div>
+            <div class="gallery-item">
+                <img src="https://images.unsplash.com/photo-1504893524553-b855bce32c67?w=600" alt="Resilience">
+                <div class="gallery-overlay"><span>Paths of Exile</span></div>
+            </div>
+            <div class="gallery-item">
+                <img src="https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=600" alt="Memory">
+                <div class="gallery-overlay"><span>Remembrance</span></div>
+            </div>
+            <div class="gallery-item">
+                <img src="https://images.unsplash.com/photo-1492321936769-b49830bc1d1e?w=600" alt="Hope">
+                <div class="gallery-overlay"><span>Hope Endures</span></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Understanding Section -->
+    <section class="section">
+        <h2 class="section-title">Understanding the Legacy</h2>
+        <div class="history-grid">
+            <div class="history-card">
+                <img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800" alt="Reconciliation" class="card-image">
+                <div class="card-content">
+                    <div class="card-era">MODERN ERA</div>
+                    <h3 class="card-title">Church Reconciliation</h3>
+                    <p class="card-text">In 1965, the Second Vatican Council's Nostra Aetate formally repudiated the charge of deicide against Jews. Many Christian denominations have since worked to combat antisemitism and build interfaith bridges.</p>
+                </div>
+            </div>
+            <div class="history-card">
+                <img src="https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?w=800" alt="Education" class="card-image">
+                <div class="card-content">
+                    <div class="card-era">TODAY</div>
+                    <h3 class="card-title">Education and Memory</h3>
+                    <p class="card-text">Holocaust education and remembrance ensure that the lessons of history are not forgotten. Understanding the roots of antisemitism helps prevent its resurgence in new forms.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Remembrance -->
+    <section class="remembrance">
+        <h2 class="section-title">In Memory</h2>
+        <p style="max-width: 700px; margin: 0 auto; font-size: 1.3rem; line-height: 2; color: #a89a7a;">
+            We remember the millions who suffered and died simply because of their faith. Their memory lives on in every candle lit, every prayer spoken, and every act of kindness that defies hatred.
+        </p>
+        <div class="candles">
+            <div class="candle"><div class="flame"></div><div class="candle-body"></div></div>
+            <div class="candle"><div class="flame"></div><div class="candle-body"></div></div>
+            <div class="candle"><div class="flame"></div><div class="candle-body"></div></div>
+            <div class="candle"><div class="flame"></div><div class="candle-body"></div></div>
+            <div class="candle"><div class="flame"></div><div class="candle-body"></div></div>
+            <div class="candle"><div class="flame"></div><div class="candle-body"></div></div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p class="message">Never Again</p>
+        <p>This presentation was created to educate and remember.<br>May we learn from history and build a world of understanding and peace.</p>
+    </footer>
+
+</div>
+
+<script>
+    // Cinematic Intro Sequence
+    const intro = document.getElementById('intro');
+    const mainContent = document.getElementById('mainContent');
+    const introTexts = [
+        document.getElementById('introText1'),
+        document.getElementById('introText2'),
+        document.getElementById('introText3')
+    ];
+
+    let textIndex = 0;
+
+    function showNextText() {
+        if (textIndex < introTexts.length) {
+            introTexts[textIndex].classList.add('visible');
+            textIndex++;
+            setTimeout(showNextText, 2500);
+        } else {
+            setTimeout(endIntro, 3000);
+        }
+    }
+
+    function endIntro() {
+        intro.classList.add('fade-out');
+        setTimeout(() => {
+            intro.style.display = 'none';
+            mainContent.classList.add('visible');
+        }, 1500);
+    }
+
+    function skipIntro() {
+        intro.classList.add('fade-out');
+        setTimeout(() => {
+            intro.style.display = 'none';
+            mainContent.classList.add('visible');
+        }, 500);
+    }
+
+    // Start intro sequence after 1 second
+    setTimeout(showNextText, 1000);
+
+    // Scroll animations
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+
+    document.querySelectorAll('.history-card, .timeline-item').forEach(el => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(30px)';
+        el.style.transition = 'all 0.8s ease';
+        observer.observe(el);
+    });
+</script>
+
+</body>
+</html>

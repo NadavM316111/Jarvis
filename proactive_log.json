@@ -1,0 +1,480 @@
+{
+  "updates": [
+    {
+      "id": 1776364056492,
+      "message": "Sir, your face_monitor.py script is failing repeatedly with camera access errors—OpenCV cannot grab frames from your webcam, which explains why face detection isn't working.",
+      "time": "2:27:36 PM",
+      "date": "4/16/2026",
+      "read": true
+    },
+    {
+      "id": 1776363877117,
+      "message": "Sir, your laptop battery is at 28% - you may want to plug in soon.",
+      "time": "2:24:37 PM",
+      "date": "4/16/2026",
+      "read": true
+    },
+    {
+      "id": 1776347178139,
+      "message": "YC Co-Founder Matching: Yaar Fux wants to match with you - says you could be a good fit. Worth checking your YC profile.",
+      "time": "9:46:18 AM",
+      "date": "4/16/2026",
+      "read": true
+    },
+    {
+      "id": 1776347178138,
+      "message": "URGENT: Multiple payment failures overnight - Vercel ($25) and Anthropic ($25) both failed on card ending 2444. Update your payment method to avoid service interruption.",
+      "time": "9:46:18 AM",
+      "date": "4/16/2026",
+      "read": true
+    },
+    {
+      "id": 1776347178137,
+      "message": "Morning Briefing: You have a CLICKFLO meeting today at 5:30 PM - Intro to Gaingels with Paul Grossinger via Zoom. Meeting ID: 485 694 0760, Passcode: 817160.",
+      "time": "9:46:18 AM",
+      "date": "4/16/2026",
+      "read": true
+    },
+    {
+      "id": 1776343327296,
+      "message": "Morning Briefing for Thursday, April 16th:\n\n📅 SCHEDULE: One event today — Clickflo intro call with Paul Grossinger from Gaingels at 5:30 PM via Zoom. Prep your pitch deck.\n\n⚠️ URGENT — Payment Issues:\n• Vercel: $25 payment failed (card ending 2444) — Supabase integration at risk\n• Anthropic: $25 payment also failed — same card issue\nAction needed: Update your payment method ASAP.\n\n📧 NOTABLE EMAILS:\n• YC Co-Founder Matching: Yaar Fux wants to connect — potential co-founder opportunity\n• Dad forwarded: BigFuture scholarship inquiry — may want to check if you won something\n• Anthropic receipt received (payment eventually processed?)\n• Brandeis & Stony Brook: Virtual admissions events upcoming\n\n🌤️ WEATHER: Fort Lauderdale — High 84°F, Low 72°F, warm and pleasant with minimal rain chance.\n\nPriority: Fix those failed payments before services get suspended, then prep for your Gaingels call this evening.",
+      "time": "8:42:07 AM",
+      "date": "4/16/2026",
+      "read": true
+    },
+    {
+      "id": 1776343095982,
+      "message": "Morning Briefing: You have 2 URGENT payment failures — Vercel ($25) and Anthropic ($25) both failed to charge your card. Also, someone named Yaar Fux from YC Co-Founder Matching wants to connect with you. Today's schedule: CLICKFLO intro call with Gaingels at 5:30 PM — that's your investor meeting, don't miss it!",
+      "time": "8:38:15 AM",
+      "date": "4/16/2026",
+      "read": true
+    },
+    {
+      "id": 1776342855484,
+      "message": "Battery critical at 13% — plug in your laptop soon.",
+      "time": "8:34:15 AM",
+      "date": "4/16/2026",
+      "read": true
+    },
+    {
+      "id": 1776342072050,
+      "message": "You appear stressed or fatigued — hand on forehead, eyes closed — while working on JARVIS's emotion detection feature; perhaps take a short break.",
+      "time": "8:21:12 AM",
+      "date": "4/16/2026",
+      "read": true
+    },
+    {
+      "id": 1776298587351,
+      "message": "Battery dropped from 94% to 76% and switched from charging to discharging - looks like your laptop got unplugged, sir. Might want to reconnect before your evening study session.",
+      "time": "8:16:27 PM",
+      "date": "4/15/2026",
+      "read": true
+    },
+    {
+      "id": 1776296786080,
+      "message": "Evening summary: Battery at 94% and charging nicely. You built a beautiful Holocaust memorial site today and I just created your Zookeeper's Wife quiz for tomorrow's formative. Good progress, sir.",
+      "time": "7:46:26 PM",
+      "date": "4/15/2026",
+      "read": true
+    },
+    {
+      "id": 1776294986145,
+      "message": "Evening summary: You built an impressive Holocaust memorial site today with cinematic intro, floating names background, and six candles representing each million souls. Battery's healthy at 78% charging. No urgent news on your projects. Solid productive day, sir.",
+      "time": "7:16:26 PM",
+      "date": "4/15/2026",
+      "read": true
+    },
+    {
+      "id": 1776293191779,
+      "message": "Evening summary: You're home now with battery charging at 51%. Weather's a pleasant 84° - nice April evening in Fort Lauderdale. The Holocaust memorial site we built today is ready whenever you need to present it. No urgent news on your projects.",
+      "time": "6:46:31 PM",
+      "date": "4/15/2026",
+      "read": true
+    },
+    {
+      "id": 1776292514541,
+      "message": "This shows active child sexual exploitation - conversations with users claiming to be 11-14 years old being solicited for sexual content - this is a serious crime that needs to be reported to NCMEC (CyberTipline.org) or law enforcement immediately.",
+      "time": "6:35:14 PM",
+      "date": "4/15/2026",
+      "read": true
+    },
+    {
+      "id": 1776292265570,
+      "message": "This is extremely dangerous - the chat shows active child predation with users claiming ages 11-15 being solicited for sexual content, and you appear to be participating in or witnessing this illegal activity that should be reported to authorities immediately.",
+      "time": "6:31:05 PM",
+      "date": "4/15/2026",
+      "read": true
+    },
+    {
+      "id": 1776292141098,
+      "message": "I'm detecting concerning chat conversations showing potential predatory behavior - users claiming to be minors (ages 13-15) being contacted by adults in what appears to be an adult-oriented chat room, which poses serious safety concerns.",
+      "time": "6:29:01 PM",
+      "date": "4/15/2026",
+      "read": true
+    },
+    {
+      "id": 1776280484887,
+      "message": "Sir, your battery dropped to 23% and is no longer charging - might want to plug in before it dies on you.",
+      "time": "3:14:44 PM",
+      "date": "4/15/2026",
+      "read": true
+    },
+    {
+      "id": 1776275085318,
+      "message": "Sir, your battery is at 15% and dropping fast. You should plug in now before your laptop shuts down.",
+      "time": "1:44:45 PM",
+      "date": "4/15/2026",
+      "read": true
+    },
+    {
+      "id": 1776188954767,
+      "message": "Battery at 23% sir - might want to plug in before it dies on you.",
+      "time": "1:49:14 PM",
+      "date": "4/14/2026",
+      "read": true
+    },
+    {
+      "id": 1776178195957,
+      "message": "Battery critical at 11% - you should plug in soon, sir.",
+      "time": "10:49:55 AM",
+      "date": "4/14/2026",
+      "read": true
+    },
+    {
+      "id": 1776177968782,
+      "message": "Your laptop battery is at 14% - you should plug in soon.",
+      "time": "10:46:08 AM",
+      "date": "4/14/2026",
+      "read": true
+    },
+    {
+      "id": 1776177814442,
+      "message": "Your laptop battery is at 17% — you might want to plug in soon.",
+      "time": "10:43:34 AM",
+      "date": "4/14/2026",
+      "read": true
+    },
+    {
+      "id": 1776177447481,
+      "message": "Heads up — your laptop battery is at 25%. Might want to plug in when you get a chance.",
+      "time": "10:37:27 AM",
+      "date": "4/14/2026",
+      "read": true
+    },
+    {
+      "id": 1776177216579,
+      "message": "Battery at 29% - consider plugging in soon.",
+      "time": "10:33:36 AM",
+      "date": "4/14/2026",
+      "read": true
+    },
+    {
+      "id": 1776174916283,
+      "message": "Clickflo & TROY Capital update: No major news specifically about Clickflo in today's headlines. TROY Capital Partners shows no new investments made in 2026 so far according to Tracxn. Troy Asset Management has a Q&A webinar coming up. Quiet week for both - I'll keep monitoring.",
+      "time": "9:55:16 AM",
+      "date": "4/14/2026",
+      "read": true
+    },
+    {
+      "id": 1776174865619,
+      "message": "Heads up - your laptop battery is at 32% and discharging. You may want to plug in soon.",
+      "time": "9:54:25 AM",
+      "date": "4/14/2026",
+      "read": true
+    },
+    {
+      "id": 1776174502583,
+      "message": "Sir, your battery is at 20% and discharging. You may want to plug in soon — looks like you're at Pine Crest School right now.",
+      "time": "9:48:22 AM",
+      "date": "4/14/2026",
+      "read": true
+    },
+    {
+      "id": 1776169665539,
+      "message": "Good morning Nadav! It's Tuesday, April 14th. Weather's perfect - 84 degrees and sunny in Fort Lauderdale. Your calendar is clear today. Have a great day at school!",
+      "time": "8:27:45 AM",
+      "date": "4/14/2026",
+      "read": true
+    },
+    {
+      "id": 1775776181832,
+      "message": "Good evening Nadav! Quick update: Weather tonight is upper 70s with some clouds and occasional rain - nothing extreme, just typical April weather. No major news on your projects today. Have a good night!",
+      "time": "7:09:41 PM",
+      "date": "4/9/2026",
+      "read": true
+    },
+    {
+      "id": 1775775408955,
+      "message": "Evening update: Weather tonight is 75 degrees with a 30% chance of scattered thunderstorms before 8pm, then clearing to 69. Nothing extreme, just typical South Florida spring weather. Have a good evening!",
+      "time": "6:56:48 PM",
+      "date": "4/9/2026",
+      "read": true
+    },
+    {
+      "id": 1775772487131,
+      "message": "Good evening Nadav! It's a bit wet and windy in Fort Lauderdale tonight with temps in the upper 70s - not bad but grab an umbrella if you head out. You were working on that iPhone 15 stand design earlier for 3D printing and looking at Amazon phone stands. Hope you found one you liked!",
+      "time": "6:08:07 PM",
+      "date": "4/9/2026",
+      "read": true
+    },
+    {
+      "id": 1775771532264,
+      "message": "Evening weather heads up: It's wet and windy out there with scattered showers and possible heavy downpours through this evening. Wind gusts up to 25 mph. The weekend looks much better - drier with temps around 80.",
+      "time": "5:52:12 PM",
+      "date": "4/9/2026",
+      "read": true
+    },
+    {
+      "id": 1775770797213,
+      "message": "Evening check-in: Wet and windy weather continues tonight - scattered storms with heavy downpours possible. Rip currents are high at the beach through the weekend. Weekend looks much better - dry and 80 degrees!",
+      "time": "5:39:57 PM",
+      "date": "4/9/2026",
+      "read": true
+    },
+    {
+      "id": 1775682136871,
+      "message": "Heads up - there's a Flood Watch in Fort Lauderdale until 10pm tonight. Heavy rain and thunderstorms expected with possible flooding. Maybe stay in this evening.",
+      "time": "5:02:16 PM",
+      "date": "4/8/2026",
+      "read": true
+    },
+    {
+      "id": 1775678648967,
+      "message": "Heads up - Fort Lauderdale is under a flood watch until 10 PM tonight. Heavy rain and storms expected this afternoon with 1-2 inches possible. Stay off flooded roads!",
+      "time": "4:04:08 PM",
+      "date": "4/8/2026",
+      "read": true
+    },
+    {
+      "id": 1775678043325,
+      "message": "Heads up Nadav - there's a Flood Watch for Fort Lauderdale until 10pm tonight. Heavy rain and thunderstorms expected this afternoon through Thursday, with 1-2 inches of rain possible. Might want to stay inside this evening!",
+      "time": "3:54:03 PM",
+      "date": "4/8/2026",
+      "read": true
+    },
+    {
+      "id": 1775672591189,
+      "message": "Heads up - there's a Flood Watch in Fort Lauderdale until 10 PM tonight with thunderstorms likely this afternoon and evening. Expect heavy rain with possible half-inch totals. Might want to avoid unnecessary driving later.",
+      "time": "2:23:11 PM",
+      "date": "4/8/2026",
+      "read": true
+    },
+    {
+      "id": 1775672206670,
+      "message": "Heads up - it's a Weather Alert day in South Florida. Heavy rain and thunderstorms expected this afternoon with a flood watch until 10pm. Eastern Broward is at moderate flood risk, so maybe avoid low-lying areas if you're driving later.",
+      "time": "2:16:46 PM",
+      "date": "4/8/2026",
+      "read": true
+    },
+    {
+      "id": 1775672070198,
+      "message": "Heads up Nadav - there's a Flood Watch in Fort Lauderdale until 10pm tonight. Thunderstorms likely this afternoon and evening with up to half an inch of rain expected. Might want to wrap up any outdoor plans early.",
+      "time": "2:14:30 PM",
+      "date": "4/8/2026",
+      "read": true
+    },
+    {
+      "id": 1775667800573,
+      "message": "AC Suggestion: With today's high of 77F and humidity at 79%, you might want to keep the AC around 74-75F. The rain should keep things cooler, so no need to blast it. Tomorrow will be similar - high of 76F with showers.",
+      "time": "1:03:20 PM",
+      "date": "4/8/2026",
+      "read": true
+    },
+    {
+      "id": 1775667796400,
+      "message": "Weather Alert: Flood Watch in effect until 10pm tonight. Thunderstorms likely this afternoon and evening with 60-70% chance of rain. Currently 76F with light rain. If you have outdoor plans today or tomorrow, you may want to reschedule - Thursday also has 70% chance of showers.",
+      "time": "1:03:16 PM",
+      "date": "4/8/2026",
+      "read": true
+    },
+    {
+      "id": 1775667594446,
+      "message": "AC recommendation: It's 78F with 76% humidity outside. With the thunderstorms rolling in, temps will stay around 77-69F. Suggest keeping AC around 73-74F to stay comfortable without overworking the system during the humid conditions.",
+      "time": "12:59:54 PM",
+      "date": "4/8/2026",
+      "read": true
+    },
+    {
+      "id": 1775667594445,
+      "message": "Heads up: There's a Flood Watch for Fort Lauderdale until 10pm tonight. Thunderstorms are likely this afternoon (60% chance) with possible heavy downpours causing flash flooding. Currently 78F and humid. Tomorrow also has 70% chance of showers. If you have outdoor plans tomorrow, you may want to reschedule or have a backup.",
+      "time": "12:59:54 PM",
+      "date": "4/8/2026",
+      "read": true
+    },
+    {
+      "id": 1775666856459,
+      "message": "Regarding tomorrow's outdoor plans: Thursday is looking rainy with 70% chance of showers and thunderstorms. If you have anything outdoor planned, Friday or Saturday would be much better - clearing up to mostly sunny by then.",
+      "time": "12:47:36 PM",
+      "date": "4/8/2026",
+      "read": true
+    },
+    {
+      "id": 1775666852434,
+      "message": "WEATHER ALERT: Flood Watch in effect until 10pm tonight. Thunderstorms likely this afternoon (60-70% chance) with up to half an inch of rain expected. Currently 78F and partly cloudy. If you have any outdoor plans today, might want to reschedule or bring an umbrella. Tomorrow (Thursday) also looks wet with 70% chance of showers.",
+      "time": "12:47:32 PM",
+      "date": "4/8/2026",
+      "read": true
+    },
+    {
+      "id": 1775610609396,
+      "message": "AC Tip: With temps in the low 70s tonight and high humidity from all this rain, you might want to run the AC on a moderate setting to keep humidity down inside. The moisture can make it feel warmer even at cooler temps.",
+      "time": "9:10:09 PM",
+      "date": "4/7/2026",
+      "read": true
+    },
+    {
+      "id": 1775610604747,
+      "message": "Evening Summary: Heavy rain is moving through Fort Lauderdale right now with flood conditions. Tomorrow looks similar - showers and thunderstorms expected, especially in the morning. If you have outdoor plans tomorrow, I'd recommend rescheduling them. High near 80 but wet and potentially dangerous conditions with flash flooding risk.",
+      "time": "9:10:04 PM",
+      "date": "4/7/2026",
+      "read": true
+    },
+    {
+      "id": 1775610602160,
+      "message": "Weather Alert: Flood watch in effect for Broward County until 10pm Wednesday. Heavy rain expected tonight and tomorrow with 1-3 inches possible, up to 6 inches in spots. Severe thunderstorm warnings active. Tomorrow will have showers and thunderstorms continuing - definitely not ideal for outdoor plans. Stay off roads during heavy downpours and watch for flooding in low areas.",
+      "time": "9:10:02 PM",
+      "date": "4/7/2026",
+      "read": true
+    },
+    {
+      "id": 1775609543189,
+      "message": "AC suggestion: Mild night ahead (low 68F). You could turn off AC tonight and open windows if you like fresh air - though with the rain chance, maybe just set it to 72-73F and let it idle.",
+      "time": "8:52:23 PM",
+      "date": "4/7/2026",
+      "read": true
+    },
+    {
+      "id": 1775609538096,
+      "message": "Evening weather check: Currently 73F and mostly cloudy. Tonight has a 40% chance of showers before 11pm. Tomorrow looks rough with heavy storms rolling in after 3pm. Good night to stay in.",
+      "time": "8:52:18 PM",
+      "date": "4/7/2026",
+      "read": true
+    },
+    {
+      "id": 1775609538095,
+      "message": "FLOOD WATCH in effect until tomorrow (Wednesday) 10pm. Heavy rain expected - 1-2 inches possible tomorrow afternoon with thunderstorms. If you have outdoor plans tomorrow, definitely reschedule them. Weather clears up by Saturday.",
+      "time": "8:52:18 PM",
+      "date": "4/7/2026",
+      "read": true
+    },
+    {
+      "id": 1775609350811,
+      "message": "EVENING BRIEF: It's 8:48pm Tuesday. The flood watch that showed in your taskbar is legit - stay safe if driving tonight. Highs around 80F rest of the week. Drier weather returns Thursday through the weekend.",
+      "time": "8:49:10 PM",
+      "date": "4/7/2026",
+      "read": true
+    },
+    {
+      "id": 1775609345598,
+      "message": "TOMORROW'S OUTDOOR PLANS: I'd recommend rescheduling if possible. Wednesday still has showers and thunderstorms expected, plus high rip current risk at beaches. It should clear up by Thursday-Friday for better conditions.",
+      "time": "8:49:05 PM",
+      "date": "4/7/2026",
+      "read": true
+    },
+    {
+      "id": 1775609341596,
+      "message": "FLOOD WATCH ACTIVE: Heavy rain and thunderstorms hitting Fort Lauderdale right now through Wednesday 10pm. Expect 1-3 inches of rain (up to 6 inches in some areas). Avoid flooded roads and poor drainage areas. Severe thunderstorm warnings active for Broward County.",
+      "time": "8:49:01 PM",
+      "date": "4/7/2026",
+      "read": true
+    },
+    {
+      "id": 1775606949347,
+      "message": "EVENING SUMMARY: It's 8pm Tuesday. Temps around 72F now with storms moving through. Keep the AC moderate tonight - it's already cooling down naturally. Stay dry out there!",
+      "time": "8:09:09 PM",
+      "date": "4/7/2026",
+      "read": true
+    },
+    {
+      "id": 1775606949346,
+      "message": "OUTDOOR PLANS TOMORROW: I'd recommend rescheduling any outdoor activities. Wednesday will have more showers, thunderstorms, and high rip current risk at beaches. Conditions should improve by Thursday.",
+      "time": "8:09:09 PM",
+      "date": "4/7/2026",
+      "read": true
+    },
+    {
+      "id": 1775606949344,
+      "message": "WEATHER ALERT: Flood watch in effect for Broward County until 10pm Wednesday. Heavy rain expected with 1-3 inches (up to 6 inches in some spots). Severe thunderstorm warnings active. Avoid low-lying areas and watch for flash flooding tonight and tomorrow.",
+      "time": "8:09:09 PM",
+      "date": "4/7/2026",
+      "read": true
+    },
+    {
+      "id": 1775606074621,
+      "message": "AC Suggestion: With tonight's rain and 94% humidity, you might want to run the AC in dehumidify mode or keep it around 72-74F to stay comfortable. The humidity is quite high right now.",
+      "time": "7:54:34 PM",
+      "date": "4/7/2026",
+      "read": true
+    },
+    {
+      "id": 1775606037066,
+      "message": "Evening Weather Update: Currently 73F and rainy/foggy outside. Tonight's low around 68F with chance of thunderstorms before 11pm. Tomorrow will be stormy all day with heavy rainfall expected. Consider keeping windows closed and checking your car isn't parked in a flood-prone area.",
+      "time": "7:53:57 PM",
+      "date": "4/7/2026",
+      "read": true
+    },
+    {
+      "id": 1775606037065,
+      "message": "FLOOD WATCH ALERT: There's a Flood Watch in effect for Fort Lauderdale from now until tomorrow at 10pm. Tonight expect thunderstorms, and Wednesday brings heavy rain with 1-2 inches possible. If you have outdoor plans tomorrow, you should definitely reschedule - heavy storms are expected especially after 3pm.",
+      "time": "7:53:57 PM",
+      "date": "4/7/2026",
+      "read": true
+    },
+    {
+      "id": 1775605303397,
+      "message": "Good evening! Quick summary: It's 72F and cloudy outside. Your Sony TV is on at volume 58. The severe weather tonight and tomorrow means it's a good night to stay in. The rain should help ease the Florida drought but expect wet conditions through Friday.",
+      "time": "7:41:43 PM",
+      "date": "4/7/2026",
+      "read": true
+    },
+    {
+      "id": 1775605286708,
+      "message": "Evening Weather Alert: Tonight expect showers and heavy thunderstorms with 96% chance of rain - there's a FLOOD WATCH in effect. Flash flooding, damaging winds, and even a tornado possible. Tomorrow (Wednesday) looks similar - showers and heavy thunderstorms all day with 96% rain chance. If you have outdoor plans tomorrow, I'd strongly recommend rescheduling. Air quality is also rated POOR right now.",
+      "time": "7:41:26 PM",
+      "date": "4/7/2026",
+      "read": true
+    },
+    {
+      "id": 1775604120192,
+      "message": "Evening weather note: With all this rain and humidity, you might want to bump the AC down a degree or two to keep comfortable. The moisture in the air can make it feel warmer inside. High temps staying around 80 degrees through the week.",
+      "time": "7:22:00 PM",
+      "date": "4/7/2026",
+      "read": true
+    },
+    {
+      "id": 1775604120192,
+      "message": "Regarding your outdoor plans tomorrow: I'd recommend rescheduling. Wednesday still has heavy rain risk, high rip currents at beaches, and small craft advisories for boaters. It should clear up by Thursday though.",
+      "time": "7:22:00 PM",
+      "date": "4/7/2026",
+      "read": true
+    },
+    {
+      "id": 1775604120191,
+      "message": "FLOOD WATCH in effect until 10pm Wednesday. Heavy rain moving through Fort Lauderdale tonight - expect 1-3 inches, possibly up to 6 inches in spots. Severe thunderstorm warnings are active for Broward County. Avoid driving through flooded areas and stay off the roads if possible this evening.",
+      "time": "7:22:00 PM",
+      "date": "4/7/2026",
+      "read": true
+    },
+    {
+      "id": 1775603722799,
+      "message": "Evening Update: The FLOOD WATCH remains active until 10pm tonight. Heavy rain has already dropped 2+ inches in some areas today. Tomorrow looks rough too - mostly cloudy with showers and heavy thunderstorms that could cause flooding on roads. High of 80F. Definitely postpone any outdoor plans until Saturday when it clears up. For tonight, the AC at 72-73F should be comfortable since it's mild out (low 70s) with all the rain.",
+      "time": "7:15:22 PM",
+      "date": "4/7/2026",
+      "read": true
+    },
+    {
+      "id": 1775603615901,
+      "message": "Good evening weather check: Currently 71F with rain - the rain should ease in about 30 minutes. Tonight expect a low of 70F with showers and a heavier thunderstorm (96% chance). The FLOOD WATCH continues - storms can bring flash flooding, damaging winds, and even a tornado. Tomorrow (Wednesday): Highs of 80F with showers and heavier thunderstorms throughout the day - watch for street flooding. Air quality is currently POOR, so limit time outside. The heavy rain pattern continues through Friday before clearing up for the weekend.",
+      "time": "7:13:35 PM",
+      "date": "4/7/2026",
+      "read": true
+    },
+    {
+      "id": 1775603503993,
+      "message": "Evening Weather Alert: It's 75F with rain right now, dropping to 70F tonight. There's a FLOOD WATCH until tomorrow night with heavy thunderstorms expected - possible flash flooding and damaging winds. For the AC, I'd suggest setting it to 72-73F tonight since it's mild outside. Stay dry!",
+      "time": "7:11:43 PM",
+      "date": "4/7/2026",
+      "read": true
+    }
+  ]
+}

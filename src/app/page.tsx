@@ -6,6 +6,8 @@ interface Message {
   content: string;
   source?: "voice" | "text";
   timestamp?: number;
+  imageUrl?: string;
+  fileName?: string;
 }
 
 interface Conversation {
@@ -69,14 +71,23 @@ export default function Home() {
   const [newCheckInput, setNewCheckInput] = useState("");
   const [voiceRunning, setVoiceRunning] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [cameraActive, setCameraActive] = useState(false);
+  const [attachedFile, setAttachedFile] = useState<{data: string, type: string, name: string} | null>(null);
+
   const bottomRef = useRef<HTMLDivElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const animFrameRef = useRef<number>(0);
   const lastTranscriptRef = useRef("");
   const lastResponseRef = useRef("");
   const activeIdRef = useRef<string | null>(null);
+  const latestCameraFrameRef = useRef<string | null>(null);
+  const cameraStreamRef = useRef<MediaStream | null>(null);
+  const cameraIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const tokenRef = useRef<string | null>(null);
 
   useEffect(() => { activeIdRef.current = activeId; }, [activeId]);
+  useEffect(() => { tokenRef.current = token; }, [token]);
 
   const activeConv = conversations.find(c => c.id === activeId);
   const messages = activeConv?.messages || [];
@@ -93,7 +104,6 @@ export default function Home() {
         if (convs.length > 0) setActiveId(convs[0].id);
       } catch {}
     }
-    // Open sidebar by default on desktop
     if (window.innerWidth >= 768) setSidebarOpen(true);
   }, []);
 
@@ -107,8 +117,53 @@ export default function Home() {
     setConversations(prev => prev.map(c => c.id === convId ? { ...c, messages: [...c.messages, msg] } : c));
   }
 
+  // ── Dedicated bg-response poller ──────────────────────────────────────────
+  // Runs every 800ms independently of the voice-status interval.
+  // Uses refs so it always sees the latest token and activeId without
+  // needing to be torn down and recreated when they change.
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      const tok = tokenRef.current;
+      if (!tok) return;
+      try {
+        const res = await fetch("http://localhost:3001/bg-response", {
+          headers: { Authorization: `Bearer ${tok}` }
+        });
+        const data = await res.json();
+        if (!data.responses?.length) return;
+
+        for (const r of data.responses) {
+          // Always use the current active conversation; if none exists yet,
+          // create one so the message has somewhere to live.
+          let convId = activeIdRef.current;
+          if (!convId) {
+            convId = generateId();
+            const conv: Conversation = {
+              id: convId,
+              title: r.message.slice(0, 40),
+              messages: [],
+              createdAt: Date.now()
+            };
+            setConversations(prev => [conv, ...prev]);
+            setActiveId(convId);
+            activeIdRef.current = convId;
+          }
+          addMessageToConv(convId, {
+            role: "assistant",
+            content: r.message,
+            source: "text",
+            timestamp: r.timestamp ?? Date.now()
+          });
+        }
+      } catch {}
+    }, 800);
+
+    return () => clearInterval(interval);
+  }, []); // intentionally empty — uses refs
+
   useEffect(() => {
     if (!token) return;
+    const saved = token;
 
     const fetchUpdates = async () => {
       try {
@@ -157,9 +212,14 @@ export default function Home() {
           if (convId) addMessageToConv(convId, { role: "assistant", content: data.response, source: "voice", timestamp: Date.now() });
           setTimeout(() => { if (lastResponseRef.current === data.response) lastResponseRef.current = ''; }, 5000);
         }
+
+        // NOTE: bg-response polling has been moved to its own dedicated useEffect above.
+        // Removing it from here prevents duplicate messages.
+
       } catch {}
     }, 400);
 
+    // Microphone for audio visualizer
     navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
       streamRef.current = stream;
       const ctx = new AudioContext();
@@ -176,14 +236,70 @@ export default function Home() {
       tick();
     }).catch(() => {});
 
+    // Camera streaming to JARVIS (silent, no preview)
+    navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480 }, audio: false })
+      .then(stream => {
+        cameraStreamRef.current = stream;
+        setCameraActive(true);
+        const video = document.createElement('video');
+        video.srcObject = stream;
+        video.play();
+
+        const canvas = document.createElement('canvas');
+        canvas.width = 640;
+        canvas.height = 480;
+        const ctx = canvas.getContext('2d')!;
+
+        video.addEventListener('loadeddata', async () => {
+          try {
+            ctx.drawImage(video, 0, 0, 640, 480);
+            const frame = canvas.toDataURL('image/jpeg', 0.7).split(',')[1];
+            latestCameraFrameRef.current = frame;
+            await fetch('http://localhost:3001/camera-frame', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${saved}` },
+              body: JSON.stringify({ frame })
+            });
+          } catch {}
+        });
+
+        cameraIntervalRef.current = setInterval(async () => {
+          try {
+            ctx.drawImage(video, 0, 0, 640, 480);
+            const frame = canvas.toDataURL('image/jpeg', 0.7).split(',')[1];
+            latestCameraFrameRef.current = frame;
+            await fetch('http://localhost:3001/camera-frame', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${saved}` },
+              body: JSON.stringify({ frame })
+            });
+          } catch {}
+        }, 5000);
+      })
+      .catch(() => { setCameraActive(false); });
+
     return () => {
       clearInterval(interval);
       clearInterval(updatesInterval);
       clearInterval(voiceInterval);
       cancelAnimationFrame(animFrameRef.current);
       streamRef.current?.getTracks().forEach(t => t.stop());
+      cameraStreamRef.current?.getTracks().forEach(t => t.stop());
+      if (cameraIntervalRef.current) clearInterval(cameraIntervalRef.current);
     };
   }, [token]);
+
+  const handleFileAttach = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const base64 = (reader.result as string).split(',')[1];
+      setAttachedFile({ data: base64, type: file.type, name: file.name });
+    };
+    reader.readAsDataURL(file);
+    e.target.value = '';
+  };
 
   function newConversation() {
     const id = generateId();
@@ -291,7 +407,10 @@ export default function Home() {
   const send = async () => {
     if (!input.trim() || loading) return;
     const userMsg = input.trim();
+    const fileToSend = attachedFile;
     setInput("");
+    setAttachedFile(null);
+
     let convId = activeIdRef.current;
     if (!convId || !conversations.find(c => c.id === convId)) {
       convId = generateId();
@@ -302,16 +421,33 @@ export default function Home() {
       setConversations(prev => prev.map(c => c.id === convId && c.messages.length === 0 ? { ...c, title: userMsg.slice(0, 40) } : c));
     }
     const finalConvId = convId!;
-    addMessageToConv(finalConvId, { role: "user", content: userMsg, source: "text", timestamp: Date.now() });
+
+    addMessageToConv(finalConvId, {
+      role: "user",
+      content: userMsg,
+      source: "text",
+      timestamp: Date.now(),
+      imageUrl: fileToSend?.type.startsWith('image/') ? `data:${fileToSend.type};base64,${fileToSend.data}` : undefined,
+      fileName: fileToSend?.name
+    });
+
     setLoading(true);
     try {
       const res = await fetch("http://localhost:3001/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ message: userMsg })
+        body: JSON.stringify({
+          message: userMsg,
+          cameraFrame: latestCameraFrameRef.current,
+          attachedFile: fileToSend
+        })
       });
       const data = await res.json();
-      addMessageToConv(finalConvId, { role: "assistant", content: data.message || "Done.", source: "text", timestamp: Date.now() });
+      // Show immediate response if it's not the bg-task placeholder.
+      // The actual result will arrive via the bg-response poller.
+      if (data.message && data.message !== 'On it.') {
+        addMessageToConv(finalConvId, { role: "assistant", content: data.message, source: "text", timestamp: Date.now() });
+      }
     } catch {
       addMessageToConv(finalConvId, { role: "assistant", content: "Cannot connect to JARVIS server.", timestamp: Date.now() });
     }
@@ -361,12 +497,10 @@ export default function Home() {
   return (
     <div className="h-screen bg-[#060608] flex overflow-hidden" style={{ fontFamily: "-apple-system, 'SF Pro Display', sans-serif" }}>
 
-      {/* Mobile overlay when sidebar open */}
       {sidebarOpen && (
         <div className="fixed inset-0 bg-black/60 z-30 md:hidden" onClick={() => setSidebarOpen(false)} />
       )}
 
-      {/* Sidebar — drawer on mobile, fixed on desktop */}
       <div className={`
         fixed md:relative inset-y-0 left-0 z-40 md:z-auto
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
@@ -457,7 +591,7 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Waveform — hidden on very small screens */}
+          {/* Waveform */}
           <div className="hidden sm:flex items-center gap-0.5 h-5 mr-1">
             {[...Array(5)].map((_, i) => {
               const h = isListening || audioLevel > 10 ? Math.max(3, (audioLevel / 255) * 20 * (0.4 + (i % 3) * 0.3)) : isSpeaking ? 4 + Math.abs(Math.sin(Date.now() / 200 + i)) * 12 : 3;
@@ -465,7 +599,14 @@ export default function Home() {
             })}
           </div>
 
-          {/* Voice indicator on mobile */}
+          {/* Camera indicator */}
+          {cameraActive && (
+            <div className="hidden sm:flex items-center gap-1.5 px-2 py-1 rounded-lg bg-white/5">
+              <div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+              <span className="text-white/30 text-xs">cam</span>
+            </div>
+          )}
+
           <div className="sm:hidden">
             {voiceRunning && <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />}
           </div>
@@ -481,7 +622,7 @@ export default function Home() {
           </button>
         </div>
 
-        {/* Updates panel — full screen on mobile */}
+        {/* Updates panel */}
         {showUpdates && (
           <div className="absolute inset-0 md:inset-auto md:top-[53px] md:right-0 md:w-80 md:h-[calc(100vh-53px)] bg-[rgba(6,6,8,0.99)] border-l border-white/5 z-20 flex flex-col overflow-hidden">
             <div className="flex-1 overflow-y-auto min-h-0">
@@ -552,7 +693,9 @@ export default function Home() {
             <div className="flex-1 flex flex-col items-center justify-center text-center h-full px-4">
               <div className="w-16 h-16 rounded-full mb-5 flex-shrink-0" style={{ background: orbBg, boxShadow: orbGlow }} />
               <div className="text-white/60 text-xl font-medium mb-1">Good to see you, {userName}.</div>
-              <div className="text-white/25 text-sm mb-8">I can see your screen and I'm always ready.</div>
+              <div className="text-white/25 text-sm mb-8">
+                {cameraActive ? "I can see your screen and your camera." : "I can see your screen and I'm always ready."}
+              </div>
               {!voiceRunning ? (
                 <button onClick={toggleVoice} className="px-6 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl text-white/50 hover:text-white/70 text-sm transition-all flex items-center gap-2.5">
                   <div className="w-2 h-2 rounded-full bg-white/30" />
@@ -575,7 +718,18 @@ export default function Home() {
                   msg.role === "assistant" ? "bg-white/5 border border-white/7 text-white/85 rounded-tl-sm" : "bg-blue-600 text-white rounded-tr-sm"
                 }`}>
                   {msg.source === "voice" && <div className="text-xs opacity-40 mb-1">{msg.role === "user" ? "voice" : "spoken"}</div>}
+                  {msg.fileName && !msg.imageUrl && (
+                    <div className="flex items-center gap-1.5 mb-2 opacity-70">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
+                      </svg>
+                      <span className="text-xs">{msg.fileName}</span>
+                    </div>
+                  )}
                   <span dangerouslySetInnerHTML={{ __html: formatMessage(msg.content) }} />
+                  {msg.imageUrl && (
+                    <img src={msg.imageUrl} alt={msg.fileName || 'attachment'} className="mt-2 rounded-xl max-w-full" style={{ maxHeight: '300px', objectFit: 'contain' }} />
+                  )}
                 </div>
               </div>
             ))
@@ -593,8 +747,47 @@ export default function Home() {
           <div ref={bottomRef} />
         </div>
 
+        {/* File attachment preview */}
+        {attachedFile && (
+          <div className="px-4 pt-2 flex-shrink-0">
+            <div className="flex items-center gap-2">
+              {attachedFile.type.startsWith('image/') ? (
+                <img src={`data:${attachedFile.type};base64,${attachedFile.data}`} alt="preview" className="h-12 w-12 rounded-lg object-cover border border-white/10" />
+              ) : (
+                <div className="h-10 w-10 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
+                  </svg>
+                </div>
+              )}
+              <span className="text-white/50 text-xs flex-1 truncate">{attachedFile.name}</span>
+              <button onClick={() => setAttachedFile(null)} className="text-white/30 hover:text-white/60 transition-all p-1">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Input */}
         <div className="px-4 pb-4 pt-3 flex gap-2.5 border-t border-white/5 flex-shrink-0">
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*,.pdf,.txt,.js,.ts,.py,.md,.json,.csv,.doc,.docx"
+            onChange={handleFileAttach}
+            className="hidden"
+          />
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            className="w-11 h-11 flex items-center justify-center rounded-xl hover:bg-white/5 transition-all flex-shrink-0 text-white/30 hover:text-white/60"
+            title="Attach file"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
+            </svg>
+          </button>
           <input
             value={input}
             onChange={e => setInput(e.target.value)}
@@ -603,7 +796,7 @@ export default function Home() {
             disabled={loading}
             className="flex-1 bg-white/5 border border-white/10 rounded-xl text-white text-sm px-4 py-3 outline-none placeholder:text-white/20 focus:border-blue-500/30 transition-all"
           />
-          <button onClick={send} disabled={loading || !input.trim()}
+          <button onClick={send} disabled={loading || (!input.trim() && !attachedFile)}
             className="w-11 h-11 bg-blue-600 hover:bg-blue-500 disabled:opacity-30 rounded-xl flex items-center justify-center transition-all flex-shrink-0">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
               <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>

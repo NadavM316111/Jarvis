@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JARVIS — Design Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&family=Orbitron:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --void: #000408;
+  --panel: rgba(0,18,32,0.9);
+  --border: rgba(0,200,255,0.15);
+  --border-bright: rgba(0,200,255,0.5);
+  --arc: #00c8ff;
+  --arc-dim: rgba(0,200,255,0.4);
+  --arc-glow: rgba(0,200,255,0.12);
+  --gold: #ffd060;
+  --text: rgba(0,200,255,0.9);
+  --text-dim: rgba(0,200,255,0.4);
+  --text-muted: rgba(0,200,255,0.18);
+  --mono: 'Share Tech Mono', monospace;
+  --display: 'Orbitron', sans-serif;
+  --body: 'Rajdhani', sans-serif;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--void);font-family:var(--body);color:var(--text);cursor:crosshair}
+body::before{content:'';position:fixed;inset:0;z-index:9999;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.025) 2px,rgba(0,0,0,0.025) 4px);pointer-events:none}
+body::after{content:'';position:fixed;inset:0;z-index:9998;background:radial-gradient(ellipse at center,transparent 35%,rgba(0,0,0,0.65) 100%);pointer-events:none}
+#topbar{position:fixed;top:0;left:0;right:0;height:52px;z-index:100;background:linear-gradient(180deg,rgba(0,18,32,0.99),rgba(0,10,20,0.95));border-bottom:1px solid var(--border-bright);display:flex;align-items:center;padding:0 20px;gap:0}
+#topbar::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--arc),var(--arc-dim),var(--arc),transparent);animation:scanH 4s ease-in-out infinite}
+@keyframes scanH{0%,100%{opacity:.3}50%{opacity:1}}
+.hud-logo{font-family:var(--display);font-size:14px;font-weight:800;letter-spacing:6px;color:var(--arc);text-shadow:0 0 20px var(--arc),0 0 40px var(--arc-dim);margin-right:28px}
+.hud-sep{width:1px;height:24px;background:linear-gradient(180deg,transparent,var(--border-bright),transparent);margin:0 16px}
+.hud-stat{display:flex;flex-direction:column;gap:1px;min-width:70px}
+.hud-stat-label{font-family:var(--mono);font-size:7px;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase}
+.hud-stat-value{font-family:var(--mono);font-size:11px;color:var(--arc);text-shadow:0 0 8px var(--arc-dim)}
+.hud-center{flex:1;display:flex;justify-content:center;align-items:center}
+.hud-title{font-family:var(--display);font-size:10px;font-weight:600;letter-spacing:7px;color:var(--text-dim);text-transform:uppercase}
+.hud-actions{display:flex;gap:6px;align-items:center}
+.hud-btn{padding:6px 14px;border:1px solid var(--border-bright);background:rgba(0,200,255,0.05);color:var(--text);font-family:var(--mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)}
+.hud-btn:hover{background:rgba(0,200,255,0.15);border-color:var(--arc);color:var(--arc);box-shadow:0 0 12px var(--arc-glow)}
+.hud-btn.primary{background:rgba(0,200,255,0.1);border-color:var(--arc);color:var(--arc)}
+.hud-btn.primary:hover{background:rgba(0,200,255,0.22);box-shadow:0 0 20px var(--arc-dim)}
+#layout{position:fixed;inset:0;top:52px;display:grid;grid-template-columns:210px 1fr 260px;grid-template-rows:1fr 170px}
+#left-panel{grid-row:1/3;background:var(--panel);border-right:1px solid var(--border);display:flex;flex-direction:column;backdrop-filter:blur(20px);position:relative;overflow:hidden}
+#left-panel::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--arc),transparent);animation:slideR 3s ease-in-out infinite}
+@keyframes slideR{0%{transform:translateX(-100%);opacity:0}50%{opacity:1}100%{transform:translateX(100%);opacity:0}}
+.panel-header{padding:14px 14px 10px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.panel-dot{width:6px;height:6px;border-radius:50%;background:var(--arc);box-shadow:0 0 8px var(--arc);animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 8px var(--arc)}50%{opacity:.4;box-shadow:0 0 3px var(--arc-dim)}}
+.panel-title{font-family:var(--mono);font-size:8px;letter-spacing:3px;color:var(--text-dim);text-transform:uppercase;flex:1}
+.panel-count{font-family:var(--mono);font-size:11px;color:var(--arc);text-shadow:0 0 8px var(--arc-dim)}
+.select-all-btn{margin:6px 8px;padding:5px 10px;background:rgba(0,200,255,0.03);border:1px solid var(--border);color:var(--text-dim);font-family:var(--mono);font-size:8px;letter-spacing:2px;cursor:pointer;transition:all .2s;text-transform:uppercase;width:calc(100% - 16px)}
+.select-all-btn:hover{border-color:var(--arc-dim);color:var(--arc)}
+#parts-list{flex:1;overflow-y:auto;padding:2px 6px}
+#parts-list::-webkit-scrollbar{width:2px}
+#parts-list::-webkit-scrollbar-thumb{background:var(--arc-dim)}
+.part-item{display:flex;align-items:center;gap:6px;padding:6px 7px;margin-bottom:1px;cursor:pointer;transition:all .12s;border:1px solid transparent;position:relative}
+.part-item:hover{background:rgba(0,200,255,0.05);border-color:var(--border)}
+.part-item.selected{background:rgba(0,200,255,0.08);border-color:var(--arc-dim)}
+.part-item.selected::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--arc);box-shadow:0 0 6px var(--arc)}
+.part-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.part-name{font-family:var(--mono);font-size:9px;color:var(--text-dim);flex:1;letter-spacing:.3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.part-item.selected .part-name{color:var(--arc)}
+.part-check{width:11px;height:11px;border:1px solid var(--border-bright);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.part-check.checked{background:var(--arc);border-color:var(--arc);box-shadow:0 0 5px var(--arc-dim)}
+.part-check.checked::after{content:'✓';font-size:7px;color:var(--void);font-weight:bold}
+#selection-info{padding:7px 14px;font-family:var(--mono);font-size:8px;color:var(--text-muted);letter-spacing:2px;border-top:1px solid var(--border);text-transform:uppercase}
+#viewport{grid-column:2;grid-row:1;position:relative;overflow:hidden;background:radial-gradient(ellipse at 50% 55%,#001520 0%,#00070f 50%,#000408 100%)}
+#canvas{width:100%;height:100%;display:block;cursor:crosshair}
+.corner{position:absolute;width:20px;height:20px;z-index:10;pointer-events:none}
+.corner-tl{top:14px;left:14px;border-top:2px solid var(--arc);border-left:2px solid var(--arc)}
+.corner-tr{top:14px;right:14px;border-top:2px solid var(--arc);border-right:2px solid var(--arc)}
+.corner-bl{bottom:14px;left:14px;border-bottom:2px solid var(--arc);border-left:2px solid var(--arc)}
+.corner-br{bottom:14px;right:14px;border-bottom:2px solid var(--arc);border-right:2px solid var(--arc)}
+#vp-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;z-index:10}
+#vp-center::before,#vp-center::after{content:'';position:absolute;background:var(--arc-dim)}
+#vp-center::before{width:18px;height:1px;top:0;left:-9px}
+#vp-center::after{width:1px;height:18px;top:-9px;left:0}
+#vp-info{position:absolute;top:18px;left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:8px;color:var(--text-muted);letter-spacing:3px;pointer-events:none;z-index:10;text-transform:uppercase}
+#vp-coords{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:8px;color:var(--text-muted);letter-spacing:2px;pointer-events:none;z-index:10}
+#arc-reactor{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;z-index:5;opacity:0.035;width:380px;height:380px}
+.reactor-ring{position:absolute;border-radius:50%;border:1px solid var(--arc);animation:rSpin linear infinite}
+.reactor-ring:nth-child(1){inset:0;animation-duration:20s}
+.reactor-ring:nth-child(2){inset:28px;animation-duration:14s;animation-direction:reverse}
+.reactor-ring:nth-child(3){inset:56px;animation-duration:9s}
+.reactor-ring:nth-child(4){inset:84px;animation-duration:7s;animation-direction:reverse}
+@keyframes rSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+#empty-state{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;z-index:20}
+#empty-state h2{font-family:var(--display);font-size:12px;font-weight:600;letter-spacing:6px;color:var(--text-dim);text-transform:uppercase;margin-bottom:8px}
+#empty-state p{font-family:var(--mono);font-size:9px;color:var(--text-muted);letter-spacing:2px}
+#loading-overlay{position:absolute;inset:0;background:rgba(0,4,8,0.88);z-index:50;display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;backdrop-filter:blur(4px)}
+#loading-overlay.show{display:flex}
+.loading-bar-wrap{width:240px;height:2px;background:rgba(0,200,255,0.1);overflow:hidden}
+.loading-bar-fill{height:100%;width:60%;background:var(--arc);box-shadow:0 0 8px var(--arc);animation:loadSlide 1.4s ease-in-out infinite}
+@keyframes loadSlide{0%{transform:translateX(-100%)}100%{transform:translateX(200%)}}
+.loading-text{font-family:var(--mono);font-size:10px;color:var(--arc);letter-spacing:3px;text-transform:uppercase}
+#right-panel{grid-row:1/3;background:var(--panel);border-left:1px solid var(--border);display:flex;flex-direction:column;backdrop-filter:blur(20px);overflow-y:auto}
+#right-panel::-webkit-scrollbar{width:2px}
+#right-panel::-webkit-scrollbar-thumb{background:var(--arc-dim)}
+.rsec{padding:12px 14px;border-bottom:1px solid var(--border)}
+.rsec-title{font-family:var(--mono);font-size:7px;letter-spacing:3px;color:var(--text-dim);text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.rsec-title::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--border),transparent)}
+.color-palette{display:grid;grid-template-columns:repeat(6,1fr);gap:5px}
+.color-swatch{aspect-ratio:1;border-radius:50%;cursor:pointer;transition:all .2s;border:1.5px solid transparent}
+.color-swatch:hover{transform:scale(1.2)}
+.color-swatch.active{border-color:var(--arc);box-shadow:0 0 10px var(--arc-dim)}
+.shape-grid,.transform-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px}
+.shape-btn,.transform-btn{padding:6px 3px;background:rgba(0,200,255,0.02);border:1px solid var(--border);color:var(--text-dim);font-family:var(--mono);font-size:8px;letter-spacing:1px;cursor:pointer;transition:all .15s;text-align:center;text-transform:uppercase}
+.shape-btn:hover,.transform-btn:hover{background:rgba(0,200,255,0.09);border-color:var(--arc-dim);color:var(--arc)}
+.material-list{display:flex;flex-direction:column;gap:3px}
+.material-item{padding:6px 8px;border:1px solid var(--border);background:rgba(0,200,255,0.02);font-family:var(--mono);font-size:8px;color:var(--text-dim);cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:7px;letter-spacing:1px;text-transform:uppercase}
+.material-item:hover{background:rgba(0,200,255,0.08);border-color:var(--arc-dim);color:var(--arc)}
+.material-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+#chat-panel{grid-column:2;grid-row:2;background:rgba(0,6,14,0.97);border-top:1px solid var(--border-bright);display:flex;flex-direction:column;position:relative;overflow:hidden}
+#chat-panel::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--arc),var(--arc-dim),var(--arc),transparent);box-shadow:0 0 16px var(--arc-dim)}
+#chat-messages{flex:1;overflow-y:auto;padding:10px 18px 6px;display:flex;flex-direction:column;gap:5px}
+#chat-messages::-webkit-scrollbar{width:2px}
+#chat-messages::-webkit-scrollbar-thumb{background:var(--arc-dim)}
+.msg{display:flex;gap:9px;align-items:flex-start;animation:msgIn .25s ease-out}
+@keyframes msgIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+.msg-sender{font-family:var(--mono);font-size:8px;letter-spacing:2px;text-transform:uppercase;flex-shrink:0;margin-top:2px;min-width:48px}
+.msg.user .msg-sender{color:var(--gold)}
+.msg.jarvis .msg-sender{color:var(--arc);text-shadow:0 0 8px var(--arc-dim)}
+.msg-text{font-family:var(--body);font-size:12px;font-weight:500;line-height:1.4;color:rgba(255,255,255,0.7)}
+.msg.jarvis .msg-text{color:rgba(0,200,255,0.85)}
+.thinking-dots{display:flex;gap:4px;align-items:center;padding:3px 0}
+.thinking-dots span{width:4px;height:4px;border-radius:50%;background:var(--arc);animation:dotB 1.2s ease-in-out infinite}
+.thinking-dots span:nth-child(2){animation-delay:.2s}
+.thinking-dots span:nth-child(3){animation-delay:.4s}
+@keyframes dotB{0%,80%,100%{transform:scale(.6);opacity:.4}40%{transform:scale(1);opacity:1}}
+#chat-input-row{padding:9px 18px 12px;display:flex;gap:8px;align-items:center;border-top:1px solid var(--border)}
+.input-prefix{font-family:var(--mono);font-size:10px;color:var(--arc);text-shadow:0 0 8px var(--arc-dim);flex-shrink:0}
+#chat-input{flex:1;background:transparent;border:none;outline:none;font-family:var(--mono);font-size:11px;color:rgba(255,255,255,0.9);letter-spacing:.5px;caret-color:var(--arc)}
+#chat-input::placeholder{color:var(--text-muted)}
+.send-btn{padding:5px 14px;background:rgba(0,200,255,0.08);border:1px solid var(--arc-dim);color:var(--arc);font-family:var(--mono);font-size:8px;letter-spacing:2px;cursor:pointer;transition:all .2s;text-transform:uppercase}
+.send-btn:hover{background:rgba(0,200,255,0.18);border-color:var(--arc);box-shadow:0 0 12px var(--arc-glow)}
+#notification{position:fixed;top:64px;left:50%;transform:translateX(-50%) translateY(-10px);background:rgba(0,16,28,0.97);border:1px solid var(--arc-dim);padding:9px 22px;font-family:var(--mono);font-size:10px;color:var(--arc);letter-spacing:2px;backdrop-filter:blur(20px);box-shadow:0 4px 28px rgba(0,200,255,0.12);display:none;z-index:200;clip-path:polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%)}
+#notification.show{display:block;animation:notifIn .25s ease-out}
+@keyframes notifIn{from{opacity:0;transform:translateX(-50%) translateY(-18px)}to{opacity:1;transform:translateX(-50%) translateY(-10px)}}
+#model-picker{position:fixed;inset:0;background:rgba(0,4,8,0.92);z-index:150;display:none;align-items:center;justify-content:center;backdrop-filter:blur(8px)}
+#model-picker.show{display:flex}
+.model-picker-box{background:rgba(0,14,26,0.98);border:1px solid var(--border-bright);width:640px;max-height:500px;display:flex;flex-direction:column;box-shadow:0 0 60px rgba(0,200,255,0.15)}
+.model-picker-header{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.model-picker-title{font-family:var(--display);font-size:10px;font-weight:600;letter-spacing:4px;color:var(--arc);text-transform:uppercase}
+.model-picker-close{padding:5px 12px;background:transparent;border:1px solid var(--border);color:var(--text-dim);font-family:var(--mono);font-size:8px;cursor:pointer;letter-spacing:2px;text-transform:uppercase;transition:all .15s}
+.model-picker-close:hover{border-color:var(--arc-dim);color:var(--arc)}
+#model-results-list{flex:1;overflow-y:auto;padding:8px}
+#model-results-list::-webkit-scrollbar{width:2px}
+#model-results-list::-webkit-scrollbar-thumb{background:var(--arc-dim)}
+.model-result-item{padding:12px 14px;border:1px solid var(--border);margin-bottom:6px;cursor:pointer;transition:all .15s;display:flex;gap:14px;align-items:center}
+.model-result-item:hover{background:rgba(0,200,255,0.07);border-color:var(--arc-dim)}
+.model-result-thumb{width:52px;height:52px;object-fit:cover;border:1px solid var(--border);flex-shrink:0;background:#001020}
+.model-result-info{flex:1;min-width:0}
+.model-result-name{font-family:var(--mono);font-size:10px;color:var(--arc);letter-spacing:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:4px}
+.model-result-sub{font-family:var(--mono);font-size:8px;color:var(--text-dim);letter-spacing:1px}
+.model-result-badge{padding:3px 8px;font-family:var(--mono);font-size:7px;border:1px solid var(--arc-dim);color:var(--arc);letter-spacing:1px;text-transform:uppercase;white-space:nowrap}
+.model-picker-footer{padding:10px 14px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end}
+.model-picker-fallback{padding:7px 16px;background:rgba(0,200,255,0.05);border:1px solid var(--border);color:var(--text-dim);font-family:var(--mono);font-size:8px;cursor:pointer;letter-spacing:2px;text-transform:uppercase;transition:all .15s}
+.model-picker-fallback:hover{border-color:var(--arc-dim);color:var(--arc)}
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <div class="hud-logo">JARVIS</div>
+  <div class="hud-sep"></div>
+  <div class="hud-stat"><div class="hud-stat-label">Parts</div><div class="hud-stat-value" id="stat-parts">000</div></div>
+  <div class="hud-sep"></div>
+  <div class="hud-stat"><div class="hud-stat-label">Selected</div><div class="hud-stat-value" id="stat-sel">000</div></div>
+  <div class="hud-sep"></div>
+  <div class="hud-stat"><div class="hud-stat-label">System</div><div class="hud-stat-value" id="stat-sys">ONLINE</div></div>
+  <div class="hud-sep"></div>
+  <div class="hud-stat"><div class="hud-stat-label">Mode</div><div class="hud-stat-value" id="stat-mode">READY</div></div>
+  <div class="hud-center"><div class="hud-title">Design Studio — v5.0</div></div>
+  <div class="hud-actions">
+    <button class="hud-btn" onclick="clearScene()">Clear</button>
+    <button class="hud-btn" onclick="exportSTL()">Export STL</button>
+    <button class="hud-btn primary" onclick="document.getElementById('chat-input').focus()">Command</button>
+  </div>
+</div>
+
+<div id="layout">
+  <div id="left-panel">
+    <div class="panel-header">
+      <div class="panel-dot"></div>
+      <div class="panel-title">Components</div>
+      <div class="panel-count" id="parts-count">0</div>
+    </div>
+    <button class="select-all-btn" onclick="toggleSelectAll()">[ Select All ]</button>
+    <div id="parts-list"></div>
+    <div id="selection-info">0 / 0 selected</div>
+  </div>
+
+  <div id="viewport">
+    <div class="corner corner-tl"></div>
+    <div class="corner corner-tr"></div>
+    <div class="corner corner-bl"></div>
+    <div class="corner corner-br"></div>
+    <div id="vp-center"></div>
+    <div id="vp-info">STARK INDUSTRIES — REAL-TIME RENDER</div>
+    <div id="vp-coords">ZOOM: 300  ROT: 0°</div>
+    <div id="arc-reactor">
+      <div class="reactor-ring"></div><div class="reactor-ring"></div>
+      <div class="reactor-ring"></div><div class="reactor-ring"></div>
+    </div>
+    <div id="empty-state">
+      <h2>Awaiting Directive</h2>
+      <p>Describe anything — JARVIS will find or build it</p>
+    </div>
+    <div id="loading-overlay">
+      <div class="loading-text" id="loading-text">Scanning databases...</div>
+      <div class="loading-bar-wrap"><div class="loading-bar-fill"></div></div>
+    </div>
+    <canvas id="canvas"></canvas>
+  </div>
+
+  <div id="right-panel">
+    <div class="rsec">
+      <div class="rsec-title">Surface Color</div>
+      <div class="color-palette" id="color-grid"></div>
+    </div>
+    <div class="rsec">
+      <div class="rsec-title">Add Geometry</div>
+      <div class="shape-grid">
+        <button class="shape-btn" onclick="addPrimShape('box')">Box</button>
+        <button class="shape-btn" onclick="addPrimShape('sphere')">Sphere</button>
+        <button class="shape-btn" onclick="addPrimShape('cylinder')">Cylinder</button>
+        <button class="shape-btn" onclick="addPrimShape('cone')">Cone</button>
+        <button class="shape-btn" onclick="addPrimShape('torus')">Torus</button>
+        <button class="shape-btn" onclick="addPrimShape('capsule')">Capsule</button>
+      </div>
+    </div>
+    <div class="rsec">
+      <div class="rsec-title">Transform</div>
+      <div class="transform-grid">
+        <button class="transform-btn" onclick="scaleSelected(1.25)">Scale +</button>
+        <button class="transform-btn" onclick="scaleSelected(0.8)">Scale −</button>
+        <button class="transform-btn" onclick="rotateSelected('y',15)">Rot Y</button>
+        <button class="transform-btn" onclick="rotateSelected('x',15)">Rot X</button>
+        <button class="transform-btn" onclick="rotateSelected('z',15)">Rot Z</button>
+        <button class="transform-btn" onclick="deleteSelected()">Delete</button>
+      </div>
+    </div>
+    <div class="rsec">
+      <div class="rsec-title">Material</div>
+      <div class="material-list">
+        <div class="material-item" onclick="applyMaterial('chrome')"><div class="material-dot" style="background:#e0e8f0"></div>Chrome</div>
+        <div class="material-item" onclick="applyMaterial('gold')"><div class="material-dot" style="background:#ffd700"></div>Gold</div>
+        <div class="material-item" onclick="applyMaterial('matte')"><div class="material-dot" style="background:#2a3040"></div>Matte</div>
+        <div class="material-item" onclick="applyMaterial('arc')"><div class="material-dot" style="background:#00c8ff;box-shadow:0 0 6px #00c8ff"></div>Arc Energy</div>
+        <div class="material-item" onclick="applyMaterial('red')"><div class="material-dot" style="background:#cc1111"></div>Iron Red</div>
+        <div class="material-item" onclick="applyMaterial('glass')"><div class="material-dot" style="background:rgba(100,200,255,0.5);border:1px solid #00c8ff"></div>Glass</div>
+      </div>
+    </div>
+    <div class="rsec">
+      <div class="rsec-title">Scene</div>
+      <div class="transform-grid">
+        <button class="transform-btn" onclick="resetCamera()">Reset Cam</button>
+        <button class="transform-btn" onclick="toggleWireframe()">Wireframe</button>
+        <button class="transform-btn" onclick="duplicateSelected()">Duplicate</button>
+        <button class="transform-btn" onclick="centerSelected()">Center</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="chat-panel">
+    <div id="chat-messages"></div>
+    <div id="chat-input-row">
+      <div class="input-prefix">J.A.R.V.I.S. &gt;</div>
+      <input type="text" id="chat-input" placeholder="Design an Iron Man suit / a Ferrari / a dragon / a skyscraper..." autocomplete="off"/>
+      <button class="send-btn" onclick="sendCommand()">Execute</button>
+    </div>
+  </div>
+</div>
+
+<!-- Model Picker Modal -->
+<div id="model-picker">
+  <div class="model-picker-box">
+    <div class="model-picker-header">
+      <div class="model-picker-title" id="picker-title">Select Model</div>
+      <button class="model-picker-close" onclick="closeModelPicker()">✕ Close</button>
+    </div>
+    <div id="model-results-list"></div>
+    <div class="model-picker-footer">
+      <button class="model-picker-fallback" onclick="closeAndBuildPrimitives()">Build from primitives instead</button>
+    </div>
+  </div>
+</div>
+
+<div id="notification"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+// ─── SCENE ────────────────────────────────────────────────────
+const scene = new THREE.Scene();
+scene.fog = new THREE.FogExp2(0x000408, 0.0007);
+const canvasEl = document.getElementById('canvas');
+const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 8000);
+camera.position.set(0, 80, 300);
+
+const renderer = new THREE.WebGLRenderer({ canvas: canvasEl, antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.15;
+renderer.outputEncoding = THREE.sRGBEncoding;
+
+function resize() {
+  const w = canvasEl.clientWidth, h = canvasEl.clientHeight;
+  renderer.setSize(w, h, false);
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+}
+resize(); window.addEventListener('resize', resize);
+
+scene.add(new THREE.AmbientLight(0x0a1828, 2.5));
+const sun = new THREE.DirectionalLight(0xffffff, 2.8);
+sun.position.set(200, 400, 200); sun.castShadow = true;
+sun.shadow.mapSize.set(2048, 2048); scene.add(sun);
+const arcLight = new THREE.PointLight(0x00c8ff, 4, 700);
+arcLight.position.set(0, 100, 150); scene.add(arcLight);
+const rimLight = new THREE.DirectionalLight(0x0044aa, 2);
+rimLight.position.set(-300, 0, -200); scene.add(rimLight);
+
+const grid = new THREE.GridHelper(1000, 50, 0x00c8ff, 0x001a2a);
+grid.material.opacity = 0.1; grid.material.transparent = true;
+grid.position.y = -0.5; scene.add(grid);
+
+const groundMesh = new THREE.Mesh(
+  new THREE.PlaneGeometry(3000, 3000),
+  new THREE.ShadowMaterial({ opacity: 0.25 })
+);
+groundMesh.rotation.x = -Math.PI / 2; groundMesh.receiveShadow = true; scene.add(groundMesh);
+
+const pivot = new THREE.Object3D(); scene.add(pivot);
+
+// ─── CAMERA ───────────────────────────────────────────────────
+let drag = false, dragBtn = 0, px = 0, py = 0;
+let rotX = 10, rotY = 15, tRotX = 10, tRotY = 15;
+let panX = 0, panY = 0, tPanX = 0, tPanY = 0;
+let zoom = 300, tZoom = 300;
+
+canvasEl.addEventListener('mousedown', e => { drag=true; dragBtn=e.button; px=e.clientX; py=e.clientY; });
+window.addEventListener('mouseup', () => drag = false);
+window.addEventListener('mousemove', e => {
+  if (!drag) return;
+  const dx=e.clientX-px, dy=e.clientY-py;
+  if (dragBtn===0) { tRotY+=dx*.32; tRotX=Math.max(-80,Math.min(80,tRotX+dy*.22)); }
+  else if (dragBtn===2) { tPanX-=dx*.22; tPanY+=dy*.22; }
+  px=e.clientX; py=e.clientY;
+  document.getElementById('vp-coords').textContent=`ROT X:${tRotX.toFixed(0)} Y:${tRotY.toFixed(0)}  ZOOM:${tZoom.toFixed(0)}`;
+});
+canvasEl.addEventListener('wheel', e => { tZoom=Math.max(40,Math.min(2000,tZoom+e.deltaY*.3)); });
+canvasEl.addEventListener('contextmenu', e => e.preventDefault());
+
+// ─── PARTS ────────────────────────────────────────────────────
+const parts = {};
+const selectedParts = new Set();
+let partCounter = 0;
+let wireframeMode = false;
+let loadedModel = null;
+let pendingPrimitivesQuery = null;
+
+const PALETTE = {
+  'Arc Blue':  {hex:0x00c8ff,metalness:.9,roughness:.05,emissive:0x002840},
+  'Iron Red':  {hex:0xcc1111,metalness:.85,roughness:.1},
+  'Gold':      {hex:0xffd060,metalness:.95,roughness:.04},
+  'Chrome':    {hex:0xe8f0f8,metalness:1.0,roughness:.02},
+  'Black':     {hex:0x0d1420,metalness:.7,roughness:.2},
+  'White':     {hex:0xf0f4f8,metalness:.5,roughness:.18},
+  'Cobalt':    {hex:0x1144cc,metalness:.8,roughness:.1},
+  'Amber':     {hex:0xff6600,metalness:.7,roughness:.2},
+  'Emerald':   {hex:0x00cc66,metalness:.8,roughness:.08},
+  'Violet':    {hex:0x7722ee,metalness:.8,roughness:.1},
+  'Crimson':   {hex:0xff1040,metalness:.7,roughness:.15},
+  'Steel':     {hex:0x506070,metalness:.9,roughness:.18},
+};
+
+const colorGrid = document.getElementById('color-grid');
+Object.entries(PALETTE).forEach(([name,props]) => {
+  const sw = document.createElement('div');
+  sw.className = 'color-swatch';
+  const hex = '#'+props.hex.toString(16).padStart(6,'0');
+  sw.style.cssText = `background:${hex};${props.emissive?`box-shadow:0 0 8px ${hex}`:''}`;
+  sw.title = name;
+  sw.onclick = () => applyColorToSelected(props, sw);
+  colorGrid.appendChild(sw);
+});
+
+function makeMat(props) {
+  return new THREE.MeshStandardMaterial({
+    color: props.hex||0x00c8ff,
+    metalness: props.metalness??0.85,
+    roughness: props.roughness??0.12,
+    emissive: new THREE.Color(props.emissive||0),
+    emissiveIntensity: props.emissive ? 1 : 0,
+    transparent: props.opacity !== undefined,
+    opacity: props.opacity??1,
+    wireframe: wireframeMode
+  });
+}
+
+function buildGeo(type, size=30) {
+  switch(type) {
+    case 'box': return new THREE.BoxGeometry(size,size,size,2,2,2);
+    case 'sphere': return new THREE.SphereGeometry(size/2,32,24);
+    case 'cylinder': return new THREE.CylinderGeometry(size*.44,size*.44,size,32);
+    case 'cone': return new THREE.ConeGeometry(size/2,size*1.2,32);
+    case 'torus': return new THREE.TorusGeometry(size/2,size/7,16,48);
+    case 'capsule': try{return new THREE.CapsuleGeometry(size/3,size/2,8,16)}catch(e){return new THREE.CylinderGeometry(size/3,size/3,size,32)}
+    default: return new THREE.BoxGeometry(size,size,size);
+  }
+}
+
+function addPart(name, geo, colorProps, pos=[0,0,0], rot=[0,0,0]) {
+  if (parts[name]) { parts[name].mesh.material.color.setHex(colorProps.hex||0x00c8ff); return; }
+  const mesh = new THREE.Mesh(geo, makeMat(colorProps));
+  mesh.position.set(...pos);
+  mesh.rotation.set(...rot.map(r=>r*Math.PI/180));
+  mesh.castShadow = true; mesh.receiveShadow = true;
+  mesh.userData.partName = name;
+  pivot.add(mesh);
+  parts[name] = {mesh, colorProps, name};
+  document.getElementById('empty-state').style.display = 'none';
+  updateUI();
+}
+
+function addPrimShape(type, opts={}) {
+  const name = opts.name||(type[0].toUpperCase()+type.slice(1)+'_'+(++partCounter));
+  const cp = typeof opts.color==='number'
+    ? {hex:opts.color,metalness:.85,roughness:.12}
+    : opts.colorProps||PALETTE['Arc Blue'];
+  const size = opts.size||30;
+  const pos = opts.position||[0,size/2,0];
+  addPart(name, buildGeo(type,size), cp, pos);
+  selectedParts.clear(); selectedParts.add(name);
+  updateUI(); return name;
+}
+
+function clearScene() {
+  Object.keys(parts).forEach(n => {
+    pivot.remove(parts[n].mesh);
+    parts[n].mesh.geometry.dispose();
+    parts[n].mesh.material.dispose();
+    delete parts[n];
+  });
+  if (loadedModel) { pivot.remove(loadedModel); loadedModel = null; }
+  selectedParts.clear();
+  document.getElementById('empty-state').style.display = 'block';
+  document.getElementById('stat-mode').textContent = 'READY';
+  updateUI(); notify('Scene cleared');
+}
+
+function deleteSelected() {
+  selectedParts.forEach(n => {
+    if (parts[n]) {
+      pivot.remove(parts[n].mesh);
+      parts[n].mesh.geometry.dispose();
+      parts[n].mesh.material.dispose();
+      delete parts[n];
+    }
+  });
+  selectedParts.clear();
+  if (!Object.keys(parts).length && !loadedModel) document.getElementById('empty-state').style.display = 'block';
+  updateUI();
+}
+
+function selectPart(name, exclusive=true) {
+  if (exclusive) selectedParts.clear();
+  selectedParts.has(name) ? selectedParts.delete(name) : selectedParts.add(name);
+  updateUI();
+}
+
+function toggleSelectAll() {
+  if (selectedParts.size===Object.keys(parts).length) selectedParts.clear();
+  else Object.keys(parts).forEach(n=>selectedParts.add(n));
+  updateUI();
+}
+
+function applyColorToSelected(colorProps, swatchEl) {
+  if (!selectedParts.size) { notify('Select parts first'); return; }
+  document.querySelectorAll('.color-swatch').forEach(s=>s.classList.remove('active'));
+  if (swatchEl) swatchEl.classList.add('active');
+  selectedParts.forEach(n => {
+    if (!parts[n]) return;
+    parts[n].colorProps = colorProps;
+    parts[n].mesh.material.color.setHex(colorProps.hex);
+    parts[n].mesh.material.metalness = colorProps.metalness??0.85;
+    parts[n].mesh.material.roughness = colorProps.roughness??0.12;
+    parts[n].mesh.material.emissive.setHex(colorProps.emissive||0);
+  });
+  updateUI();
+}
+
+function applyMaterial(preset) {
+  const P = {
+    chrome:{hex:0xe8f0f8,metalness:1.0,roughness:.02},
+    gold:{hex:0xffd060,metalness:.95,roughness:.04},
+    matte:{hex:0x1a2030,metalness:.25,roughness:.92},
+    arc:{hex:0x00c8ff,metalness:.9,roughness:.05,emissive:0x002840},
+    red:{hex:0xcc1111,metalness:.85,roughness:.1},
+    glass:{hex:0x88ccff,metalness:.1,roughness:.02,opacity:.35},
+  };
+  const props = P[preset]; if (!props) return;
+  const targets = selectedParts.size ? selectedParts : new Set(Object.keys(parts));
+  targets.forEach(n => {
+    if (!parts[n]) return;
+    Object.assign(parts[n].colorProps, props);
+    const m = parts[n].mesh.material;
+    m.color.setHex(props.hex); m.metalness=props.metalness; m.roughness=props.roughness;
+    m.emissive.setHex(props.emissive||0);
+    m.transparent=props.opacity!==undefined; m.opacity=props.opacity??1;
+  });
+  notify(`Material: ${preset}`);
+}
+
+function scaleSelected(f) { selectedParts.forEach(n=>{if(parts[n])parts[n].mesh.scale.multiplyScalar(f)}); }
+function rotateSelected(axis,deg) { selectedParts.forEach(n=>{if(parts[n])parts[n].mesh.rotation[axis]+=deg*Math.PI/180}); }
+function resetCamera() { tRotX=10; tRotY=15; tPanX=0; tPanY=0; tZoom=300; }
+function centerSelected() { selectedParts.forEach(n=>{if(parts[n]){parts[n].mesh.position.x=0;parts[n].mesh.position.z=0;}}); }
+function toggleWireframe() {
+  wireframeMode=!wireframeMode;
+  Object.values(parts).forEach(p=>p.mesh.material.wireframe=wireframeMode);
+  if(loadedModel) loadedModel.traverse(c=>{if(c.isMesh)c.material.wireframe=wireframeMode;});
+  notify(wireframeMode?'Wireframe ON':'Wireframe OFF');
+}
+function duplicateSelected() {
+  const toAdd=[];
+  selectedParts.forEach(n=>{
+    if(!parts[n])return;
+    const p=parts[n];
+    toAdd.push({name:n+'_copy'+(++partCounter),geo:p.mesh.geometry.clone(),cp:{...p.colorProps},pos:[p.mesh.position.x+25,p.mesh.position.y,p.mesh.position.z+25]});
+  });
+  toAdd.forEach(t=>addPart(t.name,t.geo,t.cp,t.pos));
+  notify('Duplicated');
+}
+
+function updateUI() {
+  const all = Object.keys(parts);
+  const totalCount = all.length + (loadedModel ? 1 : 0);
+  const sel = selectedParts.size;
+  document.getElementById('stat-parts').textContent = totalCount.toString().padStart(3,'0');
+  document.getElementById('stat-sel').textContent = sel.toString().padStart(3,'0');
+  document.getElementById('parts-count').textContent = all.length;
+  document.getElementById('selection-info').textContent = `${sel} / ${all.length} selected`;
+  const list = document.getElementById('parts-list');
+  list.innerHTML = '';
+  if (loadedModel) {
+    const item = document.createElement('div');
+    item.className = 'part-item';
+    item.innerHTML = `<div class="part-dot" style="background:#00c8ff;box-shadow:0 0 5px #00c8ff"></div><div class="part-name">⬡ Loaded Model</div><div class="part-check"></div>`;
+    list.appendChild(item);
+  }
+  all.forEach(name => {
+    const p = parts[name];
+    const hex = '#'+(p.colorProps?.hex||0x00c8ff).toString(16).padStart(6,'0');
+    const item = document.createElement('div');
+    item.className = 'part-item'+(selectedParts.has(name)?' selected':'');
+    item.innerHTML = `<div class="part-dot" style="background:${hex};box-shadow:0 0 4px ${hex}"></div><div class="part-name">${name}</div><div class="part-check ${selectedParts.has(name)?'checked':''}"></div>`;
+    item.onclick = e => selectPart(name, !e.shiftKey&&!e.metaKey);
+    list.appendChild(item);
+  });
+}
+
+// ─── CLICK SELECT ─────────────────────────────────────────────
+const raycaster = new THREE.Raycaster();
+const mouse2d = new THREE.Vector2();
+let cs = {x:0,y:0};
+canvasEl.addEventListener('mousedown', e=>{cs.x=e.clientX;cs.y=e.clientY;});
+canvasEl.addEventListener('click', e => {
+  if (Math.abs(e.clientX-cs.x)>5||Math.abs(e.clientY-cs.y)>5) return;
+  const rect=canvasEl.getBoundingClientRect();
+  mouse2d.x=((e.clientX-rect.left)/rect.width)*2-1;
+  mouse2d.y=-((e.clientY-rect.top)/rect.height)*2+1;
+  raycaster.setFromCamera(mouse2d, camera);
+  const hits=raycaster.intersectObjects(Object.values(parts).map(p=>p.mesh),true);
+  if (hits.length) {
+    let obj=hits[0].object;
+    while(obj&&!obj.userData.partName&&obj.parent) obj=obj.parent;
+    if(obj?.userData?.partName) selectPart(obj.userData.partName,!e.shiftKey);
+  }
+});
+
+// ─── GLTF LOADER ──────────────────────────────────────────────
+let gltfLoaderReady = false;
+
+function ensureGLTFLoader() {
+  return new Promise((resolve, reject) => {
+    if (gltfLoaderReady && THREE.GLTFLoader) { resolve(); return; }
+    const s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js';
+    s.onload = () => { gltfLoaderReady = true; resolve(); };
+    s.onerror = reject;
+    document.head.appendChild(s);
+  });
+}
+
+async function loadModelFromUrl(url, name) {
+  setLoading(true, `Loading ${name}...`);
+  document.getElementById('stat-mode').textContent = 'LOAD';
+  try {
+    await ensureGLTFLoader();
+    const loader = new THREE.GLTFLoader();
+    // Route through server proxy to bypass CORS
+    const proxied = `http://localhost:3001/proxy-model?url=${encodeURIComponent(url)}`;
+    return new Promise((resolve) => {
+      loader.load(proxied, gltf => {
+        if (loadedModel) pivot.remove(loadedModel);
+        const model = gltf.scene;
+        const box = new THREE.Box3().setFromObject(model);
+        const size = box.getSize(new THREE.Vector3());
+        const maxDim = Math.max(size.x, size.y, size.z);
+        const scale = 200 / (maxDim || 1);
+        model.scale.setScalar(scale);
+        const center = box.getCenter(new THREE.Vector3());
+        model.position.sub(center.multiplyScalar(scale));
+        model.position.y += (size.y * scale) / 2;
+        model.traverse(child => {
+          if (child.isMesh) { child.castShadow = true; child.receiveShadow = true; }
+        });
+        loadedModel = model;
+        pivot.add(model);
+        document.getElementById('empty-state').style.display = 'none';
+        document.getElementById('stat-mode').textContent = 'MODEL';
+        setLoading(false);
+        updateUI();
+        notify(`Loaded: ${name}`);
+        resolve(true);
+      }, xhr => {
+        if (xhr.total) document.getElementById('loading-text').textContent = `Loading... ${Math.round(xhr.loaded/xhr.total*100)}%`;
+      }, err => {
+        console.error('Load error:', err);
+        setLoading(false);
+        document.getElementById('stat-mode').textContent = 'ERR';
+        notify('Load failed — building with primitives');
+        resolve(false);
+      });
+    });
+  } catch(e) {
+    setLoading(false);
+    return false;
+  }
+}
+
+// ─── MODEL SEARCH ─────────────────────────────────────────────
+let currentPickerQuery = '';
+
+async function searchAndShowModels(query) {
+  currentPickerQuery = query;
+  setLoading(true, `Searching: "${query}"...`);
+  document.getElementById('stat-mode').textContent = 'SEARCH';
+  try {
+    const token = localStorage.getItem('jarvis_token') || '';
+    const res = await fetch('http://localhost:3001/search-models', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json','Authorization':`Bearer ${token}`},
+      body: JSON.stringify({ query })
+    });
+    const data = await res.json();
+    setLoading(false);
+    const results = data.results || [];
+    if (results.length > 0) {
+      showModelPicker(results, query);
+      return true;
+    } else {
+      notify('No models found — building from primitives');
+      document.getElementById('stat-mode').textContent = 'BUILD';
+      return false;
+    }
+  } catch(e) {
+    setLoading(false);
+    notify('Search unavailable — building from primitives');
+    return false;
+  }
+}
+
+function showModelPicker(results, query) {
+  document.getElementById('picker-title').textContent = `Models for "${query}"`;
+  const list = document.getElementById('model-results-list');
+  list.innerHTML = '';
+  results.forEach(r => {
+    const item = document.createElement('div');
+    item.className = 'model-result-item';
+    item.innerHTML = `
+      ${r.thumbnail ? `<img class="model-result-thumb" src="${r.thumbnail}" onerror="this.style.display='none'">` : '<div class="model-result-thumb" style="display:flex;align-items:center;justify-content:center;font-size:22px;color:#00c8ff;opacity:.4">⬡</div>'}
+      <div class="model-result-info">
+        <div class="model-result-name">${r.name||'Unnamed'}</div>
+        <div class="model-result-sub">${r.source||'Unknown source'} · ${(r.downloads||r.likes||0).toLocaleString()} downloads</div>
+      </div>
+      <div class="model-result-badge">${r.format||'GLB'}</div>
+    `;
+    item.onclick = () => {
+      closeModelPicker();
+      if (r.downloadUrl) {
+        loadModelFromUrl(r.downloadUrl, r.name).then(ok => { if(!ok) buildWithPrimitives(query); });
+      } else {
+        notify('No direct download available — building with primitives');
+        buildWithPrimitives(query);
+      }
+    };
+    list.appendChild(item);
+  });
+  document.getElementById('model-picker').classList.add('show');
+}
+
+function closeModelPicker() {
+  document.getElementById('model-picker').classList.remove('show');
+}
+
+function closeAndBuildPrimitives() {
+  closeModelPicker();
+  buildWithPrimitives(currentPickerQuery || 'the requested object');
+}
+
+// ─── BUILD WITH PRIMITIVES ────────────────────────────────────
+async function buildWithPrimitives(query) {
+  setLoading(true, 'Generating geometry...');
+  document.getElementById('stat-mode').textContent = 'BUILD';
+  const token = localStorage.getItem('jarvis_token') || '';
+  try {
+    const res = await fetch('http://localhost:3001/design-command', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json','Authorization':`Bearer ${token}`},
+      body: JSON.stringify({
+        command: `Build a detailed 3D representation of "${query}" using primitive shapes. Use 20-40 parts with precise positions, correct proportions, and appropriate colors. Make it as detailed as possible.`,
+        systemPrompt: `You control a 3D design studio. Build objects from primitive shapes.
+Respond ONLY with valid JSON: {"response":"1 sentence","actions":[...]}
+Use 20-40 add actions. Position all parts logically on Y axis (ground=0).
+Iron Man layout: boots Y=15(X±35), shins Y=55(X±35), thighs Y=110(X±32), hip Y=155, chest Y=210, shoulders Y=240(X±72), upper_arms Y=220(X±95), forearms Y=178(X±98), hands Y=138(X±98), neck Y=268, helmet Y=300
+Colors (integers): red=13369344, gold=16766720, chrome=15132390, black=853536, blue=52479, white=15921906, orange=16733184, green=3199320`,
+        history: [], parts: [], selectedParts: [], partCount: 0
+      })
+    });
+    const data = await res.json();
+    setLoading(false);
+    if (data.actions?.length) {
+      data.actions.forEach(executeAction);
+      notify(data.response || 'Assembly complete.');
+    }
+    document.getElementById('stat-mode').textContent = 'PRIM';
+  } catch(e) {
+    setLoading(false);
+    document.getElementById('stat-mode').textContent = 'ERR';
+    addMsg('jarvis', 'Build failed — check server connection.');
+  }
+}
+
+// ─── STL EXPORT ───────────────────────────────────────────────
+function exportSTL() {
+  if (!Object.keys(parts).length) { notify('No primitive geometry to export'); return; }
+  const lines = ['solid jarvis_design'];
+  Object.values(parts).forEach(({mesh}) => {
+    const geo = mesh.geometry.clone();
+    geo.applyMatrix4(mesh.matrixWorld);
+    const pos = geo.attributes.position;
+    for (let i=0;i<pos.count;i+=3) {
+      const v=[0,1,2].map(j=>new THREE.Vector3().fromBufferAttribute(pos,i+j));
+      const n=new THREE.Vector3().crossVectors(v[1].clone().sub(v[0]),v[2].clone().sub(v[0])).normalize();
+      lines.push(`facet normal ${n.x} ${n.y} ${n.z}`,`  outer loop`,
+        ...v.map(vv=>`    vertex ${vv.x} ${vv.y} ${vv.z}`),`  endloop`,`endfacet`);
+    }
+  });
+  lines.push('endsolid jarvis_design');
+  const blob = new Blob([lines.join('\n')],{type:'text/plain'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'jarvis_design.stl'; a.click();
+  notify('STL exported');
+}
+
+// ─── UTILS ────────────────────────────────────────────────────
+let notifTimer;
+function notify(text) {
+  const el = document.getElementById('notification');
+  el.textContent = text; el.classList.add('show');
+  clearTimeout(notifTimer);
+  notifTimer = setTimeout(()=>el.classList.remove('show'), 3200);
+}
+function setLoading(show, text='Processing...') {
+  document.getElementById('loading-text').textContent = text;
+  document.getElementById('loading-overlay').classList.toggle('show', show);
+}
+
+// ─── CHAT ─────────────────────────────────────────────────────
+const chatEl = document.getElementById('chat-messages');
+let history = [];
+let thinkingEl = null;
+
+function addMsg(role, text) {
+  const d = document.createElement('div');
+  d.className = `msg ${role}`;
+  d.innerHTML = `<div class="msg-sender">${role==='user'?'STARK':'JARVIS'}</div><div class="msg-text">${text}</div>`;
+  chatEl.appendChild(d); chatEl.scrollTop = chatEl.scrollHeight;
+  return d;
+}
+function showThinking() {
+  thinkingEl = document.createElement('div');
+  thinkingEl.className = 'msg jarvis';
+  thinkingEl.innerHTML = `<div class="msg-sender">JARVIS</div><div class="msg-text"><div class="thinking-dots"><span></span><span></span><span></span></div></div>`;
+  chatEl.appendChild(thinkingEl); chatEl.scrollTop = chatEl.scrollHeight;
+}
+function hideThinking() { if(thinkingEl){thinkingEl.remove();thinkingEl=null;} }
+
+async function sendCommand() {
+  const input = document.getElementById('chat-input');
+  const cmd = input.value.trim(); if(!cmd) return;
+  input.value = '';
+  addMsg('user', cmd);
+  showThinking();
+  document.getElementById('stat-sys').textContent = 'PROC..';
+
+  const currentParts = Object.keys(parts).map(name => ({
+    name,
+    color: '#'+(parts[name].colorProps?.hex||0x00c8ff).toString(16).padStart(6,'0'),
+    position: parts[name].mesh.position.toArray().map(v=>Math.round(v))
+  }));
+
+  const systemPrompt = `You are JARVIS, Tony Stark's AI, controlling a real-time 3D design studio that can LOAD REAL 3D MODELS or BUILD FROM PRIMITIVES.
+
+Current scene: ${currentParts.length} primitive parts${loadedModel?' + 1 loaded 3D model':''}.
+${currentParts.length?'Parts:\n'+currentParts.map(p=>`- ${p.name} at [${p.position}]`).join('\n'):'Scene is empty.'}
+Selected: ${Array.from(selectedParts).join(', ')||'none'}
+
+DECISION: When user asks to design/make/build something:
+- If it's a recognizable real-world object (vehicle, character, building, animal, product): set "search_query" to find a real 3D model
+- If it's abstract, custom, or simple: use primitive add actions only
+- You can do both: search_query + actions (to add details on top of a model)
+
+Respond ONLY with valid JSON:
+{
+  "response": "JARVIS-style 1-sentence response",
+  "search_query": "specific search query for 3D model (optional, omit if not needed)",
+  "actions": []
+}
+
+Primitive action types:
+{"type":"add","shape":"box|sphere|cylinder|cone|torus|capsule","name":"Part","color":13369344,"size":40,"position":[0,200,0]}
+{"type":"color","parts":["Name"],"color":16766720}
+{"type":"material","parts":["Name"],"preset":"chrome|gold|matte|arc|red|glass"}
+{"type":"scale","parts":["Name"],"factor":1.3}
+{"type":"rotate","parts":["Name"],"axis":"y","degrees":45}
+{"type":"delete","parts":["Name"]}
+{"type":"clear"}
+
+Colors: arc_blue=52479, iron_red=13369344, gold=16766720, chrome=15132390, black=853536, white=15921906, orange=16733184, green=3199320, purple=7746798
+
+For primitives: use 20-40 parts, precise Y positions, realistic proportions.
+Return ONLY valid JSON — no markdown.`;
+
+  history.push({role:'user',content:cmd});
+
+  try {
+    const token = localStorage.getItem('jarvis_token') || '';
+    const res = await fetch('http://localhost:3001/design-command', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json','Authorization':`Bearer ${token}`},
+      body: JSON.stringify({ command:cmd, systemPrompt, history, parts:currentParts, selectedParts:Array.from(selectedParts), partCount:currentParts.length })
+    });
+    const data = await res.json();
+    hideThinking();
+    addMsg('jarvis', data.response || 'Understood.');
+    history.push({role:'assistant',content:JSON.stringify(data)});
+    if (history.length>20) history=history.slice(-20);
+
+    // Execute primitive actions first
+    if (data.actions?.length) data.actions.forEach(executeAction);
+
+    // Then search for model if requested
+    if (data.search_query) {
+      addMsg('jarvis', `Scanning for "${data.search_query}"...`);
+      const found = await searchAndShowModels(data.search_query);
+      if (!found && !data.actions?.length) {
+        // No model found and no primitives — build with primitives
+        await buildWithPrimitives(cmd);
+      }
+    }
+
+    document.getElementById('stat-sys').textContent = 'ONLINE';
+  } catch(err) {
+    hideThinking();
+    processLocally(cmd);
+    document.getElementById('stat-sys').textContent = 'LOCAL';
+    addMsg('jarvis', 'Local mode — server offline.');
+  }
+}
+
+function executeAction(action) {
+  switch(action.type) {
+    case 'add':
+      addPrimShape(action.shape||'box',{name:action.name,color:action.color,size:action.size||30,position:action.position||[0,15,0]});
+      break;
+    case 'color':
+      (action.parts?.length?action.parts:Array.from(selectedParts)).forEach(n=>{
+        if(parts[n]){parts[n].colorProps={hex:action.color,metalness:.85,roughness:.12};parts[n].mesh.material.color.setHex(action.color);}
+      }); updateUI(); break;
+    case 'material':
+      (action.parts?.length?action.parts:Array.from(selectedParts)).forEach(n=>{if(parts[n])selectedParts.add(n);});
+      applyMaterial(action.preset); break;
+    case 'scale':
+      (action.parts?.length?action.parts:Array.from(selectedParts)).forEach(n=>{if(parts[n])parts[n].mesh.scale.multiplyScalar(action.factor||1.2);}); break;
+    case 'rotate':
+      (action.parts?.length?action.parts:Array.from(selectedParts)).forEach(n=>{if(parts[n])parts[n].mesh.rotation[action.axis||'y']+=(action.degrees||15)*Math.PI/180;}); break;
+    case 'delete':
+      (action.parts||[]).forEach(n=>{if(parts[n]){pivot.remove(parts[n].mesh);delete parts[n];selectedParts.delete(n);}});
+      updateUI(); break;
+    case 'clear': clearScene(); break;
+    case 'select': selectedParts.clear();(action.parts||[]).forEach(n=>selectedParts.add(n));updateUI(); break;
+  }
+}
+
+function processLocally(cmd) {
+  const c=cmd.toLowerCase();
+  const cm={red:0xcc1111,gold:0xffd060,blue:0x00c8ff,white:0xf0f4f8,black:0x0d1420,silver:0xe8f0f8,orange:0xff6600,green:0x00cc66};
+  for(const[n,h]of Object.entries(cm)){if(c.includes(n)){const t=c.includes('all')?Object.keys(parts):Array.from(selectedParts);t.forEach(p=>{if(parts[p]){parts[p].mesh.material.color.setHex(h);parts[p].colorProps={hex:h,metalness:.85,roughness:.12};}});updateUI();return;}}
+  if(c.includes('clear')){clearScene();return;}
+  ['box','sphere','cylinder','cone','torus','capsule'].forEach(s=>{if(c.includes(s))addPrimShape(s);});
+}
+
+document.getElementById('chat-input').addEventListener('keydown', e=>{
+  if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendCommand();}
+});
+
+// ─── ANIMATION ────────────────────────────────────────────────
+let time = 0;
+const ease = 0.075;
+
+function animate() {
+  requestAnimationFrame(animate);
+  time += 0.01;
+  rotX+=(tRotX-rotX)*ease; rotY+=(tRotY-rotY)*ease;
+  panX+=(tPanX-panX)*ease; panY+=(tPanY-panY)*ease;
+  zoom+=(tZoom-zoom)*ease;
+  pivot.rotation.x = rotX*Math.PI/180;
+  pivot.rotation.y = rotY*Math.PI/180;
+  pivot.position.x = -panX; pivot.position.y = -panY;
+  camera.position.z = zoom;
+  arcLight.intensity = 3.5+Math.sin(time*2)*1.2;
+  arcLight.position.x = Math.sin(time*.4)*40;
+  Object.entries(parts).forEach(([n,p])=>{
+    if(selectedParts.has(n)){
+      p.mesh.material.emissiveIntensity=.12+Math.sin(time*4)*.04;
+      p.mesh.material.emissive.setHex(0x003a55);
+    } else if(!p.colorProps?.emissive){
+      p.mesh.material.emissiveIntensity=0;
+    }
+  });
+  renderer.render(scene, camera);
+}
+
+animate(); updateUI();
+setTimeout(()=>addMsg('jarvis','Systems online. Describe anything to design — I\'ll find a model or build it.'), 500);
+</script>
+</body>
+</html>

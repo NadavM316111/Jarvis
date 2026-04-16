@@ -1,0 +1,396 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calorie Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            color: #fff;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+            background: linear-gradient(90deg, #00d9ff, #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .subtitle {
+            text-align: center;
+            color: #888;
+            margin-bottom: 30px;
+        }
+        .input-section {
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        input[type="text"] {
+            flex: 1;
+            padding: 15px 20px;
+            border: none;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.3s;
+        }
+        input[type="text"]:focus {
+            background: rgba(255,255,255,0.15);
+            box-shadow: 0 0 20px rgba(0,217,255,0.3);
+        }
+        input[type="text"]::placeholder {
+            color: #666;
+        }
+        button {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(90deg, #00d9ff, #00ff88);
+            color: #000;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(0,217,255,0.4);
+        }
+        .clear-btn {
+            background: linear-gradient(90deg, #ff4757, #ff6b81);
+            margin-left: 10px;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            background: linear-gradient(90deg, #00d9ff, #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .stat-label {
+            color: #888;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+        .food-list {
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            padding: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .food-list h3 {
+            margin-bottom: 15px;
+            color: #00d9ff;
+        }
+        .food-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            transition: all 0.3s;
+        }
+        .food-item:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        .food-name {
+            font-weight: 500;
+        }
+        .food-calories {
+            color: #00ff88;
+            font-weight: bold;
+        }
+        .delete-btn {
+            background: none;
+            border: none;
+            color: #ff4757;
+            cursor: pointer;
+            font-size: 18px;
+            padding: 5px 10px;
+        }
+        .empty-state {
+            text-align: center;
+            color: #666;
+            padding: 30px;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 10px;
+            color: #00d9ff;
+        }
+        .suggestions {
+            background: rgba(0,0,0,0.5);
+            border-radius: 10px;
+            margin-top: 5px;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+        }
+        .suggestion-item {
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .suggestion-item:hover {
+            background: rgba(255,255,255,0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ðŸ”¥ Calorie Tracker</h1>
+        <p class="subtitle">Track what you eat, powered by AI</p>
+        
+        <div class="input-section">
+            <div class="input-group">
+                <input type="text" id="foodInput" placeholder="What did you eat? (e.g., 2 eggs, chicken sandwich)">
+                <button onclick="addFood()">Add</button>
+            </div>
+            <div class="loading" id="loading">Looking up calories...</div>
+        </div>
+        
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-value" id="totalCalories">0</div>
+                <div class="stat-label">Total Calories</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="itemCount">0</div>
+                <div class="stat-label">Items Today</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="remaining">2000</div>
+                <div class="stat-label">Remaining</div>
+            </div>
+        </div>
+        
+        <div class="food-list">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h3>Today's Food</h3>
+                <button class="clear-btn" onclick="clearAll()">Clear All</button>
+            </div>
+            <div id="foodItems">
+                <div class="empty-state">No food logged yet. Start by adding what you ate!</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Common food calorie database (per serving/item)
+        const calorieDB = {
+            // Proteins
+            'egg': 78, 'eggs': 78, 'fried egg': 90, 'scrambled egg': 91, 'boiled egg': 78,
+            'chicken breast': 165, 'chicken': 239, 'grilled chicken': 165, 'fried chicken': 320,
+            'chicken thigh': 209, 'chicken wing': 99, 'chicken nuggets': 286,
+            'beef': 250, 'steak': 271, 'ground beef': 254, 'hamburger': 295,
+            'bacon': 43, 'ham': 145, 'turkey': 135, 'fish': 136, 'salmon': 208,
+            'tuna': 132, 'shrimp': 99, 'pork': 242, 'sausage': 301, 'hot dog': 151,
+            
+            // Dairy
+            'milk': 149, 'cheese': 113, 'yogurt': 100, 'greek yogurt': 130,
+            'butter': 102, 'cream cheese': 51, 'cottage cheese': 163, 'ice cream': 207,
+            
+            // Breads & Grains
+            'bread': 79, 'toast': 79, 'bagel': 245, 'croissant': 231, 'muffin': 377,
+            'rice': 206, 'pasta': 220, 'noodles': 220, 'oatmeal': 158, 'cereal': 150,
+            'pancake': 86, 'pancakes': 172, 'waffle': 218, 'tortilla': 94,
+            
+            // Fruits
+            'apple': 95, 'banana': 105, 'orange': 62, 'grapes': 62, 'strawberries': 49,
+            'blueberries': 84, 'watermelon': 46, 'mango': 99, 'pineapple': 82, 'peach': 59,
+            'pear': 102, 'avocado': 240, 'berries': 70,
+            
+            // Vegetables
+            'salad': 20, 'lettuce': 5, 'tomato': 22, 'cucumber': 16, 'carrot': 25,
+            'broccoli': 55, 'spinach': 7, 'corn': 96, 'potato': 161, 'sweet potato': 103,
+            'french fries': 312, 'fries': 312, 'mashed potatoes': 214,
+            
+            // Fast Food & Common Meals
+            'pizza': 285, 'pizza slice': 285, 'burger': 354, 'cheeseburger': 303,
+            'sandwich': 252, 'chicken sandwich': 410, 'taco': 156, 'burrito': 431,
+            'sushi': 200, 'sushi roll': 255, 'ramen': 436, 'soup': 100,
+            'mac and cheese': 310, 'lasagna': 284, 'fried rice': 238,
+            
+            // Snacks
+            'chips': 152, 'popcorn': 31, 'pretzel': 380, 'crackers': 130,
+            'cookie': 49, 'cookies': 98, 'brownie': 132, 'cake': 257, 'donut': 195,
+            'chocolate': 155, 'candy bar': 215, 'candy': 106, 'granola bar': 117,
+            'peanut butter': 188, 'nuts': 172, 'almonds': 164, 'peanuts': 161,
+            
+            // Drinks
+            'coffee': 2, 'latte': 135, 'cappuccino': 80, 'tea': 2,
+            'soda': 140, 'coke': 140, 'pepsi': 150, 'sprite': 140, 'juice': 112,
+            'orange juice': 112, 'apple juice': 114, 'smoothie': 260,
+            'beer': 153, 'wine': 125, 'energy drink': 110,
+            
+            // Breakfast items
+            'cereal with milk': 250, 'french toast': 149, 'breakfast burrito': 290,
+            'omelet': 154, 'omelette': 154, 'hash browns': 164,
+            
+            // Misc
+            'protein shake': 200, 'protein bar': 200, 'soup': 100
+        };
+
+        let foods = JSON.parse(localStorage.getItem('foods') || '[]');
+        const dailyGoal = 2000;
+
+        function findCalories(foodName) {
+            const lower = foodName.toLowerCase().trim();
+            
+            // Check for quantity prefix (e.g., "2 eggs")
+            const match = lower.match(/^(\d+)\s+(.+)$/);
+            let quantity = 1;
+            let food = lower;
+            
+            if (match) {
+                quantity = parseInt(match[1]);
+                food = match[2];
+            }
+            
+            // Direct match
+            if (calorieDB[food]) {
+                return calorieDB[food] * quantity;
+            }
+            
+            // Singular/plural handling
+            const singular = food.endsWith('s') ? food.slice(0, -1) : food;
+            const plural = food + 's';
+            
+            if (calorieDB[singular]) {
+                return calorieDB[singular] * quantity;
+            }
+            if (calorieDB[plural]) {
+                return calorieDB[plural] * quantity;
+            }
+            
+            // Partial match
+            for (let key in calorieDB) {
+                if (food.includes(key) || key.includes(food)) {
+                    return calorieDB[key] * quantity;
+                }
+            }
+            
+            // Default estimate based on meal type keywords
+            if (food.includes('small')) return 150 * quantity;
+            if (food.includes('large')) return 450 * quantity;
+            if (food.includes('meal')) return 600 * quantity;
+            
+            return 200 * quantity; // Default estimate
+        }
+
+        function addFood() {
+            const input = document.getElementById('foodInput');
+            const foodName = input.value.trim();
+            
+            if (!foodName) return;
+            
+            const loading = document.getElementById('loading');
+            loading.style.display = 'block';
+            
+            setTimeout(() => {
+                const calories = findCalories(foodName);
+                
+                foods.push({
+                    name: foodName,
+                    calories: calories,
+                    time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+                });
+                
+                localStorage.setItem('foods', JSON.stringify(foods));
+                updateDisplay();
+                input.value = '';
+                loading.style.display = 'none';
+            }, 300);
+        }
+
+        function deleteFood(index) {
+            foods.splice(index, 1);
+            localStorage.setItem('foods', JSON.stringify(foods));
+            updateDisplay();
+        }
+
+        function clearAll() {
+            if (confirm('Clear all food entries for today?')) {
+                foods = [];
+                localStorage.setItem('foods', JSON.stringify(foods));
+                updateDisplay();
+            }
+        }
+
+        function updateDisplay() {
+            const totalCalories = foods.reduce((sum, f) => sum + f.calories, 0);
+            const remaining = Math.max(0, dailyGoal - totalCalories);
+            
+            document.getElementById('totalCalories').textContent = totalCalories;
+            document.getElementById('itemCount').textContent = foods.length;
+            document.getElementById('remaining').textContent = remaining;
+            
+            const container = document.getElementById('foodItems');
+            
+            if (foods.length === 0) {
+                container.innerHTML = '<div class="empty-state">No food logged yet. Start by adding what you ate!</div>';
+            } else {
+                container.innerHTML = foods.map((food, index) => `
+                    <div class="food-item">
+                        <div>
+                            <span class="food-name">${food.name}</span>
+                            <span style="color: #666; font-size: 0.85rem; margin-left: 10px;">${food.time}</span>
+                        </div>
+                        <div>
+                            <span class="food-calories">${food.calories} cal</span>
+                            <button class="delete-btn" onclick="deleteFood(${index})">âœ•</button>
+                        </div>
+                    </div>
+                `).reverse().join('');
+            }
+        }
+
+        // Enter key support
+        document.getElementById('foodInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') addFood();
+        });
+
+        // Initial display
+        updateDisplay();
+    </script>
+</body>
+</html>

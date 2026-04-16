@@ -34,6 +34,25 @@ MIN_SPEECH_DURATION = 0.4
 is_speaking = False
 stop_speaking = threading.Event()
 
+# Current emotional tone — updated by face monitor events
+current_tone = 'normal'  # normal | upbeat | gentle | calm | reassuring
+
+# Tone → ElevenLabs voice settings mapping
+TONE_SETTINGS = {
+    'normal':       {'stability': 0.50, 'similarity_boost': 0.75, 'style': 0.0},
+    'upbeat and enthusiastic': {'stability': 0.35, 'similarity_boost': 0.80, 'style': 0.3},
+    'gentle and supportive':   {'stability': 0.65, 'similarity_boost': 0.70, 'style': 0.1},
+    'calm and measured':       {'stability': 0.75, 'similarity_boost': 0.65, 'style': 0.0},
+    'calm and reassuring':     {'stability': 0.70, 'similarity_boost': 0.70, 'style': 0.05},
+    'neutral and professional':{'stability': 0.55, 'similarity_boost': 0.75, 'style': 0.0},
+    'engaged and curious':     {'stability': 0.40, 'similarity_boost': 0.80, 'style': 0.2},
+    'clear and helpful':       {'stability': 0.55, 'similarity_boost': 0.75, 'style': 0.0},
+}
+
+def get_voice_settings():
+    settings = TONE_SETTINGS.get(current_tone, TONE_SETTINGS['normal'])
+    return settings
+
 def update_status(listening=False, speaking=False, transcript='', response=''):
     try:
         requests.post(f'{JARVIS_SERVER}/voice-update', json={
@@ -71,11 +90,18 @@ def speak(text):
         print(f"\nJARVIS: {text}")
         t0 = time.time()
 
+        vs = get_voice_settings()
+
         audio = elevenlabs_client.text_to_speech.convert(
             voice_id=VOICE_ID,
             text=text[:500],
             model_id='eleven_monolingual_v1',
-            voice_settings={'stability': 0.5, 'similarity_boost': 0.75}
+            voice_settings={
+                'stability': vs['stability'],
+                'similarity_boost': vs['similarity_boost'],
+                'style': vs.get('style', 0.0),
+                'use_speaker_boost': True
+            }
         )
 
         tmp_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), f'speech_{int(time.time())}.mp3')
@@ -84,7 +110,7 @@ def speak(text):
                 if chunk:
                     f.write(chunk)
 
-        print(f"[ElevenLabs took {time.time()-t0:.1f}s]")
+        print(f"[ElevenLabs took {time.time()-t0:.1f}s, tone: {current_tone}]")
 
         pygame.mixer.init()
         pygame.mixer.music.load(tmp_path)
@@ -257,12 +283,38 @@ def calibrate():
         return threshold
     return 300
 
+def poll_face_greeting():
+    """Background thread — polls /face-greeting every 2s.
+    When face_monitor.py detects Nadav, the server queues a greeting here.
+    voice.py speaks it immediately."""
+    global current_tone
+    while True:
+        try:
+            res = requests.get(f'{JARVIS_SERVER}/face-greeting', timeout=3)
+            data = res.json()
+            greeting = data.get('greeting')
+            tone = data.get('tone')
+
+            if tone:
+                current_tone = tone
+                print(f"[FACE] Tone updated: {current_tone}")
+
+            if greeting and not is_speaking:
+                print(f"[FACE] Speaking greeting: {greeting}")
+                speak_thread = threading.Thread(target=speak, args=(greeting,))
+                speak_thread.daemon = True
+                speak_thread.start()
+        except:
+            pass
+        time.sleep(2)
+
 def main():
     global SILENCE_THRESHOLD
 
     print("=" * 50)
     print("  JARVIS Voice")
     print("  Always listening")
+    print("  Face greeting: active")
     print("  Press Ctrl+C to quit")
     print("=" * 50)
 
@@ -273,6 +325,10 @@ def main():
         print("WARNING: JARVIS server not running.")
 
     SILENCE_THRESHOLD = calibrate()
+
+    # Start face greeting polling in background
+    greeting_thread = threading.Thread(target=poll_face_greeting, daemon=True)
+    greeting_thread.start()
 
     speak("JARVIS online. Ready for your command, Nadav.")
 

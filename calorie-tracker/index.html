@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FUEL - Cinematic Calorie Tracker</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="scanlines"></div>
+    <div class="vignette"></div>
+    
+    <div class="container">
+        <header class="header">
+            <div class="logo">
+                <span class="logo-icon">F</span>
+                <span class="logo-text">FUEL</span>
+            </div>
+            <div class="date-display" id="currentDate"></div>
+        </header>
+
+        <main class="main-content">
+            <section class="stats-panel">
+                <div class="circular-progress" id="mainProgress">
+                    <svg class="progress-ring" viewBox="0 0 200 200">
+                        <defs>
+                            <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#00f0ff;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#0080ff;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <circle class="progress-ring-bg" cx="100" cy="100" r="85"/>
+                        <circle class="progress-ring-fill" cx="100" cy="100" r="85" id="progressRing"/>
+                    </svg>
+                    <div class="progress-content">
+                        <span class="calories-consumed" id="caloriesConsumed">0</span>
+                        <span class="calories-label">CALORIES</span>
+                        <span class="calories-remaining" id="caloriesRemaining">2000 remaining</span>
+                    </div>
+                </div>
+
+                <div class="macro-stats">
+                    <div class="macro-card protein">
+                        <div class="macro-icon">P</div>
+                        <div class="macro-info">
+                            <span class="macro-value" id="proteinValue">0g</span>
+                            <span class="macro-label">PROTEIN</span>
+                            <div class="macro-bar"><div class="macro-fill" id="proteinBar"></div></div>
+                        </div>
+                    </div>
+                    <div class="macro-card carbs">
+                        <div class="macro-icon">C</div>
+                        <div class="macro-info">
+                            <span class="macro-value" id="carbsValue">0g</span>
+                            <span class="macro-label">CARBS</span>
+                            <div class="macro-bar"><div class="macro-fill" id="carbsBar"></div></div>
+                        </div>
+                    </div>
+                    <div class="macro-card fats">
+                        <div class="macro-icon">F</div>
+                        <div class="macro-info">
+                            <span class="macro-value" id="fatsValue">0g</span>
+                            <span class="macro-label">FATS</span>
+                            <div class="macro-bar"><div class="macro-fill" id="fatsBar"></div></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="input-panel">
+                <h2 class="section-title">
+                    <span class="title-decorator"></span>
+                    ADD FUEL
+                    <span class="title-decorator"></span>
+                </h2>
+                
+                <div class="input-group">
+                    <input type="text" id="foodName" placeholder="Food item..." class="cyber-input">
+                    <div class="input-row">
+                        <input type="number" id="calories" placeholder="Calories" class="cyber-input small">
+                        <input type="number" id="protein" placeholder="Protein (g)" class="cyber-input small">
+                        <input type="number" id="carbs" placeholder="Carbs (g)" class="cyber-input small">
+                        <input type="number" id="fats" placeholder="Fats (g)" class="cyber-input small">
+                    </div>
+                    <button class="add-btn" id="addFood">
+                        <span class="btn-text">LOG ENTRY</span>
+                        <span class="btn-glow"></span>
+                    </button>
+                </div>
+
+                <div class="quick-add">
+                    <span class="quick-label">QUICK ADD:</span>
+                    <button class="quick-btn" data-calories="150" data-protein="1" data-carbs="35" data-fats="0" data-name="Apple">Apple</button>
+                    <button class="quick-btn" data-calories="285" data-protein="26" data-carbs="0" data-fats="19" data-name="Chicken Breast">Chicken</button>
+                    <button class="quick-btn" data-calories="220" data-protein="8" data-carbs="45" data-fats="1" data-name="Rice Bowl">Rice</button>
+                    <button class="quick-btn" data-calories="95" data-protein="5" data-carbs="12" data-fats="2" data-name="Protein Shake">Shake</button>
+                </div>
+            </section>
+
+            <section class="log-panel">
+                <h2 class="section-title">
+                    <span class="title-decorator"></span>
+                    TODAY'S LOG
+                    <span class="title-decorator"></span>
+                </h2>
+                <div class="food-log" id="foodLog">
+                    <div class="empty-state">
+                        <div class="empty-icon">[]</div>
+                        <p>No entries logged yet</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <div class="goal-setting">
+                <span>DAILY TARGET:</span>
+                <input type="number" id="dailyGoal" value="2000" class="goal-input">
+                <span>CAL</span>
+            </div>
+            <button class="reset-btn" id="resetDay">RESET DAY</button>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

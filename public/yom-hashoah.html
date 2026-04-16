@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yom HaShoah - Holocaust Remembrance Day</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0a0a0a;
+            color: #e8e8e8;
+            font-family: 'Cormorant Garamond', serif;
+            overflow-x: hidden;
+        }
+
+        /* Cinematic Intro */
+        #intro {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .intro-quote {
+            position: absolute;
+            text-align: center;
+            opacity: 0;
+            max-width: 80%;
+            padding: 20px;
+        }
+
+        .intro-quote p {
+            font-size: 2.5rem;
+            font-style: italic;
+            color: #d4af37;
+            text-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
+            line-height: 1.6;
+        }
+
+        .intro-quote .author {
+            font-size: 1.2rem;
+            color: #888;
+            margin-top: 20px;
+            font-style: normal;
+        }
+
+        .intro-year {
+            position: absolute;
+            font-family: 'Cinzel', serif;
+            font-size: 8rem;
+            color: #1a1a1a;
+            opacity: 0;
+            text-shadow: 0 0 100px rgba(139, 0, 0, 0.5);
+        }
+
+        /* Main Content */
+        #main-content {
+            display: none;
+            opacity: 0;
+        }
+
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            position: relative;
+            background: linear-gradient(to bottom, #000 0%, #1a1a1a 100%);
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Bundesarchiv_Bild_183-N0827-318%2C_KZ_Auschwitz%2C_Ankunft_ungarischer_Juden.jpg/1280px-Bundesarchiv_Bild_183-N0827-318%2C_KZ_Auschwitz%2C_Ankunft_ungarischer_Juden.jpg') center/cover;
+            opacity: 0.15;
+            filter: grayscale(100%);
+        }
+
+        .hero-content {
+            text-align: center;
+            z-index: 10;
+            animation: fadeInUp 2s ease;
+        }
+
+        .hero h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 4rem;
+            color: #d4af37;
+            text-shadow: 0 0 50px rgba(212, 175, 55, 0.4);
+            margin-bottom: 20px;
+            letter-spacing: 8px;
+        }
+
+        .hero .subtitle {
+            font-size: 1.8rem;
+            color: #aaa;
+            margin-bottom: 10px;
+        }
+
+        .hero .hebrew {
+            font-size: 3rem;
+            color: #d4af37;
+            margin-bottom: 30px;
+            direction: rtl;
+        }
+
+        .hero .date {
+            font-size: 1.2rem;
+            color: #666;
+            letter-spacing: 3px;
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: bounce 2s infinite;
+        }
+
+        .scroll-indicator span {
+            display: block;
+            width: 20px;
+            height: 20px;
+            border-right: 2px solid #d4af37;
+            border-bottom: 2px solid #d4af37;
+            transform: rotate(45deg);
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(10px); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Section Styling */
+        section {
+            padding: 100px 10%;
+            position: relative;
+        }
+
+        .section-title {
+            font-family: 'Cinzel', serif;
+            font-size: 2.5rem;
+            color: #d4af37;
+            text-align: center;
+            margin-bottom: 60px;
+            letter-spacing: 5px;
+        }
+
+        /* History Cards */
+        .history-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .history-card {
+            background: linear-gradient(145deg, #1a1a1a 0%, #0d0d0d 100%);
+            border: 1px solid #333;
+            border-radius: 10px;
+            overflow: hidden;
+            transition: all 0.5s ease;
+            position: relative;
+        }
+
+        .history-card:hover {
+            transform: translateY(-10px);
+            border-color: #d4af37;
+            box-shadow: 0 20px 60px rgba(212, 175, 55, 0.2);
+        }
+
+        .history-card img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            filter: grayscale(100%);
+            transition: filter 0.5s ease;
+        }
+
+        .history-card:hover img {
+            filter: grayscale(50%);
+        }
+
+        .history-card .card-content {
+            padding: 30px;
+        }
+
+        .history-card h3 {
+            font-family: 'Cinzel', serif;
+            color: #d4af37;
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+        }
+
+        .history-card p {
+            color: #aaa;
+            line-height: 1.8;
+            font-size: 1.1rem;
+        }
+
+        /* Timeline */
+        .timeline-section {
+            background: linear-gradient(to bottom, #0d0d0d 0%, #1a1a1a 50%, #0d0d0d 100%);
+        }
+
+        .timeline {
+            position: relative;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2px;
+            height: 100%;
+            background: linear-gradient(to bottom, transparent, #d4af37, transparent);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 60px;
+            display: flex;
+            align-items: center;
+        }
+
+        .timeline-item:nth-child(odd) {
+            flex-direction: row-reverse;
+        }
+
+        .timeline-content {
+            width: 45%;
+            padding: 30px;
+            background: rgba(26, 26, 26, 0.9);
+            border: 1px solid #333;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .timeline-content:hover {
+            border-color: #d4af37;
+            box-shadow: 0 10px 40px rgba(212, 175, 55, 0.15);
+        }
+
+        .timeline-year {
+            font-family: 'Cinzel', serif;
+            font-size: 2rem;
+            color: #d4af37;
+            margin-bottom: 10px;
+        }
+
+        .timeline-content h4 {
+            color: #fff;
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+        }
+
+        .timeline-content p {
+            color: #999;
+            line-height: 1.7;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 20px;
+            background: #d4af37;
+            border-radius: 50%;
+            z-index: 10;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+        }
+
+        /* Statistics */
+        .stats-section {
+            background: #000;
+            text-align: center;
+        }
+
+        .stats-grid {
+            display: flex;
+            justify-content: center;
+            gap: 80px;
+            flex-wrap: wrap;
+            margin-top: 40px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-family: 'Cinzel', serif;
+            font-size: 4rem;
+            color: #d4af37;
+            text-shadow: 0 0 30px rgba(212, 175, 55, 0.4);
+        }
+
+        .stat-label {
+            color: #888;
+            font-size: 1.2rem;
+            margin-top: 10px;
+        }
+
+        /* Memorial Candles Preview */
+        .memorial-section {
+            background: linear-gradient(to bottom, #0d0d0d 0%, #000 100%);
+            text-align: center;
+            padding-bottom: 150px;
+        }
+
+        .memorial-preview {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 40px 0;
+            flex-wrap: wrap;
+        }
+
+        .candle {
+            width: 30px;
+            height: 100px;
+            position: relative;
+            animation: flicker 2s ease-in-out infinite alternate;
+        }
+
+        .candle-body {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 60px;
+            background: linear-gradient(to right, #f5f5dc 0%, #fff 50%, #f5f5dc 100%);
+            border-radius: 5px 5px 0 0;
+        }
+
+        .candle-flame {
+            position: absolute;
+            bottom: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 40px;
+            background: linear-gradient(to top, #ff6600 0%, #ffcc00 50%, #fff 100%);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            box-shadow: 0 0 30px #ff9900, 0 0 60px #ff6600;
+            animation: flame 0.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes flicker {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.9; }
+        }
+
+        @keyframes flame {
+            0% { transform: translateX(-50%) scale(1) rotate(-2deg); }
+            100% { transform: translateX(-50%) scale(1.05) rotate(2deg); }
+        }
+
+        .enter-memorial {
+            display: inline-block;
+            margin-top: 50px;
+            padding: 20px 60px;
+            background: transparent;
+            border: 2px solid #d4af37;
+            color: #d4af37;
+            font-family: 'Cinzel', serif;
+            font-size: 1.3rem;
+            letter-spacing: 3px;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            text-decoration: none;
+        }
+
+        .enter-memorial:hover {
+            background: #d4af37;
+            color: #000;
+            box-shadow: 0 0 40px rgba(212, 175, 55, 0.4);
+        }
+
+        .memorial-text {
+            color: #888;
+            font-size: 1.3rem;
+            margin-top: 30px;
+            line-height: 1.8;
+        }
+
+        .memorial-text span {
+            color: #d4af37;
+            font-size: 2rem;
+        }
+
+        /* Footer */
+        footer {
+            background: #000;
+            padding: 40px;
+            text-align: center;
+            border-top: 1px solid #222;
+        }
+
+        footer p {
+            color: #666;
+            font-size: 1rem;
+        }
+
+        footer .hebrew-quote {
+            color: #d4af37;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            direction: rtl;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.5rem; }
+            .hero .hebrew { font-size: 2rem; }
+            .intro-quote p { font-size: 1.5rem; }
+            .timeline::before { left: 20px; }
+            .timeline-item { flex-direction: column !important; }
+            .timeline-content { width: 85%; margin-left: 50px; }
+            .timeline-dot { left: 20px; }
+            .stat-number { font-size: 2.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Cinematic Intro -->
+    <div id="intro">
+        <div class="intro-quote" id="quote1">
+            <p>"Those who cannot remember the past are condemned to repeat it."</p>
+            <div class="author">- George Santayana</div>
+        </div>
+        <div class="intro-quote" id="quote2">
+            <p>"For the dead and the living, we must bear witness."</p>
+            <div class="author">- Elie Wiesel, Holocaust Survivor</div>
+        </div>
+        <div class="intro-quote" id="quote3">
+            <p>"To forget the dead would be akin to killing them a second time."</p>
+            <div class="author">- Elie Wiesel, Night</div>
+        </div>
+        <div class="intro-year" id="year1">1933</div>
+        <div class="intro-year" id="year2">1945</div>
+        <div class="intro-quote" id="quote4">
+            <p>"Six Million"</p>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div id="main-content">
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-content">
+                <div class="hebrew">יום השואה</div>
+                <h1>YOM HASHOAH</h1>
+                <p class="subtitle">Holocaust Remembrance Day</p>
+                <p class="date">NEVER FORGET - NEVER AGAIN</p>
+            </div>
+            <div class="scroll-indicator">
+                <span></span>
+            </div>
+        </section>
+
+        <!-- History Section -->
+        <section class="history-section">
+            <h2 class="section-title">THE HOLOCAUST</h2>
+            <div class="history-grid">
+                <div class="history-card">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Bundesarchiv_Bild_102-14468%2C_Berlin%2C_NS-Boykott_gegen_j%C3%BCdische_Gesch%C3%A4fte.jpg/1280px-Bundesarchiv_Bild_102-14468%2C_Berlin%2C_NS-Boykott_gegen_j%C3%BCdische_Gesch%C3%A4fte.jpg" alt="Nazi Boycott">
+                    <div class="card-content">
+                        <h3>The Rise of Nazi Germany</h3>
+                        <p>In 1933, Adolf Hitler rose to power in Germany. Anti-Jewish laws were enacted, Jewish businesses were boycotted, and the systematic persecution of Jews began. The Nuremberg Laws of 1935 stripped Jews of their citizenship and basic rights.</p>
+                    </div>
+                </div>
+                <div class="history-card">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/Bundesarchiv_Bild_146-1970-083-44%2C_Magdeburg%2C_zerst%C3%B6rtes_j%C3%BCdisches_Gesch%C3%A4ft.jpg/800px-Bundesarchiv_Bild_146-1970-083-44%2C_Magdeburg%2C_zerst%C3%B6rtes_j%C3%BCdisches_Gesch%C3%A4ft.jpg" alt="Kristallnacht">
+                    <div class="card-content">
+                        <h3>Kristallnacht - Night of Broken Glass</h3>
+                        <p>On November 9-10, 1938, Nazi forces and civilians destroyed Jewish synagogues, businesses, and homes across Germany and Austria. Over 30,000 Jewish men were arrested and sent to concentration camps. This marked the beginning of systematic violence.</p>
+                    </div>
+                </div>
+                <div class="history-card">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Stroop_Report_-_Warsaw_Ghetto_Uprising_06b.jpg/800px-Stroop_Report_-_Warsaw_Ghetto_Uprising_06b.jpg" alt="Warsaw Ghetto">
+                    <div class="card-content">
+                        <h3>The Ghettos</h3>
+                        <p>Jews were forced into overcrowded ghettos across occupied Europe. The Warsaw Ghetto held over 400,000 people in an area of just 1.3 square miles. Starvation, disease, and death were constant companions for those trapped inside.</p>
+                    </div>
+                </div>
+                <div class="history-card">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Auschwitz-Birkenau_main_guard_house.jpg/1280px-Auschwitz-Birkenau_main_guard_house.jpg" alt="Auschwitz">
+                    <div class="card-content">
+                        <h3>The Death Camps</h3>
+                        <p>Auschwitz-Birkenau, Treblinka, Sobibor, and other extermination camps became factories of death. Over 1.1 million people were murdered at Auschwitz alone. Gas chambers operated around the clock as the Nazis implemented their "Final Solution."</p>
+                    </div>
+                </div>
+                <div class="history-card">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/71/Buchenwald_Slave_Laborers_Liberation.jpg/1280px-Buchenwald_Slave_Laborers_Liberation.jpg" alt="Liberation">
+                    <div class="card-content">
+                        <h3>Liberation</h3>
+                        <p>As Allied forces advanced in 1945, they liberated the concentration camps and discovered the full horror of Nazi atrocities. Survivors, barely alive, bore witness to the systematic murder of six million Jews - men, women, and children.</p>
+                    </div>
+                </div>
+                <div class="history-card">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Eichmann_in_Jerusalem.jpg/800px-Eichmann_in_Jerusalem.jpg" alt="Justice">
+                    <div class="card-content">
+                        <h3>Justice and Remembrance</h3>
+                        <p>The Nuremberg Trials held Nazi leaders accountable for crimes against humanity. Israel declared Yom HaShoah as Holocaust Remembrance Day. We remember not for vengeance, but so that such evil may never rise again.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Timeline Section -->
+        <section class="timeline-section">
+            <h2 class="section-title">TIMELINE OF TERROR</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="timeline-year">1933</div>
+                        <h4>Hitler Becomes Chancellor</h4>
+                        <p>The Nazi Party seizes power. Dachau, the first concentration camp, opens. Book burnings target Jewish authors.</p>
+                    </div>
+                    <div class="timeline-dot"></div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="timeline-year">1935</div>
+                        <h4>Nuremberg Laws</h4>
+                        <p>Jews are stripped of German citizenship. Marriage between Jews and non-Jews is forbidden. Systematic exclusion begins.</p>
+                    </div>
+                    <div class="timeline-dot"></div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="timeline-year">1938</div>
+                        <h4>Kristallnacht</h4>
+                        <p>The Night of Broken Glass. 267 synagogues destroyed. 7,500 Jewish businesses demolished. 30,000 Jews arrested.</p>
+                    </div>
+                    <div class="timeline-dot"></div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="timeline-year">1941</div>
+                        <h4>The Final Solution</h4>
+                        <p>Mass shootings begin in Eastern Europe. Einsatzgruppen murder over 1 million Jews. Gas vans are introduced.</p>
+                    </div>
+                    <div class="timeline-dot"></div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="timeline-year">1942</div>
+                        <h4>Wannsee Conference</h4>
+                        <p>Nazi officials coordinate the "Final Solution to the Jewish Question." Death camps begin systematic extermination.</p>
+                    </div>
+                    <div class="timeline-dot"></div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="timeline-year">1943</div>
+                        <h4>Warsaw Ghetto Uprising</h4>
+                        <p>Jews fight back against deportation to Treblinka. The uprising is crushed, but becomes a symbol of Jewish resistance.</p>
+                    </div>
+                    <div class="timeline-dot"></div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="timeline-year">1945</div>
+                        <h4>Liberation</h4>
+                        <p>Allied forces liberate the camps. The world witnesses the horror. Six million Jews - two-thirds of European Jewry - have been murdered.</p>
+                    </div>
+                    <div class="timeline-dot"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Statistics Section -->
+        <section class="stats-section">
+            <h2 class="section-title">THE HUMAN COST</h2>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-number">6,000,000</div>
+                    <div class="stat-label">Jews Murdered</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">1,500,000</div>
+                    <div class="stat-label">Children Killed</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">2/3</div>
+                    <div class="stat-label">Of European Jews</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Memorial Candles Section -->
+        <section class="memorial-section">
+            <h2 class="section-title">LIGHT A CANDLE</h2>
+            <p class="memorial-text">
+                Each flame represents a soul lost.<br>
+                <span>6,000,000</span> lives extinguished.<br>
+                6,000,000 stories silenced.
+            </p>
+            <div class="memorial-preview">
+                <div class="candle">
+                    <div class="candle-flame"></div>
+                    <div class="candle-body"></div>
+                </div>
+                <div class="candle">
+                    <div class="candle-flame"></div>
+                    <div class="candle-body"></div>
+                </div>
+                <div class="candle">
+                    <div class="candle-flame"></div>
+                    <div class="candle-body"></div>
+                </div>
+                <div class="candle">
+                    <div class="candle-flame"></div>
+                    <div class="candle-body"></div>
+                </div>
+                <div class="candle">
+                    <div class="candle-flame"></div>
+                    <div class="candle-body"></div>
+                </div>
+                <div class="candle">
+                    <div class="candle-flame"></div>
+                    <div class="candle-body"></div>
+                </div>
+            </div>
+            <a href="memorial-candles.html" class="enter-memorial">ENTER THE MEMORIAL</a>
+            <p class="memorial-text" style="font-size: 1rem; color: #555; margin-top: 20px;">
+                A candle for every soul - 6 million flames of remembrance
+            </p>
+        </section>
+
+        <!-- Footer -->
+        <footer>
+            <p class="hebrew-quote">"Zachor" - Remember</p>
+            <p>In memory of the six million. May their souls be bound in the bond of eternal life.</p>
+        </footer>
+    </div>
+
+    <script>
+        // Cinematic Intro Animation
+        const intro = document.getElementById('intro');
+        const mainContent = document.getElementById('main-content');
+
+        const timeline = [
+            { el: 'quote1', start: 500, duration: 3500 },
+            { el: 'quote2', start: 4500, duration: 3500 },
+            { el: 'quote3', start: 8500, duration: 3500 },
+            { el: 'year1', start: 12500, duration: 1500 },
+            { el: 'year2', start: 14000, duration: 1500 },
+            { el: 'quote4', start: 16000, duration: 3000 }
+        ];
+
+        timeline.forEach(item => {
+            setTimeout(() => {
+                const el = document.getElementById(item.el);
+                el.style.transition = 'opacity 1.5s ease';
+                el.style.opacity = '1';
+                
+                setTimeout(() => {
+                    el.style.opacity = '0';
+                }, item.duration - 1500);
+            }, item.start);
+        });
+
+        // Fade out intro and show main content
+        setTimeout(() => {
+            intro.style.transition = 'opacity 2s ease';
+            intro.style.opacity = '0';
+            
+            setTimeout(() => {
+                intro.style.display = 'none';
+                mainContent.style.display = 'block';
+                setTimeout(() => {
+                    mainContent.style.transition = 'opacity 2s ease';
+                    mainContent.style.opacity = '1';
+                }, 100);
+            }, 2000);
+        }, 19500);
+
+        // Scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.history-card, .timeline-item, .stat-item').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(30px)';
+            el.style.transition = 'all 0.8s ease';
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>

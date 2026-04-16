@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JARVIS Beat Maker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            color: #fff;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #00d4ff, #9b59b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #888;
+            margin-bottom: 30px;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .control-group label {
+            font-size: 0.9rem;
+            color: #aaa;
+        }
+        
+        .control-group input[type="range"] {
+            width: 120px;
+            accent-color: #00d4ff;
+        }
+        
+        .control-group span {
+            font-weight: bold;
+            color: #00d4ff;
+        }
+        
+        .btn {
+            padding: 12px 30px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+        
+        .btn-play {
+            background: linear-gradient(135deg, #00d4ff, #0099cc);
+            color: #000;
+        }
+        
+        .btn-play:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+        }
+        
+        .btn-play.playing {
+            background: linear-gradient(135deg, #ff6b6b, #cc0000);
+        }
+        
+        .btn-clear {
+            background: linear-gradient(135deg, #666, #444);
+            color: #fff;
+        }
+        
+        .btn-clear:hover {
+            transform: scale(1.05);
+        }
+        
+        .grid-container {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            overflow-x: auto;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: 100px repeat(16, 1fr);
+            gap: 4px;
+            min-width: 800px;
+        }
+        
+        .row-label {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 10px;
+            font-weight: bold;
+            font-size: 0.85rem;
+            color: #ccc;
+        }
+        
+        .pad {
+            aspect-ratio: 1;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            border: 2px solid transparent;
+            min-width: 40px;
+            min-height: 40px;
+        }
+        
+        .pad:hover {
+            transform: scale(1.1);
+            z-index: 10;
+        }
+        
+        .pad.active {
+            border-color: #fff;
+            box-shadow: 0 0 15px currentColor;
+        }
+        
+        .pad.playing {
+            transform: scale(1.15);
+            filter: brightness(1.5);
+        }
+        
+        .kick .pad { background: #e74c3c; }
+        .kick .pad.active { background: #ff6b6b; }
+        
+        .snare .pad { background: #f39c12; }
+        .snare .pad.active { background: #f1c40f; }
+        
+        .hihat .pad { background: #2ecc71; }
+        .hihat .pad.active { background: #58d68d; }
+        
+        .openhat .pad { background: #1abc9c; }
+        .openhat .pad.active { background: #48c9b0; }
+        
+        .clap .pad { background: #9b59b6; }
+        .clap .pad.active { background: #bb8fce; }
+        
+        .tom .pad { background: #3498db; }
+        .tom .pad.active { background: #5dade2; }
+        
+        .perc .pad { background: #e91e63; }
+        .perc .pad.active { background: #f48fb1; }
+        
+        .bass .pad { background: #00bcd4; }
+        .bass .pad.active { background: #4dd0e1; }
+        
+        .step-indicator {
+            height: 8px;
+            border-radius: 4px;
+            background: #333;
+            margin-top: 4px;
+        }
+        
+        .step-indicator.current {
+            background: #00d4ff;
+            box-shadow: 0 0 10px #00d4ff;
+        }
+        
+        .presets {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .preset-btn {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .preset-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: #00d4ff;
+        }
+        
+        .beat-indicator {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .beat-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #333;
+            transition: all 0.1s ease;
+        }
+        
+        .beat-dot.active {
+            background: #00d4ff;
+            box-shadow: 0 0 15px #00d4ff;
+        }
+        
+        .beat-dot.downbeat {
+            width: 16px;
+            height: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>JARVIS Beat Maker</h1>
+        <p class="subtitle">Click pads to build your beat, then hit Play</p>
+        
+        <div class="beat-indicator" id="beatIndicator"></div>
+        
+        <div class="controls">
+            <button class="btn btn-play" id="playBtn">Play</button>
+            <button class="btn btn-clear" id="clearBtn">Clear All</button>
+            
+            <div class="control-group">
+                <label>BPM</label>
+                <input type="range" id="bpmSlider" min="60" max="180" value="120">
+                <span id="bpmValue">120</span>
+            </div>
+            
+            <div class="control-group">
+                <label>Swing</label>
+                <input type="range" id="swingSlider" min="0" max="100" value="0">
+                <span id="swingValue">0%</span>
+            </div>
+            
+            <div class="control-group">
+                <label>Volume</label>
+                <input type="range" id="volumeSlider" min="0" max="100" value="70">
+                <span id="volumeValue">70%</span>
+            </div>
+        </div>
+        
+        <div class="grid-container">
+            <div class="grid" id="grid"></div>
+        </div>
+        
+        <div class="presets">
+            <button class="preset-btn" data-preset="hiphop">Hip Hop</button>
+            <button class="preset-btn" data-preset="trap">Trap</button>
+            <button class="preset-btn" data-preset="house">House</button>
+            <button class="preset-btn" data-preset="dnb">Drum & Bass</button>
+            <button class="preset-btn" data-preset="rock">Rock</button>
+            <button class="preset-btn" data-preset="reggaeton">Reggaeton</button>
+        </div>
+    </div>
+
+    <script>
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        const sounds = {
+            kick: { freq: 150, decay: 0.5, type: 'sine' },
+            snare: { freq: 200, decay: 0.2, noise: true },
+            hihat: { freq: 8000, decay: 0.05, noise: true },
+            openhat: { freq: 8000, decay: 0.3, noise: true },
+            clap: { freq: 1500, decay: 0.15, noise: true },
+            tom: { freq: 200, decay: 0.3, type: 'sine' },
+            perc: { freq: 400, decay: 0.1, type: 'triangle' },
+            bass: { freq: 80, decay: 0.4, type: 'sawtooth' }
+        };
+        
+        const rows = [
+            { name: 'Kick', key: 'kick' },
+            { name: 'Snare', key: 'snare' },
+            { name: 'Hi-Hat', key: 'hihat' },
+            { name: 'Open Hat', key: 'openhat' },
+            { name: 'Clap', key: 'clap' },
+            { name: 'Tom', key: 'tom' },
+            { name: 'Perc', key: 'perc' },
+            { name: 'Bass', key: 'bass' }
+        ];
+        
+        const steps = 16;
+        let pattern = {};
+        let isPlaying = false;
+        let currentStep = 0;
+        let intervalId = null;
+        let bpm = 120;
+        let swing = 0;
+        let volume = 0.7;
+        
+        // Initialize pattern
+        rows.forEach(row => {
+            pattern[row.key] = new Array(steps).fill(false);
+        });
+        
+        // Create beat indicator
+        const beatIndicator = document.getElementById('beatIndicator');
+        for (let i = 0; i < steps; i++) {
+            const dot = document.createElement('div');
+            dot.className = 'beat-dot' + (i % 4 === 0 ? ' downbeat' : '');
+            dot.dataset.step = i;
+            beatIndicator.appendChild(dot);
+        }
+        
+        // Create grid
+        const grid = document.getElementById('grid');
+        rows.forEach((row, rowIndex) => {
+            // Row label
+            const label = document.createElement('div');
+            label.className = 'row-label';
+            label.textContent = row.name;
+            grid.appendChild(label);
+            
+            // Pads
+            for (let i = 0; i < steps; i++) {
+                const pad = document.createElement('div');
+                pad.className = 'pad';
+                pad.dataset.row = row.key;
+                pad.dataset.step = i;
+                pad.addEventListener('click', () => togglePad(row.key, i, pad));
+                grid.appendChild(pad);
+            }
+            
+            // Apply row color class
+            const rowPads = grid.querySelectorAll(`[data-row="${row.key}"]`);
+            rowPads.forEach(p => p.parentElement || null);
+        });
+        
+        // Apply row classes for colors
+        rows.forEach(row => {
+            const pads = document.querySelectorAll(`[data-row="${row.key}"]`);
+            pads.forEach(pad => {
+                pad.closest('.grid').classList.add(row.key);
+            });
+        });
+        
+        // Wrap each row with color class
+        document.querySelectorAll('.pad').forEach(pad => {
+            const rowKey = pad.dataset.row;
+            pad.style.background = getComputedStyle(document.documentElement).getPropertyValue('--' + rowKey) || '';
+        });
+        
+        function togglePad(rowKey, step, padElement) {
+            pattern[rowKey][step] = !pattern[rowKey][step];
+            padElement.classList.toggle('active');
+            
+            if (pattern[rowKey][step]) {
+                playSound(rowKey);
+            }
+        }
+        
+        function playSound(soundKey) {
+            const sound = sounds[soundKey];
+            const now = audioCtx.currentTime;
+            
+            const gainNode = audioCtx.createGain();
+            gainNode.connect(audioCtx.destination);
+            gainNode.gain.setValueAtTime(volume, now);
+            gainNode.gain.exponentialDecayTo = function(target, time) {
+                this.gain.exponentialRampToValueAtTime(Math.max(target, 0.001), time);
+            };
+            
+            if (sound.noise) {
+                // Noise-based sounds (snare, hihat, clap)
+                const bufferSize = audioCtx.sampleRate * sound.decay;
+                const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+                const data = buffer.getChannelData(0);
+                
+                for (let i = 0; i < bufferSize; i++) {
+                    data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / bufferSize, 2);
+                }
+                
+                const noise = audioCtx.createBufferSource();
+                noise.buffer = buffer;
+                
+                const filter = audioCtx.createBiquadFilter();
+                filter.type = 'highpass';
+                filter.frequency.value = sound.freq;
+                
+                noise.connect(filter);
+                filter.connect(gainNode);
+                
+                gainNode.gain.exponentialRampToValueAtTime(0.001, now + sound.decay);
+                noise.start(now);
+                
+                // Add tone for snare
+                if (soundKey === 'snare') {
+                    const osc = audioCtx.createOscillator();
+                    const oscGain = audioCtx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(180, now);
+                    osc.frequency.exponentialRampToValueAtTime(80, now + 0.1);
+                    oscGain.gain.setValueAtTime(volume * 0.7, now);
+                    oscGain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+                    osc.connect(oscGain);
+                    oscGain.connect(audioCtx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.1);
+                }
+            } else if (soundKey === 'kick') {
+                // Kick drum with pitch envelope
+                const osc = audioCtx.createOscillator();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(sound.freq, now);
+                osc.frequency.exponentialRampToValueAtTime(40, now + 0.1);
+                
+                gainNode.gain.setValueAtTime(volume, now);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, now + sound.decay);
+                
+                osc.connect(gainNode);
+                osc.start(now);
+                osc.stop(now + sound.decay);
+            } else if (soundKey === 'bass') {
+                // Bass with filter
+                const osc = audioCtx.createOscillator();
+                osc.type = sound.type;
+                osc.frequency.setValueAtTime(sound.freq, now);
+                
+                const filter = audioCtx.createBiquadFilter();
+                filter.type = 'lowpass';
+                filter.frequency.setValueAtTime(400, now);
+                filter.frequency.exponentialRampToValueAtTime(100, now + sound.decay);
+                
+                gainNode.gain.setValueAtTime(volume * 0.8, now);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, now + sound.decay);
+                
+                osc.connect(filter);
+                filter.connect(gainNode);
+                osc.start(now);
+                osc.stop(now + sound.decay);
+            } else {
+                // Other tonal sounds
+                const osc = audioCtx.createOscillator();
+                osc.type = sound.type || 'sine';
+                osc.frequency.setValueAtTime(sound.freq, now);
+                
+                if (soundKey === 'tom') {
+                    osc.frequency.exponentialRampToValueAtTime(80, now + sound.decay);
+                }
+                
+                gainNode.gain.setValueAtTime(volume * 0.6, now);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, now + sound.decay);
+                
+                osc.connect(gainNode);
+                osc.start(now);
+                osc.stop(now + sound.decay);
+            }
+        }
+        
+        function playStep() {
+            // Update beat indicator
+            document.querySelectorAll('.beat-dot').forEach((dot, i) => {
+                dot.classList.toggle('active', i === currentStep);
+            });
+            
+            // Remove playing class from all pads
+            document.querySelectorAll('.pad.playing').forEach(p => p.classList.remove('playing'));
+            
+            // Play sounds and highlight pads for current step
+            rows.forEach(row => {
+                if (pattern[row.key][currentStep]) {
+                    playSound(row.key);
+                    const pad = document.querySelector(`[data-row="${row.key}"][data-step="${currentStep}"]`);
+                    if (pad) pad.classList.add('playing');
+                }
+            });
+            
+            currentStep = (currentStep + 1) % steps;
+        }
+        
+        function startPlaying() {
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            
+            isPlaying = true;
+            document.getElementById('playBtn').textContent = 'Stop';
+            document.getElementById('playBtn').classList.add('playing');
+            
+            const msPerBeat = (60000 / bpm) / 4; // 16th notes
+            
+            playStep();
+            intervalId = setInterval(() => {
+                playStep();
+            }, msPerBeat);
+        }
+        
+        function stopPlaying() {
+            isPlaying = false;
+            document.getElementById('playBtn').textContent = 'Play';
+            document.getElementById('playBtn').classList.remove('playing');
+            
+            if (intervalId) {
+                clearInterval(intervalId);
+                intervalId = null;
+            }
+            
+            currentStep = 0;
+            document.querySelectorAll('.beat-dot').forEach(dot => dot.classList.remove('active'));
+            document.querySelectorAll('.pad.playing').forEach(p => p.classList.remove('playing'));
+        }
+        
+        // Event listeners
+        document.getElementById('playBtn').addEventListener('click', () => {
+            if (isPlaying) {
+                stopPlaying();
+            } else {
+                startPlaying();
+            }
+        });
+        
+        document.getElementById('clearBtn').addEventListener('click', () => {
+            rows.forEach(row => {
+                pattern[row.key] = new Array(steps).fill(false);
+            });
+            document.querySelectorAll('.pad').forEach(pad => pad.classList.remove('active'));
+        });
+        
+        document.getElementById('bpmSlider').addEventListener('input', (e) => {
+            bpm = parseInt(e.target.value);
+            document.getElementById('bpmValue').textContent = bpm;
+            
+            if (isPlaying) {
+                stopPlaying();
+                startPlaying();
+            }
+        });
+        
+        document.getElementById('swingSlider').addEventListener('input', (e) => {
+            swing = parseInt(e.target.value);
+            document.getElementById('swingValue').textContent = swing + '%';
+        });
+        
+        document.getElementById('volumeSlider').addEventListener('input', (e) => {
+            volume = parseInt(e.target.value) / 100;
+            document.getElementById('volumeValue').textContent = e.target.value + '%';
+        });
+        
+        // Presets
+        const presets = {
+            hiphop: {
+                kick: [1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],
+                snare: [0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],
+                hihat: [1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0],
+                openhat: [0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1],
+                clap: [0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],
+                bass: [1,0,0,0,0,0,1,0,1,0,0,0,0,0,1,0]
+            },
+            trap: {
+                kick: [1,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0],
+                snare: [0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],
+                hihat: [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+                openhat: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0],
+                clap: [0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],
+                bass: [1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0]
+            },
+            house: {
+                kick: [1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0],
+                snare: [0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],
+                hihat: [0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0],
+                openhat: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+                clap: [0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],
+                bass: [1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,0]
+            },
+            dnb: {
+                kick: [1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0],
+                snare: [0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],
+                hihat: [1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0],
+                openhat: [0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0],
+                bass: [1,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0]
+            },
+            rock: {
+                kick: [1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0],
+                snare: [0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],
+                hihat: [1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0],
+                tom: [0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1]
+            },
+            reggaeton: {
+                kick: [1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0],
+                snare: [0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1],
+                hihat: [1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0],
+                clap: [0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1]
+            }
+        };
+        
+        document.querySelectorAll('.preset-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const presetName = btn.dataset.preset;
+                const preset = presets[presetName];
+                
+                // Clear all
+                rows.forEach(row => {
+                    pattern[row.key] = new Array(steps).fill(false);
+                });
+                document.querySelectorAll('.pad').forEach(pad => pad.classList.remove('active'));
+                
+                // Apply preset
+                Object.keys(preset).forEach(rowKey => {
+                    preset[rowKey].forEach((val, step) => {
+                        pattern[rowKey][step] = val === 1;
+                        if (val === 1) {
+                            const pad = document.querySelector(`[data-row="${rowKey}"][data-step="${step}"]`);
+                            if (pad) pad.classList.add('active');
+                        }
+                    });
+                });
+                
+                // Set appropriate BPM
+                const bpmMap = { hiphop: 90, trap: 140, house: 128, dnb: 174, rock: 110, reggaeton: 95 };
+                if (bpmMap[presetName]) {
+                    bpm = bpmMap[presetName];
+                    document.getElementById('bpmSlider').value = bpm;
+                    document.getElementById('bpmValue').textContent = bpm;
+                    
+                    if (isPlaying) {
+                        stopPlaying();
+                        startPlaying();
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

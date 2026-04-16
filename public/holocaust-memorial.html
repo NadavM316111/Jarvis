@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yom HaShoah - Holocaust Remembrance Day</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Cinzel:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --gold: #d4af37;
+            --gold-light: #f4e4bc;
+            --dark: #0a0a0a;
+            --darker: #050505;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Cormorant Garamond', serif;
+            background: var(--dark);
+            color: #e8e8e8;
+            overflow-x: hidden;
+            line-height: 1.8;
+        }
+
+        /* NAMES BACKGROUND - MORE VISIBLE */
+        #names-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .floating-name {
+            position: absolute;
+            font-family: 'Cormorant Garamond', serif;
+            color: #d4af37;
+            white-space: nowrap;
+            animation: floatUp linear infinite;
+            will-change: transform, opacity;
+        }
+
+        .floating-name.layer-back {
+            font-size: 14px;
+            opacity: 0.08;
+            filter: blur(1px);
+        }
+
+        .floating-name.layer-mid {
+            font-size: 18px;
+            opacity: 0.12;
+        }
+
+        .floating-name.layer-front {
+            font-size: 22px;
+            opacity: 0.18;
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(100vh) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: var(--target-opacity);
+            }
+            90% {
+                opacity: var(--target-opacity);
+            }
+            100% {
+                transform: translateY(-100px) translateX(20px);
+                opacity: 0;
+            }
+        }
+
+        /* INTRO SEQUENCE */
+        #intro {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--darker);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        #intro.fade-out {
+            animation: introFadeOut 2s ease-out forwards;
+        }
+
+        @keyframes introFadeOut {
+            to {
+                opacity: 0;
+                visibility: hidden;
+            }
+        }
+
+        .intro-quote {
+            position: absolute;
+            text-align: center;
+            padding: 40px;
+            opacity: 0;
+            max-width: 900px;
+        }
+
+        .intro-quote p {
+            font-size: 2rem;
+            font-style: italic;
+            color: var(--gold-light);
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .intro-quote cite {
+            font-size: 1.2rem;
+            color: var(--gold);
+        }
+
+        .six-million {
+            position: absolute;
+            font-family: 'Cinzel', serif;
+            font-size: 5rem;
+            font-weight: 600;
+            color: #ffffff;
+            opacity: 0;
+            text-align: center;
+            letter-spacing: 0.3em;
+        }
+
+        @keyframes quoteIn {
+            0% { opacity: 0; transform: translateY(30px); }
+            20% { opacity: 1; transform: translateY(0); }
+            80% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-30px); }
+        }
+
+        @keyframes sixMillionIn {
+            0% { opacity: 0; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        #skip-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: transparent;
+            border: 1px solid rgba(212, 175, 55, 0.5);
+            color: var(--gold);
+            padding: 10px 25px;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1rem;
+            cursor: pointer;
+            z-index: 10001;
+            transition: all 0.3s ease;
+        }
+
+        #skip-btn:hover {
+            background: rgba(212, 175, 55, 0.1);
+            border-color: var(--gold);
+        }
+
+        /* SOUND TOGGLE */
+        #sound-toggle {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            background: transparent;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            color: var(--gold);
+            padding: 10px 15px;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 0.9rem;
+            cursor: pointer;
+            z-index: 1000;
+            transition: all 0.3s ease;
+            opacity: 0;
+        }
+
+        #sound-toggle.visible {
+            opacity: 1;
+        }
+
+        /* MAIN CONTENT */
+        #main-content {
+            opacity: 0;
+            visibility: hidden;
+            position: relative;
+            z-index: 1;
+        }
+
+        #main-content.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* HERO */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 40px 20px;
+            position: relative;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(ellipse at center, transparent 0%, var(--dark) 70%);
+            pointer-events: none;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 4rem;
+            font-weight: 400;
+            color: var(--gold);
+            margin-bottom: 20px;
+            letter-spacing: 0.15em;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 1.5s ease forwards 0.5s;
+        }
+
+        .hero .hebrew {
+            font-size: 3rem;
+            margin-bottom: 30px;
+            color: var(--gold-light);
+            opacity: 0;
+            animation: fadeInUp 1.5s ease forwards 1s;
+        }
+
+        .hero .subtitle {
+            font-size: 1.5rem;
+            color: #aaa;
+            max-width: 600px;
+            opacity: 0;
+            animation: fadeInUp 1.5s ease forwards 1.5s;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* SECTIONS */
+        section {
+            padding: 100px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .section-divider {
+            width: 100px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            margin: 0 auto 60px;
+            opacity: 0;
+            transition: opacity 1s ease, width 1s ease;
+        }
+
+        .section-divider.visible {
+            opacity: 1;
+            width: 200px;
+        }
+
+        h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 2.5rem;
+            color: var(--gold);
+            text-align: center;
+            margin-bottom: 60px;
+            letter-spacing: 0.1em;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 1s ease;
+        }
+
+        h2.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* HISTORY CARDS */
+        .history-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 40px;
+            margin-top: 40px;
+        }
+
+        .history-card {
+            background: linear-gradient(145deg, rgba(20,20,20,0.9), rgba(10,10,10,0.9));
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 8px;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.8s ease;
+        }
+
+        .history-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .history-card:hover {
+            border-color: rgba(212, 175, 55, 0.5);
+            box-shadow: 0 0 40px rgba(212, 175, 55, 0.1);
+        }
+
+        .card-header {
+            height: 200px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-visual {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            background: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%);
+            position: relative;
+        }
+
+        .card-visual::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent 40%, rgba(212,175,55,0.1) 50%, transparent 60%);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .card-content {
+            padding: 30px;
+        }
+
+        .card-content h3 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.4rem;
+            color: var(--gold);
+            margin-bottom: 15px;
+        }
+
+        .card-content p {
+            color: #bbb;
+            font-size: 1.1rem;
+        }
+
+        /* TIMELINE */
+        .timeline {
+            position: relative;
+            padding: 40px 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, transparent, var(--gold), transparent);
+            transform: translateX(-50%);
+        }
+
+        .timeline-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 60px;
+            opacity: 0;
+            transition: all 0.8s ease;
+        }
+
+        .timeline-item.visible {
+            opacity: 1;
+        }
+
+        .timeline-item:nth-child(odd) {
+            flex-direction: row;
+            transform: translateX(-50px);
+        }
+
+        .timeline-item:nth-child(even) {
+            flex-direction: row-reverse;
+            transform: translateX(50px);
+        }
+
+        .timeline-item.visible:nth-child(odd),
+        .timeline-item.visible:nth-child(even) {
+            transform: translateX(0);
+        }
+
+        .timeline-content {
+            flex: 1;
+            padding: 30px;
+            background: rgba(20,20,20,0.8);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 8px;
+            margin: 0 40px;
+        }
+
+        .timeline-node {
+            width: 20px;
+            height: 20px;
+            background: var(--gold);
+            border-radius: 50%;
+            position: relative;
+            z-index: 2;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+        }
+
+        .timeline-year {
+            font-family: 'Cinzel', serif;
+            font-size: 1.8rem;
+            color: var(--gold);
+            margin-bottom: 10px;
+        }
+
+        .timeline-text {
+            color: #bbb;
+            font-size: 1.1rem;
+        }
+
+        /* CANDLES SECTION */
+        .candles-section {
+            text-align: center;
+            padding: 150px 20px;
+            background: linear-gradient(to bottom, var(--dark), var(--darker));
+        }
+
+        .candles-row {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin: 60px 0;
+            flex-wrap: wrap;
+        }
+
+        .candle-wrapper {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+        }
+
+        .candle-wrapper.lit {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .candle {
+            width: 60px;
+            height: 150px;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .candle:hover {
+            transform: scale(1.1);
+        }
+
+        .flame {
+            position: absolute;
+            top: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 40px;
+            background: linear-gradient(to top, #ff6600, #ffcc00, #fff);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            animation: flicker 0.5s ease-in-out infinite alternate;
+            box-shadow: 0 0 30px #ff9900, 0 0 60px #ff6600, 0 0 90px #ff3300;
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+
+        .candle-wrapper.lit .flame {
+            opacity: 1;
+        }
+
+        @keyframes flicker {
+            0%, 100% { transform: translateX(-50%) scale(1) rotate(-2deg); }
+            50% { transform: translateX(-50%) scale(1.1, 0.9) rotate(2deg); }
+        }
+
+        .candle-body {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30px;
+            height: 120px;
+            background: linear-gradient(to right, #f5f5dc, #fffef0, #f5f5dc);
+            border-radius: 5px 5px 0 0;
+            box-shadow: inset -5px 0 10px rgba(0,0,0,0.1);
+        }
+
+        .candle-base {
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 20px;
+            background: linear-gradient(to right, #8b7355, #a0896c, #8b7355);
+            border-radius: 3px;
+        }
+
+        .enter-memorial {
+            display: inline-block;
+            margin-top: 60px;
+            padding: 20px 50px;
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+            color: var(--gold);
+            background: transparent;
+            border: 1px solid var(--gold);
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .enter-memorial:hover {
+            background: rgba(212, 175, 55, 0.1);
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
+        }
+
+        /* QUOTE SECTION */
+        .quote-section {
+            text-align: center;
+            padding: 100px 20px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .quote-section blockquote {
+            font-size: 1.8rem;
+            font-style: italic;
+            color: var(--gold-light);
+            line-height: 1.8;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 1s ease;
+        }
+
+        .quote-section blockquote.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .quote-section cite {
+            display: block;
+            margin-top: 30px;
+            font-size: 1.2rem;
+            color: var(--gold);
+            font-style: normal;
+        }
+
+        /* FOOTER */
+        footer {
+            text-align: center;
+            padding: 60px 20px;
+            border-top: 1px solid rgba(212, 175, 55, 0.2);
+            color: #666;
+        }
+
+        footer p {
+            font-size: 1rem;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.5rem; }
+            .hero .hebrew { font-size: 2rem; }
+            .six-million { font-size: 3rem; }
+            .timeline::before { left: 20px; }
+            .timeline-item { flex-direction: column !important; }
+            .timeline-content { margin: 20px 0 20px 50px; }
+            .timeline-node { position: absolute; left: 20px; }
+        }
+    </style>
+</head>
+<body style="overflow: hidden;">
+    <!-- NAMES BACKGROUND -->
+    <div id="names-container"></div>
+
+    <!-- INTRO SEQUENCE -->
+    <div id="intro">
+        <div class="intro-quote" id="quote1">
+            <p>"For the dead and the living, we must bear witness."</p>
+            <cite>- Elie Wiesel</cite>
+        </div>
+        <div class="intro-quote" id="quote2">
+            <p>"To forget the dead would be akin to killing them a second time."</p>
+            <cite>- Elie Wiesel</cite>
+        </div>
+        <div class="intro-quote" id="quote3">
+            <p>"One person of integrity can make a difference."</p>
+            <cite>- Elie Wiesel</cite>
+        </div>
+        <div class="six-million" id="six-million">SIX MILLION</div>
+    </div>
+
+    <button id="skip-btn">Skip Intro</button>
+
+    <button id="sound-toggle">Sound: Off</button>
+
+    <!-- MAIN CONTENT -->
+    <div id="main-content">
+        <header class="hero">
+            <div class="hero-content">
+                <h1>YOM HASHOAH</h1>
+                <p class="hebrew">Holocaust Remembrance Day</p>
+                <p class="subtitle">In memory of the six million Jewish men, women, and children murdered during the Holocaust</p>
+            </div>
+        </header>
+
+        <section>
+            <div class="section-divider"></div>
+            <h2>The Descent into Darkness</h2>
+            <div class="history-grid">
+                <div class="history-card">
+                    <div class="card-header">
+                        <div class="card-visual">1933</div>
+                    </div>
+                    <div class="card-content">
+                        <h3>Rise of the Nazi Party</h3>
+                        <p>Adolf Hitler becomes Chancellor of Germany. The Nazi regime begins systematic persecution of Jews, stripping them of citizenship, rights, and dignity through the Nuremberg Laws.</p>
+                    </div>
+                </div>
+                <div class="history-card">
+                    <div class="card-header">
+                        <div class="card-visual">1938</div>
+                    </div>
+                    <div class="card-content">
+                        <h3>Kristallnacht</h3>
+                        <p>The "Night of Broken Glass" - Nazi forces destroy thousands of Jewish businesses, synagogues, and homes. 30,000 Jewish men are sent to concentration camps. The violence marks the beginning of the Holocaust.</p>
+                    </div>
+                </div>
+                <div class="history-card">
+                    <div class="card-header">
+                        <div class="card-visual">1941</div>
+                    </div>
+                    <div class="card-content">
+                        <h3>The Final Solution</h3>
+                        <p>Nazi leadership implements the systematic genocide of European Jews. Death camps are constructed across occupied Poland. Mass shootings by Einsatzgruppen murder over 1.5 million Jews.</p>
+                    </div>
+                </div>
+                <div class="history-card">
+                    <div class="card-header">
+                        <div class="card-visual">1945</div>
+                    </div>
+                    <div class="card-content">
+                        <h3>Liberation</h3>
+                        <p>Allied forces liberate the concentration camps, revealing the full horror of the Holocaust to the world. Six million Jews - two-thirds of European Jewry - have been murdered.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="quote-section">
+            <blockquote>
+                "We must always take sides. Neutrality helps the oppressor, never the victim. Silence encourages the tormentor, never the tormented."
+                <cite>- Elie Wiesel, Nobel Peace Prize Acceptance Speech, 1986</cite>
+            </blockquote>
+        </section>
+
+        <section>
+            <div class="section-divider"></div>
+            <h2>Timeline of Tragedy</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="timeline-year">1933</div>
+                        <p class="timeline-text">Dachau, the first concentration camp, opens. Book burnings begin across Germany.</p>
+                    </div>
+                    <div class="timeline-node"></div>
+                    <div style="flex:1"></div>
+                </div>
+                <div class="timeline-item">
+                    <div style="flex:1"></div>
+                    <div class="timeline-node"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-year">1939</div>
+                        <p class="timeline-text">World War II begins. Jews in Poland are forced into ghettos.</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="timeline-year">1942</div>
+                        <p class="timeline-text">Wannsee Conference formalizes the "Final Solution." Auschwitz-Birkenau becomes primary death camp.</p>
+                    </div>
+                    <div class="timeline-node"></div>
+                    <div style="flex:1"></div>
+                </div>
+                <div class="timeline-item">
+                    <div style="flex:1"></div>
+                    <div class="timeline-node"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-year">1943</div>
+                        <p class="timeline-text">Warsaw Ghetto Uprising - Jewish resistance fighters hold off Nazi forces for nearly a month.</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="timeline-year">1945</div>
+                        <p class="timeline-text">Auschwitz liberated January 27th. Germany surrenders May 8th. The world confronts the Holocaust.</p>
+                    </div>
+                    <div class="timeline-node"></div>
+                    <div style="flex:1"></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="quote-section">
+            <blockquote>
+                "In spite of everything, I still believe that people are really good at heart."
+                <cite>- Anne Frank, The Diary of a Young Girl</cite>
+            </blockquote>
+        </section>
+
+        <section class="candles-section">
+            <div class="section-divider"></div>
+            <h2>We Remember</h2>
+            <p style="color: #999; font-size: 1.2rem; max-width: 700px; margin: 0 auto 40px;">Each candle represents one million souls lost. Click to enter the memorial and learn their stories.</p>
+            <div class="candles-row">
+                <div class="candle-wrapper">
+                    <div class="candle">
+                        <div class="flame"></div>
+                        <div class="candle-body"></div>
+                        <div class="candle-base"></div>
+                    </div>
+                </div>
+                <div class="candle-wrapper">
+                    <div class="candle">
+                        <div class="flame"></div>
+                        <div class="candle-body"></div>
+                        <div class="candle-base"></div>
+                    </div>
+                </div>
+                <div class="candle-wrapper">
+                    <div class="candle">
+                        <div class="flame"></div>
+                        <div class="candle-body"></div>
+                        <div class="candle-base"></div>
+                    </div>
+                </div>
+                <div class="candle-wrapper">
+                    <div class="candle">
+                        <div class="flame"></div>
+                        <div class="candle-body"></div>
+                        <div class="candle-base"></div>
+                    </div>
+                </div>
+                <div class="candle-wrapper">
+                    <div class="candle">
+                        <div class="flame"></div>
+                        <div class="candle-body"></div>
+                        <div class="candle-base"></div>
+                    </div>
+                </div>
+                <div class="candle-wrapper">
+                    <div class="candle">
+                        <div class="flame"></div>
+                        <div class="candle-body"></div>
+                        <div class="candle-base"></div>
+                    </div>
+                </div>
+            </div>
+            <a href="memorial-candles.html" class="enter-memorial">Enter the Memorial</a>
+        </section>
+
+        <footer>
+            <p>Yom HaShoah - Holocaust Remembrance Day</p>
+            <p style="margin-top: 10px; color: #444;">Never Forget</p>
+        </footer>
+    </div>
+
+    <script>
+        // Extended list of Jewish names
+        const jewishNames = [
+            'Avraham', 'Yitzhak', 'Yaakov', 'Moshe', 'Aharon', 'David', 'Shlomo', 'Yosef',
+            'Binyamin', 'Reuven', 'Shimon', 'Levi', 'Yehuda', 'Dan', 'Naftali', 'Gad',
+            'Asher', 'Yissachar', 'Zevulun', 'Menachem', 'Chaim', 'Baruch', 'Shmuel',
+            'Eliyahu', 'Yeshayahu', 'Yirmiyahu', 'Yechezkel', 'Daniel', 'Ezra', 'Nechemia',
+            'Sarah', 'Rivka', 'Rachel', 'Leah', 'Miriam', 'Devorah', 'Chana', 'Esther',
+            'Ruth', 'Naomi', 'Tamar', 'Dinah', 'Yael', 'Batya', 'Tzipora', 'Shifra',
+            'Puah', 'Yocheved', 'Elisheva', 'Batsheva', 'Michal', 'Avigail', 'Hagar',
+            'Moritz', 'Heinrich', 'Wilhelm', 'Friedrich', 'Gustav', 'Hermann', 'Ludwig',
+            'Siegfried', 'Leopold', 'Emil', 'Otto', 'Ernst', 'Felix', 'Hugo', 'Max',
+            'Rosa', 'Bertha', 'Hedwig', 'Frieda', 'Gertrude', 'Helene', 'Irma', 'Lotte',
+            'Mendel', 'Zalman', 'Sholom', 'Mottel', 'Leibel', 'Hershel', 'Yankel', 'Berel',
+            'Chaya', 'Gittel', 'Shayna', 'Breindel', 'Malka', 'Golda', 'Faiga', 'Tova',
+            'Pinchas', 'Nachman', 'Kalman', 'Dovid', 'Tzvi', 'Aryeh', 'Zelig', 'Fishel',
+            'Fruma', 'Bluma', 'Perl', 'Raizel', 'Baila', 'Hendel', 'Kreindel', 'Mindel',
+            'Wolf', 'Hirsch', 'Meyer', 'Sender', 'Velvel', 'Shmulik', 'Moishe', 'Itzhak',
+            'Rifka', 'Doba', 'Eidel', 'Feige', 'Gitel', 'Hinda', 'Itta', 'Keila',
+            'Lazer', 'Mechel', 'Noach', 'Osher', 'Pesach', 'Refael', 'Simcha', 'Tuvia',
+            'Liba', 'Machla', 'Necha', 'Pesha', 'Ruchel', 'Sera', 'Tema', 'Udel',
+            'Uri', 'Volf', 'Yudel', 'Zundel', 'Alter', 'Bunim', 'Cheskel', 'Dov',
+            'Ella', 'Freida', 'Glicka', 'Hodel', 'Itka', 'Jenta', 'Kayla', 'Libby',
+            'Moshe', 'Nachum', 'Ovadia', 'Pinkus', 'Rachmiel', 'Shalom', 'Tevye', 'Usher',
+            'Margalit', 'Nirit', 'Ofra', 'Penina', 'Rakefet', 'Shoshana', 'Talia', 'Varda',
+            'Yonatan', 'Zecharia', 'Amram', 'Boaz', 'Calev', 'Doron', 'Efraim', 'Gavriel',
+            'Hadassah', 'Ilana', 'Judith', 'Kinneret', 'Liora', 'Merav', 'Noa', 'Ora',
+            'Raphael', 'Saadya', 'Tobias', 'Uriel', 'Yair', 'Zeev', 'Akiva', 'Bentzion'
+        ];
+
+        const namesContainer = document.getElementById('names-container');
+        const nameElements = [];
+        const numNames = 150;
+
+        // Create name elements
+        for (let i = 0; i < numNames; i++) {
+            const nameEl = document.createElement('div');
+            nameEl.className = 'floating-name';
+            namesContainer.appendChild(nameEl);
+            nameElements.push(nameEl);
+            initializeName(nameEl, true);
+        }
+
+        function initializeName(el, initial = false) {
+            const name = jewishNames[Math.floor(Math.random() * jewishNames.length)];
+            el.textContent = name;
+
+            // Assign layer
+            const layerRand = Math.random();
+            let layer, opacity, duration;
+
+            if (layerRand < 0.4) {
+                layer = 'layer-back';
+                opacity = 0.06 + Math.random() * 0.04; // 0.06-0.10
+                duration = 40 + Math.random() * 20;
+            } else if (layerRand < 0.75) {
+                layer = 'layer-mid';
+                opacity = 0.10 + Math.random() * 0.05; // 0.10-0.15
+                duration = 30 + Math.random() * 15;
+            } else {
+                layer = 'layer-front';
+                opacity = 0.15 + Math.random() * 0.08; // 0.15-0.23
+                duration = 25 + Math.random() * 10;
+            }
+
+            el.className = 'floating-name ' + layer;
+            el.style.setProperty('--target-opacity', opacity);
+            el.style.left = Math.random() * 100 + '%';
+            el.style.animationDuration = duration + 's';
+            el.style.animationDelay = initial ? -(Math.random() * duration) + 's' : '0s';
+        }
+
+        // Recycle names when animation ends
+        nameElements.forEach(el => {
+            el.addEventListener('animationiteration', () => initializeName(el));
+        });
+
+        // INTRO SEQUENCE
+        const intro = document.getElementById('intro');
+        const mainContent = document.getElementById('main-content');
+        const skipBtn = document.getElementById('skip-btn');
+        const soundToggle = document.getElementById('sound-toggle');
+        const quotes = [
+            document.getElementById('quote1'),
+            document.getElementById('quote2'),
+            document.getElementById('quote3')
+        ];
+        const sixMillion = document.getElementById('six-million');
+
+        let introTimeout;
+
+        function playIntro() {
+            // Quote 1
+            setTimeout(() => {
+                quotes[0].style.animation = 'quoteIn 5s ease forwards';
+            }, 500);
+
+            // Quote 2
+            setTimeout(() => {
+                quotes[1].style.animation = 'quoteIn 5s ease forwards';
+            }, 6000);
+
+            // Quote 3
+            setTimeout(() => {
+                quotes[2].style.animation = 'quoteIn 5s ease forwards';
+            }, 11500);
+
+            // Six Million
+            setTimeout(() => {
+                sixMillion.style.animation = 'sixMillionIn 3s ease forwards';
+            }, 17000);
+
+            // End intro
+            introTimeout = setTimeout(endIntro, 21000);
+        }
+
+        function endIntro() {
+            document.body.style.overflow = 'hidden';
+            window.scrollTo({ top: 0, behavior: 'instant' });
+            intro.classList.add('fade-out');
+            skipBtn.style.display = 'none';
+            soundToggle.classList.add('visible');
+            setTimeout(() => {
+                intro.style.display = 'none';
+                mainContent.classList.add('visible');
+                window.scrollTo({ top: 0, behavior: 'instant' });
+                setTimeout(() => { document.body.style.overflow = 'auto'; }, 100);
+            }, 2000);
+        }
+
+        skipBtn.addEventListener('click', () => {
+            clearTimeout(quoteTimeout);
+            intro.style.display = 'none';
+            introOverlay.style.display = 'none';
+            mainContent.classList.add('visible');
+            window.scrollTo({ top: 0, behavior: 'instant' });
+            setTimeout(() => { document.body.style.overflow = 'auto'; }, 100);
+            soundToggle.classList.add('visible');
+        });
+
+        playIntro();
+
+        // SCROLL ANIMATIONS
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    if (entry.target.classList.contains('candle-wrapper')) {
+                        entry.target.classList.add('lit');
+                    }
+                }
+            });
+        }, observerOptions);
+
+        // Observe elements
+        document.querySelectorAll('.history-card, .timeline-item, h2, .section-divider, blockquote').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Candles light up sequentially
+        const candleWrappers = document.querySelectorAll('.candle-wrapper');
+        const candleObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    candleWrappers.forEach((candle, index) => {
+                        setTimeout(() => {
+                            candle.classList.add('lit');
+                        }, index * 400);
+                    });
+                    candleObserver.disconnect();
+                }
+            });
+        }, { threshold: 0.3 });
+
+        candleObserver.observe(document.querySelector('.candles-section'));
+
+        // Sound toggle (placeholder)
+        let soundOn = false;
+        soundToggle.addEventListener('click', () => {
+            soundOn = !soundOn;
+            soundToggle.textContent = soundOn ? 'Sound: On' : 'Sound: Off';
+        });
+    </script>
+</body>
+</html>

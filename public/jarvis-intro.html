@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JARVIS - A Rather Very Intelligent System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: #0a0a0f;
+            color: #fff;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* Animated Background */
+        .bg-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 170, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 170, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: -2;
+        }
+
+        .bg-glow {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(0, 170, 255, 0.15) 0%, transparent 70%);
+            z-index: -1;
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
+            50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.8; }
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 20px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            background: linear-gradient(180deg, rgba(10,10,15,0.9) 0%, transparent 100%);
+        }
+
+        .logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: #00aaff;
+            text-shadow: 0 0 20px rgba(0, 170, 255, 0.5);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            color: #888;
+            text-decoration: none;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #00aaff;
+            text-shadow: 0 0 10px rgba(0, 170, 255, 0.5);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 100px 20px;
+        }
+
+        .arc-reactor {
+            width: 200px;
+            height: 200px;
+            position: relative;
+            margin-bottom: 40px;
+        }
+
+        .reactor-core {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            background: radial-gradient(circle, #fff 0%, #00aaff 50%, #0066aa 100%);
+            border-radius: 50%;
+            box-shadow: 0 0 60px #00aaff, 0 0 100px #00aaff, inset 0 0 20px rgba(255,255,255,0.5);
+            animation: corePulse 2s ease-in-out infinite;
+        }
+
+        @keyframes corePulse {
+            0%, 100% { box-shadow: 0 0 60px #00aaff, 0 0 100px #00aaff; }
+            50% { box-shadow: 0 0 80px #00aaff, 0 0 140px #00aaff, 0 0 200px rgba(0,170,255,0.3); }
+        }
+
+        .reactor-ring {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border: 3px solid rgba(0, 170, 255, 0.6);
+            border-radius: 50%;
+            animation: rotate 10s linear infinite;
+        }
+
+        .ring1 { width: 100px; height: 100px; animation-duration: 8s; }
+        .ring2 { width: 140px; height: 140px; animation-duration: 12s; animation-direction: reverse; border-style: dashed; }
+        .ring3 { width: 180px; height: 180px; animation-duration: 15s; border-width: 2px; }
+
+        @keyframes rotate {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        .tagline {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem;
+            color: #00aaff;
+            letter-spacing: 8px;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            opacity: 0.8;
+        }
+
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 5rem;
+            font-weight: 900;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #fff 0%, #00aaff 50%, #0088cc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: none;
+            filter: drop-shadow(0 0 30px rgba(0, 170, 255, 0.3));
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            color: #666;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .creator {
+            font-size: 1.2rem;
+            color: #00aaff;
+            margin-bottom: 40px;
+        }
+
+        .creator span {
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .cta-button {
+            padding: 15px 50px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            background: transparent;
+            border: 2px solid #00aaff;
+            color: #00aaff;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-button:hover {
+            background: #00aaff;
+            color: #0a0a0f;
+            box-shadow: 0 0 30px rgba(0, 170, 255, 0.5);
+        }
+
+        /* Stats Section */
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 80px;
+            margin-top: 60px;
+            flex-wrap: wrap;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3rem;
+            color: #00aaff;
+            font-weight: 700;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 100px 50px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 60px;
+            color: #fff;
+        }
+
+        .section-title span {
+            color: #00aaff;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, rgba(0, 170, 255, 0.1) 0%, rgba(0, 0, 0, 0.3) 100%);
+            border: 1px solid rgba(0, 170, 255, 0.2);
+            padding: 40px;
+            border-radius: 10px;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #00aaff, transparent);
+            transition: 0.5s;
+        }
+
+        .feature-card:hover::before {
+            left: 100%;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(0, 170, 255, 0.5);
+            box-shadow: 0 20px 40px rgba(0, 170, 255, 0.1);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .feature-card h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            color: #00aaff;
+        }
+
+        .feature-card p {
+            color: #888;
+            line-height: 1.6;
+        }
+
+        /* Capabilities Section */
+        .capabilities {
+            padding: 100px 50px;
+            background: linear-gradient(180deg, transparent 0%, rgba(0, 170, 255, 0.05) 50%, transparent 100%);
+        }
+
+        .capabilities-list {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .capability-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 20px;
+            background: rgba(0, 170, 255, 0.05);
+            border-left: 3px solid #00aaff;
+            transition: all 0.3s;
+        }
+
+        .capability-item:hover {
+            background: rgba(0, 170, 255, 0.1);
+            transform: translateX(10px);
+        }
+
+        .capability-icon {
+            font-size: 1.5rem;
+            color: #00aaff;
+        }
+
+        .capability-text {
+            font-size: 1.1rem;
+            color: #ccc;
+        }
+
+        /* About Creator Section */
+        .creator-section {
+            padding: 100px 50px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .creator-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .creator-info h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .creator-info h2 span {
+            color: #00aaff;
+        }
+
+        .creator-info .age-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            background: rgba(0, 170, 255, 0.2);
+            border: 1px solid #00aaff;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: #00aaff;
+            margin-bottom: 20px;
+        }
+
+        .creator-info p {
+            color: #888;
+            line-height: 1.8;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .creator-visual {
+            position: relative;
+            height: 400px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .hologram {
+            width: 300px;
+            height: 300px;
+            border: 2px solid rgba(0, 170, 255, 0.3);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            animation: hologramFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes hologramFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .hologram::before {
+            content: 'N';
+            font-family: 'Orbitron', sans-serif;
+            font-size: 8rem;
+            color: rgba(0, 170, 255, 0.3);
+            font-weight: 900;
+        }
+
+        .hologram-ring {
+            position: absolute;
+            border: 1px solid rgba(0, 170, 255, 0.2);
+            border-radius: 50%;
+            animation: rotate 20s linear infinite;
+        }
+
+        .holo-ring1 { width: 350px; height: 350px; }
+        .holo-ring2 { width: 380px; height: 380px; animation-direction: reverse; animation-duration: 25s; }
+
+        /* Tech Stack */
+        .tech-stack {
+            padding: 80px 50px;
+            text-align: center;
+        }
+
+        .tech-icons {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+            margin-top: 40px;
+        }
+
+        .tech-item {
+            padding: 20px 40px;
+            background: rgba(0, 170, 255, 0.05);
+            border: 1px solid rgba(0, 170, 255, 0.2);
+            border-radius: 5px;
+            font-family: 'Orbitron', sans-serif;
+            color: #666;
+            transition: all 0.3s;
+        }
+
+        .tech-item:hover {
+            color: #00aaff;
+            border-color: #00aaff;
+            transform: scale(1.05);
+        }
+
+        /* Footer */
+        footer {
+            padding: 50px;
+            text-align: center;
+            border-top: 1px solid rgba(0, 170, 255, 0.1);
+        }
+
+        .footer-logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2rem;
+            color: #00aaff;
+            margin-bottom: 20px;
+        }
+
+        .footer-tagline {
+            color: #666;
+            font-size: 0.9rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+            color: #00ff88;
+            font-size: 0.9rem;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            background: #00ff88;
+            border-radius: 50%;
+            animation: statusBlink 2s ease-in-out infinite;
+        }
+
+        @keyframes statusBlink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* Floating Particles */
+        .particle {
+            position: fixed;
+            width: 3px;
+            height: 3px;
+            background: #00aaff;
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 0.5;
+            animation: floatParticle 15s infinite linear;
+        }
+
+        @keyframes floatParticle {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.5; }
+            90% { opacity: 0.5; }
+            100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 { font-size: 3rem; }
+            .stats { gap: 40px; }
+            .capabilities-list { grid-template-columns: 1fr; }
+            .creator-content { grid-template-columns: 1fr; text-align: center; }
+            nav { padding: 20px; }
+            .nav-links { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-grid"></div>
+    <div class="bg-glow"></div>
+
+    <!-- Floating Particles -->
+    <div class="particle" style="left: 10%; animation-delay: 0s;"></div>
+    <div class="particle" style="left: 20%; animation-delay: 2s;"></div>
+    <div class="particle" style="left: 30%; animation-delay: 4s;"></div>
+    <div class="particle" style="left: 40%; animation-delay: 1s;"></div>
+    <div class="particle" style="left: 50%; animation-delay: 3s;"></div>
+    <div class="particle" style="left: 60%; animation-delay: 5s;"></div>
+    <div class="particle" style="left: 70%; animation-delay: 2.5s;"></div>
+    <div class="particle" style="left: 80%; animation-delay: 4.5s;"></div>
+    <div class="particle" style="left: 90%; animation-delay: 1.5s;"></div>
+
+    <nav>
+        <div class="logo">J.A.R.V.I.S</div>
+        <div class="nav-links">
+            <a href="#features">Features</a>
+            <a href="#capabilities">Capabilities</a>
+            <a href="#creator">Creator</a>
+            <a href="#tech">Technology</a>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="arc-reactor">
+            <div class="reactor-core"></div>
+            <div class="reactor-ring ring1"></div>
+            <div class="reactor-ring ring2"></div>
+            <div class="reactor-ring ring3"></div>
+        </div>
+        <div class="tagline">A Rather Very Intelligent System</div>
+        <h1>J.A.R.V.I.S</h1>
+        <p class="subtitle">Just A Rather Very Intelligent System</p>
+        <p class="creator">Created by <span>Nadav</span> - Fort Lauderdale, FL</p>
+        <button class="cta-button">Initialize System</button>
+
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-number">24/7</div>
+                <div class="stat-label">Always Online</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">100+</div>
+                <div class="stat-label">Capabilities</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">1</div>
+                <div class="stat-label">Genius Creator</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="features" id="features">
+        <h2 class="section-title">Core <span>Features</span></h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">&#129302;</div>
+                <h3>Autonomous Intelligence</h3>
+                <p>Independently figures out how to accomplish tasks by searching the web, writing code, and chaining multiple tools together. No hand-holding required.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">&#127968;</div>
+                <h3>Smart Home Control</h3>
+                <p>Controls Sony TV, Roku TV, Sonos speakers throughout the house, Nest thermostat, and monitors all network devices in real-time.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">&#128187;</div>
+                <h3>Code Execution</h3>
+                <p>Writes and runs Node.js code on-the-fly to accomplish any task - API calls, file operations, data processing, and more.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">&#128222;</div>
+                <h3>Phone Calls & SMS</h3>
+                <p>Makes real phone calls using Twilio conference bridges, sends SMS messages, and can communicate on your behalf.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">&#128197;</div>
+                <h3>Calendar Integration</h3>
+                <p>Full Google Calendar access - reads events, creates appointments, checks availability, and provides proactive schedule updates.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">&#129513;</div>
+                <h3>3D Printing Pipeline</h3>
+                <p>Searches Thingiverse and Printables, generates OpenSCAD models, and provides complete print settings and finishing advice.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="capabilities" id="capabilities">
+        <h2 class="section-title">System <span>Capabilities</span></h2>
+        <div class="capabilities-list">
+            <div class="capability-item">
+                <span class="capability-icon">&#10004;</span>
+                <span class="capability-text">Web Search & Information Retrieval</span>
+            </div>
+            <div class="capability-item">
+                <span class="capability-icon">&#10004;</span>
+                <span class="capability-text">Browser Automation with Puppeteer</span>
+            </div>
+            <div class="capability-item">
+                <span class="capability-icon">&#10004;</span>
+                <span class="capability-text">Network Scanning & Device Discovery</span>
+            </div>
+            <div class="capability-item">
+                <span class="capability-icon">&#10004;</span>
+                <span class="capability-text">Sonos Multi-Room Audio Control</span>
+            </div>
+            <div class="capability-item">
+                <span class="capability-icon">&#10004;</span>
+                <span class="capability-text">File System Management</span>
+            </div>
+            <div class="capability-item">
+                <span class="capability-icon">&#10004;</span>
+                <span class="capability-text">Memory & Context Retention</span>
+            </div>
+            <div class="capability-item">
+                <span class="capability-icon">&#10004;</span>
+                <span class="capability-text">Proactive Notifications & Alerts</span>
+            </div>
+            <div class="capability-item">
+                <span class="capability-icon">&#10004;</span>
+                <span class="capability-text">Social Media Automation</span>
+            </div>
+            <div class="capability-item">
+                <span class="capability-icon">&#10004;</span>
+                <span class="capability-text">Amazon Shopping Assistance</span>
+            </div>
+            <div class="capability-item">
+                <span class="capability-icon">&#10004;</span>
+                <span class="capability-text">Eero Network Management</span>
+            </div>
+            <div class="capability-item">
+                <span class="capability-icon">&#10004;</span>
+                <span class="capability-text">Voice Response Optimization</span>
+            </div>
+            <div class="capability-item">
+                <span class="capability-icon">&#10004;</span>
+                <span class="capability-text">Real-Time Weather Monitoring</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="creator-section" id="creator">
+        <div class="creator-content">
+            <div class="creator-info">
+                <h2>Meet <span>Nadav</span></h2>
+                <span class="age-badge">15 Years Old</span>
+                <p>A teenage prodigy from Fort Lauderdale, Florida who decided that having a regular AI assistant wasn't enough - so he built his own.</p>
+                <p>While other kids were playing video games, Nadav was architecting an autonomous AI system that can control his entire smart home, make phone calls, browse the web, write code, and basically do anything a digital assistant should do - but better.</p>
+                <p>JARVIS isn't just a chatbot - it's a fully autonomous agent that thinks, plans, and executes complex tasks independently. The future Tony Stark? Maybe. The kid who built his own JARVIS at 15? Definitely.</p>
+            </div>
+            <div class="creator-visual">
+                <div class="hologram">
+                    <div class="hologram-ring holo-ring1"></div>
+                    <div class="hologram-ring holo-ring2"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="tech-stack" id="tech">
+        <h2 class="section-title">Built <span>With</span></h2>
+        <div class="tech-icons">
+            <div class="tech-item">Node.js</div>
+            <div class="tech-item">Next.js</div>
+            <div class="tech-item">Claude AI</div>
+            <div class="tech-item">Twilio</div>
+            <div class="tech-item">Puppeteer</div>
+            <div class="tech-item">Google APIs</div>
+            <div class="tech-item">Sonos API</div>
+            <div class="tech-item">WebSockets</div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-logo">J.A.R.V.I.S</div>
+        <p class="footer-tagline">A Rather Very Intelligent System</p>
+        <div class="status-indicator">
+            <span class="status-dot"></span>
+            System Online - All Services Operational
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scroll for nav links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Initialize button effect
+        document.querySelector('.cta-button').addEventListener('click', function() {
+            this.textContent = 'System Active';
+            this.style.background = '#00aaff';
+            this.style.color = '#0a0a0f';
+        });
+
+        // Add more dynamic particles
+        function createParticle() {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.animationDuration = (10 + Math.random() * 10) + 's';
+            document.body.appendChild(particle);
+            setTimeout(() => particle.remove(), 20000);
+        }
+
+        setInterval(createParticle, 2000);
+    </script>
+</body>
+</html>

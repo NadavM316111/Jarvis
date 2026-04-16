@@ -1,0 +1,8 @@
+{
+  "name": "fuel-calorie-tracker",
+  "version": "1.0.0",
+  "description": "Cinematic calorie tracker",
+  "scripts": {
+    "start": "npx serve ."
+  }
+}

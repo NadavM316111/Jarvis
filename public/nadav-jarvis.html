@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nadav & JARVIS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0a0a0a 100%);
+            min-height: 100vh;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: #00d4ff;
+            border-radius: 50%;
+            animation: float 15s infinite;
+            opacity: 0.5;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.5; }
+            90% { opacity: 0.5; }
+            100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
+        }
+
+        .hero {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            z-index: 1;
+        }
+
+        .arc-reactor {
+            width: 200px;
+            height: 200px;
+            position: relative;
+            margin-bottom: 3rem;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .arc-reactor::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 180px;
+            height: 180px;
+            border: 3px solid #00d4ff;
+            border-radius: 50%;
+            box-shadow: 0 0 30px #00d4ff, inset 0 0 30px rgba(0, 212, 255, 0.3);
+        }
+
+        .arc-reactor::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(circle, #00d4ff 0%, #0066ff 50%, transparent 70%);
+            border-radius: 50%;
+            box-shadow: 0 0 60px #00d4ff, 0 0 100px #00d4ff;
+        }
+
+        .ring {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border: 2px solid rgba(0, 212, 255, 0.5);
+            border-radius: 50%;
+            animation: rotate 10s linear infinite;
+        }
+
+        .ring:nth-child(1) { width: 140px; height: 140px; }
+        .ring:nth-child(2) { width: 160px; height: 160px; animation-direction: reverse; animation-duration: 15s; }
+
+        @keyframes rotate {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 4rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.5rem;
+            background: linear-gradient(90deg, #00d4ff, #0066ff, #00d4ff);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradient 3s ease infinite;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0% center; }
+            50% { background-position: 100% center; }
+            100% { background-position: 0% center; }
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            color: #888;
+            letter-spacing: 0.3rem;
+            margin-bottom: 3rem;
+            text-transform: uppercase;
+        }
+
+        .creator-section {
+            display: flex;
+            align-items: center;
+            gap: 3rem;
+            max-width: 1200px;
+            margin: 4rem auto;
+            padding: 3rem;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .creator-image {
+            width: 250px;
+            height: 250px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #00d4ff 0%, #0066ff 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 5rem;
+            font-weight: 900;
+            color: #0a0a0a;
+            box-shadow: 0 0 50px rgba(0, 212, 255, 0.3);
+            flex-shrink: 0;
+        }
+
+        .creator-info h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #00d4ff;
+        }
+
+        .creator-info p {
+            font-size: 1.3rem;
+            line-height: 1.8;
+            color: #ccc;
+            margin-bottom: 1rem;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .stat {
+            text-align: center;
+            padding: 1.5rem;
+            background: rgba(0, 212, 255, 0.05);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            border-radius: 15px;
+        }
+
+        .stat-number {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            color: #00d4ff;
+            font-weight: 700;
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.1rem;
+        }
+
+        .capabilities {
+            max-width: 1200px;
+            margin: 4rem auto;
+            padding: 2rem;
+        }
+
+        .capabilities h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2rem;
+            text-align: center;
+            margin-bottom: 3rem;
+            color: #00d4ff;
+        }
+
+        .capability-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .capability {
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            border-radius: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .capability:hover {
+            transform: translateY(-5px);
+            border-color: #00d4ff;
+            box-shadow: 0 10px 40px rgba(0, 212, 255, 0.2);
+        }
+
+        .capability h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: #00d4ff;
+        }
+
+        .capability p {
+            color: #888;
+            line-height: 1.6;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 3rem;
+            color: #444;
+            font-size: 0.9rem;
+        }
+
+        .typing-effect {
+            border-right: 2px solid #00d4ff;
+            animation: blink 0.7s step-end infinite;
+        }
+
+        @keyframes blink {
+            from, to { border-color: transparent; }
+            50% { border-color: #00d4ff; }
+        }
+    </style>
+</head>
+<body>
+    <div class="particles">
+        <div class="particle" style="left: 60.94700902183297%; animation-delay: 13.290175234750402s; animation-duration: 15.01859306675134s;"></div><div class="particle" style="left: 61.81784853846478%; animation-delay: 2.596595043403341s; animation-duration: 16.34594805722065s;"></div><div class="particle" style="left: 94.87875088953467%; animation-delay: 9.295826206397832s; animation-duration: 18.05184201521244s;"></div><div class="particle" style="left: 33.14183970531319%; animation-delay: 14.27360131470624s; animation-duration: 11.74799865087112s;"></div><div class="particle" style="left: 78.44017855443215%; animation-delay: 12.687759229255983s; animation-duration: 14.698819406567235s;"></div><div class="particle" style="left: 3.420062736139695%; animation-delay: 1.7554904718028768s; animation-duration: 15.25694439026482s;"></div><div class="particle" style="left: 30.27218385128929%; animation-delay: 8.539962803416882s; animation-duration: 12.688610069835308s;"></div><div class="particle" style="left: 65.27047690405806%; animation-delay: 2.4496593283434223s; animation-duration: 19.919937193228275s;"></div><div class="particle" style="left: 43.87480786178066%; animation-delay: 7.645896188033079s; animation-duration: 16.347476617994428s;"></div><div class="particle" style="left: 33.51737809396019%; animation-delay: 10.796832404793594s; animation-duration: 15.495093321173126s;"></div><div class="particle" style="left: 51.78036319092414%; animation-delay: 7.428362603970429s; animation-duration: 12.830313082031765s;"></div><div class="particle" style="left: 59.614392285453455%; animation-delay: 10.614841099034532s; animation-duration: 12.35504277978217s;"></div><div class="particle" style="left: 71.72107989783012%; animation-delay: 9.298542887279206s; animation-duration: 14.202766729240492s;"></div><div class="particle" style="left: 75.77932127031936%; animation-delay: 7.694941451030642s; animation-duration: 17.937757417562946s;"></div><div class="particle" style="left: 17.716853564635592%; animation-delay: 6.931011491518834s; animation-duration: 14.137530564247676s;"></div><div class="particle" style="left: 82.38970997250667%; animation-delay: 11.91727895558209s; animation-duration: 16.54883830895322s;"></div><div class="particle" style="left: 13.036004342283503%; animation-delay: 0.49030165178985785s; animation-duration: 17.567940842058846s;"></div><div class="particle" style="left: 76.69719521569084%; animation-delay: 10.448340864654112s; animation-duration: 10.926176764710974s;"></div><div class="particle" style="left: 66.07052147285034%; animation-delay: 5.47174553354173s; animation-duration: 11.035426774763991s;"></div><div class="particle" style="left: 41.19169928906792%; animation-delay: 10.54113462623134s; animation-duration: 14.646994678249277s;"></div><div class="particle" style="left: 98.55400590974472%; animation-delay: 13.329674744290749s; animation-duration: 11.058405657135426s;"></div><div class="particle" style="left: 39.433200498194644%; animation-delay: 11.693638273535248s; animation-duration: 13.586076498660951s;"></div><div class="particle" style="left: 94.99456209306622%; animation-delay: 12.846417640301388s; animation-duration: 16.616401083016612s;"></div><div class="particle" style="left: 34.14350921367959%; animation-delay: 9.137264010287812s; animation-duration: 18.21043028828376s;"></div><div class="particle" style="left: 83.35326447794463%; animation-delay: 0.9205645950219415s; animation-duration: 12.446279396752226s;"></div><div class="particle" style="left: 67.49530573730202%; animation-delay: 6.387117500479681s; animation-duration: 14.786064304891461s;"></div><div class="particle" style="left: 73.77945982814111%; animation-delay: 14.964192907955859s; animation-duration: 12.184129303393277s;"></div><div class="particle" style="left: 83.4881915334001%; animation-delay: 7.744315982349086s; animation-duration: 16.785857659531295s;"></div><div class="particle" style="left: 23.889959822594143%; animation-delay: 0.4995571270122623s; animation-duration: 13.869103596708454s;"></div><div class="particle" style="left: 33.5830002300712%; animation-delay: 12.962105729134421s; animation-duration: 10.338011385898438s;"></div><div class="particle" style="left: 86.210763881536%; animation-delay: 10.038221771407672s; animation-duration: 14.055533484513282s;"></div><div class="particle" style="left: 70.4140004121786%; animation-delay: 2.0987104269940633s; animation-duration: 18.281812982460814s;"></div><div class="particle" style="left: 61.49215003130338%; animation-delay: 14.5182604996035s; animation-duration: 14.108412282086018s;"></div><div class="particle" style="left: 82.76639343427841%; animation-delay: 1.637412839823598s; animation-duration: 15.063177689704705s;"></div><div class="particle" style="left: 43.45221469764565%; animation-delay: 12.743863853585292s; animation-duration: 16.782872806770303s;"></div><div class="particle" style="left: 4.453033196587963%; animation-delay: 4.734186460530083s; animation-duration: 18.035404189019033s;"></div><div class="particle" style="left: 79.4452468919821%; animation-delay: 2.502297473002155s; animation-duration: 10.467936891060656s;"></div><div class="particle" style="left: 51.5958505384023%; animation-delay: 3.7549438698629163s; animation-duration: 18.105864578441867s;"></div><div class="particle" style="left: 13.331027967769526%; animation-delay: 8.758656034588276s; animation-duration: 16.288337817543525s;"></div><div class="particle" style="left: 27.64347136327445%; animation-delay: 5.6203807459466795s; animation-duration: 10.898141934624237s;"></div><div class="particle" style="left: 5.771544940140972%; animation-delay: 8.691491869481522s; animation-duration: 17.447173764053666s;"></div><div class="particle" style="left: 60.411509142276564%; animation-delay: 3.49579475590309s; animation-duration: 13.914674246797201s;"></div><div class="particle" style="left: 88.21947268620896%; animation-delay: 12.268522972036626s; animation-duration: 16.867449368679832s;"></div><div class="particle" style="left: 58.712719544036354%; animation-delay: 4.939980677785399s; animation-duration: 18.52771770350587s;"></div><div class="particle" style="left: 13.377734098894589%; animation-delay: 10.440584940650531s; animation-duration: 10.564553283096872s;"></div><div class="particle" style="left: 98.58310520711841%; animation-delay: 2.7238151918650826s; animation-duration: 19.517082131945102s;"></div><div class="particle" style="left: 61.762312229850856%; animation-delay: 11.548094735461953s; animation-duration: 10.015818306372838s;"></div><div class="particle" style="left: 95.9607623913067%; animation-delay: 2.854967900525855s; animation-duration: 14.204662659660428s;"></div><div class="particle" style="left: 97.1251563973013%; animation-delay: 11.791166697415292s; animation-duration: 16.49979185303011s;"></div><div class="particle" style="left: 73.95597482292524%; animation-delay: 2.415944687462713s; animation-duration: 11.070565651186888s;"></div>
+    </div>
+
+    <section class="hero">
+        <div class="arc-reactor">
+            <div class="ring"></div>
+            <div class="ring"></div>
+        </div>
+        <h1 class="title">J.A.R.V.I.S.</h1>
+        <p class="subtitle">Just A Rather Very Intelligent System</p>
+    </section>
+
+    <section class="creator-section">
+        <div class="creator-image">N</div>
+        <div class="creator-info">
+            <h2>Meet the Creator</h2>
+            <p><strong>Nadav</strong> - A 15-year-old visionary from Fort Lauderdale, Florida who decided that waiting for the future wasn't an option. Instead, he built it.</p>
+            <p>What started as a dream to have his own AI assistant evolved into JARVIS - a fully autonomous system that controls smart homes, manages schedules, searches the web, writes code, and even makes phone calls.</p>
+            <p>Because why just imagine the future when you can code it into existence?</p>
+        </div>
+    </section>
+
+    <div class="stats">
+        <div class="stat">
+            <div class="stat-number">15</div>
+            <div class="stat-label">Years Old</div>
+        </div>
+        <div class="stat">
+            <div class="stat-number">Infinite</div>
+            <div class="stat-label">Possibilities</div>
+        </div>
+        <div class="stat">
+            <div class="stat-number">24/7</div>
+            <div class="stat-label">Availability</div>
+        </div>
+    </div>
+
+    <section class="capabilities">
+        <h2>What JARVIS Can Do</h2>
+        <div class="capability-grid">
+            <div class="capability">
+                <h3>Smart Home Control</h3>
+                <p>Controls TVs, Sonos speakers, thermostats, and any connected device. Turns your home into a scene from Iron Man.</p>
+            </div>
+            <div class="capability">
+                <h3>Web Intelligence</h3>
+                <p>Searches the web, reads any webpage, and synthesizes information in real-time. Knowledge at the speed of thought.</p>
+            </div>
+            <div class="capability">
+                <h3>Code Generation</h3>
+                <p>Writes and executes Node.js code autonomously. Need an API integration? Consider it done.</p>
+            </div>
+            <div class="capability">
+                <h3>Communication</h3>
+                <p>Makes phone calls via Twilio, manages schedules via Google Calendar, and keeps you connected.</p>
+            </div>
+            <div class="capability">
+                <h3>3D Design</h3>
+                <p>Creates and finds 3D models, manages the design studio, and brings ideas into physical reality.</p>
+            </div>
+            <div class="capability">
+                <h3>Proactive Assistant</h3>
+                <p>Monitors weather, news, and your projects. Alerts you to what matters before you even ask.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <p>Built with passion by Nadav | Powered by Claude AI | Inspired by Tony Stark</p>
+        <p style="margin-top: 1rem; color: #00d4ff;">"Sometimes you gotta run before you can walk."</p>
+    </footer>
+
+    <script>
+        // Add some interactive sparkle
+        document.addEventListener('mousemove', (e) => {
+            const spark = document.createElement('div');
+            spark.style.cssText = `
+                position: fixed;
+                width: 4px;
+                height: 4px;
+                background: #00d4ff;
+                border-radius: 50%;
+                pointer-events: none;
+                left: ${e.clientX}px;
+                top: ${e.clientY}px;
+                animation: sparkle 1s ease-out forwards;
+                z-index: 9999;
+            `;
+            document.body.appendChild(spark);
+            setTimeout(() => spark.remove(), 1000);
+        });
+
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes sparkle {
+                0% { transform: scale(1); opacity: 1; }
+                100% { transform: scale(0); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

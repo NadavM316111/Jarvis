@@ -1,0 +1,844 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary: #00f0ff;
+    --secondary: #ff006e;
+    --accent: #7b2dff;
+    --success: #00ff88;
+    --warning: #ffaa00;
+    --bg-dark: #0a0a0f;
+    --bg-card: #12121a;
+    --bg-input: #1a1a25;
+    --text: #ffffff;
+    --text-dim: #8888aa;
+    --glow: 0 0 20px rgba(0, 240, 255, 0.3);
+}
+
+body {
+    font-family: 'Rajdhani', sans-serif;
+    background: var(--bg-dark);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* Intro Overlay */
+#intro-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--bg-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    animation: fadeOut 0.5s ease 3.5s forwards;
+}
+
+@keyframes fadeOut {
+    to { opacity: 0; pointer-events: none; }
+}
+
+.intro-content {
+    text-align: center;
+}
+
+.logo-container {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    margin: 0 auto 30px;
+}
+
+.arc {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-dasharray: 565;
+    stroke-dashoffset: 565;
+}
+
+.arc-1 {
+    stroke: var(--primary);
+    animation: drawArc 1s ease 0.2s forwards, rotateArc 8s linear 1.2s infinite;
+}
+
+.arc-2 {
+    stroke: var(--secondary);
+    animation: drawArc 1s ease 0.4s forwards, rotateArcReverse 6s linear 1.4s infinite;
+}
+
+.arc-3 {
+    stroke: var(--accent);
+    animation: drawArc 1s ease 0.6s forwards, rotateArc 4s linear 1.6s infinite;
+}
+
+@keyframes drawArc {
+    to { stroke-dashoffset: 141; }
+}
+
+@keyframes rotateArc {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes rotateArcReverse {
+    to { transform: rotate(-360deg); }
+}
+
+.logo-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: 'Orbitron', sans-serif;
+    font-size: 36px;
+    font-weight: 900;
+    letter-spacing: 8px;
+    color: var(--primary);
+    text-shadow: 0 0 30px var(--primary);
+    opacity: 0;
+    animation: revealText 0.5s ease 1s forwards;
+}
+
+@keyframes revealText {
+    to { opacity: 1; }
+}
+
+.tagline {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 14px;
+    letter-spacing: 6px;
+    color: var(--text-dim);
+    opacity: 0;
+    animation: revealText 0.5s ease 1.5s forwards;
+}
+
+.loading-bar {
+    width: 300px;
+    height: 4px;
+    background: var(--bg-card);
+    margin: 40px auto 20px;
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.loading-fill {
+    height: 100%;
+    width: 0;
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    animation: loadBar 2s ease 1.5s forwards;
+}
+
+@keyframes loadBar {
+    to { width: 100%; }
+}
+
+.boot-text {
+    font-size: 12px;
+    letter-spacing: 2px;
+    color: var(--text-dim);
+    opacity: 0;
+    animation: revealText 0.3s ease 1.8s forwards, blink 0.5s ease infinite;
+}
+
+@keyframes blink {
+    50% { opacity: 0.5; }
+}
+
+/* App Hidden Initially */
+#app.hidden {
+    display: none;
+}
+
+#app {
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Header */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 40px;
+    background: linear-gradient(180deg, rgba(18, 18, 26, 0.9) 0%, transparent 100%);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.logo-mini {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 24px;
+    font-weight: 900;
+    color: var(--primary);
+    text-shadow: 0 0 20px var(--primary);
+}
+
+.system-status {
+    font-size: 12px;
+    letter-spacing: 2px;
+    color: var(--success);
+    padding: 5px 15px;
+    border: 1px solid var(--success);
+    border-radius: 20px;
+    animation: pulse 2s ease infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { box-shadow: 0 0 5px var(--success); }
+    50% { box-shadow: 0 0 20px var(--success); }
+}
+
+.header-right {
+    text-align: right;
+}
+
+.date-display {
+    font-size: 14px;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+}
+
+.time-display {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 20px;
+    color: var(--primary);
+}
+
+/* Main */
+main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px 40px 100px;
+}
+
+/* Stats Panel */
+.stats-panel {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-bottom: 40px;
+}
+
+.stat-card {
+    background: var(--bg-card);
+    border-radius: 20px;
+    padding: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+}
+
+.main-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.stat-ring {
+    position: relative;
+    width: 200px;
+    height: 200px;
+}
+
+.stat-ring svg {
+    transform: rotate(-90deg);
+}
+
+.ring-bg {
+    fill: none;
+    stroke: var(--bg-input);
+    stroke-width: 12;
+}
+
+.ring-fill {
+    fill: none;
+    stroke: var(--primary);
+    stroke-width: 12;
+    stroke-linecap: round;
+    stroke-dasharray: 534;
+    stroke-dashoffset: 534;
+    transition: stroke-dashoffset 1s ease;
+    filter: drop-shadow(0 0 10px var(--primary));
+}
+
+.stat-inner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.stat-value {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 48px;
+    font-weight: 700;
+    color: var(--text);
+    display: block;
+}
+
+.stat-label {
+    font-size: 14px;
+    letter-spacing: 3px;
+    color: var(--text-dim);
+}
+
+.stat-meta {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-top: 20px;
+    font-size: 14px;
+    color: var(--text-dim);
+}
+
+.stat-meta span span {
+    color: var(--primary);
+    font-weight: 600;
+}
+
+/* Mini Stats */
+.macro-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.stat-card.mini {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+}
+
+.mini-ring {
+    position: relative;
+    width: 80px;
+    height: 80px;
+}
+
+.mini-ring svg {
+    transform: rotate(-90deg);
+}
+
+.mini-ring .ring-bg {
+    stroke-width: 8;
+}
+
+.mini-ring .ring-fill {
+    stroke-width: 8;
+    stroke-dasharray: 251;
+    stroke-dashoffset: 251;
+}
+
+.mini-ring.protein .ring-fill { stroke: var(--secondary); filter: drop-shadow(0 0 8px var(--secondary)); }
+.mini-ring.carbs .ring-fill { stroke: var(--warning); filter: drop-shadow(0 0 8px var(--warning)); }
+.mini-ring.fats .ring-fill { stroke: var(--accent); filter: drop-shadow(0 0 8px var(--accent)); }
+
+.mini-value {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: 'Orbitron', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.mini-label {
+    font-size: 16px;
+    letter-spacing: 3px;
+    color: var(--text-dim);
+}
+
+/* Input Section */
+.input-section {
+    margin-bottom: 40px;
+}
+
+h2 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 18px;
+    letter-spacing: 3px;
+    margin-bottom: 20px;
+    color: var(--text-dim);
+}
+
+h2 .accent {
+    color: var(--primary);
+}
+
+.input-container {
+    display: flex;
+    gap: 15px;
+}
+
+.input-wrapper {
+    flex: 1;
+    position: relative;
+}
+
+.input-wrapper input {
+    width: 100%;
+    padding: 20px 25px;
+    background: var(--bg-card);
+    border: 2px solid transparent;
+    border-radius: 15px;
+    color: var(--text);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 18px;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.input-wrapper input:focus {
+    border-color: var(--primary);
+    box-shadow: var(--glow);
+}
+
+.input-wrapper input::placeholder {
+    color: var(--text-dim);
+}
+
+.btn-primary {
+    padding: 20px 40px;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    border: none;
+    border-radius: 15px;
+    color: var(--bg-dark);
+    font-family: 'Orbitron', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(0, 240, 255, 0.3);
+}
+
+.btn-primary svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+}
+
+.suggestions {
+    margin-top: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.suggestion-tag {
+    padding: 8px 16px;
+    background: var(--bg-input);
+    border: 1px solid var(--text-dim);
+    border-radius: 20px;
+    font-size: 14px;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.suggestion-tag:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+/* Analysis Result */
+.analysis-result {
+    margin-top: 20px;
+    padding: 25px;
+    background: var(--bg-card);
+    border-radius: 15px;
+    border-left: 4px solid var(--success);
+    animation: slideIn 0.3s ease;
+}
+
+.analysis-result.hidden {
+    display: none;
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.analysis-result h4 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 16px;
+    color: var(--success);
+    margin-bottom: 15px;
+}
+
+.nutrition-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.nutrition-item {
+    text-align: center;
+}
+
+.nutrition-item .value {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 24px;
+    color: var(--primary);
+}
+
+.nutrition-item .label {
+    font-size: 12px;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+}
+
+.add-food-btn {
+    margin-top: 20px;
+    width: 100%;
+    padding: 15px;
+    background: var(--success);
+    border: none;
+    border-radius: 10px;
+    color: var(--bg-dark);
+    font-family: 'Orbitron', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.add-food-btn:hover {
+    box-shadow: 0 5px 20px rgba(0, 255, 136, 0.3);
+}
+
+/* Food Log */
+.log-container {
+    background: var(--bg-card);
+    border-radius: 20px;
+    padding: 20px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.log-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.log-container::-webkit-scrollbar-track {
+    background: var(--bg-input);
+    border-radius: 4px;
+}
+
+.log-container::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 4px;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 40px;
+    color: var(--text-dim);
+}
+
+.empty-state svg {
+    width: 60px;
+    height: 60px;
+    fill: var(--text-dim);
+    margin-bottom: 15px;
+    opacity: 0.5;
+}
+
+.food-entry {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background: var(--bg-input);
+    border-radius: 12px;
+    margin-bottom: 10px;
+    animation: slideIn 0.3s ease;
+}
+
+.food-entry:last-child {
+    margin-bottom: 0;
+}
+
+.food-info h4 {
+    font-size: 16px;
+    color: var(--text);
+    margin-bottom: 5px;
+}
+
+.food-info .macros {
+    font-size: 12px;
+    color: var(--text-dim);
+}
+
+.food-info .macros span {
+    margin-right: 15px;
+}
+
+.food-calories {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 20px;
+    color: var(--primary);
+}
+
+.delete-btn {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    cursor: pointer;
+    padding: 5px;
+    margin-left: 15px;
+    transition: color 0.3s ease;
+}
+
+.delete-btn:hover {
+    color: var(--secondary);
+}
+
+.delete-btn svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+}
+
+/* Chart Section */
+.chart-section {
+    margin-top: 40px;
+}
+
+.chart-container {
+    background: var(--bg-card);
+    border-radius: 20px;
+    padding: 30px;
+}
+
+.chart {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    height: 200px;
+    gap: 20px;
+}
+
+.chart-bar {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.bar-fill {
+    width: 100%;
+    max-width: 60px;
+    background: linear-gradient(180deg, var(--primary), var(--accent));
+    border-radius: 8px 8px 0 0;
+    transition: height 0.5s ease;
+    position: relative;
+}
+
+.bar-fill::before {
+    content: attr(data-value);
+    position: absolute;
+    top: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Orbitron', sans-serif;
+    font-size: 12px;
+    color: var(--primary);
+}
+
+.bar-label {
+    font-size: 12px;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+}
+
+/* Settings */
+.settings-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 60px;
+    height: 60px;
+    background: var(--bg-card);
+    border: 2px solid var(--primary);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.settings-btn:hover {
+    background: var(--primary);
+}
+
+.settings-btn svg {
+    width: 28px;
+    height: 28px;
+    fill: var(--primary);
+    transition: fill 0.3s ease;
+}
+
+.settings-btn:hover svg {
+    fill: var(--bg-dark);
+}
+
+/* Modal */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(5px);
+}
+
+.modal.hidden {
+    display: none;
+}
+
+.modal-content {
+    background: var(--bg-card);
+    padding: 40px;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 400px;
+    border: 1px solid var(--primary);
+    box-shadow: 0 0 50px rgba(0, 240, 255, 0.2);
+}
+
+.modal-content h3 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 20px;
+    color: var(--primary);
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.setting-item {
+    margin-bottom: 20px;
+}
+
+.setting-item label {
+    display: block;
+    font-size: 14px;
+    color: var(--text-dim);
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+}
+
+.setting-item input {
+    width: 100%;
+    padding: 15px;
+    background: var(--bg-input);
+    border: 2px solid transparent;
+    border-radius: 10px;
+    color: var(--text);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 16px;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.setting-item input:focus {
+    border-color: var(--primary);
+}
+
+.btn-secondary {
+    width: 100%;
+    padding: 15px;
+    background: transparent;
+    border: 2px solid var(--text-dim);
+    border-radius: 10px;
+    color: var(--text-dim);
+    font-family: 'Orbitron', sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+    border-color: var(--text);
+    color: var(--text);
+}
+
+.modal .btn-primary {
+    width: 100%;
+    justify-content: center;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .stats-panel {
+        grid-template-columns: 1fr;
+    }
+    
+    .input-container {
+        flex-direction: column;
+    }
+    
+    .nutrition-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    header {
+        padding: 15px 20px;
+    }
+    
+    main {
+        padding: 20px;
+    }
+}

@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Six Million Souls - Holocaust Memorial</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #000;
+            color: #e8e8e8;
+            font-family: 'Cormorant Garamond', serif;
+            min-height: 100vh;
+        }
+
+        header {
+            text-align: center;
+            padding: 60px 20px;
+            background: linear-gradient(to bottom, #0a0a0a, #000);
+        }
+
+        h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 3rem;
+            color: #d4af37;
+            letter-spacing: 10px;
+            margin-bottom: 20px;
+        }
+
+        .subtitle {
+            font-size: 1.3rem;
+            color: #666;
+            font-style: italic;
+        }
+
+        .back-link {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            color: #888;
+            text-decoration: none;
+            font-family: 'Cinzel', serif;
+            letter-spacing: 2px;
+            font-size: 0.9rem;
+            z-index: 100;
+            transition: color 0.3s;
+        }
+
+        .back-link:hover {
+            color: #d4af37;
+        }
+
+        .candles-container {
+            display: flex;
+            justify-content: center;
+            gap: 60px;
+            flex-wrap: wrap;
+            padding: 40px 10%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .candle-memorial {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .candle-memorial:hover {
+            transform: scale(1.05);
+        }
+
+        .large-candle {
+            width: 60px;
+            height: 160px;
+            background: linear-gradient(to bottom, #f5f5dc, #e8dcc4, #d4c4a8);
+            border-radius: 5px 5px 0 0;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .large-flame {
+            position: absolute;
+            top: -70px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 70px;
+            background: linear-gradient(to top, #ff4500, #ff6600, #ffcc00, #fff);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            animation: flicker 0.5s ease-in-out infinite alternate;
+            box-shadow: 0 0 50px #ff9900, 0 0 100px #ff6600, 0 0 150px rgba(255,153,0,0.3);
+        }
+
+        @keyframes flicker {
+            0% { transform: translateX(-50%) scale(1) rotate(-3deg); opacity: 1; }
+            100% { transform: translateX(-50%) scale(1.08) rotate(3deg); opacity: 0.9; }
+        }
+
+        .candle-number {
+            margin-top: 30px;
+            font-family: 'Cinzel', serif;
+            font-size: 2.5rem;
+            color: #d4af37;
+        }
+
+        .candle-million {
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            color: #666;
+            letter-spacing: 3px;
+            margin-top: 5px;
+        }
+
+        .candle-desc {
+            font-size: 1rem;
+            color: #888;
+            margin-top: 10px;
+            text-align: center;
+            max-width: 150px;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 60px;
+            background: linear-gradient(145deg, #1a1a1a, #0d0d0d);
+            border: 1px solid #2a2a2a;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-size: 2rem;
+            color: #666;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .modal-close:hover {
+            color: #d4af37;
+        }
+
+        .modal-candle {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 40px;
+        }
+
+        .modal-title {
+            font-family: 'Cinzel', serif;
+            font-size: 2.5rem;
+            color: #d4af37;
+            text-align: center;
+            margin-bottom: 30px;
+            letter-spacing: 5px;
+        }
+
+        .modal-text {
+            font-size: 1.2rem;
+            line-height: 2;
+            color: #bbb;
+            margin-bottom: 30px;
+        }
+
+        .modal-quote {
+            font-size: 1.3rem;
+            font-style: italic;
+            color: #888;
+            text-align: center;
+            padding: 30px;
+            border-left: 3px solid #d4af37;
+            margin: 30px 0;
+            background: rgba(212, 175, 55, 0.05);
+        }
+
+        .modal-quote-author {
+            display: block;
+            margin-top: 15px;
+            font-style: normal;
+            color: #d4af37;
+            font-family: 'Cinzel', serif;
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 80px 20px;
+            border-top: 1px solid #1a1a1a;
+        }
+
+        .never-forget {
+            font-family: 'Cinzel', serif;
+            font-size: 2.5rem;
+            color: #d4af37;
+            letter-spacing: 10px;
+            opacity: 0.7;
+        }
+
+        .zachor {
+            font-size: 1.5rem;
+            color: #555;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <a href="holocaust-memorial.html" class="back-link">< RETURN</a>
+    
+    <header>
+        <h1>SIX MILLION SOULS</h1>
+        <p class="subtitle">Click each candle to remember those we lost</p>
+    </header>
+
+    <div class="candles-container">
+        <div class="candle-memorial" onclick="openModal(0)">
+            <div class="large-candle"><div class="large-flame"></div></div>
+            <div class="candle-number">1</div>
+            <div class="candle-million">MILLION</div>
+            <div class="candle-desc">The Children</div>
+        </div>
+
+        <div class="candle-memorial" onclick="openModal(1)">
+            <div class="large-candle"><div class="large-flame"></div></div>
+            <div class="candle-number">2</div>
+            <div class="candle-million">MILLION</div>
+            <div class="candle-desc">Polish Jews</div>
+        </div>
+
+        <div class="candle-memorial" onclick="openModal(2)">
+            <div class="large-candle"><div class="large-flame"></div></div>
+            <div class="candle-number">3</div>
+            <div class="candle-million">MILLION</div>
+            <div class="candle-desc">Soviet Jews</div>
+        </div>
+
+        <div class="candle-memorial" onclick="openModal(3)">
+            <div class="large-candle"><div class="large-flame"></div></div>
+            <div class="candle-number">4</div>
+            <div class="candle-million">MILLION</div>
+            <div class="candle-desc">Hungarian Jews</div>
+        </div>
+
+        <div class="candle-memorial" onclick="openModal(4)">
+            <div class="large-candle"><div class="large-flame"></div></div>
+            <div class="candle-number">5</div>
+            <div class="candle-million">MILLION</div>
+            <div class="candle-desc">Western European Jews</div>
+        </div>
+
+        <div class="candle-memorial" onclick="openModal(5)">
+            <div class="large-candle"><div class="large-flame"></div></div>
+            <div class="candle-number">6</div>
+            <div class="candle-million">MILLION</div>
+            <div class="candle-desc">The Resisters</div>
+        </div>
+    </div>
+
+    <footer>
+        <p class="never-forget">NEVER FORGET</p>
+        <p class="zachor">Zachor - Remember</p>
+    </footer>
+
+    <!-- Modal -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal()">&times;</span>
+            <div class="modal-candle">
+                <div class="large-candle"><div class="large-flame"></div></div>
+            </div>
+            <h2 id="modal-title" class="modal-title"></h2>
+            <p id="modal-text" class="modal-text"></p>
+            <div id="modal-quote" class="modal-quote"></div>
+        </div>
+    </div>
+
+    <script>
+        const candleData = [
+            {
+                title: "THE CHILDREN",
+                text: "1.5 million children were murdered in the Holocaust. They never got to grow up, to fall in love, to have families of their own. Some were infants torn from their mothers' arms. Others were teenagers who still believed in a future. In the camps, children were often the first selected for death, deemed 'unproductive' by the Nazi regime. Yet even in the darkest moments, children drew pictures, played games, and dreamed of freedom.",
+                quote: "I still believe, in spite of everything, that people are truly good at heart.",
+                author: "Anne Frank, age 15"
+            },
+            {
+                title: "POLISH JEWS",
+                text: "Poland was home to 3.3 million Jews before the war - the largest Jewish community in Europe. By 1945, 90% had been murdered. Cities like Warsaw, Krakow, and Lodz, once vibrant centers of Jewish culture, learning, and commerce, were emptied. The Warsaw Ghetto uprising of 1943 showed the world that even facing certain death, the human spirit refuses to surrender.",
+                quote: "We knew perfectly well that there was no prospect of victory. We fought simply not to allow the Germans alone to pick the time and place of our deaths.",
+                author: "Marek Edelman, Warsaw Ghetto Fighter"
+            },
+            {
+                title: "SOVIET JEWS",
+                text: "Over one million Soviet Jews were killed, many in mass shootings by mobile killing units called Einsatzgruppen. At Babi Yar, over 33,000 Jews were shot in just two days. These killing fields stretched across Ukraine, Belarus, Lithuania, and Latvia. Entire communities were marched to ravines, forests, and pits, never to return.",
+                quote: "They killed them all: scholars and illiterates, the old and the young, men, women, and children.",
+                author: "Vasily Grossman, Soviet War Correspondent"
+            },
+            {
+                title: "HUNGARIAN JEWS",
+                text: "Hungary's Jews survived until 1944, when Nazi Germany occupied the country. In just 56 days, over 437,000 Hungarian Jews were deported to Auschwitz - the fastest deportation of the Holocaust. Families who had lived in Hungary for generations were gone in weeks. Raoul Wallenberg and others saved thousands, but could not stop the machinery of death.",
+                quote: "One person of integrity can make a difference.",
+                author: "Raoul Wallenberg, who saved tens of thousands"
+            },
+            {
+                title: "WESTERN EUROPEAN JEWS",
+                text: "From France to the Netherlands, Belgium to Greece, Jews were hunted, betrayed, and deported. Anne Frank's family hid in Amsterdam for two years before discovery. In France, the Vichy government collaborated in deportations. Yet there were also rescuers: the village of Le Chambon-sur-Lignon saved thousands, and Denmark evacuated nearly all its Jews to Sweden.",
+                quote: "Whoever saves a single life is considered to have saved the whole world.",
+                author: "The Talmud"
+            },
+            {
+                title: "THE RESISTERS",
+                text: "Not all went quietly. Jewish partisans fought in the forests of Eastern Europe. The Bielski brothers saved 1,200 Jews. Prisoners revolted at Sobibor and Treblinka. Women smuggled explosives into Auschwitz, blowing up a crematorium. Doctors and nurses saved who they could. Rabbis kept faith alive. Teachers held secret classes. Every act of defiance was a victory of the human spirit.",
+                quote: "We are fighting for three lines in the history books, to show the world that the Jewish people did not go to their deaths like lambs to the slaughter.",
+                author: "Mordechai Anielewicz, Warsaw Ghetto Uprising Commander"
+            }
+        ];
+
+        function openModal(index) {
+            const data = candleData[index];
+            document.getElementById('modal-title').textContent = data.title;
+            document.getElementById('modal-text').textContent = data.text;
+            document.getElementById('modal-quote').innerHTML = '"' + data.quote + '"<span class="modal-quote-author">- ' + data.author + '</span>';
+            document.getElementById('modal').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close modal on outside click
+        document.getElementById('modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // Close on escape
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>

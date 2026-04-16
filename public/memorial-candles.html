@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Six Million Souls - Memorial</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0a;
+            color: #e8e8e8;
+            min-height: 100vh;
+        }
+
+        /* Names Background */
+        .names-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .name {
+            position: absolute;
+            font-family: 'Cormorant Garamond', serif;
+            color: rgba(255, 255, 255, 0.04);
+            font-size: 14px;
+            letter-spacing: 2px;
+            animation: nameFade 20s infinite ease-in-out;
+        }
+
+        @keyframes nameFade {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 1; }
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 80px 20px;
+        }
+
+        .back-link {
+            display: inline-block;
+            color: #888;
+            text-decoration: none;
+            font-size: 12px;
+            letter-spacing: 3px;
+            margin-bottom: 60px;
+            transition: color 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: #d4af37;
+        }
+
+        .page-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(32px, 6vw, 56px);
+            font-weight: 300;
+            text-align: center;
+            margin-bottom: 20px;
+            letter-spacing: 10px;
+        }
+
+        .page-subtitle {
+            text-align: center;
+            color: #888;
+            font-size: 14px;
+            letter-spacing: 4px;
+            margin-bottom: 100px;
+        }
+
+        .candles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            margin-bottom: 100px;
+        }
+
+        .memorial-candle {
+            background: linear-gradient(135deg, rgba(20, 20, 20, 0.9), rgba(15, 15, 15, 0.95));
+            border: 1px solid rgba(255, 215, 140, 0.1);
+            padding: 50px 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .memorial-candle::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(to right, transparent, #d4af37, transparent);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .memorial-candle:hover {
+            border-color: rgba(255, 215, 140, 0.3);
+            transform: translateY(-5px);
+            box-shadow: 0 20px 60px rgba(212, 175, 55, 0.1);
+        }
+
+        .memorial-candle:hover::before {
+            opacity: 1;
+        }
+
+        .candle-visual {
+            position: relative;
+            height: 150px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .candle-body {
+            width: 8px;
+            height: 100px;
+            background: linear-gradient(to top, #8B4513, #D2691E, #DEB887);
+            border-radius: 2px;
+            position: relative;
+        }
+
+        .candle-flame {
+            position: absolute;
+            top: -35px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 40px;
+            background: radial-gradient(ellipse at bottom, #fff 0%, #ffd700 20%, #ff8c00 50%, #ff4500 70%, transparent 100%);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            animation: candleFlicker 3s infinite ease-in-out;
+            box-shadow: 0 0 30px rgba(255, 200, 100, 0.5), 0 0 60px rgba(255, 150, 50, 0.3);
+        }
+
+        @keyframes candleFlicker {
+            0%, 100% { transform: translateX(-50%) scale(1) rotate(-1deg); opacity: 1; }
+            25% { transform: translateX(-50%) scale(1.05) rotate(1deg); opacity: 0.95; }
+            50% { transform: translateX(-50%) scale(0.95) rotate(-0.5deg); opacity: 1; }
+            75% { transform: translateX(-50%) scale(1.02) rotate(0.5deg); opacity: 0.97; }
+        }
+
+        .candle-glow {
+            position: absolute;
+            top: -60px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(circle, rgba(255, 200, 100, 0.15) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .candle-number {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 48px;
+            color: #d4af37;
+            margin-bottom: 10px;
+        }
+
+        .candle-label {
+            font-size: 11px;
+            letter-spacing: 4px;
+            color: #888;
+            margin-bottom: 20px;
+        }
+
+        .candle-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 22px;
+            color: #fff;
+            margin-bottom: 15px;
+        }
+
+        .candle-summary {
+            font-size: 13px;
+            line-height: 1.8;
+            color: #777;
+        }
+
+        .click-hint {
+            margin-top: 20px;
+            font-size: 11px;
+            color: #555;
+            letter-spacing: 2px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .memorial-candle:hover .click-hint {
+            opacity: 1;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #151515, #0d0d0d);
+            border: 1px solid rgba(255, 215, 140, 0.15);
+            max-width: 700px;
+            width: 100%;
+            padding: 60px 50px;
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 24px;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .modal-close:hover {
+            color: #d4af37;
+        }
+
+        .modal-candle {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 40px;
+        }
+
+        .modal-candle .candle-body {
+            width: 10px;
+            height: 120px;
+        }
+
+        .modal-candle .candle-flame {
+            width: 24px;
+            height: 48px;
+        }
+
+        .modal-number {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 72px;
+            color: #d4af37;
+            text-align: center;
+            margin-bottom: 5px;
+        }
+
+        .modal-label {
+            text-align: center;
+            font-size: 11px;
+            letter-spacing: 4px;
+            color: #888;
+            margin-bottom: 30px;
+        }
+
+        .modal-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 32px;
+            text-align: center;
+            margin-bottom: 40px;
+            color: #fff;
+        }
+
+        .modal-text {
+            font-size: 15px;
+            line-height: 2;
+            color: #aaa;
+            margin-bottom: 30px;
+        }
+
+        .modal-quote {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 20px;
+            font-style: italic;
+            color: #888;
+            text-align: center;
+            padding: 30px;
+            border-left: 2px solid #d4af37;
+            margin: 40px 0;
+            background: rgba(212, 175, 55, 0.03);
+        }
+
+        .modal-quote .author {
+            display: block;
+            margin-top: 15px;
+            font-size: 12px;
+            font-style: normal;
+            color: #d4af37;
+            letter-spacing: 2px;
+        }
+
+        /* Footer */
+        .memorial-footer {
+            text-align: center;
+            padding: 60px 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .hebrew-text {
+            font-size: 24px;
+            color: #d4af37;
+            margin-bottom: 20px;
+            font-family: serif;
+        }
+
+        .memorial-footer p {
+            font-size: 12px;
+            color: #555;
+            letter-spacing: 3px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Names Background -->
+    <div class="names-background" id="namesBackground"></div>
+
+    <div class="container">
+        <a href="holocaust-memorial.html" class="back-link">RETURN TO MEMORIAL</a>
+
+        <h1 class="page-title">SIX MILLION</h1>
+        <p class="page-subtitle">EACH CANDLE REPRESENTS ONE MILLION SOULS</p>
+
+        <div class="candles-grid">
+            <div class="memorial-candle" onclick="openModal(0)">
+                <div class="candle-visual">
+                    <div class="candle-glow"></div>
+                    <div class="candle-body">
+                        <div class="candle-flame"></div>
+                    </div>
+                </div>
+                <div class="candle-number">1</div>
+                <div class="candle-label">MILLION</div>
+                <h3 class="candle-title">The Children</h3>
+                <p class="candle-summary">1.5 million Jewish children were murdered. This candle burns for the youngest victims who never had a chance to grow up.</p>
+                <p class="click-hint">CLICK TO REMEMBER</p>
+            </div>
+
+            <div class="memorial-candle" onclick="openModal(1)">
+                <div class="candle-visual">
+                    <div class="candle-glow"></div>
+                    <div class="candle-body">
+                        <div class="candle-flame"></div>
+                    </div>
+                </div>
+                <div class="candle-number">2</div>
+                <div class="candle-label">MILLION</div>
+                <h3 class="candle-title">Polish Jewry</h3>
+                <p class="candle-summary">3 million Polish Jews - 90% of the community - were annihilated. The largest and oldest Jewish community in Europe, erased.</p>
+                <p class="click-hint">CLICK TO REMEMBER</p>
+            </div>
+
+            <div class="memorial-candle" onclick="openModal(2)">
+                <div class="candle-visual">
+                    <div class="candle-glow"></div>
+                    <div class="candle-body">
+                        <div class="candle-flame"></div>
+                    </div>
+                </div>
+                <div class="candle-number">3</div>
+                <div class="candle-label">MILLION</div>
+                <h3 class="candle-title">Soviet Jews</h3>
+                <p class="candle-summary">Over one million Soviet Jews were murdered, many in mass shootings at places like Babi Yar, where 33,000 died in two days.</p>
+                <p class="click-hint">CLICK TO REMEMBER</p>
+            </div>
+
+            <div class="memorial-candle" onclick="openModal(3)">
+                <div class="candle-visual">
+                    <div class="candle-glow"></div>
+                    <div class="candle-body">
+                        <div class="candle-flame"></div>
+                    </div>
+                </div>
+                <div class="candle-number">4</div>
+                <div class="candle-label">MILLION</div>
+                <h3 class="candle-title">Hungarian Jews</h3>
+                <p class="candle-summary">565,000 Hungarian Jews were murdered, most in just 56 days in 1944 - the fastest deportation of the Holocaust.</p>
+                <p class="click-hint">CLICK TO REMEMBER</p>
+            </div>
+
+            <div class="memorial-candle" onclick="openModal(4)">
+                <div class="candle-visual">
+                    <div class="candle-glow"></div>
+                    <div class="candle-body">
+                        <div class="candle-flame"></div>
+                    </div>
+                </div>
+                <div class="candle-number">5</div>
+                <div class="candle-label">MILLION</div>
+                <h3 class="candle-title">Western Europe</h3>
+                <p class="candle-summary">Jews from Germany, France, Netherlands, Belgium, and beyond. Communities that had flourished for centuries, destroyed.</p>
+                <p class="click-hint">CLICK TO REMEMBER</p>
+            </div>
+
+            <div class="memorial-candle" onclick="openModal(5)">
+                <div class="candle-visual">
+                    <div class="candle-glow"></div>
+                    <div class="candle-body">
+                        <div class="candle-flame"></div>
+                    </div>
+                </div>
+                <div class="candle-number">6</div>
+                <div class="candle-label">MILLION</div>
+                <h3 class="candle-title">The Resisters</h3>
+                <p class="candle-summary">Those who fought back - in ghettos, camps, and forests. The Warsaw Ghetto Uprising. The partisans. They died fighting.</p>
+                <p class="click-hint">CLICK TO REMEMBER</p>
+            </div>
+        </div>
+    </div>
+
+    <footer class="memorial-footer">
+        <p class="hebrew-text">zikhronam livrakha</p>
+        <p>MAY THEIR MEMORY BE A BLESSING</p>
+    </footer>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+            
+            <div class="modal-candle">
+                <div class="candle-body" style="width: 10px; height: 120px; background: linear-gradient(to top, #8B4513, #D2691E, #DEB887); border-radius: 2px; position: relative;">
+                    <div class="candle-flame" style="position: absolute; top: -45px; left: 50%; transform: translateX(-50%); width: 24px; height: 48px; background: radial-gradient(ellipse at bottom, #fff 0%, #ffd700 20%, #ff8c00 50%, #ff4500 70%, transparent 100%); border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; animation: candleFlicker 3s infinite ease-in-out; box-shadow: 0 0 30px rgba(255, 200, 100, 0.5), 0 0 60px rgba(255, 150, 50, 0.3);"></div>
+                </div>
+            </div>
+            
+            <div class="modal-number" id="modalNumber">1</div>
+            <div class="modal-label">MILLION SOULS</div>
+            <h2 class="modal-title" id="modalTitle">The Children</h2>
+            
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <script>
+        // Names background
+        const names = [
+            'Sarah', 'David', 'Rachel', 'Moshe', 'Leah', 'Abraham', 'Rebecca', 'Isaac',
+            'Miriam', 'Jacob', 'Hannah', 'Samuel', 'Esther', 'Daniel', 'Ruth', 'Solomon',
+            'Judith', 'Aaron', 'Naomi', 'Benjamin', 'Deborah', 'Joseph', 'Anna', 'Eli',
+            'Eva', 'Max', 'Rosa', 'Leo', 'Hanna', 'Felix', 'Greta', 'Otto', 'Ida', 'Karl'
+        ];
+
+        const namesBackground = document.getElementById('namesBackground');
+        for (let i = 0; i < 80; i++) {
+            const nameEl = document.createElement('div');
+            nameEl.className = 'name';
+            nameEl.textContent = names[Math.floor(Math.random() * names.length)];
+            nameEl.style.left = Math.random() * 100 + '%';
+            nameEl.style.top = Math.random() * 100 + '%';
+            nameEl.style.animationDelay = Math.random() * 20 + 's';
+            nameEl.style.animationDuration = (15 + Math.random() * 10) + 's';
+            namesBackground.appendChild(nameEl);
+        }
+
+        // Modal data
+        const modalData = [
+            {
+                number: 1,
+                title: 'The Children',
+                body: `
+                    <p class="modal-text">An estimated 1.5 million Jewish children were murdered during the Holocaust. They were the most vulnerable victims - babies torn from mothers' arms, toddlers who could not understand why they were being taken away, children who had to grow up overnight in ghettos and camps.</p>
+                    <p class="modal-text">At Auschwitz, children were often sent directly to the gas chambers upon arrival. Those who survived selection faced starvation, disease, and medical experiments. Very few survived.</p>
+                    <div class="modal-quote">
+                        "We were children. We had done nothing wrong. Our only crime was being born Jewish."
+                        <span class="author">- A child survivor</span>
+                    </div>
+                    <p class="modal-text">Today, we remember their stolen futures - the doctors, artists, teachers, and parents they never became. We remember their laughter, silenced forever.</p>
+                `
+            },
+            {
+                number: 2,
+                title: 'Polish Jewry',
+                body: `
+                    <p class="modal-text">Before the war, Poland was home to 3.3 million Jews - the largest Jewish community in Europe. Cities like Warsaw, Krakow, and Lodz were centers of Jewish culture, learning, and religious life. Yiddish literature flourished. Great rabbis taught. Communities thrived.</p>
+                    <p class="modal-text">By 1945, 90% were dead. Three million Polish Jews murdered. Entire shtetls erased from the map. The Warsaw Ghetto, once home to 400,000 Jews, was reduced to rubble.</p>
+                    <div class="modal-quote">
+                        "A thousand years of Jewish civilization in Poland, destroyed in three years."
+                        <span class="author">- Historian Emanuel Ringelblum</span>
+                    </div>
+                    <p class="modal-text">The death camps - Auschwitz, Treblinka, Sobibor, Majdanek, Belzec, Chelmno - were all built on Polish soil, designed for industrial murder.</p>
+                `
+            },
+            {
+                number: 3,
+                title: 'Soviet Jews',
+                body: `
+                    <p class="modal-text">When Germany invaded the Soviet Union in 1941, mobile killing units called Einsatzgruppen followed the army. Their mission: kill every Jew they found. In ravines, forests, and fields, over one million Soviet Jews were shot.</p>
+                    <p class="modal-text">At Babi Yar, outside Kyiv, 33,771 Jews were shot in just two days - September 29-30, 1941. Men, women, children forced to undress, march to the ravine, and stand at the edge before being shot.</p>
+                    <div class="modal-quote">
+                        "No monument stands over Babi Yar. A steep cliff only, like the rudest headstone."
+                        <span class="author">- Yevgeny Yevtushenko</span>
+                    </div>
+                    <p class="modal-text">Similar massacres occurred across Ukraine, Belarus, Lithuania, and Latvia. The Holocaust by bullets claimed over 1.5 million Jewish lives.</p>
+                `
+            },
+            {
+                number: 4,
+                title: 'Hungarian Jews',
+                body: `
+                    <p class="modal-text">Hungarian Jews survived longer than most of European Jewry. But in March 1944, Germany occupied Hungary, and Adolf Eichmann arrived to personally oversee their deportation.</p>
+                    <p class="modal-text">In just 56 days - from May 15 to July 9, 1944 - over 437,000 Hungarian Jews were deported to Auschwitz. It was the fastest, most concentrated deportation of the Holocaust. Up to 12,000 people arrived daily. Most were gassed within hours.</p>
+                    <div class="modal-quote">
+                        "In those 56 days, an ancient community was destroyed. Families who had lived in Hungary for generations - doctors, lawyers, merchants, rabbis - all gone."
+                        <span class="author">- Randolph Braham, Holocaust historian</span>
+                    </div>
+                    <p class="modal-text">By the end of the war, 565,000 Hungarian Jews had been murdered - nearly 70% of the community.</p>
+                `
+            },
+            {
+                number: 5,
+                title: 'Western Europe',
+                body: `
+                    <p class="modal-text">The Jews of Germany, France, Netherlands, Belgium, Italy, and beyond - assimilated communities who had contributed to European culture for centuries - were hunted down and deported east to their deaths.</p>
+                    <p class="modal-text">In the Netherlands, 75% of Jews were murdered - the highest rate in Western Europe. Anne Frank and her family, hidden in an Amsterdam attic for two years, were among them. In France, 77,000 Jews were deported, including 11,000 children.</p>
+                    <div class="modal-quote">
+                        "I still believe, in spite of everything, that people are truly good at heart."
+                        <span class="author">- Anne Frank, who died in Bergen-Belsen at age 15</span>
+                    </div>
+                    <p class="modal-text">German Jews - Einstein's community, Freud's community - were the first victims. By 1943, the Nazis declared Germany "Judenrein" - cleansed of Jews.</p>
+                `
+            },
+            {
+                number: 6,
+                title: 'The Resisters',
+                body: `
+                    <p class="modal-text">They fought back. Against impossible odds, with almost no weapons, knowing they would die - they chose to die fighting. The Warsaw Ghetto Uprising of April 1943 saw Jews hold off the German army for nearly a month.</p>
+                    <p class="modal-text">Jewish partisans fought in the forests of Eastern Europe. The Bielski brothers saved 1,200 Jews in Belarus. At Sobibor and Treblinka, prisoners staged uprisings. At Auschwitz, the Sonderkommando blew up a crematorium.</p>
+                    <div class="modal-quote">
+                        "We knew we were going to die. But we wanted to choose how. We wanted to die with dignity, with weapons in our hands."
+                        <span class="author">- Marek Edelman, Warsaw Ghetto fighter</span>
+                    </div>
+                    <p class="modal-text">This candle burns for those who refused to go quietly. Who scratched "I was here" into walls. Who sang Hatikvah on the way to the gas chambers. Who never stopped being human.</p>
+                `
+            }
+        ];
+
+        function openModal(index) {
+            const modal = document.getElementById('modalOverlay');
+            const data = modalData[index];
+            
+            document.getElementById('modalNumber').textContent = data.number;
+            document.getElementById('modalTitle').textContent = data.title;
+            document.getElementById('modalBody').innerHTML = data.body;
+            
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal(event) {
+            if (event && event.target !== document.getElementById('modalOverlay')) return;
+            document.getElementById('modalOverlay').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
+    </script>
+</body>
+</html>
