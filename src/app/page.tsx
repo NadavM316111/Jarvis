@@ -47,6 +47,10 @@ function generateId() {
   return Math.random().toString(36).slice(2);
 }
 
+const API = typeof window !== 'undefined' && window.location.hostname !== 'localhost'
+  ? 'https://api.heyjarvis.me'
+  : 'http://localhost:3001';
+
 export default function Home() {
   const [token, setToken] = useState<string | null>(null);
   const [userName, setUserName] = useState('');
@@ -117,24 +121,18 @@ export default function Home() {
     setConversations(prev => prev.map(c => c.id === convId ? { ...c, messages: [...c.messages, msg] } : c));
   }
 
-  // ── Dedicated bg-response poller ──────────────────────────────────────────
-  // Runs every 800ms independently of the voice-status interval.
-  // Uses refs so it always sees the latest token and activeId without
-  // needing to be torn down and recreated when they change.
   useEffect(() => {
     const interval = setInterval(async () => {
       const tok = tokenRef.current;
       if (!tok) return;
       try {
-        const res = await fetch("http://localhost:3001/bg-response", {
+        const res = await fetch(`${API}/bg-response`, {
           headers: { Authorization: `Bearer ${tok}` }
         });
         const data = await res.json();
         if (!data.responses?.length) return;
 
         for (const r of data.responses) {
-          // Always use the current active conversation; if none exists yet,
-          // create one so the message has somewhere to live.
           let convId = activeIdRef.current;
           if (!convId) {
             convId = generateId();
@@ -159,7 +157,7 @@ export default function Home() {
     }, 800);
 
     return () => clearInterval(interval);
-  }, []); // intentionally empty — uses refs
+  }, []);
 
   useEffect(() => {
     if (!token) return;
@@ -167,7 +165,7 @@ export default function Home() {
 
     const fetchUpdates = async () => {
       try {
-        const res = await fetch("http://localhost:3001/proactive-updates", { headers: { Authorization: `Bearer ${token}` } });
+        const res = await fetch(`${API}/proactive-updates`, { headers: { Authorization: `Bearer ${token}` } });
         const data = await res.json();
         setUpdates(data.updates || []);
         setUnreadCount((data.updates || []).filter((u: Update) => !u.read).length);
@@ -176,7 +174,7 @@ export default function Home() {
 
     const checkVoice = async () => {
       try {
-        const res = await fetch("http://localhost:3001/voice/running");
+        const res = await fetch(`${API}/voice/running`);
         const data = await res.json();
         setVoiceRunning(data.running);
       } catch {}
@@ -189,7 +187,7 @@ export default function Home() {
 
     const interval = setInterval(async () => {
       try {
-        const res = await fetch("http://localhost:3001/voice-status");
+        const res = await fetch(`${API}/voice-status`);
         const data = await res.json();
         setIsListening(data.listening);
         setIsSpeaking(data.speaking);
@@ -212,14 +210,9 @@ export default function Home() {
           if (convId) addMessageToConv(convId, { role: "assistant", content: data.response, source: "voice", timestamp: Date.now() });
           setTimeout(() => { if (lastResponseRef.current === data.response) lastResponseRef.current = ''; }, 5000);
         }
-
-        // NOTE: bg-response polling has been moved to its own dedicated useEffect above.
-        // Removing it from here prevents duplicate messages.
-
       } catch {}
     }, 400);
 
-    // Microphone for audio visualizer
     navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
       streamRef.current = stream;
       const ctx = new AudioContext();
@@ -236,7 +229,6 @@ export default function Home() {
       tick();
     }).catch(() => {});
 
-    // Camera streaming to JARVIS (silent, no preview)
     navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480 }, audio: false })
       .then(stream => {
         cameraStreamRef.current = stream;
@@ -255,7 +247,7 @@ export default function Home() {
             ctx.drawImage(video, 0, 0, 640, 480);
             const frame = canvas.toDataURL('image/jpeg', 0.7).split(',')[1];
             latestCameraFrameRef.current = frame;
-            await fetch('http://localhost:3001/camera-frame', {
+            await fetch(`${API}/camera-frame`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${saved}` },
               body: JSON.stringify({ frame })
@@ -268,7 +260,7 @@ export default function Home() {
             ctx.drawImage(video, 0, 0, 640, 480);
             const frame = canvas.toDataURL('image/jpeg', 0.7).split(',')[1];
             latestCameraFrameRef.current = frame;
-            await fetch('http://localhost:3001/camera-frame', {
+            await fetch(`${API}/camera-frame`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${saved}` },
               body: JSON.stringify({ frame })
@@ -308,7 +300,7 @@ export default function Home() {
     setActiveId(id);
     activeIdRef.current = id;
     setSidebarOpen(false);
-    fetch("http://localhost:3001/reset", { method: "POST", headers: { Authorization: `Bearer ${token}` } }).catch(() => {});
+    fetch(`${API}/reset`, { method: "POST", headers: { Authorization: `Bearer ${token}` } }).catch(() => {});
   }
 
   function deleteConversation(id: string) {
@@ -326,10 +318,10 @@ export default function Home() {
 
   const toggleVoice = async () => {
     if (voiceRunning) {
-      await fetch("http://localhost:3001/voice/stop", { method: "POST" });
+      await fetch(`${API}/voice/stop`, { method: "POST" });
       setVoiceRunning(false);
     } else {
-      await fetch("http://localhost:3001/voice/start", { method: "POST" });
+      await fetch(`${API}/voice/start`, { method: "POST" });
       setVoiceRunning(true);
     }
   };
@@ -342,7 +334,7 @@ export default function Home() {
       const body = authMode === 'login'
         ? { email: authEmail, password: authPassword }
         : { email: authEmail, password: authPassword, name: authName };
-      const res = await fetch(`http://localhost:3001${endpoint}`, {
+      const res = await fetch(`${API}${endpoint}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)
@@ -369,7 +361,7 @@ export default function Home() {
   };
 
   const markAllRead = async () => {
-    await fetch("http://localhost:3001/proactive-updates/read", { method: "POST", headers: { Authorization: `Bearer ${token}` } });
+    await fetch(`${API}/proactive-updates/read`, { method: "POST", headers: { Authorization: `Bearer ${token}` } });
     setUpdates(prev => prev.map(u => ({ ...u, read: true }))); setUnreadCount(0);
   };
 
@@ -380,7 +372,7 @@ export default function Home() {
     const check: DailyCheck = { id: Date.now(), label, status: "processing", lastResult: "", expanded: false, followUp: "" };
     setDailyChecks(prev => [...prev, check]);
     try {
-      const res = await fetch("http://localhost:3001/chat", {
+      const res = await fetch(`${API}/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ message: `${label} — check this every day and send a proactive_update with the result` })
@@ -394,7 +386,7 @@ export default function Home() {
     if (!check.followUp.trim()) return;
     setDailyChecks(prev => prev.map(c => c.id === check.id ? { ...c, status: "processing", followUp: "" } : c));
     try {
-      const res = await fetch("http://localhost:3001/chat", {
+      const res = await fetch(`${API}/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ message: `Regarding my daily check "${check.label}": ${check.followUp}` })
@@ -433,7 +425,7 @@ export default function Home() {
 
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:3001/chat", {
+      const res = await fetch(`${API}/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({
@@ -443,8 +435,6 @@ export default function Home() {
         })
       });
       const data = await res.json();
-      // Show immediate response if it's not the bg-task placeholder.
-      // The actual result will arrive via the bg-response poller.
       if (data.message && data.message !== 'On it.') {
         addMessageToConv(finalConvId, { role: "assistant", content: data.message, source: "text", timestamp: Date.now() });
       }
@@ -591,7 +581,6 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Waveform */}
           <div className="hidden sm:flex items-center gap-0.5 h-5 mr-1">
             {[...Array(5)].map((_, i) => {
               const h = isListening || audioLevel > 10 ? Math.max(3, (audioLevel / 255) * 20 * (0.4 + (i % 3) * 0.3)) : isSpeaking ? 4 + Math.abs(Math.sin(Date.now() / 200 + i)) * 12 : 3;
@@ -599,7 +588,6 @@ export default function Home() {
             })}
           </div>
 
-          {/* Camera indicator */}
           {cameraActive && (
             <div className="hidden sm:flex items-center gap-1.5 px-2 py-1 rounded-lg bg-white/5">
               <div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
@@ -622,7 +610,6 @@ export default function Home() {
           </button>
         </div>
 
-        {/* Updates panel */}
         {showUpdates && (
           <div className="absolute inset-0 md:inset-auto md:top-[53px] md:right-0 md:w-80 md:h-[calc(100vh-53px)] bg-[rgba(6,6,8,0.99)] border-l border-white/5 z-20 flex flex-col overflow-hidden">
             <div className="flex-1 overflow-y-auto min-h-0">
@@ -687,7 +674,6 @@ export default function Home() {
           </div>
         )}
 
-        {/* Messages */}
         <div className="flex-1 overflow-y-auto px-4 py-5 flex flex-col gap-4 min-h-0">
           {messages.length === 0 ? (
             <div className="flex-1 flex flex-col items-center justify-center text-center h-full px-4">
@@ -747,7 +733,6 @@ export default function Home() {
           <div ref={bottomRef} />
         </div>
 
-        {/* File attachment preview */}
         {attachedFile && (
           <div className="px-4 pt-2 flex-shrink-0">
             <div className="flex items-center gap-2">
@@ -770,7 +755,6 @@ export default function Home() {
           </div>
         )}
 
-        {/* Input */}
         <div className="px-4 pb-4 pt-3 flex gap-2.5 border-t border-white/5 flex-shrink-0">
           <input
             ref={fileInputRef}
