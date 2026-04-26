@@ -533,10 +533,12 @@ const toggleVoice = async () => {
             New conversation
           </button>
 
-          <button onClick={toggleVoice} className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl border text-xs font-medium transition-all mb-2 ${voiceRunning ? 'bg-green-500/15 border-green-500/30 text-green-400' : 'bg-white/5 border-white/10 text-white/50 hover:text-white/70'}`}>
-            <div className={`w-2 h-2 rounded-full ${voiceRunning ? 'bg-green-400 animate-pulse' : 'bg-white/20'}`} />
-            {voiceRunning ? 'Voice active — stop' : 'Start voice'}
-          </button>
+          {typeof window !== 'undefined' && window.location.hostname === 'localhost' && (
+  <button onClick={toggleVoice} className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl border text-xs font-medium transition-all mb-2 ${voiceRunning ? 'bg-green-500/15 border-green-500/30 text-green-400' : 'bg-white/5 border-white/10 text-white/50 hover:text-white/70'}`}>
+    <div className={`w-2 h-2 rounded-full ${voiceRunning ? 'bg-green-400 animate-pulse' : 'bg-white/20'}`} />
+    {voiceRunning ? 'Voice active — stop' : 'Start voice'}
+  </button>
+)}
           <button
   onClick={async () => {
     const res = await fetch(`${API}/voice/spoken-updates`, { method: 'POST', headers: { 'Content-Type': 'application/json' } });
@@ -854,6 +856,32 @@ const toggleVoice = async () => {
             onChange={handleFileAttach}
             className="hidden"
           />
+          <button
+  onClick={() => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) return alert('Speech recognition not supported in this browser.');
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'en-US';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+    recognition.onresult = (e: any) => {
+      const transcript = e.results[0][0].transcript;
+      setInput(transcript);
+      setTimeout(() => send(), 100);
+    };
+    recognition.onerror = (e: any) => console.log('Speech error:', e.error);
+    recognition.start();
+  }}
+  className="w-11 h-11 flex items-center justify-center rounded-xl hover:bg-white/5 transition-all flex-shrink-0 text-white/30 hover:text-white/60"
+  title="Voice input"
+>
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+    <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+    <line x1="12" y1="19" x2="12" y2="23"/>
+    <line x1="8" y1="23" x2="16" y2="23"/>
+  </svg>
+</button>
           <button
             onClick={() => fileInputRef.current?.click()}
             className="w-11 h-11 flex items-center justify-center rounded-xl hover:bg-white/5 transition-all flex-shrink-0 text-white/30 hover:text-white/60"
