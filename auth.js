@@ -59,9 +59,10 @@ async function signup(email, password, name) {
   saveUsers(users);
 
   // Init memory with their name
-  const memory = loadUserMemory(userId);
-  memory.userName = name;
-  saveUserMemory(userId, memory);
+const memory = loadUserMemory(userId);
+memory.userName = name;
+memory.email = email;
+saveUserMemory(userId, memory);
 
   const token = jwt.sign({ userId, email, name }, JWT_SECRET, { expiresIn: '30d' });
   return { token, userId, name };
