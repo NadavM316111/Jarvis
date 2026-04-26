@@ -858,60 +858,30 @@ const toggleVoice = async () => {
           />
           <button
   onClick={() => {
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    if (!SpeechRecognition) return alert('Speech recognition not supported in this browser.');
-    const recognition = new SpeechRecognition();
-    recognition.lang = 'en-US';
-    recognition.interimResults = false;
-    recognition.maxAlternatives = 1;
-    setIsListening(true);
-    recognition.onresult = (e: any) => {
-      setIsListening(false);
-      const transcript = e.results[0][0].transcript;
-      setInput(transcript);
-      setTimeout(() => {
-        const userMsg = transcript;
-        setInput('');
-        // directly trigger send with transcript
-        (async () => {
-          let convId = activeIdRef.current;
-          if (!convId || !conversations.find(c => c.id === convId)) {
-            convId = generateId();
-            setConversations(prev => [{ id: convId!, title: userMsg.slice(0, 40), messages: [], createdAt: Date.now() }, ...prev]);
-            setActiveId(convId);
-            activeIdRef.current = convId;
-          }
-          const finalConvId = convId!;
-          addMessageToConv(finalConvId, { role: "user", content: userMsg, source: "voice", timestamp: Date.now() });
-          setLoading(true);
-          try {
-            const res = await fetch(`${API}/chat`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-              body: JSON.stringify({ message: userMsg, cameraFrame: latestCameraFrameRef.current })
-            });
-            const data = await res.json();
-            if (data.message && data.message !== 'On it.') {
-              addMessageToConv(finalConvId, { role: "assistant", content: data.message, source: "voice", timestamp: Date.now() });
-              if (window.speechSynthesis) {
-                window.speechSynthesis.cancel();
-                const utterance = new SpeechSynthesisUtterance(data.message.replace(/<[^>]*>/g, '').replace(/\*\*/g, '').replace(/\*/g, ''));
-                utterance.rate = 1.0;
-                utterance.pitch = 0.85;
-                window.speechSynthesis.speak(utterance);
-              }
-            }
-          } catch {}
-          setLoading(false);
-        })();
-      }, 100);
-    };
-    recognition.onerror = () => setIsListening(false);
-    recognition.onend = () => setIsListening(false);
-    recognition.start();
-  }}
-  className={`w-11 h-11 flex items-center justify-center rounded-xl transition-all flex-shrink-0 ${isListening ? 'bg-red-500/20 text-red-400 animate-pulse' : 'hover:bg-white/5 text-white/30 hover:text-white/60'}`}
-  title="Voice input"
+  const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+  if (!SpeechRecognition) {
+    alert('Speech recognition not supported. Use Chrome or Edge.');
+    return;
+  }
+  alert('Starting recognition...');
+  const recognition = new SpeechRecognition();
+  recognition.lang = 'en-US';
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
+  setIsListening(true);
+  recognition.onstart = () => alert('Listening! Speak now.');
+  recognition.onresult = (e: any) => {
+    alert('Got result: ' + e.results[0][0].transcript);
+    setIsListening(false);
+    // ... rest of code
+  };
+  recognition.onerror = (e: any) => {
+    alert('Error: ' + e.error);
+    setIsListening(false);
+  };
+  recognition.onend = () => setIsListening(false);
+  recognition.start();
+}}
 >
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
     <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
