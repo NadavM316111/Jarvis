@@ -442,6 +442,15 @@ const toggleVoice = async () => {
       const data = await res.json();
       if (data.message && data.message !== 'On it.') {
         addMessageToConv(finalConvId, { role: "assistant", content: data.message, source: "text", timestamp: Date.now() });
+        // Speak response in user's browser
+        if (typeof window !== 'undefined' && window.speechSynthesis) {
+          window.speechSynthesis.cancel();
+          const utterance = new SpeechSynthesisUtterance(data.message.replace(/<[^>]*>/g, '').replace(/\*\*/g, '').replace(/\*/g, ''));
+          utterance.rate = 1.0;
+          utterance.pitch = 0.85;
+          utterance.volume = 1.0;
+          window.speechSynthesis.speak(utterance);
+        }
       }
     } catch {
       addMessageToConv(finalConvId, { role: "assistant", content: "Cannot connect to JARVIS server.", timestamp: Date.now() });
@@ -613,7 +622,12 @@ const toggleVoice = async () => {
           <div className="sm:hidden">
             {voiceRunning && <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />}
           </div>
-
+          <button onClick={logout} className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/5 transition-all text-white/30 hover:text-white/60 flex-shrink-0" title="Sign out">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+              <polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
+          </button>
           <button onClick={() => { setShowUpdates(!showUpdates); if (!showUpdates) markAllRead(); }} className="relative w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/5 transition-all flex-shrink-0">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.35)" strokeWidth="2">
               <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
