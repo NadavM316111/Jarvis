@@ -48,7 +48,7 @@ function generateId() {
 }
 
 const API = typeof window !== 'undefined' && window.location.hostname !== 'localhost'
-  ? 'https://heyjarvis.me'
+  ? 'https://api.heyjarvis.me'
   : 'http://localhost:3001';
 
 export default function Home() {
