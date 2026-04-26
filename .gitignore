@@ -77,3 +77,6 @@ network_inventory.txt
 motivational_quote.txt
 chapter*.txt
 amazon_page.png
+token.json
+credentials.json
+users.json
