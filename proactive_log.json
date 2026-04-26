@@ -1,81 +1,165 @@
 {
   "updates": [
     {
+      "id": 1777246849075,
+      "message": "Unrecognized person detected at computer",
+      "time": "7:40:49 PM",
+      "date": "4/26/2026",
+      "read": false
+    },
+    {
+      "id": 1777246794925,
+      "message": "I've detected your .env.local file containing sensitive API keys is currently displayed on screen with all credentials visible - you may want to close this before it's captured or seen by anyone else.",
+      "time": "7:39:54 PM",
+      "date": "4/26/2026",
+      "read": false
+    },
+    {
+      "id": 1777246715843,
+      "message": "Unrecognized person detected at computer",
+      "time": "7:38:35 PM",
+      "date": "4/26/2026",
+      "read": true
+    },
+    {
+      "id": 1777246702260,
+      "message": "Unrecognized person detected at computer",
+      "time": "7:38:22 PM",
+      "date": "4/26/2026",
+      "read": true
+    },
+    {
+      "id": 1777246692226,
+      "message": "Nadav detected at computer — neutral mood",
+      "time": "7:38:12 PM",
+      "date": "4/26/2026",
+      "read": true
+    },
+    {
+      "id": 1777178432838,
+      "message": "Sir, you're setting up two-factor authentication for your Alpaca trading account, and I notice the QR code containing your TOTP secret is visible on screen while no one is detected at the camera - this is sensitive security information that should be scanned promptly and not left exposed.",
+      "time": "12:40:32 AM",
+      "date": "4/26/2026",
+      "read": true
+    },
+    {
+      "id": 1777177567980,
+      "message": "Sir, your Alpaca API credentials are currently displayed on screen with your email address visible in the API Key ID field - I'd recommend caution as this is sensitive brokerage authentication information.",
+      "time": "12:26:07 AM",
+      "date": "4/26/2026",
+      "read": true
+    },
+    {
+      "id": 1777175524544,
+      "message": "Sir, you have a 500 error on your POST /api/troy endpoint that needs attention - the request is failing with a server error.",
+      "time": "11:52:04 PM",
+      "date": "4/25/2026",
+      "read": true
+    },
+    {
+      "id": 1777173163728,
+      "message": "Sir, your payment is processing for $10.00 in OpenAI API credits, and I should note that your credit card details ending in 2444 are currently visible on screen while no one is detected at the camera.",
+      "time": "11:12:43 PM",
+      "date": "4/25/2026",
+      "read": true
+    },
+    {
+      "id": 1777172664934,
+      "message": "Sir, I notice your .env.local file containing sensitive API keys and secrets is currently visible on screen - you may want to be cautious about screen sharing or recording while these credentials are exposed.",
+      "time": "11:04:24 PM",
+      "date": "4/25/2026",
+      "read": true
+    },
+    {
+      "id": 1777171477154,
+      "message": "Battery critical at 22% and discharging — plug in soon to avoid shutdown.",
+      "time": "10:44:37 PM",
+      "date": "4/25/2026",
+      "read": true
+    },
+    {
+      "id": 1777168955957,
+      "message": "Nadav has stepped away from the computer",
+      "time": "10:02:35 PM",
+      "date": "4/25/2026",
+      "read": true
+    },
+    {
       "id": 1777166865232,
       "message": "Nadav detected at computer — neutral mood",
       "time": "9:27:45 PM",
       "date": "4/25/2026",
-      "read": false
+      "read": true
     },
     {
       "id": 1777166489027,
       "message": "Nadav has stepped away from the computer",
       "time": "9:21:29 PM",
       "date": "4/25/2026",
-      "read": false
+      "read": true
     },
     {
       "id": 1777166276069,
       "message": "Unknown has stepped away from the computer",
       "time": "9:17:56 PM",
       "date": "4/25/2026",
-      "read": false
+      "read": true
     },
     {
       "id": 1777166212437,
       "message": "Evening briefing: Battery at 27% - plug in soon. Weather shows 14% chance of severe thunderstorms tonight in Fort Lauderdale, nothing extreme. No significant news on your monitored projects today.",
       "time": "9:16:52 PM",
       "date": "4/25/2026",
-      "read": false
+      "read": true
     },
     {
       "id": 1777166196080,
       "message": "Unrecognized person detected at computer",
       "time": "9:16:36 PM",
       "date": "4/25/2026",
-      "read": false
+      "read": true
     },
     {
       "id": 1777166175967,
       "message": "Nadav detected at computer — neutral mood",
       "time": "9:16:15 PM",
       "date": "4/25/2026",
-      "read": false
+      "read": true
     },
     {
       "id": 1777163301887,
       "message": "Unknown has stepped away from the computer",
       "time": "8:28:21 PM",
       "date": "4/25/2026",
-      "read": false
+      "read": true
     },
     {
       "id": 1777163136583,
       "message": "Unrecognized person detected at computer",
       "time": "8:25:36 PM",
       "date": "4/25/2026",
-      "read": false
+      "read": true
     },
     {
       "id": 1777162888783,
       "message": "Nadav has stepped away from the computer",
       "time": "8:21:28 PM",
       "date": "4/25/2026",
-      "read": false
+      "read": true
     },
     {
       "id": 1777162758091,
       "message": "Nadav detected at computer — neutral mood",
       "time": "8:19:18 PM",
       "date": "4/25/2026",
-      "read": false
+      "read": true
     },
     {
       "id": 1777162568380,
       "message": "Nadav has stepped away from the computer",
       "time": "8:16:08 PM",
       "date": "4/25/2026",
-      "read": false
+      "read": true
     },
     {
       "id": 1777162469856,
@@ -613,90 +697,6 @@
       "id": 1776966848043,
       "message": "⚠️ Critical: Battery at 10% and dropping. Plug in immediately to avoid losing your work.",
       "time": "1:54:08 PM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776966809091,
-      "message": "Unrecognized person detected at computer",
-      "time": "1:53:29 PM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776966740795,
-      "message": "Nadav detected at computer — neutral mood",
-      "time": "1:52:20 PM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776964881498,
-      "message": "Unrecognized person detected at computer",
-      "time": "1:21:21 PM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776964831514,
-      "message": "Nadav detected at computer — neutral mood",
-      "time": "1:20:31 PM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776964821992,
-      "message": "Unrecognized person detected at computer",
-      "time": "1:20:21 PM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776964606889,
-      "message": "Unrecognized person detected at computer",
-      "time": "1:16:46 PM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776964504372,
-      "message": "Battery critical at 16%, sir. I recommend plugging in soon.",
-      "time": "1:15:04 PM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776964406148,
-      "message": "Nadav detected at computer — neutral mood",
-      "time": "1:13:26 PM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776954378437,
-      "message": "Nadav has stepped away from the computer",
-      "time": "10:26:18 AM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776954296145,
-      "message": "Unrecognized person detected at computer",
-      "time": "10:24:56 AM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776954179386,
-      "message": "Unrecognized person detected at computer",
-      "time": "10:22:59 AM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776954133905,
-      "message": "Unrecognized person detected at computer",
-      "time": "10:22:13 AM",
       "date": "4/23/2026",
       "read": true
     }
