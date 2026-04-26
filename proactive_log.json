@@ -1,6 +1,48 @@
 {
   "updates": [
     {
+      "id": 1777166865232,
+      "message": "Nadav detected at computer — neutral mood",
+      "time": "9:27:45 PM",
+      "date": "4/25/2026",
+      "read": false
+    },
+    {
+      "id": 1777166489027,
+      "message": "Nadav has stepped away from the computer",
+      "time": "9:21:29 PM",
+      "date": "4/25/2026",
+      "read": false
+    },
+    {
+      "id": 1777166276069,
+      "message": "Unknown has stepped away from the computer",
+      "time": "9:17:56 PM",
+      "date": "4/25/2026",
+      "read": false
+    },
+    {
+      "id": 1777166212437,
+      "message": "Evening briefing: Battery at 27% - plug in soon. Weather shows 14% chance of severe thunderstorms tonight in Fort Lauderdale, nothing extreme. No significant news on your monitored projects today.",
+      "time": "9:16:52 PM",
+      "date": "4/25/2026",
+      "read": false
+    },
+    {
+      "id": 1777166196080,
+      "message": "Unrecognized person detected at computer",
+      "time": "9:16:36 PM",
+      "date": "4/25/2026",
+      "read": false
+    },
+    {
+      "id": 1777166175967,
+      "message": "Nadav detected at computer — neutral mood",
+      "time": "9:16:15 PM",
+      "date": "4/25/2026",
+      "read": false
+    },
+    {
       "id": 1777163301887,
       "message": "Unknown has stepped away from the computer",
       "time": "8:28:21 PM",
@@ -655,48 +697,6 @@
       "id": 1776954133905,
       "message": "Unrecognized person detected at computer",
       "time": "10:22:13 AM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776954110827,
-      "message": "Nadav detected at computer — neutral mood",
-      "time": "10:21:50 AM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776954104100,
-      "message": "Unrecognized person detected at computer",
-      "time": "10:21:44 AM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776953975283,
-      "message": "Nadav detected at computer — neutral mood",
-      "time": "10:19:35 AM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776953767123,
-      "message": "Nadav detected at computer — neutral mood",
-      "time": "10:16:07 AM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776947584848,
-      "message": "Morning Briefing for Thursday, April 23rd:\n\nWEATHER: Fort Lauderdale - Partly sunny, high 77F. East winds 14mph with gusts to 23mph. Rip current advisory until tomorrow 8AM.\n\nCALENDAR: Clear day - no scheduled events.\n\nEMAILS (3 notable):\n- Rice University thanked you for attending their event\n- Daniel Minkowitz replied about \"rock the park\" \n- Indiana University recruitment: \"Do it all at IU\"\n- College outreach also from Seton Hall\n\nMARKETS: S&P 500 and Nasdaq closed at record highs yesterday. Investopedia pre-market update in inbox.\n\nNo urgent action items. Good day to focus on projects, sir.",
-      "time": "8:33:04 AM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776947523414,
-      "message": "Nadav detected at computer — neutral mood",
-      "time": "8:32:03 AM",
       "date": "4/23/2026",
       "read": true
     }
