@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Belonging - An Anime Short</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #000;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', sans-serif;
+            color: #fff;
+        }
+        .title-card {
+            text-align: center;
+            margin-bottom: 20px;
+            opacity: 0;
+            animation: fadeIn 2s ease forwards;
+        }
+        h1 {
+            font-size: 3rem;
+            font-weight: 200;
+            letter-spacing: 15px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            font-size: 1rem;
+            color: #888;
+            letter-spacing: 5px;
+        }
+        .video-container {
+            position: relative;
+            max-width: 1280px;
+            width: 95%;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 0 60px rgba(100, 100, 255, 0.2);
+        }
+        video {
+            width: 100%;
+            display: block;
+        }
+        .play-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+        .play-overlay.hidden { opacity: 0; pointer-events: none; }
+        .play-btn {
+            width: 100px;
+            height: 100px;
+            border: 3px solid #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .play-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 30px rgba(255,255,255,0.3);
+        }
+        .play-btn::after {
+            content: '';
+            border: 20px solid transparent;
+            border-left: 30px solid #fff;
+            margin-left: 10px;
+        }
+        .credits {
+            margin-top: 30px;
+            text-align: center;
+            color: #555;
+            font-size: 0.85rem;
+            opacity: 0;
+            animation: fadeIn 2s ease 1s forwards;
+        }
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="title-card">
+        <h1>Belonging</h1>
+        <div class="subtitle">An AI-Generated Anime Short</div>
+    </div>
+    
+    <div class="video-container">
+        <video id="video" controls>
+            <source src="belonging_v2.mp4" type="video/mp4">
+        </video>
+        <div class="play-overlay" id="overlay">
+            <div class="play-btn"></div>
+        </div>
+    </div>
+    
+    <div class="credits">
+        <p>Music: "Creep" by Radiohead</p>
+        <p>Generated with Luma AI Dream Machine</p>
+        <p>Created by JARVIS for Nadav</p>
+    </div>
+    
+    <script>
+        const video = document.getElementById('video');
+        const overlay = document.getElementById('overlay');
+        
+        overlay.addEventListener('click', () => {
+            video.play();
+            overlay.classList.add('hidden');
+        });
+        
+        video.addEventListener('pause', () => {
+            if (video.currentTime < video.duration - 0.5) {
+                overlay.classList.remove('hidden');
+            }
+        });
+        
+        video.addEventListener('play', () => {
+            overlay.classList.add('hidden');
+        });
+    </script>
+</body>
+</html>

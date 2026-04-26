@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Decision Matrix - Ideate - Sesami</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../edit-mode.css">
+</head>
+<body data-page="ideate">
+    <div class="bg-gradient"></div>
+    <div class="bg-pattern"></div>
+    <div class="floating-orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="../index.html" class="logo">
+                <div class="logo-icon"><i class="fas fa-baby"></i></div>
+                <span class="logo-text">Sesami</span>
+            </a>
+            <ul class="nav-links" id="navLinks">
+                <li class="nav-item"><a href="../index.html" class="nav-link">Home</a></li>
+                <li class="nav-item has-dropdown">
+                    <a href="../background.html" class="nav-link">Background <i class="fas fa-chevron-down arrow"></i></a>
+                    <div class="dropdown">
+                        <a href="../background/preliminary-research.html"><i class="fas fa-file-alt"></i> Preliminary Research</a>
+                        <a href="../background/final-research.html"><i class="fas fa-file-lines"></i> Final Research Paper</a>
+                        <a href="../background/baby-development-tech.html"><i class="fas fa-baby"></i> Baby Development Tech</a>
+                        <a href="../background/competitor-chart.html"><i class="fas fa-chart-bar"></i> Competitor Chart</a>
+                        <a href="../background/expert-source.html"><i class="fas fa-user-md"></i> Expert Source</a>
+                    </div>
+                </li>
+                <li class="nav-item has-dropdown">
+                    <a href="../empathize.html" class="nav-link">Empathize <i class="fas fa-chevron-down arrow"></i></a>
+                    <div class="dropdown">
+                        <a href="../empathize/end-users-survey.html"><i class="fas fa-poll"></i> End Users Survey</a>
+                        <a href="../empathize/deep-dive.html"><i class="fas fa-search"></i> Deep Dive of End Users</a>
+                        <a href="../empathize/potential-solutions.html"><i class="fas fa-lightbulb"></i> Potential Solutions</a>
+                        <a href="../empathize/direct-observation.html"><i class="fas fa-eye"></i> Direct Observation</a>
+                    </div>
+                </li>
+                <li class="nav-item has-dropdown">
+                    <a href="../define.html" class="nav-link">Define <i class="fas fa-chevron-down arrow"></i></a>
+                    <div class="dropdown">
+                        <a href="../define/purpose.html"><i class="fas fa-bullseye"></i> Purpose for Innovation</a>
+                        <a href="../define/design-goals.html"><i class="fas fa-tasks"></i> Design Goals/Criteria</a>
+                        <a href="../define/end-user-interview.html"><i class="fas fa-comments"></i> End User Interview</a>
+                        <a href="../define/thesis.html"><i class="fas fa-scroll"></i> Thesis Statement</a>
+                        <a href="../define/user-profiles.html"><i class="fas fa-users"></i> End User Profiles</a>
+                    </div>
+                </li>
+                <li class="nav-item has-dropdown">
+                    <a href="../ideate.html" class="nav-link active">Ideate <i class="fas fa-chevron-down arrow"></i></a>
+                    <div class="dropdown">
+                        <a href="potential-solutions.html"><i class="fas fa-lightbulb"></i> Potential Solutions</a>
+                        <a href="decision-matrix.html"><i class="fas fa-table"></i> Decision Matrix</a>
+                        <a href="competitive-advantage.html"><i class="fas fa-trophy"></i> Competitive Advantage</a>
+                        <a href="professional-feedback.html"><i class="fas fa-user-tie"></i> Professional Feedback</a>
+                        <a href="deep-dive-experts.html"><i class="fas fa-microscope"></i> Deep Dive of Experts</a>
+                        <a href="approach-reasoning.html"><i class="fas fa-route"></i> Approach Reasoning</a>
+                    </div>
+                </li>
+                <li class="nav-item has-dropdown">
+                    <a href="../engineering.html" class="nav-link">Engineering <i class="fas fa-chevron-down arrow"></i></a>
+                    <div class="dropdown">
+                        <a href="../engineering.html#specs"><i class="fas fa-cogs"></i> Technical Specs</a>
+                        <a href="../engineering.html#cad"><i class="fas fa-drafting-compass"></i> CAD Drawings</a>
+                    </div>
+                </li>
+                <li class="nav-item has-dropdown">
+                    <a href="../test.html" class="nav-link">Test <i class="fas fa-chevron-down arrow"></i></a>
+                    <div class="dropdown">
+                        <a href="../test.html#methods"><i class="fas fa-flask"></i> Testing Methods</a>
+                        <a href="../test.html#results"><i class="fas fa-chart-bar"></i> Results</a>
+                    </div>
+                </li>
+            </ul>
+            <button class="menu-toggle" id="menuToggle">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+
+    <section class="page-hero">
+        <div class="page-hero-content">
+            <div class="page-badge"><i class="fas fa-table"></i> Ideate</div>
+            <h1>Decision <span>Matrix</span></h1>
+            <p>Systematic evaluation of all solutions against weighted design criteria.</p>
+        </div>
+    </section>
+
+    <main class="main-content">
+        <div class="container">
+            <nav class="breadcrumb">
+                <a href="../index.html">Home</a> <i class="fas fa-chevron-right"></i>
+                <a href="../ideate.html">Ideate</a> <i class="fas fa-chevron-right"></i>
+                <span>Decision Matrix</span>
+            </nav>
+
+            <section class="section-header" data-editable="true">
+                <h2>Weighted Criteria Evaluation</h2>
+                <p>We evaluated each solution against 8 criteria derived from our user research and design goals. Criteria weights were determined by importance to our target users and project constraints.</p>
+            </section>
+
+            <div class="content-card" data-editable="true">
+                <h3><i class="fas fa-balance-scale"></i> Evaluation Criteria & Weights</h3>
+                <div class="criteria-grid">
+                    <div class="criteria-item">
+                        <div class="criteria-weight">20%</div>
+                        <div class="criteria-name">Accuracy & Reliability</div>
+                        <div class="criteria-desc">How accurately can it detect developmental milestones?</div>
+                    </div>
+                    <div class="criteria-item">
+                        <div class="criteria-weight">15%</div>
+                        <div class="criteria-name">Ease of Use</div>
+                        <div class="criteria-desc">How simple is it for parents to use daily?</div>
+                    </div>
+                    <div class="criteria-item">
+                        <div class="criteria-weight">15%</div>
+                        <div class="criteria-name">Cost to Consumer</div>
+                        <div class="criteria-desc">Is it affordable for average families?</div>
+                    </div>
+                    <div class="criteria-item">
+                        <div class="criteria-weight">15%</div>
+                        <div class="criteria-name">Non-Invasiveness</div>
+                        <div class="criteria-desc">Does it require wearables or special equipment?</div>
+                    </div>
+                    <div class="criteria-item">
+                        <div class="criteria-weight">10%</div>
+                        <div class="criteria-name">Privacy & Security</div>
+                        <div class="criteria-desc">How well can user data be protected?</div>
+                    </div>
+                    <div class="criteria-item">
+                        <div class="criteria-weight">10%</div>
+                        <div class="criteria-name">Scalability</div>
+                        <div class="criteria-desc">Can it scale globally via app stores?</div>
+                    </div>
+                    <div class="criteria-item">
+                        <div class="criteria-weight">10%</div>
+                        <div class="criteria-name">Development Feasibility</div>
+                        <div class="criteria-desc">Can we build it with current technology?</div>
+                    </div>
+                    <div class="criteria-item">
+                        <div class="criteria-weight">5%</div>
+                        <div class="criteria-name">Differentiation</div>
+                        <div class="criteria-desc">Does it stand out from competitors?</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-card full-width" data-editable="true">
+                <h3><i class="fas fa-table"></i> Decision Matrix Scores (1-10 scale)</h3>
+                <div class="table-wrapper">
+                    <table class="decision-matrix">
+                        <thead>
+                            <tr>
+                                <th>Criteria (Weight)</th>
+                                <th>AI Video</th>
+                                <th>Smart Sock</th>
+                                <th>Nursery Cam</th>
+                                <th>App Only</th>
+                                <th>Play Mat</th>
+                                <th>Audio</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Accuracy (20%)</strong></td>
+                                <td class="score-high">9</td>
+                                <td class="score-high">8</td>
+                                <td class="score-high">8</td>
+                                <td class="score-med">5</td>
+                                <td class="score-med">6</td>
+                                <td class="score-med">6</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Ease of Use (15%)</strong></td>
+                                <td class="score-high">9</td>
+                                <td class="score-med">6</td>
+                                <td class="score-high">8</td>
+                                <td class="score-high">10</td>
+                                <td class="score-med">7</td>
+                                <td class="score-high">8</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Cost (15%)</strong></td>
+                                <td class="score-high">10</td>
+                                <td class="score-med">5</td>
+                                <td class="score-low">4</td>
+                                <td class="score-high">10</td>
+                                <td class="score-low">3</td>
+                                <td class="score-high">8</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Non-Invasive (15%)</strong></td>
+                                <td class="score-high">10</td>
+                                <td class="score-low">4</td>
+                                <td class="score-high">9</td>
+                                <td class="score-high">10</td>
+                                <td class="score-high">9</td>
+                                <td class="score-high">10</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Privacy (10%)</strong></td>
+                                <td class="score-med">7</td>
+                                <td class="score-high">9</td>
+                                <td class="score-med">5</td>
+                                <td class="score-high">10</td>
+                                <td class="score-high">9</td>
+                                <td class="score-med">6</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Scalability (10%)</strong></td>
+                                <td class="score-high">10</td>
+                                <td class="score-med">5</td>
+                                <td class="score-med">5</td>
+                                <td class="score-high">10</td>
+                                <td class="score-low">3</td>
+                                <td class="score-high">9</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Feasibility (10%)</strong></td>
+                                <td class="score-high">9</td>
+                                <td class="score-med">6</td>
+                                <td class="score-med">7</td>
+                                <td class="score-high">10</td>
+                                <td class="score-low">4</td>
+                                <td class="score-high">8</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Differentiation (5%)</strong></td>
+                                <td class="score-high">8</td>
+                                <td class="score-med">6</td>
+                                <td class="score-med">5</td>
+                                <td class="score-low">3</td>
+                                <td class="score-high">8</td>
+                                <td class="score-med">7</td>
+                            </tr>
+                            <tr class="total-row">
+                                <td><strong>WEIGHTED TOTAL</strong></td>
+                                <td class="winner">9.05</td>
+                                <td>6.00</td>
+                                <td>6.70</td>
+                                <td>8.35</td>
+                                <td>5.60</td>
+                                <td>7.45</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="content-card highlight" data-editable="true">
+                <h3><i class="fas fa-trophy"></i> Winner: AI Video Analysis</h3>
+                <p>With a weighted score of <strong>9.05/10</strong>, AI Video Analysis emerged as the clear winner. Key factors:</p>
+                <ul class="results-list">
+                    <li><strong>Highest accuracy potential</strong> - Computer vision can detect subtle movement patterns</li>
+                    <li><strong>Zero hardware cost</strong> - Uses existing smartphones</li>
+                    <li><strong>Completely non-invasive</strong> - No wearables or special equipment</li>
+                    <li><strong>Maximum scalability</strong> - Deployable globally via app stores</li>
+                    <li><strong>Strong differentiation</strong> - No major competitor offers this approach</li>
+                </ul>
+            </div>
+
+            <section class="highlight-section" data-editable="true">
+                <h3><i class="fas fa-lightbulb"></i> Key Decision Insights</h3>
+                <div class="insights-grid">
+                    <div class="insight-item">
+                        <h4>App-Only Came Close</h4>
+                        <p>Questionnaire-based apps scored 8.35 but lost on accuracy. Parents want objective data, not self-assessment.</p>
+                    </div>
+                    <div class="insight-item">
+                        <h4>Wearables Failed on Compliance</h4>
+                        <p>Smart sock scored only 6.00 - parents and babies resist wearables. The "will my baby keep it on?" problem is real.</p>
+                    </div>
+                    <div class="insight-item">
+                        <h4>Hardware = Barrier</h4>
+                        <p>Solutions requiring new hardware (camera, mat) face adoption barriers. Smartphone-first wins.</p>
+                    </div>
+                    <div class="insight-item">
+                        <h4>Privacy Trade-off Accepted</h4>
+                        <p>Video analysis has privacy considerations, but parents accept this trade-off for accurate developmental insights.</p>
+                    </div>
+                </div>
+            </section>
+
+            <div class="nav-buttons">
+                <a href="potential-solutions.html" class="nav-btn prev"><i class="fas fa-arrow-left"></i> Potential Solutions</a>
+                <a href="competitive-advantage.html" class="nav-btn primary">Competitive Advantage <i class="fas fa-arrow-right"></i></a>
+            </div>
+        </div>
+    </main>
+
+    <a href="?edit=true" class="edit-float-btn" id="editFloatBtn">
+        <i class="fas fa-edit"></i> Edit Site
+    </a>
+
+    <script src="../edit-mode.js"></script>
+    <script>
+        document.getElementById('menuToggle').addEventListener('click', function() {
+            document.getElementById('navLinks').classList.toggle('active');
+            this.classList.toggle('active');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Belonging - An Anime Short Film</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap');
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            background: #000;
+            overflow: hidden;
+            font-family: 'Noto Sans JP', sans-serif;
+        }
+        
+        #loading-screen {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        #loading-screen h1 {
+            color: #fff;
+            font-size: 48px;
+            margin-bottom: 20px;
+            text-shadow: 0 0 30px rgba(255,100,100,0.5);
+        }
+        
+        #loading-screen p {
+            color: #888;
+            font-size: 18px;
+            margin-bottom: 30px;
+        }
+        
+        .progress-bar {
+            width: 300px;
+            height: 4px;
+            background: #333;
+            border-radius: 2px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b6b, #ee5a24);
+            width: 0%;
+            transition: width 0.3s;
+        }
+        
+        #begin-btn {
+            padding: 15px 50px;
+            font-size: 20px;
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            display: none;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        #begin-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 30px rgba(238, 90, 36, 0.5);
+        }
+        
+        #cinema {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            display: none;
+        }
+        
+        .letterbox {
+            position: absolute;
+            left: 0; width: 100%;
+            height: 12%;
+            background: #000;
+            z-index: 100;
+        }
+        
+        .letterbox.top { top: 0; }
+        .letterbox.bottom { bottom: 0; }
+        
+        #scene-container {
+            position: absolute;
+            top: 12%; left: 0;
+            width: 100%;
+            height: 76%;
+            overflow: hidden;
+        }
+        
+        .scene {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+        }
+        
+        .scene.active {
+            opacity: 1;
+        }
+        
+        .scene-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            animation: slowZoom 8s ease-in-out infinite alternate;
+        }
+        
+        @keyframes slowZoom {
+            from { transform: scale(1); }
+            to { transform: scale(1.1); }
+        }
+        
+        .scene-overlay {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(transparent 60%, rgba(0,0,0,0.8));
+        }
+        
+        #subtitles {
+            position: absolute;
+            bottom: 15%;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            z-index: 200;
+            width: 80%;
+        }
+        
+        .subtitle-jp {
+            font-size: 24px;
+            color: #fff;
+            text-shadow: 2px 2px 4px #000, -2px -2px 4px #000;
+            margin-bottom: 10px;
+            opacity: 0.7;
+        }
+        
+        .subtitle-en {
+            font-size: 32px;
+            color: #fff;
+            text-shadow: 2px 2px 4px #000, -2px -2px 4px #000;
+            font-weight: bold;
+        }
+        
+        /* Film grain effect */
+        #grain {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 300;
+            opacity: 0.05;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%' height='100%' filter='url(%23noise)'/%3E%3C/svg%3E");
+        }
+        
+        /* Vignette */
+        #vignette {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 250;
+            background: radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.7) 100%);
+        }
+        
+        /* Hidden audio */
+        #audio-container {
+            display: none;
+        }
+        
+        /* Canvas for anime drawings */
+        .anime-canvas {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div id="loading-screen">
+        <h1>BELONGING</h1>
+        <p>An Anime Short Film</p>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress"></div>
+        </div>
+        <p id="loading-text">Preparing scenes...</p>
+        <button id="begin-btn" onclick="startFilm()">BEGIN</button>
+    </div>
+    
+    <div id="cinema">
+        <div class="letterbox top"></div>
+        <div class="letterbox bottom"></div>
+        
+        <div id="scene-container">
+            <!-- Scenes will be generated as canvases -->
+        </div>
+        
+        <div id="subtitles">
+            <div class="subtitle-jp" id="sub-jp"></div>
+            <div class="subtitle-en" id="sub-en"></div>
+        </div>
+    </div>
+    
+    <div id="grain"></div>
+    <div id="vignette"></div>
+    
+    <!-- YouTube Audio (Creep by Radiohead) -->
+    <div id="audio-container">
+        <iframe id="yt-player" width="0" height="0" 
+            src="https://www.youtube.com/embed/XFkzRNyygfk?enablejsapi=1&autoplay=0&controls=0" 
+            frameborder="0" allow="autoplay"></iframe>
+    </div>
+    
+    <script>
+        // Scene data
+        const scenes = [
+            {
+                jp: "みんなの中にいても...",
+                en: "Even when I'm surrounded by everyone...",
+                draw: drawScene1
+            },
+            {
+                jp: "僕は一人だ",
+                en: "I am alone.",
+                draw: drawScene2
+            },
+            {
+                jp: "彼らの笑い声が聞こえる",
+                en: "I can hear their laughter...",
+                draw: drawScene3
+            },
+            {
+                jp: "でも、僕には届かない",
+                en: "But it never reaches me.",
+                draw: drawScene4
+            },
+            {
+                jp: "僕は何が違うんだろう",
+                en: "What's wrong with me?",
+                draw: drawScene5
+            },
+            {
+                jp: "僕はここにいるべきじゃない",
+                en: "I don't belong here!",
+                draw: drawScene6
+            },
+            {
+                jp: "誰も本当の僕を見ない",
+                en: "No one sees the real me...",
+                draw: drawScene7
+            },
+            {
+                jp: "でも、それでも生きていく",
+                en: "But still... I keep going.",
+                draw: drawScene8
+            }
+        ];
+        
+        const sceneContainer = document.getElementById('scene-container');
+        let canvases = [];
+        
+        // Create canvases and draw anime scenes
+        function initScenes() {
+            scenes.forEach((scene, index) => {
+                const div = document.createElement('div');
+                div.className = 'scene';
+                div.id = 'scene-' + index;
+                
+                const canvas = document.createElement('canvas');
+                canvas.className = 'anime-canvas';
+                canvas.width = 1920;
+                canvas.height = 1080;
+                
+                div.appendChild(canvas);
+                
+                const overlay = document.createElement('div');
+                overlay.className = 'scene-overlay';
+                div.appendChild(overlay);
+                
+                sceneContainer.appendChild(div);
+                canvases.push(canvas);
+                
+                // Draw the scene
+                scene.draw(canvas);
+                
+                // Update progress
+                document.getElementById('progress').style.width = ((index + 1) / scenes.length * 100) + '%';
+            });
+            
+            document.getElementById('loading-text').textContent = 'Ready';
+            document.getElementById('begin-btn').style.display = 'block';
+        }
+        
+        // ANIME DRAWING FUNCTIONS
+        
+        function drawScene1(canvas) {
+            const ctx = canvas.getContext('2d');
+            // Classroom with students - protagonist looking out window
+            
+            // Background - classroom
+            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            gradient.addColorStop(0, '#4a6fa5');
+            gradient.addColorStop(1, '#2d3a4a');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Window with light
+            ctx.fillStyle = '#87CEEB';
+            ctx.fillRect(100, 100, 400, 500);
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 10;
+            ctx.strokeRect(100, 100, 400, 500);
+            ctx.beginPath();
+            ctx.moveTo(300, 100);
+            ctx.lineTo(300, 600);
+            ctx.moveTo(100, 350);
+            ctx.lineTo(500, 350);
+            ctx.stroke();
+            
+            // Protagonist silhouette at window
+            drawAnimeCharacter(ctx, 300, 400, true, 'sad', '#1a1a2e');
+            
+            // Background students (blurred/faded)
+            ctx.globalAlpha = 0.3;
+            drawAnimeCharacter(ctx, 800, 500, false, 'happy', '#555');
+            drawAnimeCharacter(ctx, 1000, 480, false, 'happy', '#666');
+            drawAnimeCharacter(ctx, 1200, 520, false, 'happy', '#555');
+            drawAnimeCharacter(ctx, 1400, 490, false, 'happy', '#666');
+            ctx.globalAlpha = 1;
+            
+            // Light rays from window
+            ctx.globalAlpha = 0.1;
+            ctx.fillStyle = '#fff';
+            ctx.beginPath();
+            ctx.moveTo(500, 100);
+            ctx.lineTo(900, 800);
+            ctx.lineTo(600, 800);
+            ctx.lineTo(100, 100);
+            ctx.fill();
+            ctx.globalAlpha = 1;
+        }
+        
+        function drawScene2(canvas) {
+            const ctx = canvas.getContext('2d');
+            // Close-up of protagonist's face - melancholy
+            
+            // Dark background
+            const gradient = ctx.createRadialGradient(960, 540, 0, 960, 540, 800);
+            gradient.addColorStop(0, '#2d3a4a');
+            gradient.addColorStop(1, '#0a0a0a');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Large anime face
+            drawAnimeFace(ctx, 960, 500, 400, 'sad');
+        }
+        
+        function drawScene3(canvas) {
+            const ctx = canvas.getContext('2d');
+            // Group of friends laughing - protagonist in background
+            
+            // Park background
+            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            gradient.addColorStop(0, '#87CEEB');
+            gradient.addColorStop(0.6, '#98D8C8');
+            gradient.addColorStop(1, '#4a7c59');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Trees
+            ctx.fillStyle = '#2d5016';
+            ctx.beginPath();
+            ctx.arc(200, 300, 150, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(1700, 350, 180, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Friends laughing in foreground
+            drawAnimeCharacter(ctx, 600, 600, false, 'laughing', '#ffb347');
+            drawAnimeCharacter(ctx, 850, 580, false, 'laughing', '#ff6b6b');
+            drawAnimeCharacter(ctx, 1100, 620, false, 'laughing', '#87ceeb');
+            drawAnimeCharacter(ctx, 1350, 590, false, 'laughing', '#dda0dd');
+            
+            // Protagonist far in background
+            ctx.globalAlpha = 0.6;
+            drawAnimeCharacter(ctx, 1600, 700, true, 'sad', '#555');
+            ctx.globalAlpha = 1;
+        }
+        
+        function drawScene4(canvas) {
+            const ctx = canvas.getContext('2d');
+            // Sound waves not reaching protagonist
+            
+            // Dark gradient
+            const gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
+            gradient.addColorStop(0, '#1a1a2e');
+            gradient.addColorStop(1, '#16213e');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Sound waves from left
+            ctx.strokeStyle = '#ff6b6b';
+            ctx.lineWidth = 3;
+            for (let i = 0; i < 8; i++) {
+                ctx.globalAlpha = 1 - (i * 0.1);
+                ctx.beginPath();
+                ctx.arc(200, 540, 100 + i * 80, -0.5, 0.5);
+                ctx.stroke();
+            }
+            ctx.globalAlpha = 1;
+            
+            // Barrier/wall effect
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+            ctx.fillRect(900, 0, 50, canvas.height);
+            
+            // Protagonist on right side
+            drawAnimeFace(ctx, 1300, 540, 300, 'closed_eyes');
+        }
+        
+        function drawScene5(canvas) {
+            const ctx = canvas.getContext('2d');
+            // Protagonist looking in mirror - fractured
+            
+            // Dark room
+            ctx.fillStyle = '#0a0a0a';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Mirror frame
+            ctx.fillStyle = '#8B4513';
+            ctx.fillRect(600, 100, 720, 800);
+            ctx.fillStyle = '#1a1a2e';
+            ctx.fillRect(630, 130, 660, 740);
+            
+            // Reflection - fractured
+            ctx.save();
+            ctx.beginPath();
+            ctx.rect(630, 130, 660, 740);
+            ctx.clip();
+            
+            // Multiple fractured faces
+            drawAnimeFace(ctx, 960, 400, 200, 'confused');
+            
+            // Crack lines
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(960, 130);
+            ctx.lineTo(800, 500);
+            ctx.lineTo(700, 870);
+            ctx.moveTo(960, 130);
+            ctx.lineTo(1100, 400);
+            ctx.lineTo(1200, 870);
+            ctx.moveTo(800, 500);
+            ctx.lineTo(1100, 400);
+            ctx.stroke();
+            
+            ctx.restore();
+        }
+        
+        function drawScene6(canvas) {
+            const ctx = canvas.getContext('2d');
+            // SCREAMING - dramatic zoom, speed lines
+            
+            // Red/black intense background
+            const gradient = ctx.createRadialGradient(960, 540, 0, 960, 540, 800);
+            gradient.addColorStop(0, '#8B0000');
+            gradient.addColorStop(1, '#0a0a0a');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Speed lines
+            ctx.strokeStyle = '#ff0000';
+            ctx.lineWidth = 3;
+            for (let i = 0; i < 50; i++) {
+                const angle = (i / 50) * Math.PI * 2;
+                ctx.globalAlpha = 0.5;
+                ctx.beginPath();
+                ctx.moveTo(960 + Math.cos(angle) * 200, 540 + Math.sin(angle) * 200);
+                ctx.lineTo(960 + Math.cos(angle) * 1500, 540 + Math.sin(angle) * 1500);
+                ctx.stroke();
+            }
+            ctx.globalAlpha = 1;
+            
+            // Screaming face
+            drawAnimeFace(ctx, 960, 540, 350, 'screaming');
+        }
+        
+        function drawScene7(canvas) {
+            const ctx = canvas.getContext('2d');
+            // Rain scene - protagonist alone, tears
+            
+            // Rainy blue background
+            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            gradient.addColorStop(0, '#1a1a2e');
+            gradient.addColorStop(1, '#0f0f1a');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Rain
+            ctx.strokeStyle = 'rgba(150, 200, 255, 0.3)';
+            ctx.lineWidth = 1;
+            for (let i = 0; i < 200; i++) {
+                const x = Math.random() * canvas.width;
+                const y = Math.random() * canvas.height;
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+                ctx.lineTo(x - 5, y + 20);
+                ctx.stroke();
+            }
+            
+            // Protagonist with umbrella silhouette
+            drawAnimeCharacter(ctx, 960, 650, true, 'crying', '#1a1a2e');
+            
+            // Puddle reflection
+            ctx.globalAlpha = 0.3;
+            ctx.scale(1, -0.3);
+            ctx.translate(0, -3500);
+            drawAnimeCharacter(ctx, 960, 650, true, 'crying', '#1a1a2e');
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
+            ctx.globalAlpha = 1;
+        }
+        
+        function drawScene8(canvas) {
+            const ctx = canvas.getContext('2d');
+            // Dawn/hope - protagonist walking forward
+            
+            // Sunrise gradient
+            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            gradient.addColorStop(0, '#ff7e5f');
+            gradient.addColorStop(0.3, '#feb47b');
+            gradient.addColorStop(0.6, '#ffb347');
+            gradient.addColorStop(1, '#2d3a4a');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Sun
+            ctx.fillStyle = '#fff';
+            ctx.beginPath();
+            ctx.arc(960, 400, 100, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Light rays
+            ctx.globalAlpha = 0.3;
+            for (let i = 0; i < 12; i++) {
+                const angle = (i / 12) * Math.PI * 2;
+                ctx.fillStyle = '#fff';
+                ctx.beginPath();
+                ctx.moveTo(960, 400);
+                ctx.lineTo(960 + Math.cos(angle - 0.1) * 800, 400 + Math.sin(angle - 0.1) * 800);
+                ctx.lineTo(960 + Math.cos(angle + 0.1) * 800, 400 + Math.sin(angle + 0.1) * 800);
+                ctx.fill();
+            }
+            ctx.globalAlpha = 1;
+            
+            // Protagonist silhouette walking toward sun
+            drawAnimeCharacter(ctx, 960, 750, true, 'determined', '#1a1a2e');
+        }
+        
+        // Helper function to draw anime character
+        function drawAnimeCharacter(ctx, x, y, isProtagonist, emotion, color) {
+            ctx.fillStyle = color;
+            
+            // Body
+            ctx.beginPath();
+            ctx.ellipse(x, y + 50, 60, 100, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Head
+            ctx.beginPath();
+            ctx.arc(x, y - 80, 70, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Hair (spiky anime style)
+            ctx.beginPath();
+            ctx.moveTo(x - 70, y - 100);
+            ctx.lineTo(x - 50, y - 170);
+            ctx.lineTo(x - 30, y - 110);
+            ctx.lineTo(x, y - 180);
+            ctx.lineTo(x + 30, y - 110);
+            ctx.lineTo(x + 50, y - 160);
+            ctx.lineTo(x + 70, y - 100);
+            ctx.fill();
+            
+            if (isProtagonist && emotion !== 'determined') {
+                // Drooping posture
+                ctx.beginPath();
+                ctx.moveTo(x - 60, y);
+                ctx.quadraticCurveTo(x - 100, y + 50, x - 80, y + 120);
+                ctx.lineTo(x - 60, y + 120);
+                ctx.quadraticCurveTo(x - 80, y + 50, x - 50, y + 10);
+                ctx.fill();
+            }
+        }
+        
+        // Helper function to draw detailed anime face
+        function drawAnimeFace(ctx, x, y, size, emotion) {
+            // Face shape
+            ctx.fillStyle = '#ffdbac';
+            ctx.beginPath();
+            ctx.ellipse(x, y, size * 0.8, size, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Hair
+            ctx.fillStyle = '#1a1a2e';
+            ctx.beginPath();
+            ctx.ellipse(x, y - size * 0.3, size * 0.9, size * 0.7, 0, Math.PI, Math.PI * 2);
+            ctx.fill();
+            
+            // Spiky hair
+            ctx.beginPath();
+            ctx.moveTo(x - size * 0.9, y - size * 0.3);
+            ctx.lineTo(x - size * 0.7, y - size * 1.2);
+            ctx.lineTo(x - size * 0.4, y - size * 0.5);
+            ctx.lineTo(x - size * 0.1, y - size * 1.3);
+            ctx.lineTo(x + size * 0.2, y - size * 0.5);
+            ctx.lineTo(x + size * 0.5, y - size * 1.1);
+            ctx.lineTo(x + size * 0.7, y - size * 0.4);
+            ctx.lineTo(x + size * 0.9, y - size * 0.3);
+            ctx.fill();
+            
+            // Eyes
+            const eyeY = y - size * 0.1;
+            const eyeSpacing = size * 0.35;
+            
+            if (emotion === 'screaming' || emotion === 'crying') {
+                // Wide eyes
+                ctx.fillStyle = '#fff';
+                ctx.beginPath();
+                ctx.ellipse(x - eyeSpacing, eyeY, size * 0.2, size * 0.25, 0, 0, Math.PI * 2);
+                ctx.ellipse(x + eyeSpacing, eyeY, size * 0.2, size * 0.25, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Pupils - small for shock
+                ctx.fillStyle = '#000';
+                ctx.beginPath();
+                ctx.arc(x - eyeSpacing, eyeY, size * 0.08, 0, Math.PI * 2);
+                ctx.arc(x + eyeSpacing, eyeY, size * 0.08, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Eye shine
+                ctx.fillStyle = '#fff';
+                ctx.beginPath();
+                ctx.arc(x - eyeSpacing - size * 0.03, eyeY - size * 0.05, size * 0.03, 0, Math.PI * 2);
+                ctx.arc(x + eyeSpacing - size * 0.03, eyeY - size * 0.05, size * 0.03, 0, Math.PI * 2);
+                ctx.fill();
+            } else if (emotion === 'closed_eyes' || emotion === 'sad') {
+                // Closed/sad eyes
+                ctx.strokeStyle = '#000';
+                ctx.lineWidth = 4;
+                ctx.beginPath();
+                ctx.arc(x - eyeSpacing, eyeY, size * 0.15, 0.2, Math.PI - 0.2);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.arc(x + eyeSpacing, eyeY, size * 0.15, 0.2, Math.PI - 0.2);
+                ctx.stroke();
+            } else {
+                // Normal eyes
+                ctx.fillStyle = '#fff';
+                ctx.beginPath();
+                ctx.ellipse(x - eyeSpacing, eyeY, size * 0.15, size * 0.2, 0, 0, Math.PI * 2);
+                ctx.ellipse(x + eyeSpacing, eyeY, size * 0.15, size * 0.2, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.fillStyle = '#4a90d9';
+                ctx.beginPath();
+                ctx.arc(x - eyeSpacing, eyeY + size * 0.02, size * 0.1, 0, Math.PI * 2);
+                ctx.arc(x + eyeSpacing, eyeY + size * 0.02, size * 0.1, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.fillStyle = '#000';
+                ctx.beginPath();
+                ctx.arc(x - eyeSpacing, eyeY + size * 0.02, size * 0.05, 0, Math.PI * 2);
+                ctx.arc(x + eyeSpacing, eyeY + size * 0.02, size * 0.05, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
+            // Mouth
+            const mouthY = y + size * 0.4;
+            ctx.strokeStyle = '#c9a07a';
+            ctx.lineWidth = 3;
+            
+            if (emotion === 'screaming') {
+                // Open screaming mouth
+                ctx.fillStyle = '#000';
+                ctx.beginPath();
+                ctx.ellipse(x, mouthY, size * 0.25, size * 0.2, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Teeth
+                ctx.fillStyle = '#fff';
+                ctx.fillRect(x - size * 0.15, mouthY - size * 0.15, size * 0.3, size * 0.08);
+            } else if (emotion === 'sad' || emotion === 'crying') {
+                // Frown
+                ctx.beginPath();
+                ctx.arc(x, mouthY + size * 0.1, size * 0.12, Math.PI + 0.5, -0.5);
+                ctx.stroke();
+            } else {
+                // Neutral/slight line
+                ctx.beginPath();
+                ctx.moveTo(x - size * 0.1, mouthY);
+                ctx.lineTo(x + size * 0.1, mouthY);
+                ctx.stroke();
+            }
+            
+            // Tears for crying
+            if (emotion === 'crying' || emotion === 'screaming') {
+                ctx.fillStyle = 'rgba(100, 180, 255, 0.7)';
+                ctx.beginPath();
+                ctx.moveTo(x - eyeSpacing - size * 0.1, eyeY + size * 0.15);
+                ctx.quadraticCurveTo(x - eyeSpacing - size * 0.15, eyeY + size * 0.4, x - eyeSpacing - size * 0.1, eyeY + size * 0.6);
+                ctx.quadraticCurveTo(x - eyeSpacing - size * 0.05, eyeY + size * 0.4, x - eyeSpacing - size * 0.1, eyeY + size * 0.15);
+                ctx.fill();
+                
+                ctx.beginPath();
+                ctx.moveTo(x + eyeSpacing + size * 0.1, eyeY + size * 0.15);
+                ctx.quadraticCurveTo(x + eyeSpacing + size * 0.15, eyeY + size * 0.4, x + eyeSpacing + size * 0.1, eyeY + size * 0.6);
+                ctx.quadraticCurveTo(x + eyeSpacing + size * 0.05, eyeY + size * 0.4, x + eyeSpacing + size * 0.1, eyeY + size * 0.15);
+                ctx.fill();
+            }
+        }
+        
+        // Initialize
+        setTimeout(initScenes, 500);
+        
+        // Start the film
+        let currentScene = 0;
+        let synth = window.speechSynthesis;
+        
+        function startFilm() {
+            document.getElementById('loading-screen').style.display = 'none';
+            document.getElementById('cinema').style.display = 'block';
+            
+            // Start YouTube audio
+            const iframe = document.getElementById('yt-player');
+            iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+            
+            // Show first scene after a moment
+            setTimeout(() => {
+                playScene(0);
+            }, 500);
+        }
+        
+        function playScene(index) {
+            if (index >= scenes.length) {
+                // End credits
+                document.getElementById('sub-jp').textContent = "終わり";
+                document.getElementById('sub-en').textContent = "THE END";
+                return;
+            }
+            
+            // Hide all scenes
+            document.querySelectorAll('.scene').forEach(s => s.classList.remove('active'));
+            
+            // Show current scene
+            document.getElementById('scene-' + index).classList.add('active');
+            
+            // Update subtitles
+            document.getElementById('sub-jp').textContent = scenes[index].jp;
+            document.getElementById('sub-en').textContent = scenes[index].en;
+            
+            // Speak the English line
+            const utterance = new SpeechSynthesisUtterance(scenes[index].en);
+            utterance.rate = 0.85;
+            utterance.pitch = 0.9;
+            synth.speak(utterance);
+            
+            // Next scene
+            currentScene = index;
+            setTimeout(() => {
+                playScene(index + 1);
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

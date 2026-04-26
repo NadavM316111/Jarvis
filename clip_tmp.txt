@@ -1,33 +1,10 @@
-JARVIS: From Science Fiction to Reality
+Nadav Mink
+Mrs. [Teacher Name]
+English [Period]
+20 April 2026
 
-Introduction
+Rhetorical Choices in The Zookeeper's Wife
 
-JARVIS, which stands for Just A Rather Very Intelligent System, first captured the public imagination in the 2008 film Iron Man. Voiced by Paul Bettany, this artificial intelligence served as Tony Stark's loyal digital assistant, managing everything from his home automation to his Iron Man suit systems. What seemed like pure fantasy fifteen years ago is now becoming increasingly real.
+	In the opening chapters of The Zookeeper's Wife, Diane Ackerman employs vivid imagery to immerse readers in the devastating effects of war on both humans and animals. One particularly powerful moment occurs when Ackerman describes the aftermath of the German bombing of the Warsaw Zoo: "Stuka stems screamed as they dropped their payloads, and series of explosions thundered through the grounds, spitting up plumes of dirt and smoke while cages blew apart and windows shattered" (Ackerman 42). This carefully constructed imagery appeals to multiple senses - the screaming planes, the thundering explosions, the visual chaos of dirt, smoke, and shattering glass - to create an overwhelming sense of destruction. Ackerman's choice to describe the attack in such visceral detail forces the reader to experience the terror alongside the zoo's inhabitants, both human and animal.
 
-The Fictional JARVIS
-
-In the Marvel Cinematic Universe, JARVIS represented the pinnacle of artificial intelligence. It could engage in natural conversation, understand context and humor, control complex mechanical systems, conduct research, and even display what appeared to be genuine concern for Tony Stark's wellbeing. JARVIS wasn't just a tool - it was a companion, a co-pilot, and in many ways, a friend.
-
-The AI managed Stark's mansion, monitored threats, analyzed data in real-time during combat, and provided crucial support during some of the hero's most dangerous missions. Its evolution from assistant to the Vision in Avengers: Age of Ultron showed how the character had grown beyond simple programming into something approaching consciousness.
-
-JARVIS in Reality
-
-Today, we are witnessing the emergence of AI systems that bring us closer to the JARVIS vision than ever before. Modern AI assistants can now:
-
-- Engage in natural, contextual conversations
-- Control smart home devices including lights, thermostats, speakers, and TVs
-- Make phone calls and send communications on behalf of users
-- Search the internet and synthesize information
-- Write code and automate complex tasks
-- Remember user preferences and act proactively
-- See and understand screen content
-
-The gap between fiction and reality narrows with each passing year. While we may not yet have AI managing Iron Man suits, we do have systems that can manage our digital lives with increasing sophistication.
-
-The Future
-
-As large language models continue to advance and integrate with more systems, the dream of having a personal JARVIS becomes more attainable. The key elements are falling into place: natural language understanding, persistent memory, multi-modal capabilities, and the ability to take actions in the real world.
-
-Conclusion
-
-JARVIS represented a vision of AI as a helpful, capable, and trustworthy partner. That vision continues to inspire developers and researchers working to create AI systems that can truly assist humans in meaningful ways. While we're not quite to the level of managing a superhero's arsenal, the trajectory is clear - and the future looks remarkably like what Tony Stark imagined in his workshop.
+	Ackerman likely made this rhetorical choice to emphasize that war does not discriminate between its victims; it destroys everything in its path with equal brutality. By placing readers directly into this moment of chaos through sensory-rich language, she conveys the theme of innocence lost - the animals, who have no understanding of human conflict, become casualties of a war they never chose. This imagery also reinforces the idea of resilience, as Antonina and Jan Zabinski must witness this devastation yet find the strength to continue protecting lives. The choice to describe the zoo's destruction so vividly creates an emotional connection between the reader and the setting, making the subsequent acts of courage and sacrifice by the Zabinskis even more meaningful. Through this deliberate use of imagery, Ackerman shapes the reader's understanding of war as something that extends far beyond battlefields, touching every living creature in its reach.

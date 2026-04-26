@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Zookeeper's Wife - Chapters 8-15 Study Guide</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            color: #e8e8e8;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        h1 {
+            font-size: 2.5em;
+            background: linear-gradient(90deg, #e94560, #f39c12);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #aaa;
+            font-size: 1.2em;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .tab-btn {
+            padding: 15px 30px;
+            background: rgba(233, 69, 96, 0.2);
+            border: 2px solid #e94560;
+            color: #e94560;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .tab-btn:hover, .tab-btn.active {
+            background: #e94560;
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* Chapter Summaries */
+        .chapter-card {
+            background: rgba(255,255,255,0.08);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-left: 4px solid #e94560;
+            transition: transform 0.3s;
+        }
+        
+        .chapter-card:hover {
+            transform: translateX(10px);
+        }
+        
+        .chapter-card h3 {
+            color: #e94560;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+        }
+        
+        .chapter-card p {
+            line-height: 1.8;
+            color: #ccc;
+        }
+        
+        .key-points {
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 10px;
+        }
+        
+        .key-points h4 {
+            color: #f39c12;
+            margin-bottom: 10px;
+        }
+        
+        .key-points ul {
+            padding-left: 20px;
+        }
+        
+        .key-points li {
+            margin-bottom: 5px;
+            color: #bbb;
+        }
+        
+        /* Quiz Section */
+        .quiz-container {
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            padding: 30px;
+        }
+        
+        .question {
+            background: rgba(255,255,255,0.08);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+        
+        .question-number {
+            color: #e94560;
+            font-weight: bold;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+        
+        .question-text {
+            font-size: 1.1em;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .option {
+            padding: 15px 20px;
+            background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .option:hover {
+            border-color: #e94560;
+            background: rgba(233, 69, 96, 0.1);
+        }
+        
+        .option.selected {
+            border-color: #3498db;
+            background: rgba(52, 152, 219, 0.2);
+        }
+        
+        .option.correct {
+            border-color: #2ecc71;
+            background: rgba(46, 204, 113, 0.2);
+        }
+        
+        .option.incorrect {
+            border-color: #e74c3c;
+            background: rgba(231, 76, 60, 0.2);
+        }
+        
+        .submit-btn {
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(90deg, #e94560, #f39c12);
+            border: none;
+            border-radius: 15px;
+            color: white;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(233, 69, 96, 0.3);
+        }
+        
+        .score-display {
+            text-align: center;
+            padding: 30px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .score-display h2 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        
+        .score-display.show {
+            display: block;
+        }
+        
+        /* SAQ Section */
+        .saq-container {
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            padding: 30px;
+        }
+        
+        .saq-question {
+            background: rgba(255,255,255,0.08);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .saq-question h3 {
+            color: #e94560;
+            margin-bottom: 15px;
+        }
+        
+        .saq-prompt {
+            font-size: 1.1em;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        textarea {
+            width: 100%;
+            min-height: 200px;
+            padding: 20px;
+            background: rgba(0,0,0,0.3);
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            color: white;
+            font-size: 1em;
+            line-height: 1.6;
+            resize: vertical;
+            font-family: inherit;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: #e94560;
+        }
+        
+        .grade-btn {
+            padding: 15px 40px;
+            background: linear-gradient(90deg, #9b59b6, #3498db);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s;
+        }
+        
+        .grade-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(155, 89, 182, 0.4);
+        }
+        
+        .ai-feedback {
+            margin-top: 20px;
+            padding: 25px;
+            background: rgba(155, 89, 182, 0.1);
+            border: 2px solid #9b59b6;
+            border-radius: 15px;
+            display: none;
+        }
+        
+        .ai-feedback.show {
+            display: block;
+        }
+        
+        .ai-feedback h4 {
+            color: #9b59b6;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .grade-score {
+            display: inline-block;
+            padding: 5px 15px;
+            background: #9b59b6;
+            border-radius: 20px;
+            font-size: 0.9em;
+        }
+        
+        .feedback-text {
+            line-height: 1.8;
+            color: #ccc;
+        }
+        
+        .feedback-text strong {
+            color: #f39c12;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .loading.show {
+            display: block;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255,255,255,0.1);
+            border-top-color: #9b59b6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .reset-btn {
+            padding: 15px 30px;
+            background: rgba(255,255,255,0.1);
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 10px;
+            color: white;
+            font-size: 1em;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s;
+        }
+        
+        .reset-btn:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .congrats {
+            color: #2ecc71;
+        }
+        
+        @media (max-width: 600px) {
+            h1 { font-size: 1.8em; }
+            .tab-btn { padding: 12px 20px; font-size: 0.9em; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>The Zookeeper's Wife</h1>
+            <p class="subtitle">Chapters 8-15 Study Guide | Diane Ackerman</p>
+        </header>
+        
+        <div class="tabs">
+            <button class="tab-btn active" onclick="showTab('summaries')">Chapter Summaries</button>
+            <button class="tab-btn" onclick="showTab('quiz')">15 MCQ Quiz</button>
+            <button class="tab-btn" onclick="showTab('saq')">SAQ Questions</button>
+        </div>
+        
+        <!-- SUMMARIES TAB -->
+        <div id="summaries" class="tab-content active">
+            <div class="chapter-card">
+                <h3>Chapter 8: Lutz Heck and Nazi Ideology</h3>
+                <p>This chapter provides a biography of Lutz Heck and explores Nazi ideology regarding eugenics and "animal purity." Heck is obsessed with resurrecting three "pure-blooded extinct species": tarpans, aurochsen, and the European bison. The Nazi obsession with animal purity foreshadows their horrific racial policies toward humans. Ironically, the Nazis considered themselves "ardent animal lovers" - a biologist was once punished for not giving worms enough anesthesia during an experiment.</p>
+                <div class="key-points">
+                    <h4>Key Points:</h4>
+                    <ul>
+                        <li>Lutz Heck wants to resurrect extinct "pure" animal species</li>
+                        <li>Nazi ideology connects animal purity to human racial purity</li>
+                        <li>Paradox: Nazis claim to love animals while planning genocide</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="chapter-card">
+                <h3>Chapter 9: Heck's Visit</h3>
+                <p>Antonina wakes in darkness due to wartime blackouts - bedroom windows are sealed with plywood. She prepares for Lutz Heck's visit. Heck arrives appearing friendly and promises to persuade German high command to be lenient toward the zoo. However, he asks for the zoo's animals, saying "Please think of your animals as a loan." Antonina feels she has no choice but to comply with his request.</p>
+                <div class="key-points">
+                    <h4>Key Points:</h4>
+                    <ul>
+                        <li>Wartime blackouts create constant darkness</li>
+                        <li>Heck offers false friendship to get what he wants</li>
+                        <li>The Zabińskis must surrender their animals</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="chapter-card">
+                <h3>Chapter 10: The Betrayal</h3>
+                <p>Heck reveals his true nature. He returns to the zoo with high-ranking SS friends to hunt the remaining animals - shooting them in their cages like a barbaric game. Antonina is shocked by Heck's betrayal after his earlier promises of protection. She begins to fear how many people will be "hunted" in the coming months, foreshadowing the horrors to come.</p>
+                <div class="key-points">
+                    <h4>Key Points:</h4>
+                    <ul>
+                        <li>Heck's friendliness was deception</li>
+                        <li>SS officers massacre zoo animals for sport</li>
+                        <li>The animal hunt foreshadows Nazi persecution of Jews</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="chapter-card">
+                <h3>Chapter 11: The Pig Farm</h3>
+                <p>With the zoo animals gone, the property is converted into a pig farm. Jan gives Rys a pet piglet named Morys. Despite the grim circumstances, Antonina is happy her son has something resembling a normal childhood, even if his best friend is now a pig rather than exotic zoo animals.</p>
+                <div class="key-points">
+                    <h4>Key Points:</h4>
+                    <ul>
+                        <li>The zoo transforms into a pig farm</li>
+                        <li>Rys gets a pet piglet named Morys</li>
+                        <li>Antonina tries to maintain normalcy for her son</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="chapter-card">
+                <h3>Chapter 12: The Warsaw Ghetto</h3>
+                <p>German hostilities escalate as over 400,000 Jews are locked into the Warsaw Ghetto. Friends Adam and Wanda Englert stage a fake divorce so Wanda can flee. At their farewell party, Antonina and Jan narrowly survive a bombing - saved only because they stopped to smoke. They rush to check on Rys's school but find all children safe. Wanda later reappears at the zoo disguised as Rys's non-Jewish tutor.</p>
+                <div class="key-points">
+                    <h4>Key Points:</h4>
+                    <ul>
+                        <li>400,000+ Jews confined to the Warsaw Ghetto</li>
+                        <li>The Zabińskis survive a bombing by luck</li>
+                        <li>Wanda assumes a false identity to survive</li>
+                        <li>Theme: disguise and deception as survival tools</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="chapter-card">
+                <h3>Chapter 13: Jan Joins the Underground</h3>
+                <p>Jan feels "a moral indebtedness to the Jews" because he attended a primarily Jewish school. To repay this debt, he secretly uses the zoo to hide refugees. Working as part of the Polish Underground resistance, Jan assumes the code name "Francis" after Francis of Assisi, the patron saint of animals - a fitting name for a zookeeper turned savior.</p>
+                <div class="key-points">
+                    <h4>Key Points:</h4>
+                    <ul>
+                        <li>Jan's Jewish school friends inspire his resistance work</li>
+                        <li>The zoo becomes a hiding place for refugees</li>
+                        <li>Jan's code name "Francis" honors his connection to animals</li>
+                        <li>The Underground resistance network begins operating</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="chapter-card">
+                <h3>Chapter 14: Hiding in Plain Sight</h3>
+                <p>To camouflage their secret "Guests," Antonina and Jan keep the zoo populated with many legal visitors - hiding people in plain sight. Antonina becomes the hostess, managing extra chores and finding ways to provide food. Jan hides bomb-making materials underground. The biggest challenge is teaching young Rys to never speak about the Guests - if he does, everyone will be murdered. Tragically, German soldiers drag away Rys's beloved piglet Morys to be butchered.</p>
+                <div class="key-points">
+                    <h4>Key Points:</h4>
+                    <ul>
+                        <li>Strategy: hide refugees among legitimate visitors</li>
+                        <li>Antonina manages hospitality and extra food</li>
+                        <li>Jan stores resistance weapons underground</li>
+                        <li>Rys must keep deadly secrets at a young age</li>
+                        <li>Morys the piglet is taken and killed</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="chapter-card">
+                <h3>Chapter 15: The Beetle Connection</h3>
+                <p>Germans shut down the pig farm, eliminating Jan's excuse for entering the Ghetto. The Nazis also destroy zoo plants and replace them with German species. Jan meets with Warsaw's Polish vice-president and obtains a Ghetto pass through the Parks and Gardens Department. This introduces him to famous entomologist Dr. Szymon Tenenbaum. Tenenbaum leaves his insect collection to Jan, which attracts a German officer named Ziegler who loves beetles. This connection gives Jan unprecedented Ghetto access to smuggle people out. When Tenenbaum dies, Ziegler leaves his dog Zarka with Antonina, and Jan plans to rescue Tenenbaum's widow.</p>
+                <div class="key-points">
+                    <h4>Key Points:</h4>
+                    <ul>
+                        <li>Pig farm closure forces Jan to find new Ghetto access</li>
+                        <li>Nazis replace Polish plants with German species (cultural erasure)</li>
+                        <li>Dr. Tenenbaum's beetle collection becomes a rescue tool</li>
+                        <li>Ziegler's beetle obsession unknowingly aids Jewish escape</li>
+                        <li>Jan plans to save Tenenbaum's widow</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <!-- QUIZ TAB -->
+        <div id="quiz" class="tab-content">
+            <div class="quiz-container">
+                <div id="quiz-questions"></div>
+                <button class="submit-btn" onclick="submitQuiz()">Submit Quiz</button>
+                <div class="score-display" id="score-display">
+                    <h2 id="score-text"></h2>
+                    <p id="score-message"></p>
+                    <button class="reset-btn" onclick="resetQuiz()">Try Again</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- SAQ TAB -->
+        <div id="saq" class="tab-content">
+            <div class="saq-container">
+                <div class="saq-question">
+                    <h3>Short Answer Question 1</h3>
+                    <p class="saq-prompt">Analyze how the Zabińskis use the strategy of "hiding in plain sight" to protect Jewish refugees. What specific methods do they employ, and why is this approach effective under Nazi occupation? Use evidence from chapters 13-15.</p>
+                    <textarea id="saq1" placeholder="Write your response here (aim for 2-3 paragraphs)..."></textarea>
+                    <button class="grade-btn" onclick="gradeSAQ(1)">Grade My Answer</button>
+                    <div class="loading" id="loading1">
+                        <div class="spinner"></div>
+                        <p>AI is analyzing your response...</p>
+                    </div>
+                    <div class="ai-feedback" id="feedback1">
+                        <h4>AI Feedback <span class="grade-score" id="grade1"></span></h4>
+                        <div class="feedback-text" id="feedback-text1"></div>
+                    </div>
+                </div>
+                
+                <div class="saq-question">
+                    <h3>Short Answer Question 2</h3>
+                    <p class="saq-prompt">Discuss the symbolism and significance of animals throughout chapters 8-15. How does Ackerman use animals to reflect broader themes about Nazi ideology, innocence lost, and human connections? Reference specific animals and scenes from the text.</p>
+                    <textarea id="saq2" placeholder="Write your response here (aim for 2-3 paragraphs)..."></textarea>
+                    <button class="grade-btn" onclick="gradeSAQ(2)">Grade My Answer</button>
+                    <div class="loading" id="loading2">
+                        <div class="spinner"></div>
+                        <p>AI is analyzing your response...</p>
+                    </div>
+                    <div class="ai-feedback" id="feedback2">
+                        <h4>AI Feedback <span class="grade-score" id="grade2"></span></h4>
+                        <div class="feedback-text" id="feedback-text2"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Quiz Questions Data
+        const quizData = [
+            {
+                question: "What was Lutz Heck obsessed with resurrecting?",
+                options: ["Zoo animals from Berlin", "Pure-blooded extinct species like tarpans and aurochsen", "German military animals", "Antonina's pet collection"],
+                correct: 1
+            },
+            {
+                question: "How did Antonina's windows appear during wartime?",
+                options: ["Covered with curtains", "Sealed with plywood due to blackouts", "Painted black", "Left open for air"],
+                correct: 1
+            },
+            {
+                question: "What did Lutz Heck ask to 'borrow' from the zoo?",
+                options: ["Money", "The zoo's animals", "Jan's expertise", "The villa"],
+                correct: 1
+            },
+            {
+                question: "What did Heck actually do when he returned with SS officers?",
+                options: ["Protected the animals", "Hunted and killed the remaining zoo animals", "Helped rebuild the zoo", "Brought new animals"],
+                correct: 1
+            },
+            {
+                question: "What was the zoo converted into after losing its animals?",
+                options: ["A military base", "A pig farm", "A hospital", "A garden"],
+                correct: 1
+            },
+            {
+                question: "What did Jan name Rys's pet piglet?",
+                options: ["Francis", "Zarka", "Morys", "Heck"],
+                correct: 2
+            },
+            {
+                question: "How many Jews were confined to the Warsaw Ghetto?",
+                options: ["100,000", "250,000", "Over 400,000", "50,000"],
+                correct: 2
+            },
+            {
+                question: "How did the Zabińskis survive the bombing near the Englerts' party?",
+                options: ["They hid in a bunker", "They stopped to smoke a cigarette", "They arrived late", "The bomb didn't explode"],
+                correct: 1
+            },
+            {
+                question: "What disguise did Wanda use to hide at the zoo?",
+                options: ["A German officer's wife", "Rys's non-Jewish tutor", "A pig farm worker", "Antonina's sister"],
+                correct: 1
+            },
+            {
+                question: "What code name did Jan use in the Underground?",
+                options: ["Koala", "Francis", "Ziegler", "Eagle"],
+                correct: 1
+            },
+            {
+                question: "Why did Jan choose the name 'Francis'?",
+                options: ["It was his father's name", "After Francis of Assisi, patron saint of animals", "It was a common Polish name", "To honor a fallen friend"],
+                correct: 1
+            },
+            {
+                question: "What was the consequence if Rys talked about the 'Guests'?",
+                options: ["He would be sent away", "Everyone in the house would be murdered", "The guests would leave", "They would lose the zoo"],
+                correct: 1
+            },
+            {
+                question: "What happened to Morys the piglet?",
+                options: ["He escaped", "He was given to Heck", "German soldiers took him to be butchered", "He died of illness"],
+                correct: 2
+            },
+            {
+                question: "Who was Dr. Szymon Tenenbaum?",
+                options: ["A German officer", "A famous entomologist with a beetle collection", "The Warsaw mayor", "A pig farmer"],
+                correct: 1
+            },
+            {
+                question: "How did Ziegler's beetle obsession help Jan?",
+                options: ["Ziegler gave Jan money", "It gave Jan unprecedented access to the Ghetto to smuggle people out", "Ziegler protected the zoo", "It distracted the SS from the zoo"],
+                correct: 1
+            }
+        ];
+        
+        // SAQ Rubric and Answer Keys
+        const saqKeys = {
+            1: {
+                keyPoints: [
+                    "Many legal visitors to camouflage the Guests",
+                    "Refugees hidden as helpers, relatives, or in animal habitats",
+                    "Jan's code name Francis and Underground work",
+                    "Antonina as hostess managing food and hospitality",
+                    "Teaching Rys to keep secrets",
+                    "Using the pig farm and later beetle collection as cover for Ghetto access"
+                ],
+                fullAnswer: "The Zabińskis employed a brilliant 'hiding in plain sight' strategy by keeping their zoo populated with many legitimate visitors, making it harder for Germans to notice that some visitors were actually Jewish refugees. Antonina took on the role of hostess, seamlessly integrating Guests into daily life as 'helpers' or 'relatives.' Jan, using his Underground code name 'Francis,' created cover stories for Ghetto access - first through the pig farm's need for supplies, then through Dr. Tenenbaum's beetle collection which attracted the German officer Ziegler. The constant flow of people, animals, and activities provided natural camouflage for their rescue operations."
+            },
+            2: {
+                keyPoints: [
+                    "Heck's 'pure' animal breeding reflects Nazi racial ideology",
+                    "Zoo animal massacre foreshadows human persecution",
+                    "Morys the piglet represents lost innocence and Nazi cruelty",
+                    "German plants replacing Polish ones symbolizes cultural erasure",
+                    "Tenenbaum's beetles become tools of salvation",
+                    "Zarka the dog shows unexpected human connections across enemy lines",
+                    "Francis (patron saint of animals) as Jan's code name"
+                ],
+                fullAnswer: "Ackerman uses animals as powerful symbols throughout these chapters. Lutz Heck's obsession with resurrecting 'pure-blooded' extinct species directly parallels Nazi racial ideology - the same twisted logic applied to animals would soon target humans. The brutal zoo animal massacre by SS officers foreshadows the coming genocide. Morys the piglet represents childhood innocence - his slaughter by German soldiers symbolizes how war destroys normalcy. Even plants become symbolic: Germans replacing Polish flora with German species represents cultural erasure. Yet animals also offer hope: Tenenbaum's beetle collection becomes an unlikely rescue tool, and Jan's code name 'Francis' (patron saint of animals) connects his animal-caring past to his human-saving present."
+            }
+        };
+        
+        // Initialize Quiz
+        function initQuiz() {
+            const container = document.getElementById('quiz-questions');
+            container.innerHTML = quizData.map((q, i) => `
+                <div class="question" id="q${i}">
+                    <div class="question-number">Question ${i + 1} of 15</div>
+                    <div class="question-text">${q.question}</div>
+                    <div class="options">
+                        ${q.options.map((opt, j) => `
+                            <div class="option" onclick="selectOption(${i}, ${j})" id="q${i}o${j}">${opt}</div>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        let selectedAnswers = {};
+        
+        function selectOption(questionIndex, optionIndex) {
+            // Clear previous selection
+            for (let i = 0; i < 4; i++) {
+                document.getElementById(`q${questionIndex}o${i}`).classList.remove('selected');
+            }
+            // Select new option
+            document.getElementById(`q${questionIndex}o${optionIndex}`).classList.add('selected');
+            selectedAnswers[questionIndex] = optionIndex;
+        }
+        
+        function submitQuiz() {
+            let correct = 0;
+            
+            quizData.forEach((q, i) => {
+                const selected = selectedAnswers[i];
+                for (let j = 0; j < 4; j++) {
+                    const el = document.getElementById(`q${i}o${j}`);
+                    el.classList.remove('selected');
+                    if (j === q.correct) {
+                        el.classList.add('correct');
+                    } else if (j === selected && j !== q.correct) {
+                        el.classList.add('incorrect');
+                    }
+                }
+                if (selected === q.correct) correct++;
+            });
+            
+            const percentage = Math.round((correct / 15) * 100);
+            document.getElementById('score-text').textContent = `${correct}/15 (${percentage}%)`;
+            
+            let message = "";
+            if (percentage >= 90) message = "Excellent work! You've mastered these chapters!";
+            else if (percentage >= 80) message = "Great job! You have a strong understanding.";
+            else if (percentage >= 70) message = "Good effort! Review the summaries for missed questions.";
+            else message = "Keep studying! Re-read the chapter summaries and try again.";
+            
+            document.getElementById('score-message').textContent = message;
+            document.getElementById('score-display').classList.add('show');
+        }
+        
+        function resetQuiz() {
+            selectedAnswers = {};
+            document.querySelectorAll('.option').forEach(el => {
+                el.classList.remove('selected', 'correct', 'incorrect');
+            });
+            document.getElementById('score-display').classList.remove('show');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        // SAQ Grading
+        function gradeSAQ(num) {
+            const answer = document.getElementById(`saq${num}`).value.trim();
+            
+            if (answer.length < 50) {
+                alert('Please write a more detailed response (at least 2-3 sentences).');
+                return;
+            }
+            
+            document.getElementById(`loading${num}`).classList.add('show');
+            document.getElementById(`feedback${num}`).classList.remove('show');
+            
+            // Simulate AI processing
+            setTimeout(() => {
+                const feedback = analyzeAnswer(num, answer);
+                
+                document.getElementById(`loading${num}`).classList.remove('show');
+                document.getElementById(`grade${num}`).textContent = feedback.grade;
+                document.getElementById(`feedback-text${num}`).innerHTML = feedback.text;
+                document.getElementById(`feedback${num}`).classList.add('show');
+            }, 2000);
+        }
+        
+        function analyzeAnswer(num, answer) {
+            const key = saqKeys[num];
+            const lowerAnswer = answer.toLowerCase();
+            
+            let pointsFound = 0;
+            let foundPoints = [];
+            let missingPoints = [];
+            
+            // Check for key points
+            const checkTerms = {
+                1: [
+                    { terms: ['plain sight', 'visitor', 'camouflage'], point: 'hiding among legal visitors' },
+                    { terms: ['guest', 'helper', 'relative', 'habitat'], point: 'disguising refugees as helpers/relatives' },
+                    { terms: ['francis', 'underground', 'code name'], point: "Jan's Underground resistance work" },
+                    { terms: ['hostess', 'food', 'antonina', 'hospitality'], point: "Antonina's role as hostess" },
+                    { terms: ['rys', 'secret', 'quiet', 'silence'], point: 'teaching Rys to keep secrets' },
+                    { terms: ['pig', 'beetle', 'tenenbaum', 'ziegler', 'ghetto access'], point: 'cover stories for Ghetto access' }
+                ],
+                2: [
+                    { terms: ['heck', 'pure', 'breed', 'eugenics', 'racial'], point: 'Heck and Nazi racial ideology' },
+                    { terms: ['massacre', 'hunt', 'kill', 'foreshadow'], point: 'animal massacre foreshadowing genocide' },
+                    { terms: ['morys', 'piglet', 'innocen', 'childhood'], point: 'Morys representing lost innocence' },
+                    { terms: ['plant', 'german species', 'flora', 'cultural'], point: 'plant replacement as cultural erasure' },
+                    { terms: ['beetle', 'tenenbaum', 'insect', 'collection'], point: 'beetles as rescue tools' },
+                    { terms: ['zarka', 'dog', 'ziegler'], point: 'unexpected human connections' },
+                    { terms: ['francis', 'saint', 'assisi', 'patron'], point: "symbolism of Jan's code name" }
+                ]
+            };
+            
+            checkTerms[num].forEach(check => {
+                if (check.terms.some(term => lowerAnswer.includes(term))) {
+                    pointsFound++;
+                    foundPoints.push(check.point);
+                } else {
+                    missingPoints.push(check.point);
+                }
+            });
+            
+            const maxPoints = checkTerms[num].length;
+            const percentage = (pointsFound / maxPoints) * 100;
+            
+            let grade, gradeClass;
+            if (percentage >= 85) { grade = 'A (9-10/10)'; gradeClass = 'excellent'; }
+            else if (percentage >= 70) { grade = 'B (8/10)'; gradeClass = 'good'; }
+            else if (percentage >= 55) { grade = 'C (7/10)'; gradeClass = 'fair'; }
+            else if (percentage >= 40) { grade = 'D (6/10)'; gradeClass = 'needs-work'; }
+            else { grade = 'F (5/10)'; gradeClass = 'incomplete'; }
+            
+            let feedbackHtml = '<p><strong>Strengths:</strong> ';
+            if (foundPoints.length > 0) {
+                feedbackHtml += 'You addressed: ' + foundPoints.join(', ') + '.</p>';
+            } else {
+                feedbackHtml += 'Your response shows effort but needs more specific textual evidence.</p>';
+            }
+            
+            if (missingPoints.length > 0 && percentage < 85) {
+                feedbackHtml += '<p><strong>Areas to improve:</strong> Consider also discussing: ' + missingPoints.slice(0, 3).join(', ') + '.</p>';
+            }
+            
+            feedbackHtml += '<p><strong>Model response excerpt:</strong> "' + key.fullAnswer.substring(0, 300) + '..."</p>';
+            
+            if (answer.length < 150) {
+                feedbackHtml += '<p><strong>Length:</strong> Your response is brief. Aim for 2-3 developed paragraphs with specific examples.</p>';
+            }
+            
+            return { grade, text: feedbackHtml };
+        }
+        
+        // Tab Navigation
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
+        }
+        
+        // Initialize
+        initQuiz();
+    </script>
+</body>
+</html>

@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>J.A.R.V.I.S. Evolution</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #000;
+            color: #fff;
+            font-family: 'Rajdhani', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Animated background */
+        .bg-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px),
+                linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridMove 20s linear infinite;
+            z-index: -1;
+        }
+
+        @keyframes gridMove {
+            0% { transform: perspective(500px) rotateX(60deg) translateY(0); }
+            100% { transform: perspective(500px) rotateX(60deg) translateY(50px); }
+        }
+
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: #00d4ff;
+            border-radius: 50%;
+            animation: float 15s infinite;
+            opacity: 0.5;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(100vh) scale(0); opacity: 0; }
+            10% { opacity: 0.5; }
+            90% { opacity: 0.5; }
+            100% { transform: translateY(-100vh) scale(1); opacity: 0; }
+        }
+
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .hero-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 8rem;
+            font-weight: 900;
+            letter-spacing: 20px;
+            background: linear-gradient(135deg, #00d4ff 0%, #0099ff 50%, #00ffcc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 80px rgba(0,212,255,0.5);
+            animation: titleGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes titleGlow {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.3); }
+        }
+
+        .hero-subtitle {
+            font-size: 1.5rem;
+            letter-spacing: 15px;
+            color: #00d4ff;
+            margin-top: 20px;
+            opacity: 0.8;
+        }
+
+        .hero-line {
+            width: 300px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #00d4ff, transparent);
+            margin: 40px 0;
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 50px;
+            animation: bounce 2s infinite;
+        }
+
+        .scroll-indicator span {
+            display: block;
+            width: 30px;
+            height: 30px;
+            border-right: 2px solid #00d4ff;
+            border-bottom: 2px solid #00d4ff;
+            transform: rotate(45deg);
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(15px); }
+        }
+
+        /* Timeline */
+        .timeline {
+            padding: 100px 10%;
+            position: relative;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(180deg, transparent, #00d4ff, #00ffcc, transparent);
+        }
+
+        .era {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 150px 0;
+            position: relative;
+        }
+
+        .era:nth-child(odd) { flex-direction: row; }
+        .era:nth-child(even) { flex-direction: row-reverse; }
+
+        .era-content {
+            width: 45%;
+            padding: 50px;
+            background: linear-gradient(135deg, rgba(0,20,40,0.9), rgba(0,40,60,0.7));
+            border: 1px solid rgba(0,212,255,0.3);
+            border-radius: 20px;
+            position: relative;
+            backdrop-filter: blur(10px);
+            transition: all 0.5s ease;
+        }
+
+        .era-content:hover {
+            transform: scale(1.02);
+            border-color: #00d4ff;
+            box-shadow: 0 0 60px rgba(0,212,255,0.3);
+        }
+
+        .era-dot {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30px;
+            height: 30px;
+            background: #00d4ff;
+            border-radius: 50%;
+            box-shadow: 0 0 30px #00d4ff;
+            z-index: 10;
+        }
+
+        .era-label {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem;
+            color: #00ffcc;
+            letter-spacing: 5px;
+            margin-bottom: 15px;
+        }
+
+        .era-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            background: linear-gradient(90deg, #fff, #00d4ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .era-desc {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            color: #ccc;
+            margin-bottom: 30px;
+        }
+
+        .example-box {
+            background: rgba(0,0,0,0.5);
+            border-left: 4px solid #00d4ff;
+            padding: 20px;
+            border-radius: 0 10px 10px 0;
+            margin-top: 20px;
+        }
+
+        .example-label {
+            font-size: 0.8rem;
+            color: #00ffcc;
+            letter-spacing: 3px;
+            margin-bottom: 10px;
+        }
+
+        .example-prompt {
+            font-family: 'Courier New', monospace;
+            color: #ff9500;
+            font-size: 1rem;
+            margin-bottom: 15px;
+        }
+
+        .example-response {
+            color: #00d4ff;
+            font-size: 1rem;
+            font-style: italic;
+        }
+
+        /* Capabilities Grid */
+        .capabilities {
+            padding: 100px 10%;
+            background: linear-gradient(180deg, transparent, rgba(0,30,50,0.5), transparent);
+        }
+
+        .section-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3rem;
+            text-align: center;
+            margin-bottom: 80px;
+            background: linear-gradient(90deg, #00d4ff, #00ffcc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .cap-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .cap-card {
+            background: linear-gradient(135deg, rgba(0,30,50,0.8), rgba(0,50,70,0.5));
+            border: 1px solid rgba(0,212,255,0.2);
+            border-radius: 15px;
+            padding: 40px;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cap-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(0,212,255,0.1) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .cap-card:hover::before {
+            opacity: 1;
+        }
+
+        .cap-card:hover {
+            transform: translateY(-10px);
+            border-color: #00d4ff;
+            box-shadow: 0 20px 60px rgba(0,212,255,0.2);
+        }
+
+        .cap-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        .cap-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            color: #00d4ff;
+        }
+
+        .cap-desc {
+            color: #aaa;
+            line-height: 1.6;
+        }
+
+        /* Future Section */
+        .future {
+            padding: 150px 10%;
+            text-align: center;
+            position: relative;
+        }
+
+        .future-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 4rem;
+            margin-bottom: 50px;
+            background: linear-gradient(90deg, #ff6b00, #ff0066, #00d4ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: futureGlow 5s ease-in-out infinite;
+        }
+
+        @keyframes futureGlow {
+            0%, 100% { filter: hue-rotate(0deg); }
+            50% { filter: hue-rotate(30deg); }
+        }
+
+        .future-items {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 40px;
+            margin-top: 60px;
+        }
+
+        .future-item {
+            width: 250px;
+            padding: 40px 30px;
+            background: linear-gradient(135deg, rgba(255,100,0,0.1), rgba(255,0,100,0.1));
+            border: 1px solid rgba(255,100,0,0.3);
+            border-radius: 20px;
+            transition: all 0.4s ease;
+        }
+
+        .future-item:hover {
+            transform: scale(1.1);
+            border-color: #ff6b00;
+            box-shadow: 0 0 50px rgba(255,100,0,0.3);
+        }
+
+        .future-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        .future-name {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2rem;
+            color: #ff9500;
+            margin-bottom: 15px;
+        }
+
+        .future-desc {
+            color: #aaa;
+            font-size: 0.95rem;
+        }
+
+        /* Footer */
+        .footer {
+            padding: 80px 10%;
+            text-align: center;
+            border-top: 1px solid rgba(0,212,255,0.2);
+        }
+
+        .footer-text {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            color: #00d4ff;
+            margin-bottom: 20px;
+        }
+
+        .footer-sub {
+            color: #666;
+            font-size: 1rem;
+        }
+
+        .footer-sub span {
+            color: #00ffcc;
+        }
+
+        /* Stats */
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 80px;
+            padding: 80px 10%;
+            background: rgba(0,212,255,0.05);
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 4rem;
+            color: #00d4ff;
+            text-shadow: 0 0 30px rgba(0,212,255,0.5);
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            color: #888;
+            letter-spacing: 3px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-grid"></div>
+    <div class="particles">
+        <div class="particle" style="left: 80.10815011802423%; animation-delay: 1.2991827371771136s; animation-duration: 11.639974055657115s;"></div><div class="particle" style="left: 2.9009487819573354%; animation-delay: 9.326564122900123s; animation-duration: 19.235506598722054s;"></div><div class="particle" style="left: 29.636802925834882%; animation-delay: 13.217196954399299s; animation-duration: 19.212071008959796s;"></div><div class="particle" style="left: 65.66506188186048%; animation-delay: 9.357497444085292s; animation-duration: 18.266428579645492s;"></div><div class="particle" style="left: 35.52655088129944%; animation-delay: 3.5137093621848114s; animation-duration: 11.55921849857359s;"></div><div class="particle" style="left: 28.515545506186346%; animation-delay: 0.2006228394348203s; animation-duration: 10.13617549526651s;"></div><div class="particle" style="left: 24.562421391921585%; animation-delay: 9.601325902081157s; animation-duration: 12.944186732104608s;"></div><div class="particle" style="left: 11.920272839726332%; animation-delay: 14.679743680134644s; animation-duration: 19.46663986113369s;"></div><div class="particle" style="left: 77.42732534654004%; animation-delay: 3.8283016524749085s; animation-duration: 12.723489714993924s;"></div><div class="particle" style="left: 13.024165002790689%; animation-delay: 12.398532122309355s; animation-duration: 17.55455637191432s;"></div><div class="particle" style="left: 20.496799355765937%; animation-delay: 1.134846030701559s; animation-duration: 11.362404850192725s;"></div><div class="particle" style="left: 60.607322053893334%; animation-delay: 14.367401541329663s; animation-duration: 15.778028955563386s;"></div><div class="particle" style="left: 49.83294127968498%; animation-delay: 7.8843845447990795s; animation-duration: 11.294270568755563s;"></div><div class="particle" style="left: 90.98734032602503%; animation-delay: 12.945896535483696s; animation-duration: 19.655562356104s;"></div><div class="particle" style="left: 63.34418700842507%; animation-delay: 4.8316473288950075s; animation-duration: 15.93600559824565s;"></div><div class="particle" style="left: 77.99074659916991%; animation-delay: 2.0372887510278503s; animation-duration: 18.814315818180653s;"></div><div class="particle" style="left: 83.476890196385%; animation-delay: 4.71173893075745s; animation-duration: 16.803610529585335s;"></div><div class="particle" style="left: 95.44353531971232%; animation-delay: 5.35696686070259s; animation-duration: 16.816059356879094s;"></div><div class="particle" style="left: 12.17580932329515%; animation-delay: 9.726333762485025s; animation-duration: 12.00680439147843s;"></div><div class="particle" style="left: 69.3967122132251%; animation-delay: 9.933454102129781s; animation-duration: 16.44293276972031s;"></div><div class="particle" style="left: 56.58311386028069%; animation-delay: 6.214362444427991s; animation-duration: 11.880055418985576s;"></div><div class="particle" style="left: 77.53021252970672%; animation-delay: 4.80402322101634s; animation-duration: 16.850605204551986s;"></div><div class="particle" style="left: 34.022017266748165%; animation-delay: 5.795952565296727s; animation-duration: 12.981504768281443s;"></div><div class="particle" style="left: 3.6314386849886415%; animation-delay: 3.4151199412196713s; animation-duration: 13.044623727658102s;"></div><div class="particle" style="left: 37.77370560174509%; animation-delay: 5.001263861283568s; animation-duration: 18.02248116832756s;"></div><div class="particle" style="left: 36.9887086814491%; animation-delay: 1.9918758201891746s; animation-duration: 10.364083601679798s;"></div><div class="particle" style="left: 1.1773487406000038%; animation-delay: 12.832801612023578s; animation-duration: 13.280689176116654s;"></div><div class="particle" style="left: 39.42797091163543%; animation-delay: 10.110870494596014s; animation-duration: 16.17862383974713s;"></div><div class="particle" style="left: 25.211101126008394%; animation-delay: 7.522804803020872s; animation-duration: 15.780320554339557s;"></div><div class="particle" style="left: 62.84350992561697%; animation-delay: 7.253088863703811s; animation-duration: 17.97912131725186s;"></div><div class="particle" style="left: 90.5617751348543%; animation-delay: 13.528641705387324s; animation-duration: 19.970276346578714s;"></div><div class="particle" style="left: 94.24154649542899%; animation-delay: 14.72377531145477s; animation-duration: 11.473541481864327s;"></div><div class="particle" style="left: 98.66013687017166%; animation-delay: 14.229458877433197s; animation-duration: 15.249924101762822s;"></div><div class="particle" style="left: 91.13363763062665%; animation-delay: 6.06337851142018s; animation-duration: 15.239149370046635s;"></div><div class="particle" style="left: 71.37091568762361%; animation-delay: 14.982940809263853s; animation-duration: 15.16978001848401s;"></div><div class="particle" style="left: 87.51886616841837%; animation-delay: 6.736622015051157s; animation-duration: 11.117159791424411s;"></div><div class="particle" style="left: 90.84937008785164%; animation-delay: 9.646475878471664s; animation-duration: 14.14779919254569s;"></div><div class="particle" style="left: 83.81655328548696%; animation-delay: 3.586826037197896s; animation-duration: 13.631750006978613s;"></div><div class="particle" style="left: 26.305844010835845%; animation-delay: 7.909817574408733s; animation-duration: 15.153534739640623s;"></div><div class="particle" style="left: 49.751096698369594%; animation-delay: 4.231386253530828s; animation-duration: 14.10814925214968s;"></div><div class="particle" style="left: 97.83898421661587%; animation-delay: 10.244256091794973s; animation-duration: 10.55466694090093s;"></div><div class="particle" style="left: 85.85244990805754%; animation-delay: 1.512890692106097s; animation-duration: 14.636103756327191s;"></div><div class="particle" style="left: 1.4720371331815807%; animation-delay: 7.421452485235676s; animation-duration: 12.687478271305256s;"></div><div class="particle" style="left: 76.995907859356%; animation-delay: 3.124379584400945s; animation-duration: 15.673567510396271s;"></div><div class="particle" style="left: 86.4280399484395%; animation-delay: 6.827758352573342s; animation-duration: 13.605618428155678s;"></div><div class="particle" style="left: 25.378041352994686%; animation-delay: 3.2352647247113486s; animation-duration: 19.390444195120892s;"></div><div class="particle" style="left: 86.82986614777589%; animation-delay: 12.002196705314232s; animation-duration: 19.270148276380713s;"></div><div class="particle" style="left: 14.243257322383428%; animation-delay: 0.003302310305846601s; animation-duration: 15.14142114623332s;"></div><div class="particle" style="left: 64.94690355964926%; animation-delay: 11.26811545509057s; animation-duration: 10.011271714562502s;"></div><div class="particle" style="left: 3.7423108504445524%; animation-delay: 3.029750397485717s; animation-duration: 14.384808886715378s;"></div>
+    </div>
+
+    <!-- Hero -->
+    <section class="hero">
+        <h1 class="hero-title">J.A.R.V.I.S.</h1>
+        <p class="hero-subtitle">JUST A RATHER VERY INTELLIGENT SYSTEM</p>
+        <div class="hero-line"></div>
+        <p style="color: #888; font-size: 1.2rem;">Built by Nadav, age 15, in 14 days.</p>
+        <div class="scroll-indicator">
+            <span></span>
+        </div>
+    </section>
+
+    <!-- Stats -->
+    <section class="stats">
+        <div class="stat">
+            <div class="stat-number">14</div>
+            <div class="stat-label">DAYS TO BUILD</div>
+        </div>
+        <div class="stat">
+            <div class="stat-number">15</div>
+            <div class="stat-label">YEARS OLD</div>
+        </div>
+        <div class="stat">
+            <div class="stat-number">12+</div>
+            <div class="stat-label">SYSTEMS CONTROLLED</div>
+        </div>
+        <div class="stat">
+            <div class="stat-number">1</div>
+            <div class="stat-label">AUTONOMOUS AI</div>
+        </div>
+    </section>
+
+    <!-- Timeline -->
+    <section class="timeline">
+        <!-- DAY 1 -->
+        <div class="era">
+            <div class="era-content">
+                <div class="era-label">APRIL 2026 - DAY 1</div>
+                <h2 class="era-title">The Beginning</h2>
+                <p class="era-desc">
+                    A simple idea: what if I had my own JARVIS? Not a chatbot. Not Siri. 
+                    A real AI that could DO things. Control my world. Understand context. Remember everything.
+                </p>
+                <div class="example-box">
+                    <div class="example-label">EXAMPLE PROMPT</div>
+                    <div class="example-prompt">"Hey Jarvis, turn on the TV"</div>
+                    <div class="example-response">"I'm sorry sir, I don't have TV control capabilities yet."</div>
+                </div>
+            </div>
+            <div class="era-dot"></div>
+        </div>
+
+        <!-- DAY 7 -->
+        <div class="era">
+            <div class="era-content">
+                <div class="era-label">APRIL 2026 - DAY 7</div>
+                <h2 class="era-title">First Powers</h2>
+                <p class="era-desc">
+                    Smart home integration achieved. Sonos speakers across 5 rooms. Sony TV. Network scanning. 
+                    The house started listening.
+                </p>
+                <div class="example-box">
+                    <div class="example-label">EXAMPLE PROMPT</div>
+                    <div class="example-prompt">"Play Drake in the kitchen"</div>
+                    <div class="example-response">"Now playing Drake on Kitchen speaker, sir."</div>
+                </div>
+            </div>
+            <div class="era-dot"></div>
+        </div>
+
+        <!-- DAY 14 - NOW -->
+        <div class="era">
+            <div class="era-content">
+                <div class="era-label">APRIL 2026 - NOW</div>
+                <h2 class="era-title">Full Autonomy</h2>
+                <p class="era-desc">
+                    Vision. Memory. Code execution. Email. Calendar. Canvas integration. Browser automation. 
+                    Network-wide device control. Real-time screen awareness. Proactive monitoring.
+                    Not an assistant anymore. An extension of the mind.
+                </p>
+                <div class="example-box">
+                    <div class="example-label">EXAMPLE PROMPT</div>
+                    <div class="example-prompt">"Scrape my Canvas, calculate what grades I need for all A's, build me a dashboard, and deploy it live"</div>
+                    <div class="example-response">"Done sir. Your Grade Command Center is live at grade-tracker.vercel.app. You're at 97.84% in English, 98.05% in History. 17 upcoming assignments mapped."</div>
+                </div>
+            </div>
+            <div class="era-dot"></div>
+        </div>
+    </section>
+
+    <!-- Current Capabilities -->
+    <section class="capabilities">
+        <h2 class="section-title">CURRENT CAPABILITIES</h2>
+        <div class="cap-grid">
+            <div class="cap-card">
+                <div class="cap-icon">👁</div>
+                <h3 class="cap-title">Real-Time Vision</h3>
+                <p class="cap-desc">Sees your screen and camera feed simultaneously. Understands context. Watches for changes.</p>
+            </div>
+            <div class="cap-card">
+                <div class="cap-icon">🏠</div>
+                <h3 class="cap-title">Smart Home Control</h3>
+                <p class="cap-desc">5 Sonos speakers, Sony TV, Roku TV, Google Cast. Full network device control.</p>
+            </div>
+            <div class="cap-card">
+                <div class="cap-icon">💻</div>
+                <h3 class="cap-title">Unlimited Code Execution</h3>
+                <p class="cap-desc">Node.js, Python, PowerShell, Bash. Auto-installs packages. Builds and deploys apps in seconds.</p>
+            </div>
+            <div class="cap-card">
+                <div class="cap-icon">📧</div>
+                <h3 class="cap-title">Communications</h3>
+                <p class="cap-desc">Gmail access, Calendar management, Twilio phone calls, iPhone notifications.</p>
+            </div>
+            <div class="cap-card">
+                <div class="cap-icon">🎓</div>
+                <h3 class="cap-title">Canvas Integration</h3>
+                <p class="cap-desc">Scrapes grades, calculates targets, tracks assignments, builds dashboards automatically.</p>
+            </div>
+            <div class="cap-card">
+                <div class="cap-icon">🌐</div>
+                <h3 class="cap-title">Browser Automation</h3>
+                <p class="cap-desc">Puppeteer-powered. Can login, scrape, fill forms, place orders. Full web control.</p>
+            </div>
+            <div class="cap-card">
+                <div class="cap-icon">🧠</div>
+                <h3 class="cap-title">Persistent Memory</h3>
+                <p class="cap-desc">Remembers facts, contacts, preferences, projects across all sessions. Context never lost.</p>
+            </div>
+            <div class="cap-card">
+                <div class="cap-icon">🔔</div>
+                <h3 class="cap-title">Proactive Monitoring</h3>
+                <p class="cap-desc">Watches projects, weather, emails, calendar. Alerts before you ask.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Future -->
+    <section class="future">
+        <h2 class="future-title">THE FUTURE</h2>
+        <p style="color: #888; font-size: 1.3rem; max-width: 800px; margin: 0 auto;">
+            What happens when JARVIS reaches full potential? The infrastructure of an entire life, automated.
+        </p>
+        <div class="future-items">
+            <div class="future-item">
+                <div class="future-icon">🎧</div>
+                <h3 class="future-name">Voice In Your Ear</h3>
+                <p class="future-desc">AirPods connected 24/7. Whispered alerts, reminders, and intel during conversations.</p>
+            </div>
+            <div class="future-item">
+                <div class="future-icon">💰</div>
+                <h3 class="future-name">Financial Control</h3>
+                <p class="future-desc">Portfolio management, bill payments, trades executed on your authority.</p>
+            </div>
+            <div class="future-item">
+                <div class="future-icon">🔮</div>
+                <h3 class="future-name">Predictive Autonomy</h3>
+                <p class="future-desc">Books the Uber before you ask. Orders dinner when you're late. Acts before you think.</p>
+            </div>
+            <div class="future-item">
+                <div class="future-icon">🤖</div>
+                <h3 class="future-name">Physical Presence</h3>
+                <p class="future-desc">Robot and drone control. Real hands in the real world. Errands automated.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <section class="footer">
+        <p class="footer-text">"You think. I execute. Everywhere. Always."</p>
+        <p class="footer-sub">Built in <span>14 days</span> by a <span>15-year-old</span>.</p>
+        <p style="color: #444; margin-top: 30px; font-size: 0.9rem;">J.A.R.V.I.S. - April 2026</p>
+    </section>
+
+    <script>
+        // Parallax effect on scroll
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            document.querySelector('.hero-title').style.transform = `translateY(${scrolled * 0.3}px)`;
+        });
+
+        // Intersection Observer for animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.era-content, .cap-card, .future-item').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(50px)';
+            el.style.transition = 'all 0.8s ease';
+            observer.observe(el);
+        });
+
+        // Animate stats on scroll
+        const statObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const target = entry.target;
+                    const finalNum = target.textContent.replace('+', '');
+                    let current = 0;
+                    const increment = parseInt(finalNum) / 30;
+                    const hasPlus = target.textContent.includes('+');
+                    
+                    const timer = setInterval(() => {
+                        current += increment;
+                        if (current >= parseInt(finalNum)) {
+                            target.textContent = finalNum + (hasPlus ? '+' : '');
+                            clearInterval(timer);
+                        } else {
+                            target.textContent = Math.floor(current) + (hasPlus ? '+' : '');
+                        }
+                    }, 50);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        document.querySelectorAll('.stat-number').forEach(el => statObserver.observe(el));
+    </script>
+</body>
+</html>

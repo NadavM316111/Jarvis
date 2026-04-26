@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Approach Reasoning - Sesami Ideate</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            min-height: 100vh;
+            color: #e0e0e0;
+            line-height: 1.7;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+        
+        .breadcrumb { display: flex; align-items: center; gap: 10px; margin-bottom: 30px; font-size: 14px; }
+        .breadcrumb a { color: #888; text-decoration: none; transition: color 0.3s; }
+        .breadcrumb a:hover { color: #00d4ff; }
+        .breadcrumb span { color: #00d4ff; }
+        
+        .page-header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding: 40px;
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(0, 255, 136, 0.1));
+            border-radius: 20px;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+        }
+        .page-header h1 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #00d4ff, #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+        }
+        .page-header p { color: #aaa; font-size: 1.2rem; max-width: 700px; margin: 0 auto; }
+        
+        .section {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 16px;
+            padding: 35px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .section h2 { font-size: 1.6rem; color: #00d4ff; margin-bottom: 20px; }
+        .section h3 { font-size: 1.3rem; color: #00ff88; margin: 25px 0 15px 0; }
+        .section p, .section li { color: #cccccc; font-size: 1.05rem; margin-bottom: 12px; }
+        
+        .reasoning-flow {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            margin: 30px 0;
+        }
+        .reason-step {
+            display: flex;
+            gap: 20px;
+            padding: 25px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .reason-step:last-child { border-bottom: none; }
+        .step-number {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #00d4ff, #00ff88);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: #000;
+            font-size: 1.3rem;
+            flex-shrink: 0;
+        }
+        .step-content h4 {
+            color: #fff;
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+        .step-content p {
+            color: #bbb;
+            margin: 0;
+        }
+        
+        .decision-tree {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 16px;
+            padding: 30px;
+            margin: 25px 0;
+        }
+        .tree-node {
+            padding: 20px;
+            border-radius: 12px;
+            margin: 15px 0;
+            position: relative;
+        }
+        .tree-node.question {
+            background: rgba(0, 212, 255, 0.15);
+            border: 1px solid rgba(0, 212, 255, 0.4);
+        }
+        .tree-node.answer-yes {
+            background: rgba(0, 255, 136, 0.15);
+            border: 1px solid rgba(0, 255, 136, 0.4);
+            margin-left: 40px;
+        }
+        .tree-node.answer-no {
+            background: rgba(255, 100, 100, 0.15);
+            border: 1px solid rgba(255, 100, 100, 0.4);
+            margin-left: 40px;
+        }
+        .tree-node h5 {
+            color: #fff;
+            margin-bottom: 8px;
+        }
+        .tree-node p {
+            color: #bbb;
+            font-size: 0.95rem;
+            margin: 0;
+        }
+        .tree-node.question h5 { color: #00d4ff; }
+        .tree-node.answer-yes h5 { color: #00ff88; }
+        .tree-node.answer-no h5 { color: #ff6b6b; }
+        
+        .principle-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+        }
+        .principle-card {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(0, 0, 0, 0.3));
+            border-radius: 16px;
+            padding: 25px;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+        }
+        .principle-card h4 {
+            color: #00d4ff;
+            margin-bottom: 12px;
+            font-size: 1.1rem;
+        }
+        .principle-card p {
+            color: #bbb;
+            font-size: 0.95rem;
+            margin: 0;
+        }
+        
+        .summary-box {
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.1), rgba(0, 212, 255, 0.1));
+            border: 2px solid rgba(0, 255, 136, 0.3);
+            border-radius: 16px;
+            padding: 30px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        .summary-box h3 {
+            color: #00ff88;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+        .summary-box p {
+            color: #ddd;
+            font-size: 1.1rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .tradeoff-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+        }
+        .tradeoff-table th, .tradeoff-table td {
+            padding: 15px;
+            text-align: left;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .tradeoff-table th {
+            background: rgba(0, 212, 255, 0.2);
+            color: #00d4ff;
+        }
+        .tradeoff-table td { color: #ccc; }
+        .tradeoff-table .chose {
+            background: rgba(0, 255, 136, 0.1);
+            color: #00ff88;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .nav-btn {
+            padding: 15px 30px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        .nav-btn.back { background: rgba(255, 255, 255, 0.1); color: #fff; border: 1px solid rgba(255, 255, 255, 0.2); }
+        .nav-btn.next { background: linear-gradient(135deg, #00d4ff, #00ff88); color: #000; }
+        .nav-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(0, 212, 255, 0.3); }
+        
+        .edit-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: 500;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s;
+            z-index: 100;
+        }
+        .edit-btn:hover { transform: translateY(-2px); }
+        
+        [contenteditable="true"] { outline: 2px dashed #00d4ff; outline-offset: 4px; padding: 5px; }
+        
+        ul { list-style: none; padding-left: 0; }
+        ul li::before { content: ">"; color: #00d4ff; font-weight: bold; margin-right: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="index.html">Sesami</a>
+            <span>/</span>
+            <a href="ideate.html">Ideate</a>
+            <span>/</span>
+            <span>Approach Reasoning</span>
+        </nav>
+        
+        <header class="page-header">
+            <h1>Approach Reasoning</h1>
+            <p>The logical framework and decision-making process behind Sesami's AI video analysis approach</p>
+        </header>
+        
+        <section class="section">
+            <h2>Core Decision Framework</h2>
+            <p>Every product decision at Sesami follows a consistent reasoning framework based on three principles: User Safety First, Passive Over Active, and Accessible Over Premium.</p>
+            
+            <div class="principle-cards">
+                <div class="principle-card">
+                    <h4>Principle 1: User Safety First</h4>
+                    <p>When in doubt, err on the side of NOT alarming parents. False positives cause unnecessary anxiety and erode trust. We accept higher false negative rates to protect family mental health.</p>
+                </div>
+                <div class="principle-card">
+                    <h4>Principle 2: Passive Over Active</h4>
+                    <p>Any feature requiring parent action to collect data will fail. New parents are exhausted. If it doesn't work automatically in the background, it's not a real solution.</p>
+                </div>
+                <div class="principle-card">
+                    <h4>Principle 3: Accessible Over Premium</h4>
+                    <p>Developmental delays don't discriminate by income. Our solution must work for middle-class families, not just affluent early adopters. Software > Hardware.</p>
+                </div>
+            </div>
+        </section>
+        
+        <section class="section">
+            <h2>Decision Tree: Why AI Video Analysis</h2>
+            
+            <div class="decision-tree">
+                <div class="tree-node question">
+                    <h5>Question 1: Can we solve this with software only?</h5>
+                    <p>Hardware solutions (wearables, smart cribs, mats) require manufacturing, inventory, shipping, and increase user cost.</p>
+                </div>
+                <div class="tree-node answer-yes">
+                    <h5>YES - Video/Audio analysis uses existing cameras</h5>
+                    <p>78% of parents already own baby monitors with cameras. We can deliver value through software alone.</p>
+                </div>
+                
+                <div class="tree-node question">
+                    <h5>Question 2: Video or Audio or Both?</h5>
+                    <p>Audio tracks speech/language. Video tracks motor, social, cognitive. Which covers more milestones in months 0-24?</p>
+                </div>
+                <div class="tree-node answer-yes">
+                    <h5>VIDEO - Motor milestones dominate first 18 months</h5>
+                    <p>Rolling, sitting, crawling, walking, reaching, grasping - these are visual. Speech milestones start later (babbling at 6mo, words at 12mo).</p>
+                </div>
+                
+                <div class="tree-node question">
+                    <h5>Question 3: Cloud processing or Edge (on-device)?</h5>
+                    <p>Cloud offers better AI accuracy but raises privacy concerns. Edge is private but limited by device processing power.</p>
+                </div>
+                <div class="tree-node answer-yes">
+                    <h5>HYBRID - Pose estimation on edge, analysis in cloud</h5>
+                    <p>Baby's raw video never leaves the home. Only anonymized skeleton/movement data goes to cloud for milestone detection.</p>
+                </div>
+                
+                <div class="tree-node question">
+                    <h5>Question 4: Real-time alerts or Daily/Weekly summaries?</h5>
+                    <p>Real-time feels powerful but may overwhelm. Summaries feel less urgent but respect attention.</p>
+                </div>
+                <div class="tree-node answer-yes">
+                    <h5>SUMMARIES with urgent exception alerts</h5>
+                    <p>Weekly milestone progress reports. Real-time alerts ONLY for high-confidence (95%+) regression detection.</p>
+                </div>
+            </div>
+        </section>
+        
+        <section class="section">
+            <h2>Key Tradeoffs We Made</h2>
+            
+            <table class="tradeoff-table">
+                <thead>
+                    <tr>
+                        <th>Tradeoff</th>
+                        <th>Option A</th>
+                        <th>Option B</th>
+                        <th>We Chose</th>
+                        <th>Reasoning</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Detection Sensitivity</td>
+                        <td>High sensitivity (catch everything)</td>
+                        <td>High specificity (few false alarms)</td>
+                        <td class="chose">High Specificity</td>
+                        <td>False alarms destroy trust and cause anxiety</td>
+                    </tr>
+                    <tr>
+                        <td>Milestone Language</td>
+                        <td>Clinical terminology (accurate)</td>
+                        <td>Parent-friendly language (accessible)</td>
+                        <td class="chose">Parent-Friendly</td>
+                        <td>Clinical terms in pediatrician reports only</td>
+                    </tr>
+                    <tr>
+                        <td>Camera Compatibility</td>
+                        <td>Build our own camera (control)</td>
+                        <td>Work with existing cameras (reach)</td>
+                        <td class="chose">Existing Cameras</td>
+                        <td>Lower barrier to entry, faster adoption</td>
+                    </tr>
+                    <tr>
+                        <td>Business Model</td>
+                        <td>One-time purchase</td>
+                        <td>Subscription</td>
+                        <td class="chose">Subscription</td>
+                        <td>Aligns incentives - we succeed when they succeed</td>
+                    </tr>
+                    <tr>
+                        <td>Data Storage</td>
+                        <td>Store all video for training</td>
+                        <td>Process and delete (privacy)</td>
+                        <td class="chose">Process and Delete</td>
+                        <td>Privacy builds trust, anonymized data sufficient</td>
+                    </tr>
+                    <tr>
+                        <td>Feature Scope</td>
+                        <td>Track everything possible</td>
+                        <td>Focus on critical milestones only</td>
+                        <td class="chose">Critical Milestones</td>
+                        <td>Quality over quantity in medical-adjacent space</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+        
+        <section class="section">
+            <h2>Step-by-Step Reasoning</h2>
+            
+            <div class="reasoning-flow">
+                <div class="reason-step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h4>Start with the User Pain Point</h4>
+                        <p>Parents worry about their baby's development but lack tools for continuous, objective monitoring. Pediatric checkups are too infrequent (every 2-3 months) to catch early delays reliably.</p>
+                    </div>
+                </div>
+                
+                <div class="reason-step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h4>Identify the Behavioral Insight</h4>
+                        <p>Parents don't want MORE work. They're exhausted. Any solution requiring active logging or testing will fail. The solution must work passively, without parent effort.</p>
+                    </div>
+                </div>
+                
+                <div class="reason-step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h4>Map Available Data Sources</h4>
+                        <p>What data can we passively collect about infant development? Video (baby monitors), audio (monitors), movement (wearables), and location (mats). Video captures the most milestone types.</p>
+                    </div>
+                </div>
+                
+                <div class="reason-step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h4>Apply Technology Feasibility Filter</h4>
+                        <p>Computer vision has advanced dramatically (2020-2025). Pose estimation, object detection, and behavior recognition now work reliably on consumer cameras. The tech is ready.</p>
+                    </div>
+                </div>
+                
+                <div class="reason-step">
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <h4>Address the Privacy Elephant</h4>
+                        <p>Baby video is incredibly sensitive. We solve this with edge AI for pose extraction - raw video never leaves the home. Only anonymized skeleton data reaches the cloud.</p>
+                    </div>
+                </div>
+                
+                <div class="reason-step">
+                    <div class="step-number">6</div>
+                    <div class="step-content">
+                        <h4>Design for Trust, Not Features</h4>
+                        <p>In the medical-adjacent space, trust is everything. We optimize for accuracy over speed, understate rather than overstate findings, and always provide clear action paths.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <div class="summary-box">
+            <h3>The Sesami Approach in One Sentence</h3>
+            <p>Use AI to passively analyze video from cameras parents already own, detecting developmental milestones with high specificity, and surfacing only actionable insights that reduce - not increase - parental anxiety.</p>
+        </div>
+        
+        <section class="section">
+            <h2>What This Approach Enables</h2>
+            <ul>
+                <li><strong>Zero-Hardware Adoption:</strong> Parents sign up and connect their existing baby monitor in under 3 minutes</li>
+                <li><strong>Continuous Monitoring:</strong> AI watches 24/7 so parents don't have to remember to log milestones</li>
+                <li><strong>Early Detection:</strong> Patterns emerge over weeks that single checkups miss</li>
+                <li><strong>Pediatric Integration:</strong> Objective data for doctor discussions, not just subjective parental recall</li>
+                <li><strong>Affordable Access:</strong> $15/month puts developmental monitoring within reach of most families</li>
+                <li><strong>Scalable Platform:</strong> Software-only model means we can reach millions without manufacturing</li>
+            </ul>
+        </section>
+        
+        <nav class="nav-buttons">
+            <a href="expert-deep-dive.html" class="nav-btn back">Back: Deep Dive of Experts</a>
+            <a href="engineering.html" class="nav-btn next">Continue to Engineering Phase</a>
+        </nav>
+    </div>
+    
+    <a href="?edit=true" class="edit-btn" id="editBtn">Edit Site</a>
+    
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('edit') === 'true') {
+            document.querySelectorAll('h1, h2, h3, h4, h5, p, li, td, th').forEach(el => {
+                if (!el.closest('nav') && !el.closest('.edit-btn')) {
+                    el.contentEditable = true;
+                }
+            });
+            document.getElementById('editBtn').textContent = 'Editing Mode';
+            document.getElementById('editBtn').style.background = 'linear-gradient(135deg, #00ff88, #00d4ff)';
+        }
+    </script>
+</body>
+</html>

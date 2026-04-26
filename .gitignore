@@ -39,3 +39,41 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Sensitive runtime files
+users.json
+token.json
+credentials.json
+eero_token.json
+memory_*.json
+memory.json
+proactive_log.json
+canvas_data.json
+accomplishments_raw.json
+clip_tmp.txt
+known_faces.npy
+luma_generations.json
+
+# Temp files
+temp_*.js
+temp_*.py
+temp_*.ps1
+temp_code.js
+
+# Audio/speech files
+speech_*.mp3
+speech.mp3
+.voice_started
+
+# Large binary/media
+*.stl
+*.scad
+*.png
+*.mp3
+model_cache/
+
+# Misc local files
+network_inventory.txt
+motivational_quote.txt
+chapter*.txt
+amazon_page.png

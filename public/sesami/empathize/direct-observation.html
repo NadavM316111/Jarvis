@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Direct Observation - Sesami Empathize</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../edit-mode.css">
+    <style>
+        .observation-card {
+            background: rgba(255,255,255,0.03);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .observation-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .observation-number {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-gold), #ffd700);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #000;
+        }
+        .observation-meta h3 {
+            color: var(--text-primary);
+            margin-bottom: 5px;
+        }
+        .observation-meta span {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        .observation-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        @media (max-width: 900px) {
+            .observation-content { grid-template-columns: 1fr; }
+        }
+        .context-section, .findings-section {
+            padding: 25px;
+            border-radius: 15px;
+        }
+        .context-section {
+            background: rgba(0,0,0,0.2);
+        }
+        .findings-section {
+            background: linear-gradient(135deg, rgba(212,175,55,0.1), rgba(212,175,55,0.05));
+            border: 1px solid rgba(212,175,55,0.2);
+        }
+        .context-section h4, .findings-section h4 {
+            color: var(--accent-gold);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .behavior-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .behavior-list li {
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            color: var(--text-secondary);
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+        .behavior-list li:last-child {
+            border-bottom: none;
+        }
+        .behavior-list li i {
+            color: var(--accent-gold);
+            margin-top: 3px;
+        }
+        .quote-block {
+            background: rgba(0,0,0,0.3);
+            padding: 25px;
+            border-radius: 12px;
+            border-left: 4px solid var(--accent-gold);
+            margin: 20px 0;
+        }
+        .quote-block p {
+            color: var(--text-secondary);
+            font-style: italic;
+            line-height: 1.7;
+        }
+        .quote-block footer {
+            color: var(--text-muted);
+            margin-top: 12px;
+            font-size: 0.9rem;
+        }
+        .methodology-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 25px;
+            margin: 40px 0;
+        }
+        .method-stat {
+            text-align: center;
+            padding: 30px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 15px;
+        }
+        .method-stat .number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--accent-gold);
+        }
+        .method-stat .label {
+            color: var(--text-secondary);
+            margin-top: 10px;
+        }
+        .insight-summary {
+            background: linear-gradient(135deg, rgba(212,175,55,0.15), rgba(212,175,55,0.05));
+            border: 2px solid rgba(212,175,55,0.4);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 40px 0;
+        }
+        .insight-summary h3 {
+            color: var(--accent-gold);
+            margin-bottom: 20px;
+        }
+        .insight-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+        .insight-item {
+            background: rgba(0,0,0,0.3);
+            padding: 25px;
+            border-radius: 15px;
+        }
+        .insight-item h4 {
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .insight-item h4 i {
+            color: var(--accent-gold);
+        }
+        .insight-item p {
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+        .observation-notes {
+            background: rgba(0,0,0,0.2);
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 25px;
+        }
+        .observation-notes h4 {
+            color: var(--text-primary);
+            margin-bottom: 15px;
+        }
+        .observation-notes p {
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+        .timeline-item {
+            display: flex;
+            gap: 20px;
+            margin: 15px 0;
+        }
+        .timeline-time {
+            min-width: 80px;
+            color: var(--accent-gold);
+            font-weight: 600;
+        }
+        .timeline-event {
+            color: var(--text-secondary);
+        }
+        .content-text {
+            color: var(--text-secondary);
+            line-height: 1.8;
+            font-size: 1.05rem;
+        }
+        .content-text strong {
+            color: var(--text-primary);
+        }
+    </style>
+</head>
+<body data-page="empathize">
+    <!-- Animated Background -->
+    <div class="bg-gradient"></div>
+    <div class="bg-pattern"></div>
+    <div class="floating-orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="../index.html" class="logo">
+                <div class="logo-icon"><i class="fas fa-baby"></i></div>
+                <span class="logo-text">Sesami</span>
+            </a>
+            <ul class="nav-links" id="navLinks">
+                <li class="nav-item"><a href="../index.html" class="nav-link">Home</a></li>
+                <li class="nav-item has-dropdown">
+                    <a href="../background.html" class="nav-link">Background <i class="fas fa-chevron-down arrow"></i></a>
+                    <div class="dropdown" style="width: 280px;">
+                        <a href="../background/preliminary-research.html"><i class="fas fa-file-alt"></i> Preliminary Research</a>
+                        <a href="../background/final-research.html"><i class="fas fa-file-lines"></i> Final Research Paper</a>
+                        <a href="../background/baby-development-tech.html"><i class="fas fa-baby"></i> Baby Development Tech</a>
+                        <a href="../background/competitor-chart.html"><i class="fas fa-chart-bar"></i> Competitor Chart</a>
+                        <a href="../background/expert-source.html"><i class="fas fa-user-md"></i> Expert Source</a>
+                        <a href="../background/end-user.html"><i class="fas fa-users"></i> End User</a>
+                        <a href="../background/expert-survey.html"><i class="fas fa-poll"></i> Expert Survey</a>
+                        <a href="../background/sensors-writeup.html"><i class="fas fa-microchip"></i> Sensors Writeup</a>
+                        <a href="../background/business-plan.html"><i class="fas fa-briefcase"></i> Business Plan</a>
+                        <a href="../background/financials.html"><i class="fas fa-dollar-sign"></i> Financials</a>
+                    </div>
+                </li>
+                <li class="nav-item has-dropdown">
+                    <a href="../empathize.html" class="nav-link active">Empathize <i class="fas fa-chevron-down arrow"></i></a>
+                    <div class="dropdown">
+                        <a href="end-users-survey.html"><i class="fas fa-poll"></i> End Users Survey</a>
+                        <a href="deep-dive.html"><i class="fas fa-microscope"></i> Deep Dive of End Users</a>
+                        <a href="potential-solutions.html"><i class="fas fa-lightbulb"></i> Potential Solutions</a>
+                        <a href="direct-observation.html"><i class="fas fa-eye"></i> Direct Observation</a>
+                    </div>
+                </li>
+                <li class="nav-item"><a href="../define.html" class="nav-link">Define</a></li>
+                <li class="nav-item"><a href="../ideate.html" class="nav-link">Ideate</a></li>
+                <li class="nav-item"><a href="../engineering.html" class="nav-link">Engineering</a></li>
+                <li class="nav-item"><a href="../test.html" class="nav-link">Test</a></li>
+            </ul>
+            <button class="menu-toggle" id="menuToggle">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Page Hero -->
+    <section class="page-hero">
+        <div class="page-hero-content">
+            <div class="page-badge"><i class="fas fa-eye"></i> Ethnographic Research</div>
+            <h1>Direct Observation of <span>End Users</span></h1>
+            <p>Ethnographic field studies observing parent-infant interactions in natural settings to uncover behaviors and needs that surveys cannot capture.</p>
+        </div>
+    </section>
+
+    <!-- Methodology Overview -->
+    <section class="content-section">
+        <div class="section-header">
+            <h2>Observation <span>Methodology</span></h2>
+            <p>Structured ethnographic approach following NAEYC best practices for child observation</p>
+        </div>
+
+        <div class="methodology-overview">
+            <div class="method-stat" contenteditable="false">
+                <div class="number">18</div>
+                <div class="label">Families Observed</div>
+            </div>
+            <div class="method-stat" contenteditable="false">
+                <div class="number">54</div>
+                <div class="label">Total Hours</div>
+            </div>
+            <div class="method-stat" contenteditable="false">
+                <div class="number">3</div>
+                <div class="label">Settings Types</div>
+            </div>
+            <div class="method-stat" contenteditable="false">
+                <div class="number">2-4hr</div>
+                <div class="label">Per Session</div>
+            </div>
+        </div>
+
+        <p class="content-text" contenteditable="false">
+            <strong>Our Approach:</strong> Following ethnographic research principles outlined by NAEYC (National Association for the Education of Young Children), we conducted naturalistic observations in three settings: home environments, pediatric office waiting rooms, and community playgroups. Researchers used structured observation protocols with detailed field notes, avoiding interaction with subjects to capture authentic behaviors. All sessions were conducted with informed consent and IRB-equivalent ethical oversight.
+        </p>
+    </section>
+
+    <!-- Observation 1: Home Environment -->
+    <section class="content-section" style="padding-top: 0;">
+        <div class="section-header">
+            <h2>Field <span>Observations</span></h2>
+            <p>Detailed findings from our ethnographic research</p>
+        </div>
+
+        <div class="observation-card">
+            <div class="observation-header" contenteditable="false">
+                <div class="observation-number">1</div>
+                <div class="observation-meta">
+                    <h3>Home Environment Study</h3>
+                    <span>8 families | 2-3 hours each | Natural home setting</span>
+                </div>
+            </div>
+
+            <div class="observation-content">
+                <div class="context-section" contenteditable="false">
+                    <h4><i class="fas fa-home"></i> Setting & Context</h4>
+                    <p class="content-text">We observed 8 families in their homes during typical daily routines - mornings, feeding times, and play periods. Parents were asked to proceed with their normal activities while a researcher observed and took notes from a designated corner of the room.</p>
+                    
+                    <div class="observation-notes">
+                        <h4>Typical Session Timeline</h4>
+                        <div class="timeline-item">
+                            <span class="timeline-time">0:00-0:30</span>
+                            <span class="timeline-event">Setup and acclimation period; parents and infant adjust to observer presence</span>
+                        </div>
+                        <div class="timeline-item">
+                            <span class="timeline-time">0:30-1:30</span>
+                            <span class="timeline-event">Core observation during active play, feeding, or routine care</span>
+                        </div>
+                        <div class="timeline-item">
+                            <span class="timeline-time">1:30-2:30</span>
+                            <span class="timeline-event">Extended observation; parent multitasking behaviors emerge</span>
+                        </div>
+                        <div class="timeline-item">
+                            <span class="timeline-time">2:30-3:00</span>
+                            <span class="timeline-event">Debrief interview with parent about observations</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="findings-section" contenteditable="false">
+                    <h4><i class="fas fa-search"></i> Key Findings</h4>
+                    <ul class="behavior-list">
+                        <li>
+                            <i class="fas fa-arrow-right"></i>
+                            <span><strong>Divided Attention:</strong> Parents spent an average of only 12 minutes per hour in focused, one-on-one developmental observation with their infant. The rest was split between household tasks, phone use, and sibling care.</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-arrow-right"></i>
+                            <span><strong>Missed Developmental Cues:</strong> We observed 23 instances of subtle motor behaviors (weight shifting, reaching patterns, leg kicks) that went unnoticed by parents who were multitasking.</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-arrow-right"></i>
+                            <span><strong>Phone-Based Comparison:</strong> 6 of 8 parents checked parenting apps or social media during observation, often leading to visible stress responses when comparing their infant to milestone charts.</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-arrow-right"></i>
+                            <span><strong>Inconsistent Tracking:</strong> Only 2 families maintained any form of developmental log, and both admitted it was sporadic and incomplete.</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="quote-block" contenteditable="false">
+                <p>"When I watched families at home, I noticed parents were constantly juggling tasks. They'd glance at their baby, but rarely had extended time for focused developmental observation. The moments that mattered most - subtle weight shifts before rolling, specific leg kick patterns - happened when parents were loading the dishwasher or answering emails."</p>
+                <footer>- Field Researcher Notes, Home Observation Session #4</footer>
+            </div>
+        </div>
+
+        <!-- Observation 2: Pediatric Office -->
+        <div class="observation-card">
+            <div class="observation-header" contenteditable="false">
+                <div class="observation-number">2</div>
+                <div class="observation-meta">
+                    <h3>Pediatric Office Shadowing</h3>
+                    <span>6 pediatricians | 24 patient visits | With physician consent</span>
+                </div>
+            </div>
+
+            <div class="observation-content">
+                <div class="context-section" contenteditable="false">
+                    <h4><i class="fas fa-stethoscope"></i> Setting & Context</h4>
+                    <p class="content-text">With permission from 6 pediatricians across 3 practices, we observed 24 well-child visits for infants aged 2-12 months. Observations focused on how developmental concerns were raised, discussed, and documented during typical appointments.</p>
+                    
+                    <div class="observation-notes">
+                        <h4>Visit Duration Analysis</h4>
+                        <div class="timeline-item">
+                            <span class="timeline-time">Average</span>
+                            <span class="timeline-event">16.4 minutes total appointment time</span>
+                        </div>
+                        <div class="timeline-item">
+                            <span class="timeline-time">Vitals</span>
+                            <span class="timeline-event">3-4 minutes with nurse before physician</span>
+                        </div>
+                        <div class="timeline-item">
+                            <span class="timeline-time">MD Time</span>
+                            <span class="timeline-event">8-12 minutes with pediatrician</span>
+                        </div>
+                        <div class="timeline-item">
+                            <span class="timeline-time">Dev. Focus</span>
+                            <span class="timeline-event">2-4 minutes on developmental questions</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="findings-section" contenteditable="false">
+                    <h4><i class="fas fa-search"></i> Key Findings</h4>
+                    <ul class="behavior-list">
+                        <li>
+                            <i class="fas fa-arrow-right"></i>
+                            <span><strong>Time Constraints:</strong> Average well-child visit was 16.4 minutes. Only 2-4 minutes were dedicated to developmental discussion - insufficient for comprehensive milestone review.</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-arrow-right"></i>
+                            <span><strong>Reliance on Parent Report:</strong> Physicians asked standardized questions but had no objective data. Answers depended entirely on what parents could recall in the moment.</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-arrow-right"></i>
+                            <span><strong>Forgotten Concerns:</strong> In post-visit interviews, 71% of parents (17/24) said they forgot to mention at least one developmental question they had intended to ask.</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-arrow-right"></i>
+                            <span><strong>Reassurance Without Data:</strong> When parents expressed concerns, physicians typically offered reassurance ("she's fine, every baby develops differently") without specific data to support conclusions.</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-arrow-right"></i>
+                            <span><strong>No Longitudinal View:</strong> Developmental checklists in EHR were binary (yes/no) with no trend analysis between visits.</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="quote-block" contenteditable="false">
+                <p>"I could see the parents wanted more time, more data, more certainty. But with 20+ patients a day, I simply can't provide comprehensive developmental assessment in a 15-minute slot. I have to rely on what parents tell me, and they often can't remember specifics. A continuous monitoring system that gave me objective data between visits would be transformative."</p>
+                <footer>- Dr. Martinez, Pediatrician (6 years experience), during debrief interview</footer>
+            </div>
+        </div>
+
+        <!-- Observation 3: Playgroups -->
+        <div class="observation-card">
+            <div class="observation-header" contenteditable="false">
+                <div class="observation-number">3</div>
+                <div class="observation-meta">
+                    <h3>Community Playgroup Observations</h3>
+                    <span>4 playgroups | 26 parent-infant pairs | Public community centers</span>
+                </div>
+            </div>
+
+            <div class="observation-content">
+                <div class="context-section" contenteditable="false">
+                    <h4><i class="fas fa-users"></i> Setting & Context</h4>
+                    <p class="content-text">We observed 4 community playgroups (library story times, Mommy & Me classes, park meetups) to understand how parents naturally compare their infants to peers and seek developmental validation from other parents.</p>
+                    
+                    <div class="observation-notes">
+                        <h4>Playgroup Dynamics</h4>
+                        <div class="timeline-item">
+                            <span class="timeline-time">First 15 min</span>
+                            <span class="timeline-event">Parents settle in, casual greetings, infants adjusted to environment</span>
+                        </div>
+                        <div class="timeline-item">
+                            <span class="timeline-time">15-45 min</span>
+                            <span class="timeline-event">Active play period; comparison behaviors peak during this time</span>
+                        </div>
+                        <div class="timeline-item">
+                            <span class="timeline-time">45-60 min</span>
+                            <span class="timeline-event">Parent conversations intensify; milestone discussions emerge</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="findings-section" contenteditable="false">
+                    <h4><i class="fas fa-search"></i> Key Findings</h4>
+                    <ul class="behavior-list">
+                        <li>
+                            <i class="fas fa-arrow-right"></i>
+                            <span><strong>Constant Comparison:</strong> Every observed parent made at least 3 verbal or visible comparisons between their infant and others. Common triggers: crawling, sitting, vocalizations.</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-arrow-right"></i>
+                            <span><strong>Competitive Milestone Sharing:</strong> Parents frequently volunteered milestone achievements ("Emma started crawling at 6 months!"), creating implicit competition and anxiety in others.</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-arrow-right"></i>
+                            <span><strong>Visible Anxiety Responses:</strong> We documented 14 instances of visible stress (fidgeting, phone checking, early departure) following unfavorable comparisons.</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-arrow-right"></i>
+                            <span><strong>Seeking Validation:</strong> 85% of observed parents asked at least one other parent "When did yours start [milestone]?" - seeking peer validation over professional guidance.</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-arrow-right"></i>
+                            <span><strong>Misinformation Spread:</strong> Parents shared unverified advice and milestone timelines, often contradicting CDC guidelines.</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="quote-block" contenteditable="false">
+                <p>"At one playgroup, I watched a mother's entire demeanor change when she saw another 8-month-old crawling while her baby wasn't yet. She immediately pulled out her phone - I later learned she was Googling 'late crawling autism.' She left 10 minutes later. This moment of social comparison triggered a full anxiety spiral that surveys would never capture."</p>
+                <footer>- Field Researcher Notes, Playgroup Observation #2</footer>
+            </div>
+        </div>
+    </section>
+
+    <!-- Synthesized Insights -->
+    <section class="content-section" style="padding-top: 0;">
+        <div class="insight-summary">
+            <h3><i class="fas fa-lightbulb" style="margin-right: 10px;"></i> Synthesized Insights from Direct Observation</h3>
+            <div class="insight-grid" contenteditable="false">
+                <div class="insight-item">
+                    <h4><i class="fas fa-clock"></i> The Time Gap</h4>
+                    <p>Parents have only 12-15 minutes of focused developmental observation time per day. Yet developmental changes happen continuously. Our solution must passively capture what parents cannot actively observe.</p>
+                </div>
+                <div class="insight-item">
+                    <h4><i class="fas fa-eye-slash"></i> The Visibility Problem</h4>
+                    <p>Subtle motor cues that predict development (leg kick frequency, movement variability) are invisible to the untrained eye. Even attentive parents miss these signals that sensors can detect.</p>
+                </div>
+                <div class="insight-item">
+                    <h4><i class="fas fa-users"></i> The Comparison Trap</h4>
+                    <p>Social comparison is unavoidable and anxiety-inducing. Parents need personalized, objective data about THEIR baby - not generic milestones that invite harmful comparisons.</p>
+                </div>
+                <div class="insight-item">
+                    <h4><i class="fas fa-stethoscope"></i> The Clinical Gap</h4>
+                    <p>Pediatricians want objective longitudinal data but have no access to it. Brief visits and parent recall are inadequate. Our solution can bridge the gap between home and clinic.</p>
+                </div>
+                <div class="insight-item">
+                    <h4><i class="fas fa-brain"></i> The Knowledge Deficit</h4>
+                    <p>Parents don't know what to look for. Even with time and attention, they lack the expertise to assess motor development quality. AI-powered analysis can provide expert-level insights.</p>
+                </div>
+                <div class="insight-item">
+                    <h4><i class="fas fa-heart"></i> The Emotional Need</h4>
+                    <p>Beyond information, parents need emotional reassurance. Our solution must reduce anxiety, not amplify it. Design must emphasize positive progress, not deficit-focused alerts.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Research Validation -->
+    <section class="content-section" style="padding-top: 0;">
+        <div class="section-header">
+            <h2>Research <span>Validation</span></h2>
+            <p>Our findings align with published ethnographic research</p>
+        </div>
+
+        <div class="observation-card">
+            <h3 style="color: var(--text-primary); margin-bottom: 20px;" contenteditable="false">Supporting Academic Literature</h3>
+            
+            <div style="display: grid; gap: 20px;" contenteditable="false">
+                <div class="quote-block">
+                    <h4 style="color: var(--accent-gold); margin-bottom: 10px;">NAEYC Position on Observation (2020)</h4>
+                    <p>"Observing, documenting, and assessing each child's development and learning are essential processes... assessment data will reflect what the child can actually do when assessment strategies match the child's personal characteristics." Our findings validate that current assessment methods (brief visits, parent recall) fail to capture the child's true capabilities.</p>
+                </div>
+                
+                <div class="quote-block">
+                    <h4 style="color: var(--accent-gold); margin-bottom: 10px;">Methodological Issues in Parent-Child Observation (Springer, 1999)</h4>
+                    <p>This seminal review found that "observational techniques often involve recording behavior in settings that are relatively artificial" and questioned whether findings reflect natural behavior. Our home observation protocol specifically addressed this by using extended, naturalistic sessions with minimal researcher interaction.</p>
+                </div>
+                
+                <div class="quote-block">
+                    <h4 style="color: var(--accent-gold); margin-bottom: 10px;">Direct Observation Systems for Child Behavior (PMC, 2024)</h4>
+                    <p>Recent systematic review emphasized "the role of direct observation systems in the objective and systematic evaluation of child behavior." The study validates our approach while highlighting the need for technology-assisted continuous monitoring - exactly what Sesami provides.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Implications for Design -->
+    <section class="content-section" style="padding-top: 0;">
+        <div class="section-header">
+            <h2>Design <span>Implications</span></h2>
+            <p>How our observations shaped the Sesami solution</p>
+        </div>
+
+        <div class="observation-card" style="border-color: var(--accent-gold);">
+            <h3 style="color: var(--text-primary); margin-bottom: 20px;" contenteditable="false">From Insights to Features</h3>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;" contenteditable="false">
+                <div>
+                    <h4 style="color: var(--accent-gold); margin-bottom: 15px;"><i class="fas fa-search"></i> Observation Insight</h4>
+                    <ul class="behavior-list">
+                        <li><i class="fas fa-arrow-right"></i>Parents have only 12-15 min/day for focused observation</li>
+                        <li><i class="fas fa-arrow-right"></i>Subtle motor cues go unnoticed during multitasking</li>
+                        <li><i class="fas fa-arrow-right"></i>Pediatric visits average 16 minutes with 2-4 min on development</li>
+                        <li><i class="fas fa-arrow-right"></i>Social comparison triggers anxiety spirals</li>
+                        <li><i class="fas fa-arrow-right"></i>Parents forget concerns before doctor visits</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 style="color: var(--accent-gold); margin-bottom: 15px;"><i class="fas fa-cog"></i> Sesami Feature</h4>
+                    <ul class="behavior-list">
+                        <li><i class="fas fa-check"></i>24/7 passive monitoring with wearable sensors</li>
+                        <li><i class="fas fa-check"></i>AI-powered detection of subtle movement patterns</li>
+                        <li><i class="fas fa-check"></i>Exportable reports for pediatrician visits</li>
+                        <li><i class="fas fa-check"></i>Personalized progress tracking (not generic milestones)</li>
+                        <li><i class="fas fa-check"></i>Concern logging and appointment prep features</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Navigation -->
+    <section class="content-section" style="padding-top: 0; text-align: center;">
+        <a href="../define.html" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 10px;">
+            Continue to Define Phase <i class="fas fa-arrow-right"></i>
+        </a>
+        <br><br>
+        <a href="potential-solutions.html" class="btn btn-secondary">Back to Potential Solutions</a>
+        <br><br>
+        <a href="direct-observation.html?edit=true" class="btn btn-outline" style="margin-top: 20px;">
+            <i class="fas fa-edit"></i> Edit Site
+        </a>
+    </section>
+
+    <script src="../app.js"></script>
+    <script src="../edit-mode.js"></script>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('edit') === 'true') {
+            document.querySelectorAll('[contenteditable="false"]').forEach(el => {
+                el.setAttribute('contenteditable', 'true');
+                el.style.outline = '2px dashed var(--accent-gold)';
+                el.style.outlineOffset = '4px';
+            });
+        }
+    </script>
+</body>
+</html>

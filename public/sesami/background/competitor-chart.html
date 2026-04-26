@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Competitor Analysis Chart - Sesami</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../edit-mode.css">
+    <style>
+        .sub-nav { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.1); padding: 0; position: sticky; top: 80px; z-index: 99; }
+        .sub-nav-container { max-width: 1400px; margin: 0 auto; display: flex; gap: 0; overflow-x: auto; scrollbar-width: none; }
+        .sub-nav-container::-webkit-scrollbar { display: none; }
+        .sub-nav-link { padding: 16px 24px; color: rgba(255,255,255,0.6); text-decoration: none; font-size: 14px; font-weight: 500; white-space: nowrap; border-bottom: 3px solid transparent; transition: all 0.3s ease; }
+        .sub-nav-link:hover { color: rgba(255,255,255,0.9); background: rgba(255,255,255,0.05); }
+        .sub-nav-link.active { color: #f472b6; border-bottom-color: #f472b6; background: rgba(244, 114, 182, 0.1); }
+        .research-content { max-width: 1100px; margin: 0 auto; padding: 60px 24px; }
+        .research-header { margin-bottom: 48px; }
+        .research-header h1 { font-family: 'Playfair Display', serif; font-size: 48px; margin-bottom: 16px; background: linear-gradient(135deg, #f472b6, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .research-header .meta { color: rgba(255,255,255,0.5); font-size: 14px; }
+        .research-section { margin-bottom: 48px; }
+        .research-section h2 { font-size: 28px; margin-bottom: 20px; color: #fff; }
+        .research-section p { color: rgba(255,255,255,0.8); line-height: 1.8; margin-bottom: 16px; font-size: 16px; }
+        .back-link { display: inline-flex; align-items: center; gap: 8px; color: #f472b6; text-decoration: none; font-weight: 500; margin-bottom: 24px; transition: all 0.3s ease; }
+        .back-link:hover { gap: 12px; }
+        .competitor-table { width: 100%; border-collapse: collapse; margin: 24px 0; background: rgba(255,255,255,0.02); border-radius: 16px; overflow: hidden; font-size: 14px; }
+        .competitor-table th { background: linear-gradient(135deg, rgba(244, 114, 182, 0.3), rgba(167, 139, 250, 0.3)); color: #fff; font-weight: 600; padding: 16px 12px; text-align: left; position: sticky; top: 0; }
+        .competitor-table td { padding: 14px 12px; border-bottom: 1px solid rgba(255,255,255,0.08); color: rgba(255,255,255,0.8); vertical-align: top; }
+        .competitor-table tr:hover { background: rgba(255,255,255,0.05); }
+        .competitor-table .company-name { font-weight: 600; color: #f472b6; }
+        .feature-yes { color: #22c55e; font-weight: 600; }
+        .feature-no { color: #ef4444; }
+        .feature-partial { color: #eab308; }
+        .sesami-row { background: linear-gradient(135deg, rgba(244, 114, 182, 0.1), rgba(167, 139, 250, 0.1)) !important; }
+        .sesami-row td { border-color: rgba(244, 114, 182, 0.2); }
+        .legend { display: flex; gap: 24px; margin-bottom: 24px; flex-wrap: wrap; }
+        .legend-item { display: flex; align-items: center; gap: 8px; color: rgba(255,255,255,0.7); font-size: 14px; }
+        .legend-dot { width: 12px; height: 12px; border-radius: 50%; }
+        .legend-dot.yes { background: #22c55e; }
+        .legend-dot.no { background: #ef4444; }
+        .legend-dot.partial { background: #eab308; }
+        .insight-box { background: linear-gradient(135deg, rgba(244, 114, 182, 0.15), rgba(167, 139, 250, 0.15)); border: 1px solid rgba(244, 114, 182, 0.3); border-radius: 16px; padding: 24px; margin: 32px 0; }
+        .insight-box h3 { color: #f472b6; margin: 0 0 12px 0; font-size: 18px; }
+        .insight-box p { margin: 0; color: rgba(255,255,255,0.9); }
+    </style>
+</head>
+<body data-page="background">
+    <div class="bg-gradient"></div>
+    <div class="bg-pattern"></div>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="../index.html" class="logo"><div class="logo-icon"><i class="fas fa-baby"></i></div><span class="logo-text">Sesami</span></a>
+            <ul class="nav-links">
+                <li class="nav-item"><a href="../index.html" class="nav-link">Home</a></li>
+                <li class="nav-item"><a href="../background.html" class="nav-link active">Background</a></li>
+                <li class="nav-item"><a href="../empathize.html" class="nav-link">Empathize</a></li>
+                <li class="nav-item"><a href="../define.html" class="nav-link">Define</a></li>
+                <li class="nav-item"><a href="../ideate.html" class="nav-link">Ideate</a></li>
+                <li class="nav-item"><a href="../engineering.html" class="nav-link">Engineering</a></li>
+                <li class="nav-item"><a href="../test.html" class="nav-link">Test</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="sub-nav">
+        <div class="sub-nav-container">
+            <a href="preliminary-research.html" class="sub-nav-link">Preliminary Research</a>
+            <a href="final-research.html" class="sub-nav-link">Final Research Paper</a>
+            <a href="baby-development-tech.html" class="sub-nav-link">Baby Development Tech</a>
+            <a href="competitor-chart.html" class="sub-nav-link active">Competitor Chart</a>
+            <a href="expert-source.html" class="sub-nav-link">Expert Source</a>
+            <a href="end-user.html" class="sub-nav-link">End User</a>
+            <a href="expert-survey.html" class="sub-nav-link">Expert Survey</a>
+            <a href="sensors-writeup.html" class="sub-nav-link">Sensors Writeup</a>
+            <a href="business-plan.html" class="sub-nav-link">Business Plan</a>
+            <a href="financials.html" class="sub-nav-link">Financials</a>
+        </div>
+    </div>
+
+    <div class="research-content">
+        <a href="../background.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Background</a>
+        
+        <div class="research-header">
+            <h1>Competitor Analysis Chart</h1>
+            <p class="meta">Comprehensive comparison of baby monitoring products in the market</p>
+        </div>
+
+        <div class="research-section">
+            <h2>Smart Baby Monitor Comparison</h2>
+            <p>We analyzed 12 leading baby monitoring products across key feature categories. This comparison reveals significant gaps in developmental tracking capabilities that Sesami addresses.</p>
+            
+            <div class="legend">
+                <div class="legend-item"><div class="legend-dot yes"></div> Full Feature</div>
+                <div class="legend-item"><div class="legend-dot partial"></div> Partial/Limited</div>
+                <div class="legend-item"><div class="legend-dot no"></div> Not Available</div>
+            </div>
+        </div>
+
+        <div class="research-section">
+            <h2>Feature Comparison Matrix</h2>
+            
+            <div style="overflow-x: auto;">
+            <table class="competitor-table">
+                <thead>
+                    <tr>
+                        <th>Company / Product</th>
+                        <th>Price</th>
+                        <th>Video Monitor</th>
+                        <th>Sleep Tracking</th>
+                        <th>Health Vitals</th>
+                        <th>Milestone Tracking</th>
+                        <th>AI Analysis</th>
+                        <th>Movement Detection</th>
+                        <th>Mobile App</th>
+                        <th>Subscription</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="company-name">Nanit Pro</td>
+                        <td>$299-$399</td>
+                        <td class="feature-yes">Yes</td>
+                        <td class="feature-yes">Yes</td>
+                        <td class="feature-partial">Breathing Band</td>
+                        <td class="feature-no">No</td>
+                        <td class="feature-partial">Sleep only</td>
+                        <td class="feature-yes">Yes</td>
+                        <td class="feature-yes">Yes</td>
+                        <td>$99/yr</td>
+                    </tr>
+                    <tr>
+                        <td class="company-name">Owlet Dream Duo</td>
+                        <td>$399-$449</td>
+                        <td class="feature-yes">Yes</td>
+                        <td class="feature-yes">Yes</td>
+                        <td class="feature-yes">O2 + HR</td>
+                        <td class="feature-no">No</td>
+                        <td class="feature-no">No</td>
+                        <td class="feature-partial">Basic</td>
+                        <td class="feature-yes">Yes</td>
+                        <td>Optional</td>
+                    </tr>
+                    <tr>
+                        <td class="company-name">Miku Pro</td>
+                        <td>$399</td>
+                        <td class="feature-yes">Yes</td>
+                        <td class="feature-yes">Yes</td>
+                        <td class="feature-partial">Breathing only</td>
+                        <td class="feature-no">No</td>
+                        <td class="feature-partial">Limited</td>
+                        <td class="feature-yes">Yes</td>
+                        <td class="feature-yes">Yes</td>
+                        <td>$5/mo</td>
+                    </tr>
+                    <tr>
+                        <td class="company-name">Motorola Halo+</td>
+                        <td>$229</td>
+                        <td class="feature-yes">Yes</td>
+                        <td class="feature-partial">Basic</td>
+                        <td class="feature-no">No</td>
+                        <td class="feature-no">No</td>
+                        <td class="feature-no">No</td>
+                        <td class="feature-partial">Basic</td>
+                        <td class="feature-yes">Yes</td>
+                        <td>None</td>
+                    </tr>
+                    <tr>
+                        <td class="company-name">Lollipop Camera</td>
+                        <td>$149</td>
+                        <td class="feature-yes">Yes</td>
+                        <td class="feature-partial">Limited</td>
+                        <td class="feature-no">No</td>
+                        <td class="feature-no">No</td>
+                        <td class="feature-no">No</td>
+                        <td class="feature-yes">Yes</td>
+                        <td class="feature-yes">Yes</td>
+                        <td>$4/mo</td>
+                    </tr>
+                    <tr>
+                        <td class="company-name">Babysense HD</td>
+                        <td>$169</td>
+                        <td class="feature-yes">Yes</td>
+                        <td class="feature-no">No</td>
+                        <td class="feature-partial">Movement mat</td>
+                        <td class="feature-no">No</td>
+                        <td class="feature-no">No</td>
+                        <td class="feature-yes">Yes</td>
+                        <td class="feature-partial">Basic</td>
+                        <td>None</td>
+                    </tr>
+                    <tr>
+                        <td class="company-name">VTech RM5764</td>
+                        <td>$179</td>
+                        <td class="feature-yes">Yes</td>
+                        <td class="feature-no">No</td>
+                        <td class="feature-no">No</td>
+                        <td class="feature-no">No</td>
+                        <td class="feature-no">No</td>
+                        <td class="feature-partial">Basic</td>
+                        <td class="feature-no">No</td>
+                        <td>None</td>
+                    </tr>
+                    <tr>
+                        <td class="company-name">Angelcare AC327</td>
+                        <td>$199</td>
+                        <td class="feature-yes">Yes</td>
+                        <td class="feature-no">No</td>
+                        <td class="feature-partial">Movement mat</td>
+                        <td class="feature-no">No</td>
+                        <td class="feature-no">No</td>
+                        <td class="feature-yes">Yes</td>
+                        <td class="feature-yes">Yes</td>
+                        <td>None</td>
+                    </tr>
+                    <tr>
+                        <td class="company-name">Summer Infant Glimpse</td>
+                        <td>$149</td>
+                        <td class="feature-yes">Yes</td>
+                        <td class="feature-no">No</td>
+                        <td class="feature-no">No</td>
+                        <td class="feature-no">No</td>
+                        <td class="feature-no">No</td>
+                        <td class="feature-partial">Basic</td>
+                        <td class="feature-no">No</td>
+                        <td>None</td>
+                    </tr>
+                    <tr>
+                        <td class="company-name">iBaby M7</td>
+                        <td>$179</td>
+                        <td class="feature-yes">Yes</td>
+                        <td class="feature-partial">Limited</td>
+                        <td class="feature-no">No</td>
+                        <td class="feature-no">No</td>
+                        <td class="feature-partial">Basic</td>
+                        <td class="feature-yes">Yes</td>
+                        <td class="feature-yes">Yes</td>
+                        <td>$3/mo</td>
+                    </tr>
+                    <tr>
+                        <td class="company-name">Cubo AI Plus</td>
+                        <td>$299</td>
+                        <td class="feature-yes">Yes</td>
+                        <td class="feature-yes">Yes</td>
+                        <td class="feature-partial">Covered face</td>
+                        <td class="feature-no">No</td>
+                        <td class="feature-partial">Safety only</td>
+                        <td class="feature-yes">Yes</td>
+                        <td class="feature-yes">Yes</td>
+                        <td>$99/yr</td>
+                    </tr>
+                    <tr class="sesami-row">
+                        <td class="company-name">Sesami (Ours)</td>
+                        <td>$349</td>
+                        <td class="feature-yes">Yes</td>
+                        <td class="feature-yes">Yes</td>
+                        <td class="feature-yes">Movement + Position</td>
+                        <td class="feature-yes">Yes - AI Powered</td>
+                        <td class="feature-yes">Full CV Analysis</td>
+                        <td class="feature-yes">Advanced</td>
+                        <td class="feature-yes">Yes</td>
+                        <td>$9.99/mo</td>
+                    </tr>
+                </tbody>
+            </table>
+            </div>
+        </div>
+
+        <div class="insight-box">
+            <h3>Key Competitive Insight</h3>
+            <p>None of the 11 analyzed competitors offer automated developmental milestone tracking. This represents a clear blue ocean opportunity for Sesami to differentiate in a crowded market by addressing an unmet parent need that aligns with AAP recommendations for continuous developmental surveillance.</p>
+        </div>
+
+        <div class="research-section">
+            <h2>Competitor Deep Dives</h2>
+            
+            <h3>Nanit Pro - Market Leader Analysis</h3>
+            <p><strong>Strengths:</strong> Excellent sleep analytics, beautiful hardware design, strong brand recognition, breathing wear accessory adds safety monitoring.</p>
+            <p><strong>Weaknesses:</strong> No developmental tracking, expensive subscription required for full features, limited to crib/nursery monitoring.</p>
+            <p><strong>Opportunity:</strong> Users already comfortable with AI-powered monitoring; developmental features would be natural extension.</p>
+            
+            <h3>Owlet - Health Focus</h3>
+            <p><strong>Strengths:</strong> Medical-grade vital monitoring (O2 saturation, heart rate), strong safety positioning, Dream Sock well-designed.</p>
+            <p><strong>Weaknesses:</strong> FDA regulatory challenges, no developmental tracking, health anxiety concerns among some parents.</p>
+            <p><strong>Opportunity:</strong> Parents drawn to health monitoring are ideal customers for developmental monitoring.</p>
+            
+            <h3>Traditional Monitors (VTech, Motorola, Summer)</h3>
+            <p><strong>Strengths:</strong> Lower price points, established retail distribution, reliable basic features.</p>
+            <p><strong>Weaknesses:</strong> No smart features, no app connectivity, falling behind market trends.</p>
+            <p><strong>Opportunity:</strong> Demonstrates market segmentation; premium segment (where Sesami competes) has room for growth.</p>
+        </div>
+
+        <div class="research-section">
+            <h2>Market Positioning Map</h2>
+            <p>Sesami occupies a unique position in the market: premium pricing with developmental intelligence features that no competitor offers. This creates both opportunity (differentiation) and challenge (market education required).</p>
+            
+            <table class="competitor-table">
+                <thead>
+                    <tr>
+                        <th>Segment</th>
+                        <th>Price Range</th>
+                        <th>Key Players</th>
+                        <th>Sesami Position</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Basic Video Monitors</td>
+                        <td>$50-$150</td>
+                        <td>VTech, Summer Infant</td>
+                        <td>Not competing</td>
+                    </tr>
+                    <tr>
+                        <td>Smart Monitors (Sleep)</td>
+                        <td>$150-$300</td>
+                        <td>Lollipop, Cubo, iBaby</td>
+                        <td>Feature overlap + differentiation</td>
+                    </tr>
+                    <tr>
+                        <td>Premium Smart (Sleep + Health)</td>
+                        <td>$300-$450</td>
+                        <td>Nanit, Owlet, Miku</td>
+                        <td>Direct competition + unique value</td>
+                    </tr>
+                    <tr>
+                        <td>Developmental Intelligence</td>
+                        <td>$300-$400</td>
+                        <td>None currently</td>
+                        <td>First mover advantage</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="../app.js"></script>
+    <script src="../edit-mode.js"></script>
+</body>
+</html>

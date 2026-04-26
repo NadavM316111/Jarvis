@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Belonging - An Anime Short Film</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;700&family=Playfair+Display:ital@1&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            background: #000;
+            color: #fff;
+            font-family: 'Noto Sans JP', sans-serif;
+            overflow: hidden;
+        }
+        
+        #loading-screen {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0a0a0a 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            transition: opacity 1.5s ease;
+        }
+        
+        #loading-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .loading-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 5rem;
+            font-style: italic;
+            margin-bottom: 1rem;
+            background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shimmer 3s infinite;
+        }
+        
+        .loading-kanji {
+            font-size: 2rem;
+            color: #555;
+            margin-bottom: 2rem;
+            letter-spacing: 0.5em;
+        }
+        
+        @keyframes shimmer {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.4); }
+        }
+        
+        .loading-subtitle {
+            font-size: 1.3rem;
+            color: #777;
+            margin-bottom: 3rem;
+            font-style: italic;
+        }
+        
+        .progress-container {
+            width: 350px;
+            height: 3px;
+            background: #222;
+            border-radius: 2px;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .loading-status {
+            font-size: 0.85rem;
+            color: #555;
+            margin-bottom: 2rem;
+        }
+        
+        #start-btn {
+            padding: 1.2rem 4rem;
+            font-size: 1.1rem;
+            background: transparent;
+            border: 1px solid #667eea;
+            color: #667eea;
+            border-radius: 0;
+            cursor: pointer;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+            font-family: 'Noto Sans JP', sans-serif;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+        }
+        
+        #start-btn.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        #start-btn:hover {
+            background: #667eea;
+            color: #000;
+        }
+        
+        #film-container {
+            position: fixed;
+            inset: 0;
+            background: #000;
+        }
+        
+        #scene-image {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 2.5s ease;
+            filter: saturate(1.2) contrast(1.05);
+        }
+        
+        #scene-image.visible {
+            opacity: 1;
+        }
+        
+        .ken-burns {
+            animation: kenburns 28s ease-in-out forwards;
+        }
+        
+        @keyframes kenburns {
+            0% { transform: scale(1) translate(0, 0); }
+            100% { transform: scale(1.15) translate(-3%, -2%); }
+        }
+        
+        #subtitle-container {
+            position: absolute;
+            bottom: 12%;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            z-index: 100;
+            opacity: 0;
+            transition: opacity 1.5s ease;
+        }
+        
+        #subtitle-container.visible {
+            opacity: 1;
+        }
+        
+        .subtitle-jp {
+            font-size: 3rem;
+            font-weight: 300;
+            margin-bottom: 0.8rem;
+            text-shadow: 0 0 40px rgba(0,0,0,1), 0 0 80px rgba(0,0,0,0.8), 2px 2px 4px rgba(0,0,0,1);
+            letter-spacing: 0.15em;
+            color: #fff;
+        }
+        
+        .subtitle-en {
+            font-size: 1.5rem;
+            color: #aaa;
+            font-style: italic;
+            text-shadow: 0 0 30px rgba(0,0,0,1), 2px 2px 4px rgba(0,0,0,1);
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .vignette {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.8) 100%);
+            pointer-events: none;
+        }
+        
+        .top-shadow {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 30%;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.4) 0%, transparent 100%);
+            pointer-events: none;
+        }
+        
+        .bottom-shadow {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 40%;
+            background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 100%);
+            pointer-events: none;
+        }
+        
+        .film-grain {
+            position: absolute;
+            inset: 0;
+            opacity: 0.04;
+            pointer-events: none;
+            background-image: url('data:image/svg+xml,<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="4" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23noise)"/></svg>');
+            animation: grain 0.3s steps(6) infinite;
+        }
+        
+        @keyframes grain {
+            0%, 100% { transform: translate(0, 0); }
+            25% { transform: translate(-1%, 1%); }
+            50% { transform: translate(1%, -1%); }
+            75% { transform: translate(-1%, -1%); }
+        }
+        
+        .letterbox {
+            position: absolute;
+            left: 0; right: 0;
+            height: 6%;
+            background: #000;
+            z-index: 50;
+        }
+        
+        .letterbox.top { top: 0; }
+        .letterbox.bottom { bottom: 0; }
+        
+        #credits {
+            position: absolute;
+            inset: 0;
+            background: #000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 3s ease;
+            z-index: 200;
+        }
+        
+        #credits.visible {
+            opacity: 1;
+        }
+        
+        .credits-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 5rem;
+            font-style: italic;
+            margin-bottom: 1rem;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .credits-kanji {
+            font-size: 2rem;
+            color: #444;
+            margin-bottom: 3rem;
+        }
+        
+        .credits-song {
+            font-size: 1.3rem;
+            color: #666;
+            margin-bottom: 3rem;
+            font-style: italic;
+        }
+        
+        .credits-text {
+            font-size: 1rem;
+            color: #444;
+            line-height: 2.5;
+            text-align: center;
+        }
+        
+        #youtube-container {
+            position: fixed;
+            bottom: -1000px;
+            left: -1000px;
+            width: 1px;
+            height: 1px;
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .scene-counter {
+            position: fixed;
+            top: 8%;
+            right: 3%;
+            font-size: 0.8rem;
+            color: #333;
+            z-index: 100;
+            letter-spacing: 0.2em;
+        }
+    </style>
+</head>
+<body>
+    <div id="loading-screen">
+        <div class="loading-title">Belonging</div>
+        <div class="loading-kanji">帰属</div>
+        <div class="loading-subtitle">"Creep" by Radiohead</div>
+        <div class="progress-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+        <div class="loading-status" id="loading-status">Generating anime scenes with AI...</div>
+        <button id="start-btn">Begin</button>
+    </div>
+    
+    <div id="film-container">
+        <div class="letterbox top"></div>
+        <div class="letterbox bottom"></div>
+        <img id="scene-image" src="" alt="Scene">
+        <div class="top-shadow"></div>
+        <div class="bottom-shadow"></div>
+        <div class="vignette"></div>
+        <div class="film-grain"></div>
+        <div class="scene-counter" id="scene-counter"></div>
+        <div id="subtitle-container">
+            <div class="subtitle-jp" id="subtitle-jp"></div>
+            <div class="subtitle-en" id="subtitle-en"></div>
+        </div>
+    </div>
+    
+    <div id="credits">
+        <div class="credits-title">Belonging</div>
+        <div class="credits-kanji">帰属</div>
+        <div class="credits-song">"Creep" - Radiohead, 1992</div>
+        <div class="credits-text">
+            A meditation on isolation<br>
+            and the human need to belong<br><br>
+            AI-Generated Anime Art<br>
+            Pollinations.ai<br><br>
+            Created by JARVIS<br>
+            for Nadav<br><br>
+            2026
+        </div>
+    </div>
+    
+    <div id="youtube-container">
+        <iframe id="youtube-player" 
+            src="" 
+            allow="autoplay; encrypted-media"
+            allowfullscreen>
+        </iframe>
+    </div>
+    
+    <script>
+        // Scene configuration - timed to "Creep" by Radiohead (~4 min song)
+        const scenes = [
+            { 
+                prompt: "anime teenage boy messy dark hair walking alone crowded school hallway students laughing groups isolated melancholic soft lighting studio ghibli watercolor style cinematic",
+                jp: "いつも人に囲まれているのに", 
+                en: "Always surrounded by people, yet...",
+                duration: 24000
+            },
+            { 
+                prompt: "anime beautiful girl long flowing hair laughing happily with friends bright cafe warm golden sunlight teenage boy watching alone from corner table longing eyes detailed anime art romantic",
+                jp: "彼女は天使のようだ", 
+                en: "She's like an angel...",
+                duration: 24000
+            },
+            { 
+                prompt: "dramatic anime close up portrait teenage boy dark hair looking at his distorted reflection rain covered window night time neon city lights self-doubt deep blue purple mood lighting cinematic",
+                jp: "俺は一体何者なんだ", 
+                en: "What the hell am I doing here?",
+                duration: 26000
+            },
+            { 
+                prompt: "beautiful anime scene group of friends sitting together school rooftop golden hour sunset one teenage boy sitting apart from group alone looking at orange sky silhouettes warm colors cinematography",
+                jp: "俺はここにいるべきじゃない", 
+                en: "I don't belong here...",
+                duration: 26000
+            },
+            { 
+                prompt: "emotional anime moment teenage boy reaching hand out toward beautiful girl but she walks past without noticing him pink cherry blossom petals falling heartbreak dramatic soft lighting",
+                jp: "君の目に俺は映らない", 
+                en: "I wish I was special...",
+                duration: 28000
+            },
+            { 
+                prompt: "dark moody anime teenage boy curled up alone in messy bedroom at night blue phone screen light illuminating sad face posters on wall isolation depression aesthetic detailed interior",
+                jp: "俺はただのクリープだ", 
+                en: "But I'm a creep... I'm a weirdo",
+                duration: 32000
+            },
+            { 
+                prompt: "dramatic anime teenage boy standing alone in heavy rain empty city street at night orange streetlights creating halos looking up at dark sky tears mixing with raindrops emotional",
+                jp: "俺はここで何をしているんだ", 
+                en: "What the hell am I doing here?",
+                duration: 30000
+            },
+            { 
+                prompt: "melancholic anime ending scene teenage boy standing alone watching his friend group walk away into the distance school gate autumn red orange leaves falling back view silhouette bittersweet",
+                jp: "俺はここにいるべきじゃない", 
+                en: "I don't belong here...",
+                duration: 35000
+            }
+        ];
+        
+        const loadedImages = [];
+        let filmStarted = false;
+        
+        function getImageUrl(prompt, seed) {
+            return `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=1920&height=1080&seed=${seed}&nologo=true&model=flux`;
+        }
+        
+        async function preloadImages() {
+            const progressBar = document.getElementById('progress-bar');
+            const loadingStatus = document.getElementById('loading-status');
+            const startBtn = document.getElementById('start-btn');
+            
+            for (let i = 0; i < scenes.length; i++) {
+                loadingStatus.textContent = `Generating scene ${i + 1} of ${scenes.length}...`;
+                
+                const img = new Image();
+                const url = getImageUrl(scenes[i].prompt, (i + 1) * 1234 + 5678);
+                
+                await new Promise((resolve) => {
+                    img.onload = () => {
+                        loadedImages.push(img);
+                        progressBar.style.width = `${((i + 1) / scenes.length) * 100}%`;
+                        console.log(`Scene ${i + 1} loaded`);
+                        resolve();
+                    };
+                    img.onerror = () => {
+                        console.log(`Scene ${i + 1} failed, will retry on play`);
+                        loadedImages.push(null);
+                        progressBar.style.width = `${((i + 1) / scenes.length) * 100}%`;
+                        resolve();
+                    };
+                    img.src = url;
+                });
+                
+                // Delay between API calls
+                if (i < scenes.length - 1) {
+                    await new Promise(r => setTimeout(r, 800));
+                }
+            }
+            
+            loadingStatus.textContent = 'Ready';
+            startBtn.classList.add('visible');
+        }
+        
+        function startFilm() {
+            if (filmStarted) return;
+            filmStarted = true;
+            
+            document.getElementById('loading-screen').classList.add('hidden');
+            
+            // Start YouTube video (audio only - hidden)
+            const youtubePlayer = document.getElementById('youtube-player');
+            youtubePlayer.src = 'https://www.youtube.com/embed/XFkzRNyygfk?autoplay=1&start=0&enablejsapi=1';
+            
+            // Start scenes after a moment
+            setTimeout(() => {
+                playScene(0);
+            }, 500);
+        }
+        
+        function playScene(index) {
+            if (index >= scenes.length) {
+                document.getElementById('scene-counter').textContent = '';
+                setTimeout(() => {
+                    document.getElementById('credits').classList.add('visible');
+                }, 1000);
+                return;
+            }
+            
+            const scene = scenes[index];
+            const sceneImage = document.getElementById('scene-image');
+            const subtitleContainer = document.getElementById('subtitle-container');
+            const subtitleJp = document.getElementById('subtitle-jp');
+            const subtitleEn = document.getElementById('subtitle-en');
+            const sceneCounter = document.getElementById('scene-counter');
+            
+            // Update counter
+            sceneCounter.textContent = `${index + 1} / ${scenes.length}`;
+            
+            // Fade out
+            sceneImage.classList.remove('visible');
+            subtitleContainer.classList.remove('visible');
+            
+            setTimeout(() => {
+                // Set new image
+                if (loadedImages[index] && loadedImages[index].complete) {
+                    sceneImage.src = loadedImages[index].src;
+                } else {
+                    sceneImage.src = getImageUrl(scene.prompt, (index + 1) * 1234 + 5678);
+                }
+                
+                // Reset and apply ken burns
+                sceneImage.style.animation = 'none';
+                sceneImage.offsetHeight; // Trigger reflow
+                sceneImage.style.animation = `kenburns ${scene.duration / 1000}s ease-in-out forwards`;
+                
+                // Set subtitles
+                subtitleJp.textContent = scene.jp;
+                subtitleEn.textContent = scene.en;
+                
+                // Fade in
+                setTimeout(() => {
+                    sceneImage.classList.add('visible');
+                }, 100);
+                
+                setTimeout(() => {
+                    subtitleContainer.classList.add('visible');
+                }, 800);
+                
+                // Schedule next scene
+                setTimeout(() => {
+                    playScene(index + 1);
+                }, scene.duration);
+                
+            }, 800);
+        }
+        
+        // Events
+        document.getElementById('start-btn').addEventListener('click', startFilm);
+        
+        // Keyboard controls
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space' && !filmStarted) {
+                const btn = document.getElementById('start-btn');
+                if (btn.classList.contains('visible')) {
+                    startFilm();
+                }
+            }
+        });
+        
+        // Start loading
+        preloadImages();
+    </script>
+</body>
+</html>

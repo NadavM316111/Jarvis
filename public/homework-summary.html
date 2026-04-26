@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homework Summary - Nadav</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, sans-serif; 
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { max-width: 1000px; margin: 0 auto; }
+        h1 { 
+            text-align: center; 
+            color: #00d4ff; 
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 0 0 20px rgba(0,212,255,0.5);
+        }
+        .assignment { 
+            background: rgba(255,255,255,0.05); 
+            border-radius: 15px; 
+            padding: 25px; 
+            margin-bottom: 25px;
+            border-left: 4px solid #00d4ff;
+            backdrop-filter: blur(10px);
+        }
+        .assignment h2 { 
+            color: #00d4ff; 
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .due-badge {
+            background: #ff4757;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.6em;
+        }
+        .due-badge.tomorrow { background: #ffa502; }
+        .course { color: #a0a0a0; font-size: 0.9em; margin-bottom: 15px; }
+        .points { color: #2ed573; font-weight: bold; }
+        .answer-box {
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 15px;
+            border: 1px solid rgba(0,212,255,0.3);
+            white-space: pre-wrap;
+            line-height: 1.8;
+        }
+        .copy-btn {
+            background: #00d4ff;
+            color: #1a1a2e;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 15px;
+            transition: all 0.3s;
+        }
+        .copy-btn:hover { 
+            background: #00ff88; 
+            transform: scale(1.05);
+        }
+        .status { 
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 10px;
+            font-size: 0.8em;
+            margin-left: 10px;
+        }
+        .status.done { background: #2ed573; color: #1a1a2e; }
+        .status.study { background: #ffa502; color: #1a1a2e; }
+        .status.pending { background: #ff4757; color: white; }
+        .summary-box {
+            background: linear-gradient(135deg, rgba(0,212,255,0.1), rgba(46,213,115,0.1));
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .summary-box h3 { color: #00d4ff; margin-bottom: 10px; }
+        ul { margin-left: 20px; margin-top: 10px; }
+        li { margin-bottom: 8px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>JARVIS Homework Report</h1>
+        
+        <div class="summary-box">
+            <h3>Due Tomorrow (4/20/26)</h3>
+            <p>2 Assignments + 1 Formative Test</p>
+        </div>
+
+        <div class="assignment">
+            <h2>
+                World History Exit Ticket (04/20) 
+                <span class="due-badge tomorrow">Due Tomorrow 8:00 AM</span>
+            </h2>
+            <p class="course">World History Honors (Per. B) | <span class="points">5 Points</span> <span class="status done">COMPLETED</span></p>
+            <p><strong>Question:</strong> Describe the process of reunification in Italy during the 19th century. Reference Camillo de Cavour, Giuseppe Garibaldi, and Giuseppe Mazzini.</p>
+            
+            <div class="answer-box">The reunification of Italy, known as the Risorgimento, was a complex process driven by three key figures with distinct roles. Giuseppe Mazzini was the ideological founder and visionary who inspired Italian nationalism through his writings and founded the revolutionary group "Young Italy" in 1831, advocating for a unified Italian republic based on democratic principles. Camillo di Cavour, serving as Prime Minister of Piedmont-Sardinia, was the pragmatic statesman who used diplomacy and military alliances, particularly with France in 1858, to defeat Austria and annex northern Italian states through strategic warfare and plebiscites. Giuseppe Garibaldi was the military hero who led his famous "Red Shirts" (Expedition of the Thousand) in 1860 to conquer the Kingdom of the Two Sicilies in southern Italy, which he then handed over to King Victor Emmanuel II, demonstrating his commitment to unification over personal power. Together, these three men - Mazzini providing the ideology, Cavour the diplomacy, and Garibaldi the military action - achieved Italian unification by 1861, with Rome finally joining in 1870.
+
+<strong>BONUS - Congress of Vienna:</strong>
+The Congress of Vienna actually HINDERED Italian unification by deliberately dividing the Italian peninsula into multiple states under Austrian dominance and restoring conservative monarchies. This "Metternich System" was designed to suppress nationalism and liberalism, placing Austrian Habsburgs directly in control of Lombardy-Venetia. However, this oppression ironically fueled Italian nationalist sentiment, uniting intellectuals and revolutionaries against foreign domination. The Congress had a similar impact on Germany, creating the German Confederation of 39 states under Austrian presidency. Thus, while the Congress of Vienna intended to prevent nationalism, it ultimately became a catalyst that intensified the desire for unification in both Italy and Germany.</div>
+            <button class="copy-btn" onclick="copyText(this, 'world-history')">Copy Answer</button>
+        </div>
+
+        <div class="assignment">
+            <h2>
+                Chemistry Formative 2 - Chapter 9
+                <span class="due-badge tomorrow">TEST Tomorrow</span>
+            </h2>
+            <p class="course">Chemistry I Honors | <span class="points">40 Points</span> <span class="status study">STUDY GUIDE</span></p>
+            
+            <div class="answer-box"><strong>TOPIC 1: REACTION TYPES</strong>
+
+1. SYNTHESIS: A + B -> AB (Two combine into one)
+   Ex: 2H2 + O2 -> 2H2O
+
+2. DECOMPOSITION: AB -> A + B (One breaks into many)
+   Ex: 2H2O -> 2H2 + O2
+
+3. SINGLE REPLACEMENT: A + BC -> AC + B (Element replaces element)
+   Ex: Zn + CuSO4 -> ZnSO4 + Cu
+
+4. DOUBLE REPLACEMENT: AB + CD -> AD + CB (Compounds swap partners)
+   Ex: NaCl + AgNO3 -> NaNO3 + AgCl
+
+5. COMBUSTION: CxHy + O2 -> CO2 + H2O
+   Ex: CH4 + 2O2 -> CO2 + 2H2O
+
+<strong>TOPIC 2: SOLUBILITY RULES</strong>
+
+ALWAYS SOLUBLE:
+- Group 1 ions (Na+, K+, Li+)
+- Ammonium (NH4+)
+- Nitrates (NO3-)
+- Acetates (C2H3O2-)
+- Halides (Cl-, Br-, I-) EXCEPT with Ag+, Pb2+, Hg2+
+- Sulfates EXCEPT with Ba2+, Pb2+, Ca2+
+
+USUALLY INSOLUBLE (PRECIPITATES):
+- Hydroxides (OH-) except Group 1
+- Sulfides (S2-) except Group 1, 2
+- Carbonates (CO3 2-) except Group 1, NH4+
+- Phosphates (PO4 3-) except Group 1, NH4+
+
+<strong>EXAMPLE:</strong> Pb(NO3)2 + 2KI -> PbI2(s) + 2KNO3
+PbI2 is INSOLUBLE = precipitate!</div>
+        </div>
+
+        <div class="assignment">
+            <h2>
+                Hebrew Vocab Formative
+                <span class="due-badge tomorrow">Due Tomorrow 4:00 PM</span>
+            </h2>
+            <p class="course">Hebrew AL AT C Period Levy | <span class="points">40 Points</span> <span class="status pending">IN-CLASS TEST</span></p>
+            <p>This is an in-class vocabulary test. Study your Hebrew vocabulary for this formative.</p>
+        </div>
+
+        <div class="assignment">
+            <h2>
+                AP Seminar Assignments (April 13-21)
+                <span class="due-badge">Due 4/21</span>
+            </h2>
+            <p class="course">AP Seminar - Period B & C | <span class="points">50 Points</span> <span class="status pending">ACTION NEEDED</span></p>
+            <p><strong>Requirements:</strong></p>
+            <ul>
+                <li>Complete at least 1 full AP Seminar EOC A and B Exam on AP Classroom by April 20</li>
+                <li>Watch assigned videos and submit 6 bullet points each (3 helpful things + 3 things you already knew)</li>
+            </ul>
+        </div>
+
+        <div class="assignment">
+            <h2>
+                World History DBQ Peer Review
+                <span class="due-badge">Due 4/21</span>
+            </h2>
+            <p class="course">World History Honors (Per. B) | <span class="points">10 Points</span> <span class="status pending">IN-CLASS</span></p>
+            <p>Pair up with a partner and review each other's DBQ. Share via email or Google Docs.</p>
+        </div>
+    </div>
+
+    <script>
+        function copyText(btn, id) {
+            const answerBox = btn.previousElementSibling;
+            const text = answerBox.innerText;
+            navigator.clipboard.writeText(text);
+            btn.textContent = 'Copied!';
+            btn.style.background = '#2ed573';
+            setTimeout(() => {
+                btn.textContent = 'Copy Answer';
+                btn.style.background = '#00d4ff';
+            }, 2000);
+        }
+    </script>
+</body>
+</html>

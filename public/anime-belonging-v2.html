@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Belonging - An Anime Short Film</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;700&family=Cinzel:wght@400;700&display=swap');
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            background: #000;
+            color: #fff;
+            font-family: 'Cinzel', serif;
+            overflow: hidden;
+            height: 100vh;
+        }
+        
+        #start-screen {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(180deg, #0a0a0f 0%, #1a1a2e 50%, #0a0a0f 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            transition: opacity 1s ease;
+        }
+        
+        #start-screen h1 {
+            font-size: 4rem;
+            letter-spacing: 1rem;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 30px rgba(100, 149, 237, 0.5);
+        }
+        
+        #start-screen p {
+            font-family: 'Noto Sans JP', sans-serif;
+            font-size: 1.2rem;
+            color: #888;
+            margin-bottom: 3rem;
+        }
+        
+        #begin-btn {
+            padding: 1rem 3rem;
+            font-size: 1.2rem;
+            font-family: 'Cinzel', serif;
+            background: transparent;
+            border: 2px solid #fff;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 0.3rem;
+        }
+        
+        #begin-btn:hover {
+            background: #fff;
+            color: #000;
+        }
+        
+        #cinema {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: #000;
+            display: none;
+        }
+        
+        #letterbox-top, #letterbox-bottom {
+            position: absolute;
+            left: 0; right: 0;
+            height: 12%;
+            background: #000;
+            z-index: 10;
+        }
+        #letterbox-top { top: 0; }
+        #letterbox-bottom { bottom: 0; }
+        
+        #scene-container {
+            position: absolute;
+            top: 12%; bottom: 12%; left: 0; right: 0;
+            overflow: hidden;
+        }
+        
+        .scene {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            opacity: 0;
+            transition: opacity 1.5s ease;
+        }
+        
+        .scene.active {
+            opacity: 1;
+        }
+        
+        .scene img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            animation: kenburns 12s ease-in-out infinite alternate;
+        }
+        
+        @keyframes kenburns {
+            0% { transform: scale(1) translate(0, 0); }
+            100% { transform: scale(1.1) translate(-2%, -1%); }
+        }
+        
+        .scene-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(transparent 60%, rgba(0,0,0,0.8) 100%);
+        }
+        
+        #subtitles {
+            position: absolute;
+            bottom: 15%;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            z-index: 20;
+            pointer-events: none;
+        }
+        
+        #japanese-text {
+            font-family: 'Noto Sans JP', sans-serif;
+            font-size: 2.5rem;
+            color: #fff;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.9), 0 0 20px rgba(0,0,0,0.8);
+            margin-bottom: 0.5rem;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        
+        #english-text {
+            font-family: 'Cinzel', serif;
+            font-size: 1.4rem;
+            color: #ccc;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.9);
+            font-style: italic;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        
+        #japanese-text.visible, #english-text.visible {
+            opacity: 1;
+        }
+        
+        /* Film grain effect */
+        #grain {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            pointer-events: none;
+            z-index: 50;
+            opacity: 0.05;
+            background-image: url('data:image/svg+xml,<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23noise)"/></svg>');
+        }
+        
+        /* Rain effect */
+        #rain {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            pointer-events: none;
+            z-index: 5;
+            opacity: 0;
+            transition: opacity 2s ease;
+            background: linear-gradient(transparent 0%, rgba(100, 149, 237, 0.1) 100%);
+        }
+        
+        .rain-drop {
+            position: absolute;
+            width: 1px;
+            height: 20px;
+            background: linear-gradient(transparent, rgba(174, 194, 224, 0.5));
+            animation: rain-fall linear infinite;
+        }
+        
+        @keyframes rain-fall {
+            0% { transform: translateY(-100vh); }
+            100% { transform: translateY(100vh); }
+        }
+        
+        #audio-player {
+            position: absolute;
+            bottom: 2%;
+            right: 2%;
+            z-index: 60;
+        }
+        
+        #progress-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #4a90d9, #9b59b6);
+            z-index: 30;
+            width: 0%;
+            transition: width 0.5s linear;
+        }
+        
+        #loading {
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.5rem;
+            z-index: 200;
+            display: none;
+        }
+        
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid #333;
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div id="start-screen">
+        <h1>BELONGING</h1>
+        <p>An Anime Short Film</p>
+        <button id="begin-btn">BEGIN</button>
+        <p style="margin-top: 2rem; font-size: 0.9rem; color: #555;">Music: "Creep" by Radiohead</p>
+    </div>
+    
+    <div id="loading">
+        <div class="loading-spinner"></div>
+        <p>Loading scenes...</p>
+    </div>
+    
+    <div id="cinema">
+        <div id="letterbox-top"></div>
+        <div id="scene-container"></div>
+        <div id="letterbox-bottom"></div>
+        
+        <div id="subtitles">
+            <div id="japanese-text"></div>
+            <div id="english-text"></div>
+        </div>
+        
+        <div id="rain"></div>
+        <div id="grain"></div>
+        <div id="progress-bar"></div>
+        
+        <audio id="audio-player" controls>
+            <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+        </audio>
+    </div>
+    
+    <!-- YouTube Audio (hidden) -->
+    <iframe id="youtube-audio" 
+            style="position:absolute; top:-9999px; left:-9999px;" 
+            width="1" height="1"
+            src="" 
+            allow="autoplay">
+    </iframe>
+
+    <script>
+        const scenes = [
+            {
+                prompt: "anime teenage boy dark messy hair sitting alone school cafeteria looking down melancholic studio ghibli",
+                japanese: "また一人だ...",
+                english: "Alone again...",
+                duration: 8000
+            },
+            {
+                prompt: "anime group teenagers walking city street sunset one boy behind isolated sad makoto shinkai style",
+                japanese: "彼らと一緒にいても...",
+                english: "Even when I'm with them...",
+                duration: 8000
+            },
+            {
+                prompt: "anime closeup teenage boy face rainy window reflection tears blue lighting emotional studio ghibli",
+                japanese: "誰も本当の僕を見ない",
+                english: "No one sees the real me",
+                duration: 8000
+            },
+            {
+                prompt: "anime teenage boy sitting rooftop alone night city lights stars lonely makoto shinkai beautiful",
+                japanese: "僕はここにいるのに...",
+                english: "I'm right here, but...",
+                duration: 8000
+            },
+            {
+                prompt: "anime classroom teenage boy desk window other students chatting groups he stares outside empty expression",
+                japanese: "笑顔の仮面をかぶって",
+                english: "Wearing a mask of smiles",
+                duration: 8000
+            },
+            {
+                prompt: "anime teenage boy walking alone crowded festival lanterns everyone pairs groups he looks down lonely",
+                japanese: "僕は何者なんだ？",
+                english: "What am I?",
+                duration: 8000
+            },
+            {
+                prompt: "anime dramatic teenage boy standing rain friends walking away umbrellas distance dark blue emotional cinematic",
+                japanese: "僕はクリープだ",
+                english: "I'm a creep...",
+                duration: 10000
+            },
+            {
+                prompt: "anime teenage boy alone bedroom night sitting bed looking phone group chat not part of melancholic",
+                japanese: "僕はここに属していない",
+                english: "I don't belong here",
+                duration: 10000
+            }
+        ];
+        
+        let currentScene = 0;
+        let sceneElements = [];
+        let imagesLoaded = 0;
+        
+        // Create rain drops
+        function createRain() {
+            const rain = document.getElementById('rain');
+            for (let i = 0; i < 100; i++) {
+                const drop = document.createElement('div');
+                drop.className = 'rain-drop';
+                drop.style.left = Math.random() * 100 + '%';
+                drop.style.animationDuration = (Math.random() * 0.5 + 0.3) + 's';
+                drop.style.animationDelay = Math.random() * 2 + 's';
+                rain.appendChild(drop);
+            }
+        }
+        
+        // Generate image URL
+        function getImageUrl(prompt, seed) {
+            const encoded = encodeURIComponent(prompt + ", anime art style, high quality, detailed, cinematic lighting");
+            return "https://image.pollinations.ai/prompt/" + encoded + "?width=1280&height=720&seed=" + seed + "&nologo=true";
+        }
+        
+        // Preload all images
+        function preloadImages() {
+            return new Promise((resolve) => {
+                const container = document.getElementById('scene-container');
+                let loaded = 0;
+                
+                scenes.forEach((scene, index) => {
+                    const sceneDiv = document.createElement('div');
+                    sceneDiv.className = 'scene';
+                    sceneDiv.id = 'scene-' + index;
+                    
+                    const img = document.createElement('img');
+                    img.src = getImageUrl(scene.prompt, index * 123 + 42);
+                    img.alt = 'Scene ' + (index + 1);
+                    
+                    img.onload = () => {
+                        loaded++;
+                        document.querySelector('#loading p').textContent = 'Loading scenes... ' + loaded + '/' + scenes.length;
+                        if (loaded === scenes.length) {
+                            resolve();
+                        }
+                    };
+                    
+                    img.onerror = () => {
+                        // Fallback - try different seed
+                        img.src = getImageUrl(scene.prompt, index * 456 + 789);
+                        loaded++;
+                        if (loaded === scenes.length) {
+                            resolve();
+                        }
+                    };
+                    
+                    const overlay = document.createElement('div');
+                    overlay.className = 'scene-overlay';
+                    
+                    sceneDiv.appendChild(img);
+                    sceneDiv.appendChild(overlay);
+                    container.appendChild(sceneDiv);
+                    sceneElements.push(sceneDiv);
+                });
+                
+                // Timeout fallback - proceed after 15 seconds regardless
+                setTimeout(resolve, 15000);
+            });
+        }
+        
+        // Show scene
+        function showScene(index) {
+            if (index >= scenes.length) {
+                // End of film
+                document.getElementById('japanese-text').textContent = '終わり';
+                document.getElementById('japanese-text').classList.add('visible');
+                document.getElementById('english-text').textContent = 'The End';
+                document.getElementById('english-text').classList.add('visible');
+                return;
+            }
+            
+            const scene = scenes[index];
+            
+            // Hide all scenes
+            sceneElements.forEach(el => el.classList.remove('active'));
+            
+            // Show current scene
+            sceneElements[index].classList.add('active');
+            
+            // Update subtitles
+            const jpText = document.getElementById('japanese-text');
+            const enText = document.getElementById('english-text');
+            
+            jpText.classList.remove('visible');
+            enText.classList.remove('visible');
+            
+            setTimeout(() => {
+                jpText.textContent = scene.japanese;
+                jpText.classList.add('visible');
+            }, 1000);
+            
+            setTimeout(() => {
+                enText.textContent = scene.english;
+                enText.classList.add('visible');
+            }, 1500);
+            
+            // Rain effect on certain scenes
+            if (index === 2 || index === 6) {
+                document.getElementById('rain').style.opacity = '1';
+            } else {
+                document.getElementById('rain').style.opacity = '0';
+            }
+            
+            // Progress bar
+            const progress = ((index + 1) / scenes.length) * 100;
+            document.getElementById('progress-bar').style.width = progress + '%';
+            
+            // Schedule next scene
+            currentScene = index;
+            setTimeout(() => showScene(index + 1), scene.duration);
+        }
+        
+        // Start the film
+        async function startFilm() {
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('start-screen').style.display = 'none';
+            
+            createRain();
+            await preloadImages();
+            
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('cinema').style.display = 'block';
+            
+            // Start YouTube audio
+            document.getElementById('youtube-audio').src = 'https://www.youtube.com/embed/XFkzRNyygfk?autoplay=1&start=0';
+            
+            // Start scenes after a brief delay
+            setTimeout(() => showScene(0), 1000);
+        }
+        
+        document.getElementById('begin-btn').addEventListener('click', startFilm);
+    </script>
+</body>
+</html>

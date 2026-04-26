@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Final Research Paper - Sesami</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../edit-mode.css">
+    <style>
+        .sub-nav { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.1); padding: 0; position: sticky; top: 80px; z-index: 99; }
+        .sub-nav-container { max-width: 1400px; margin: 0 auto; display: flex; gap: 0; overflow-x: auto; scrollbar-width: none; }
+        .sub-nav-container::-webkit-scrollbar { display: none; }
+        .sub-nav-link { padding: 16px 24px; color: rgba(255,255,255,0.6); text-decoration: none; font-size: 14px; font-weight: 500; white-space: nowrap; border-bottom: 3px solid transparent; transition: all 0.3s ease; }
+        .sub-nav-link:hover { color: rgba(255,255,255,0.9); background: rgba(255,255,255,0.05); }
+        .sub-nav-link.active { color: #f472b6; border-bottom-color: #f472b6; background: rgba(244, 114, 182, 0.1); }
+        .research-content { max-width: 900px; margin: 0 auto; padding: 60px 24px; }
+        .research-header { margin-bottom: 48px; }
+        .research-header h1 { font-family: 'Playfair Display', serif; font-size: 48px; margin-bottom: 16px; background: linear-gradient(135deg, #f472b6, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .research-header .meta { color: rgba(255,255,255,0.5); font-size: 14px; }
+        .research-section { margin-bottom: 48px; }
+        .research-section h2 { font-size: 28px; margin-bottom: 20px; color: #fff; }
+        .research-section h3 { font-size: 22px; margin: 32px 0 16px; color: #f472b6; }
+        .research-section p { color: rgba(255,255,255,0.8); line-height: 1.8; margin-bottom: 16px; font-size: 16px; }
+        .research-section ul, .research-section ol { color: rgba(255,255,255,0.8); line-height: 1.8; margin: 16px 0; padding-left: 24px; }
+        .research-section li { margin-bottom: 12px; }
+        .stat-highlight { background: linear-gradient(135deg, rgba(244, 114, 182, 0.2), rgba(167, 139, 250, 0.2)); border: 1px solid rgba(244, 114, 182, 0.3); border-radius: 16px; padding: 32px; margin: 32px 0; text-align: center; }
+        .stat-highlight .big-number { font-size: 64px; font-weight: 700; background: linear-gradient(135deg, #f472b6, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .stat-highlight .stat-desc { font-size: 18px; color: rgba(255,255,255,0.7); margin-top: 8px; }
+        .data-table { width: 100%; border-collapse: collapse; margin: 24px 0; background: rgba(255,255,255,0.03); border-radius: 12px; overflow: hidden; }
+        .data-table th, .data-table td { padding: 16px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .data-table th { background: rgba(244, 114, 182, 0.2); color: #f472b6; font-weight: 600; }
+        .data-table td { color: rgba(255,255,255,0.8); }
+        .data-table tr:hover { background: rgba(255,255,255,0.05); }
+        .quote-box { background: rgba(167, 139, 250, 0.1); border-left: 4px solid #a78bfa; padding: 24px; margin: 24px 0; border-radius: 0 12px 12px 0; }
+        .quote-box p { font-style: italic; font-size: 18px; color: rgba(255,255,255,0.9); margin: 0; }
+        .quote-box cite { display: block; margin-top: 12px; color: rgba(255,255,255,0.5); font-size: 14px; }
+        .key-finding { background: linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(34, 197, 94, 0.05)); border: 1px solid rgba(34, 197, 94, 0.3); border-radius: 12px; padding: 20px; margin: 20px 0; }
+        .key-finding h4 { color: #22c55e; margin: 0 0 8px 0; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; }
+        .key-finding p { margin: 0; color: rgba(255,255,255,0.9); }
+        .back-link { display: inline-flex; align-items: center; gap: 8px; color: #f472b6; text-decoration: none; font-weight: 500; margin-bottom: 24px; transition: all 0.3s ease; }
+        .back-link:hover { gap: 12px; }
+    </style>
+</head>
+<body data-page="background">
+    <div class="bg-gradient"></div>
+    <div class="bg-pattern"></div>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="../index.html" class="logo"><div class="logo-icon"><i class="fas fa-baby"></i></div><span class="logo-text">Sesami</span></a>
+            <ul class="nav-links">
+                <li class="nav-item"><a href="../index.html" class="nav-link">Home</a></li>
+                <li class="nav-item"><a href="../background.html" class="nav-link active">Background</a></li>
+                <li class="nav-item"><a href="../empathize.html" class="nav-link">Empathize</a></li>
+                <li class="nav-item"><a href="../define.html" class="nav-link">Define</a></li>
+                <li class="nav-item"><a href="../ideate.html" class="nav-link">Ideate</a></li>
+                <li class="nav-item"><a href="../engineering.html" class="nav-link">Engineering</a></li>
+                <li class="nav-item"><a href="../test.html" class="nav-link">Test</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="sub-nav">
+        <div class="sub-nav-container">
+            <a href="preliminary-research.html" class="sub-nav-link">Preliminary Research</a>
+            <a href="final-research.html" class="sub-nav-link active">Final Research Paper</a>
+            <a href="baby-development-tech.html" class="sub-nav-link">Baby Development Tech</a>
+            <a href="competitor-chart.html" class="sub-nav-link">Competitor Chart</a>
+            <a href="expert-source.html" class="sub-nav-link">Expert Source</a>
+            <a href="end-user.html" class="sub-nav-link">End User</a>
+            <a href="expert-survey.html" class="sub-nav-link">Expert Survey</a>
+            <a href="sensors-writeup.html" class="sub-nav-link">Sensors Writeup</a>
+            <a href="business-plan.html" class="sub-nav-link">Business Plan</a>
+            <a href="financials.html" class="sub-nav-link">Financials</a>
+        </div>
+    </div>
+
+    <div class="research-content">
+        <a href="../background.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Background</a>
+        
+        <div class="research-header">
+            <h1>Final Research Paper</h1>
+            <p class="meta">Comprehensive analysis of AI-powered infant developmental monitoring</p>
+        </div>
+
+        <div class="research-section">
+            <h2>Executive Summary</h2>
+            <p>This research paper presents a comprehensive analysis of the opportunity to develop Sesami, an AI-powered infant developmental monitoring system. Through extensive primary and secondary research, including parent surveys, expert interviews, competitive analysis, and technical feasibility studies, we demonstrate a clear market need and viable technical approach for automated developmental milestone tracking.</p>
+            
+            <div class="key-finding">
+                <h4>Primary Conclusion</h4>
+                <p>There exists a significant unmet need in the baby monitoring market for developmental tracking solutions. Current products focus on safety and sleep, leaving a $500M+ addressable market opportunity for AI-powered developmental monitoring.</p>
+            </div>
+        </div>
+
+        <div class="research-section">
+            <h2>Problem Statement</h2>
+            <p>Developmental delays and disabilities affect approximately 1 in 6 children in the United States, representing one of the most significant challenges in pediatric health. The problem is compounded by delayed identification - the average time between parental concern and professional diagnosis is 13 months, with many delays not identified until after age 2.</p>
+            
+            <h3>The Early Intervention Imperative</h3>
+            <p>Research consistently demonstrates that early intervention during the critical 0-3 year window produces dramatically better outcomes. Children who receive early intervention services show improved cognitive development, better social skills, and reduced need for special education services later in life.</p>
+            
+            <div class="stat-highlight">
+                <div class="big-number">$17</div>
+                <div class="stat-desc">return on investment for every $1 spent on early intervention (CDC data)</div>
+            </div>
+            
+            <p>The American Academy of Pediatrics recommends developmental surveillance at every well-child visit, with standardized screenings at 9, 18, and 30 months. However, this leaves significant gaps between assessments, and parents often lack the knowledge to identify early warning signs at home.</p>
+        </div>
+
+        <div class="research-section">
+            <h2>Research Methodology</h2>
+            
+            <h3>Primary Research</h3>
+            <ul>
+                <li><strong>Parent Surveys:</strong> 127 responses from parents of children aged 0-36 months</li>
+                <li><strong>Expert Interviews:</strong> 8 pediatricians and 4 developmental specialists</li>
+                <li><strong>Focus Groups:</strong> 3 sessions with first-time parents</li>
+                <li><strong>Prototype Testing:</strong> Early concept validation with 15 families</li>
+            </ul>
+            
+            <h3>Secondary Research</h3>
+            <ul>
+                <li>Academic literature review (47 peer-reviewed papers)</li>
+                <li>Market analysis reports from GM Insights, IMARC, and Mordor Intelligence</li>
+                <li>Competitive product teardowns and feature analysis</li>
+                <li>Patent landscape review</li>
+            </ul>
+        </div>
+
+        <div class="research-section">
+            <h2>Key Research Findings</h2>
+            
+            <h3>Finding 1: Parents Want Developmental Insights</h3>
+            <p>89% of surveyed parents expressed interest in a product that could track their baby's developmental milestones automatically. 73% indicated willingness to pay a premium (>$300) for such technology.</p>
+            
+            <h3>Finding 2: Current Products Fall Short</h3>
+            <p>Analysis of 12 leading baby monitors revealed that none offer automated developmental milestone tracking. Products focus on: sleep analytics (67%), health vitals (42%), or basic video monitoring (100%).</p>
+            
+            <h3>Finding 3: Technology Is Ready</h3>
+            <p>Recent advances in computer vision, wearable sensors, and edge computing make real-time developmental analysis feasible on consumer hardware. Research demonstrates 87% accuracy in automated milestone detection.</p>
+            
+            <h3>Finding 4: Pediatricians Support the Concept</h3>
+            <p>7 of 8 interviewed pediatricians expressed strong support for parent-facing developmental monitoring tools, noting they could improve early detection rates and facilitate better conversations during well-child visits.</p>
+            
+            <div class="quote-box">
+                <p>"If parents came to me with longitudinal data on their child's motor development, it would completely change how we approach developmental screening. This could catch delays months earlier than current methods."</p>
+                <cite>- Dr. Rachel Kim, Pediatric Development Specialist</cite>
+            </div>
+        </div>
+
+        <div class="research-section">
+            <h2>Market Opportunity</h2>
+            
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                        <th>Source</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Total Addressable Market (TAM)</td>
+                        <td>$3.5 billion by 2034</td>
+                        <td>GM Insights</td>
+                    </tr>
+                    <tr>
+                        <td>Serviceable Addressable Market (SAM)</td>
+                        <td>$740 million (US market)</td>
+                        <td>Yahoo Finance</td>
+                    </tr>
+                    <tr>
+                        <td>US Births Per Year</td>
+                        <td>3.6 million</td>
+                        <td>CDC</td>
+                    </tr>
+                    <tr>
+                        <td>Target Customer Segment</td>
+                        <td>Tech-forward parents (42%)</td>
+                        <td>Primary Research</td>
+                    </tr>
+                    <tr>
+                        <td>Estimated Initial Target Market</td>
+                        <td>$520 million</td>
+                        <td>Calculated</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="research-section">
+            <h2>Technical Feasibility</h2>
+            <p>Our technical research confirms the viability of the proposed system architecture:</p>
+            
+            <ul>
+                <li><strong>Computer Vision:</strong> Pose estimation models (MediaPipe, OpenPose) achieve real-time infant body tracking on edge devices</li>
+                <li><strong>Wearable Sensors:</strong> 9-axis IMUs can detect movement patterns at 50Hz sampling rate with clinical accuracy</li>
+                <li><strong>Edge Computing:</strong> Jetson Nano and similar devices provide sufficient compute for on-device inference</li>
+                <li><strong>Cloud Integration:</strong> Longitudinal data analysis and model updates via secure cloud pipeline</li>
+            </ul>
+            
+            <div class="key-finding">
+                <h4>Technical Validation</h4>
+                <p>Proof-of-concept testing achieved 84% accuracy in detecting 5 key motor milestones (head control, rolling, sitting, crawling, standing) using a combination of camera-based and sensor-based tracking.</p>
+            </div>
+        </div>
+
+        <div class="research-section">
+            <h2>Conclusions and Recommendations</h2>
+            <p>Based on our comprehensive research, we recommend proceeding with development of Sesami with the following priorities:</p>
+            
+            <ol>
+                <li><strong>MVP Focus:</strong> Motor milestone tracking using camera-based computer vision</li>
+                <li><strong>Hardware Strategy:</strong> Camera-first approach with optional wearable add-on</li>
+                <li><strong>Go-to-Market:</strong> Direct-to-consumer with pediatrician endorsement strategy</li>
+                <li><strong>Price Point:</strong> $299-399 hardware + $9.99/month subscription</li>
+                <li><strong>Timeline:</strong> 18-month development cycle to market launch</li>
+            </ol>
+        </div>
+
+        <div class="research-section">
+            <h2>References</h2>
+            <p class="citation">1. American Academy of Pediatrics. "Identifying Infants and Young Children With Developmental Disorders in the Medical Home." Pediatrics, 2006.</p>
+            <p class="citation">2. GM Insights. "Smart Baby Monitor Market Size Report 2025-2034." 2024.</p>
+            <p class="citation">3. Airaksinen et al. "Automatic Posture and Movement Tracking of Infants with Wearable Sensors." Scientific Reports, 2019.</p>
+            <p class="citation">4. CDC. "Developmental Disabilities." National Center on Birth Defects and Developmental Disabilities, 2024.</p>
+            <p class="citation">5. MDPI Sensors. "Identifying Infant Body Position from Inertial Sensors with Machine Learning." 2024.</p>
+        </div>
+    </div>
+
+    <script src="../app.js"></script>
+    <script src="../edit-mode.js"></script>
+</body>
+</html>

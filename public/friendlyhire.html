@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FriendlyHire - Rent a Companion</title>
+    <link rel="stylesheet" href="friendlyhire.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-users"></i>
+                <span>FriendlyHire</span>
+            </div>
+            <div class="nav-links">
+                <a href="#home">Home</a>
+                <a href="#companions">Browse Companions</a>
+                <a href="#how-it-works">How It Works</a>
+                <button class="btn-signup" onclick="openModal('signupModal')">Sign Up</button>
+                <button class="btn-login" onclick="openModal('loginModal')">Login</button>
+            </div>
+            <div class="mobile-menu" onclick="toggleMobile()">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </nav>
+
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1>Find Your Perfect Companion</h1>
+            <p>Whether you need a friend for an event, someone to explore the city with, or just good company - we've got you covered!</p>
+            <div class="hero-buttons">
+                <button class="btn-primary" onclick="scrollToCompanions()">Browse Companions</button>
+                <button class="btn-secondary" onclick="openModal('becomeCompanionModal')">Become a Companion</button>
+            </div>
+            <div class="trust-badges">
+                <div class="badge"><i class="fas fa-shield-alt"></i> Verified Profiles</div>
+                <div class="badge"><i class="fas fa-star"></i> 4.9 Rating</div>
+                <div class="badge"><i class="fas fa-users"></i> 10,000+ Connections</div>
+            </div>
+        </div>
+        <div class="hero-image">
+            <div class="floating-card card1">
+                <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="companion">
+                <span>Sarah - Available Now!</span>
+            </div>
+            <div class="floating-card card2">
+                <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="companion">
+                <span>Mike - 5 Star Rated</span>
+            </div>
+        </div>
+    </section>
+
+    <section id="how-it-works" class="how-it-works">
+        <h2>How It Works</h2>
+        <div class="steps">
+            <div class="step">
+                <div class="step-icon"><i class="fas fa-search"></i></div>
+                <h3>1. Browse</h3>
+                <p>Explore our verified companions and find someone who matches your vibe</p>
+            </div>
+            <div class="step">
+                <div class="step-icon"><i class="fas fa-credit-card"></i></div>
+                <h3>2. Pay Securely</h3>
+                <p>Complete payment through our secure platform before connecting</p>
+            </div>
+            <div class="step">
+                <div class="step-icon"><i class="fas fa-phone"></i></div>
+                <h3>3. Connect</h3>
+                <p>Get their contact info and plan your hangout!</p>
+            </div>
+            <div class="step">
+                <div class="step-icon"><i class="fas fa-heart"></i></div>
+                <h3>4. Enjoy!</h3>
+                <p>Have an amazing time with your new friend</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="companions" class="companions">
+        <h2>Meet Our Companions</h2>
+        <div class="filter-bar">
+            <select id="priceFilter" onchange="filterCompanions()">
+                <option value="all">All Prices</option>
+                <option value="budget">Budget ($25-50/hr)</option>
+                <option value="standard">Standard ($50-100/hr)</option>
+                <option value="premium">Premium ($100+/hr)</option>
+            </select>
+            <select id="activityFilter" onchange="filterCompanions()">
+                <option value="all">All Activities</option>
+                <option value="dining">Dining</option>
+                <option value="sports">Sports & Fitness</option>
+                <option value="events">Events & Parties</option>
+                <option value="exploring">City Exploring</option>
+                <option value="gaming">Gaming</option>
+            </select>
+        </div>
+        <div class="companions-grid" id="companionsGrid">
+            <!-- Companions will be loaded via JS -->
+        </div>
+    </section>
+
+    <section class="cta-section">
+        <div class="cta-content">
+            <h2>Want to Earn Money as a Companion?</h2>
+            <p>Set your own rates, choose your availability, and meet amazing people!</p>
+            <button class="btn-primary" onclick="openModal('becomeCompanionModal')">Apply Now - It's Free!</button>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3><i class="fas fa-users"></i> FriendlyHire</h3>
+                <p>Making meaningful connections, one hangout at a time.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <a href="#home">Home</a>
+                <a href="#companions">Browse</a>
+                <a href="#how-it-works">How It Works</a>
+            </div>
+            <div class="footer-section">
+                <h4>Support</h4>
+                <a href="#">FAQ</a>
+                <a href="#">Safety Guidelines</a>
+                <a href="#">Contact Us</a>
+            </div>
+            <div class="footer-section">
+                <h4>Legal</h4>
+                <a href="#">Terms of Service</a>
+                <a href="#">Privacy Policy</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>2026 FriendlyHire. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Signup Modal -->
+    <div id="signupModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('signupModal')">&times;</span>
+            <h2><i class="fas fa-user-plus"></i> Create Account</h2>
+            <form id="signupForm" onsubmit="handleSignup(event)">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" required placeholder="John Doe">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" required placeholder="john@example.com">
+                </div>
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="tel" required placeholder="(954) 555-1234">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" required placeholder="Min 8 characters">
+                </div>
+                <div class="form-group">
+                    <label>Confirm Password</label>
+                    <input type="password" required placeholder="Confirm password">
+                </div>
+                <button type="submit" class="btn-primary full-width">Create Account</button>
+            </form>
+            <p class="modal-footer">Already have an account? <a href="#" onclick="switchModal('signupModal', 'loginModal')">Login</a></p>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('loginModal')">&times;</span>
+            <h2><i class="fas fa-sign-in-alt"></i> Welcome Back</h2>
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" required placeholder="john@example.com">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" required placeholder="Your password">
+                </div>
+                <button type="submit" class="btn-primary full-width">Login</button>
+            </form>
+            <p class="modal-footer">Don't have an account? <a href="#" onclick="switchModal('loginModal', 'signupModal')">Sign Up</a></p>
+        </div>
+    </div>
+
+    <!-- Become Companion Modal -->
+    <div id="becomeCompanionModal" class="modal">
+        <div class="modal-content modal-large">
+            <span class="close" onclick="closeModal('becomeCompanionModal')">&times;</span>
+            <h2><i class="fas fa-star"></i> Become a Companion</h2>
+            <form id="companionForm" onsubmit="handleCompanionSignup(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" required placeholder="Your name">
+                    </div>
+                    <div class="form-group">
+                        <label>Age</label>
+                        <input type="number" required min="18" placeholder="Must be 18+">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" required placeholder="your@email.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Phone</label>
+                        <input type="tel" required placeholder="(954) 555-1234">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Hourly Rate ($)</label>
+                    <input type="number" required min="25" placeholder="e.g., 50">
+                </div>
+                <div class="form-group">
+                    <label>Activities You Offer (select multiple)</label>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" value="dining"> Dining</label>
+                        <label><input type="checkbox" value="sports"> Sports & Fitness</label>
+                        <label><input type="checkbox" value="events"> Events & Parties</label>
+                        <label><input type="checkbox" value="exploring"> City Exploring</label>
+                        <label><input type="checkbox" value="gaming"> Gaming</label>
+                        <label><input type="checkbox" value="movies"> Movies</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Bio - Tell people about yourself!</label>
+                    <textarea required placeholder="I'm an outgoing person who loves meeting new people..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Profile Photo URL</label>
+                    <input type="url" placeholder="https://example.com/your-photo.jpg">
+                </div>
+                <button type="submit" class="btn-primary full-width">Submit Application</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Payment Modal -->
+    <div id="paymentModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('paymentModal')">&times;</span>
+            <h2><i class="fas fa-lock"></i> Secure Payment</h2>
+            <div id="paymentDetails">
+                <!-- Filled dynamically -->
+            </div>
+            <form id="paymentForm" onsubmit="processPayment(event)">
+                <div class="form-group">
+                    <label>Card Number</label>
+                    <input type="text" id="cardNumber" required placeholder="1234 5678 9012 3456" maxlength="19">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Expiry</label>
+                        <input type="text" required placeholder="MM/YY" maxlength="5">
+                    </div>
+                    <div class="form-group">
+                        <label>CVV</label>
+                        <input type="text" required placeholder="123" maxlength="4">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Name on Card</label>
+                    <input type="text" required placeholder="John Doe">
+                </div>
+                <div class="form-group">
+                    <label>Hours to Book</label>
+                    <input type="number" id="hoursToBook" min="1" max="12" value="1" onchange="updateTotal()">
+                </div>
+                <div class="total-display">
+                    <span>Total:</span>
+                    <span id="totalAmount">$0.00</span>
+                </div>
+                <button type="submit" class="btn-primary full-width">Pay & Get Contact</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="successModal" class="modal">
+        <div class="modal-content success-content">
+            <div class="success-icon"><i class="fas fa-check-circle"></i></div>
+            <h2>Payment Successful!</h2>
+            <p>You can now contact your companion:</p>
+            <div id="contactReveal" class="contact-reveal">
+                <!-- Phone number revealed here -->
+            </div>
+            <button class="btn-primary" onclick="closeModal('successModal')">Done</button>
+        </div>
+    </div>
+
+    <script src="friendlyhire.js"></script>
+</body>
+</html>

@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Plan - Sesami</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../edit-mode.css">
+    <style>
+        .sub-nav { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.1); padding: 0; position: sticky; top: 80px; z-index: 99; }
+        .sub-nav-container { max-width: 1400px; margin: 0 auto; display: flex; gap: 0; overflow-x: auto; scrollbar-width: none; }
+        .sub-nav-container::-webkit-scrollbar { display: none; }
+        .sub-nav-link { padding: 16px 24px; color: rgba(255,255,255,0.6); text-decoration: none; font-size: 14px; font-weight: 500; white-space: nowrap; border-bottom: 3px solid transparent; transition: all 0.3s ease; }
+        .sub-nav-link:hover { color: rgba(255,255,255,0.9); background: rgba(255,255,255,0.05); }
+        .sub-nav-link.active { color: #f472b6; border-bottom-color: #f472b6; background: rgba(244, 114, 182, 0.1); }
+        .research-content { max-width: 900px; margin: 0 auto; padding: 60px 24px; }
+        .research-header { margin-bottom: 48px; }
+        .research-header h1 { font-family: 'Playfair Display', serif; font-size: 48px; margin-bottom: 16px; background: linear-gradient(135deg, #f472b6, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .research-header .meta { color: rgba(255,255,255,0.5); font-size: 14px; }
+        .research-section { margin-bottom: 48px; }
+        .research-section h2 { font-size: 28px; margin-bottom: 20px; color: #fff; }
+        .research-section h3 { font-size: 22px; margin: 32px 0 16px; color: #f472b6; }
+        .research-section p { color: rgba(255,255,255,0.8); line-height: 1.8; margin-bottom: 16px; font-size: 16px; }
+        .research-section ul, .research-section ol { color: rgba(255,255,255,0.8); line-height: 1.8; margin: 16px 0; padding-left: 24px; }
+        .research-section li { margin-bottom: 12px; }
+        .back-link { display: inline-flex; align-items: center; gap: 8px; color: #f472b6; text-decoration: none; font-weight: 500; margin-bottom: 24px; transition: all 0.3s ease; }
+        .back-link:hover { gap: 12px; }
+        .biz-card { background: linear-gradient(135deg, rgba(244, 114, 182, 0.1), rgba(167, 139, 250, 0.1)); border: 1px solid rgba(244, 114, 182, 0.2); border-radius: 20px; padding: 32px; margin: 24px 0; }
+        .biz-card h3 { color: #f472b6; margin: 0 0 16px 0; font-size: 20px; }
+        .stat-highlight { background: linear-gradient(135deg, rgba(244, 114, 182, 0.2), rgba(167, 139, 250, 0.2)); border: 1px solid rgba(244, 114, 182, 0.3); border-radius: 16px; padding: 32px; margin: 32px 0; text-align: center; }
+        .stat-highlight .big-number { font-size: 64px; font-weight: 700; background: linear-gradient(135deg, #f472b6, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .stat-highlight .stat-desc { font-size: 18px; color: rgba(255,255,255,0.7); margin-top: 8px; }
+        .timeline { position: relative; padding-left: 32px; margin: 32px 0; }
+        .timeline::before { content: ''; position: absolute; left: 8px; top: 0; bottom: 0; width: 2px; background: linear-gradient(to bottom, #f472b6, #a78bfa); }
+        .timeline-item { position: relative; margin-bottom: 32px; }
+        .timeline-item::before { content: ''; position: absolute; left: -28px; top: 4px; width: 14px; height: 14px; background: #f472b6; border-radius: 50%; border: 3px solid #0f172a; }
+        .timeline-item h4 { color: #a78bfa; font-size: 14px; margin: 0 0 4px 0; text-transform: uppercase; letter-spacing: 1px; }
+        .timeline-item h3 { color: #fff; margin: 0 0 8px 0; font-size: 18px; }
+        .timeline-item p { color: rgba(255,255,255,0.7); margin: 0; font-size: 14px; }
+        .key-finding { background: linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(34, 197, 94, 0.05)); border: 1px solid rgba(34, 197, 94, 0.3); border-radius: 12px; padding: 20px; margin: 20px 0; }
+        .key-finding h4 { color: #22c55e; margin: 0 0 8px 0; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; }
+        .key-finding p { margin: 0; color: rgba(255,255,255,0.9); }
+        .data-table { width: 100%; border-collapse: collapse; margin: 24px 0; background: rgba(255,255,255,0.03); border-radius: 12px; overflow: hidden; }
+        .data-table th, .data-table td { padding: 14px 16px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .data-table th { background: rgba(244, 114, 182, 0.2); color: #f472b6; font-weight: 600; font-size: 14px; }
+        .data-table td { color: rgba(255,255,255,0.8); font-size: 14px; }
+    </style>
+</head>
+<body data-page="background">
+    <div class="bg-gradient"></div>
+    <div class="bg-pattern"></div>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="../index.html" class="logo"><div class="logo-icon"><i class="fas fa-baby"></i></div><span class="logo-text">Sesami</span></a>
+            <ul class="nav-links">
+                <li class="nav-item"><a href="../index.html" class="nav-link">Home</a></li>
+                <li class="nav-item"><a href="../background.html" class="nav-link active">Background</a></li>
+                <li class="nav-item"><a href="../empathize.html" class="nav-link">Empathize</a></li>
+                <li class="nav-item"><a href="../define.html" class="nav-link">Define</a></li>
+                <li class="nav-item"><a href="../ideate.html" class="nav-link">Ideate</a></li>
+                <li class="nav-item"><a href="../engineering.html" class="nav-link">Engineering</a></li>
+                <li class="nav-item"><a href="../test.html" class="nav-link">Test</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="sub-nav">
+        <div class="sub-nav-container">
+            <a href="preliminary-research.html" class="sub-nav-link">Preliminary Research</a>
+            <a href="final-research.html" class="sub-nav-link">Final Research Paper</a>
+            <a href="baby-development-tech.html" class="sub-nav-link">Baby Development Tech</a>
+            <a href="competitor-chart.html" class="sub-nav-link">Competitor Chart</a>
+            <a href="expert-source.html" class="sub-nav-link">Expert Source</a>
+            <a href="end-user.html" class="sub-nav-link">End User</a>
+            <a href="expert-survey.html" class="sub-nav-link">Expert Survey</a>
+            <a href="sensors-writeup.html" class="sub-nav-link">Sensors Writeup</a>
+            <a href="business-plan.html" class="sub-nav-link active">Business Plan</a>
+            <a href="financials.html" class="sub-nav-link">Financials</a>
+        </div>
+    </div>
+
+    <div class="research-content">
+        <a href="../background.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Background</a>
+        
+        <div class="research-header">
+            <h1>Business Plan</h1>
+            <p class="meta">Strategic roadmap for bringing Sesami to market</p>
+        </div>
+
+        <div class="research-section">
+            <h2>Executive Summary</h2>
+            <p>Sesami is an AI-powered infant developmental monitoring system that fills a critical gap in the baby monitor market. By combining computer vision technology with developmental science, Sesami enables parents to track their baby's motor milestones automatically and receive early alerts about potential developmental delays.</p>
+            
+            <div class="stat-highlight">
+                <div class="big-number">$520M</div>
+                <div class="stat-desc">estimated initial target market opportunity</div>
+            </div>
+        </div>
+
+        <div class="research-section">
+            <h2>Mission & Vision</h2>
+            
+            <div class="biz-card">
+                <h3>Mission Statement</h3>
+                <p>To empower parents with AI-powered insights into their child's developmental journey, enabling earlier detection of delays and better outcomes through proactive monitoring.</p>
+            </div>
+            
+            <div class="biz-card">
+                <h3>Vision Statement</h3>
+                <p>A world where every child receives the early intervention they need because developmental concerns are identified in weeks, not years.</p>
+            </div>
+        </div>
+
+        <div class="research-section">
+            <h2>Market Opportunity</h2>
+            
+            <h3>Total Addressable Market (TAM)</h3>
+            <p>The global smart baby monitor market is projected to reach $3.5 billion by 2034, growing at 8.2% CAGR. The US market specifically is expected to reach $740 million by 2033.</p>
+            
+            <h3>Target Customer Segments</h3>
+            <ul>
+                <li><strong>Primary:</strong> Tech-forward millennial/Gen-Z parents (42% of new parents)</li>
+                <li><strong>Secondary:</strong> Parents with family history of developmental concerns</li>
+                <li><strong>Tertiary:</strong> Pediatric practices seeking patient monitoring tools</li>
+            </ul>
+            
+            <h3>Market Positioning</h3>
+            <p>Sesami positions itself in the premium smart monitor segment ($300-450) with unique differentiation through developmental tracking - a feature no competitor currently offers.</p>
+        </div>
+
+        <div class="research-section">
+            <h2>Product Strategy</h2>
+            
+            <h3>Core Product</h3>
+            <p><strong>Sesami Camera System ($349):</strong> HD camera with on-device AI processing, companion mobile app, and cloud-based developmental analytics.</p>
+            
+            <h3>Product Add-ons</h3>
+            <ul>
+                <li><strong>Sesami Wear ($79):</strong> Optional IMU sensor for wearable tracking</li>
+                <li><strong>Sesami Pro subscription ($9.99/month):</strong> Advanced analytics, milestone predictions, pediatrician reports</li>
+            </ul>
+            
+            <h3>Product Roadmap</h3>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <h4>Phase 1 - Q4 2026</h4>
+                    <h3>MVP Launch</h3>
+                    <p>Core camera system with 5 motor milestone detections, basic sleep tracking, mobile app</p>
+                </div>
+                <div class="timeline-item">
+                    <h4>Phase 2 - Q2 2027</h4>
+                    <h3>Feature Expansion</h3>
+                    <p>12 milestone detections, wearable accessory launch, pediatrician report feature</p>
+                </div>
+                <div class="timeline-item">
+                    <h4>Phase 3 - Q4 2027</h4>
+                    <h3>Platform Growth</h3>
+                    <p>Social-emotional tracking, fine motor detection, telehealth integrations</p>
+                </div>
+                <div class="timeline-item">
+                    <h4>Phase 4 - 2028</h4>
+                    <h3>Ecosystem</h3>
+                    <p>Third-party integrations, international expansion, B2B pediatric partnerships</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="research-section">
+            <h2>Go-to-Market Strategy</h2>
+            
+            <h3>Launch Strategy</h3>
+            <ol>
+                <li><strong>Pre-launch (3 months before):</strong> Build waitlist via targeted social media ads, parenting influencer partnerships</li>
+                <li><strong>Launch:</strong> Direct-to-consumer via sesami.com, Amazon listing</li>
+                <li><strong>Growth (6 months post-launch):</strong> Expand to Buy Buy Baby, Target baby section</li>
+                <li><strong>Scale (Year 2):</strong> Pediatric office partnerships, B2B licensing</li>
+            </ol>
+            
+            <h3>Marketing Channels</h3>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Channel</th>
+                        <th>Strategy</th>
+                        <th>Budget Allocation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Paid Social (Instagram, TikTok)</td>
+                        <td>Targeted ads to expecting/new parents</td>
+                        <td>35%</td>
+                    </tr>
+                    <tr>
+                        <td>Influencer Marketing</td>
+                        <td>Mommy bloggers, pediatric professionals</td>
+                        <td>25%</td>
+                    </tr>
+                    <tr>
+                        <td>Content Marketing</td>
+                        <td>SEO, developmental milestone guides</td>
+                        <td>20%</td>
+                    </tr>
+                    <tr>
+                        <td>Pediatric Partnerships</td>
+                        <td>Office displays, referral programs</td>
+                        <td>15%</td>
+                    </tr>
+                    <tr>
+                        <td>PR / Press</td>
+                        <td>Tech and parenting publications</td>
+                        <td>5%</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="research-section">
+            <h2>Competitive Advantages</h2>
+            
+            <div class="key-finding">
+                <h4>First Mover Advantage</h4>
+                <p>Sesami is the first consumer product to offer AI-powered developmental milestone tracking. This creates a 12-18 month head start before competitors can replicate.</p>
+            </div>
+            
+            <ul>
+                <li><strong>Technology moat:</strong> Proprietary ML models trained on infant movement data</li>
+                <li><strong>Data advantage:</strong> Longitudinal developmental data improves models over time</li>
+                <li><strong>Clinical validation:</strong> Expert-backed approach builds trust</li>
+                <li><strong>Network effects:</strong> More users = better benchmark comparisons for all</li>
+            </ul>
+        </div>
+
+        <div class="research-section">
+            <h2>Team Requirements</h2>
+            
+            <h3>Founding Team Needs</h3>
+            <ul>
+                <li><strong>CEO:</strong> Experience in consumer hardware, parenting industry knowledge</li>
+                <li><strong>CTO:</strong> Computer vision/ML expertise, edge computing experience</li>
+                <li><strong>Chief Medical Advisor:</strong> Developmental pediatrics credentials, AAP connections</li>
+                <li><strong>VP Product:</strong> Consumer app experience, user research background</li>
+            </ul>
+            
+            <h3>Initial Team (Launch)</h3>
+            <p>8-12 FTEs: Engineering (5), Product (2), Marketing (2), Operations (1), Customer Success (2)</p>
+        </div>
+
+        <div class="research-section">
+            <h2>Key Risks & Mitigations</h2>
+            
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Risk</th>
+                        <th>Likelihood</th>
+                        <th>Mitigation Strategy</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>FDA regulatory action</td>
+                        <td>Medium</td>
+                        <td>Position as wellness device, avoid medical claims</td>
+                    </tr>
+                    <tr>
+                        <td>Competitor fast-follow</td>
+                        <td>High</td>
+                        <td>Build data moat, continuous innovation</td>
+                    </tr>
+                    <tr>
+                        <td>Hardware manufacturing issues</td>
+                        <td>Medium</td>
+                        <td>Partner with established ODM, quality audits</td>
+                    </tr>
+                    <tr>
+                        <td>Privacy breach concerns</td>
+                        <td>Low-Medium</td>
+                        <td>Edge processing, SOC2 compliance, transparency</td>
+                    </tr>
+                    <tr>
+                        <td>Low customer adoption</td>
+                        <td>Medium</td>
+                        <td>Strong launch marketing, pediatrician endorsements</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="../app.js"></script>
+    <script src="../edit-mode.js"></script>
+</body>
+</html>

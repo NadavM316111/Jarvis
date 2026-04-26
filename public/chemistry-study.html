@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chemistry Honors Study App</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', system-ui, sans-serif; 
+            background: linear-gradient(135deg, #0d0d1a 0%, #1a1a2e 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #1a1a2e; }
+        ::-webkit-scrollbar-thumb { background: #4a4a6a; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+const { useState, useEffect } = React;
+
+// DATA
+const REACTION_TYPES = {
+    synthesis: {
+        name: 'Synthesis',
+        pattern: 'A + B --> AB',
+        description: 'Two or more reactants combine to form a single product.',
+        examples: [
+            { equation: '2Na + Cl2 --> 2NaCl', explanation: 'Sodium and chlorine combine to form sodium chloride' },
+            { equation: '2H2 + O2 --> 2H2O', explanation: 'Hydrogen and oxygen combine to form water' },
+            { equation: 'CaO + H2O --> Ca(OH)2', explanation: 'Calcium oxide and water form calcium hydroxide' }
+        ]
+    },
+    decomposition: {
+        name: 'Decomposition',
+        pattern: 'AB --> A + B',
+        description: 'A single compound breaks down into two or more simpler substances.',
+        examples: [
+            { equation: '2H2O --> 2H2 + O2', explanation: 'Water decomposes into hydrogen and oxygen' },
+            { equation: '2KClO3 --> 2KCl + 3O2', explanation: 'Potassium chlorate decomposes' },
+            { equation: 'CaCO3 --> CaO + CO2', explanation: 'Calcium carbonate decomposes' }
+        ]
+    },
+    combustion: {
+        name: 'Combustion',
+        pattern: 'CxHy + O2 --> CO2 + H2O',
+        description: 'A hydrocarbon reacts with oxygen to produce carbon dioxide and water.',
+        examples: [
+            { equation: 'CH4 + 2O2 --> CO2 + 2H2O', explanation: 'Methane burns in oxygen' },
+            { equation: '2C2H6 + 7O2 --> 4CO2 + 6H2O', explanation: 'Ethane combustion' },
+            { equation: 'C3H8 + 5O2 --> 3CO2 + 4H2O', explanation: 'Propane combustion' }
+        ]
+    },
+    singleReplacement: {
+        name: 'Single Replacement',
+        pattern: 'A + BX --> AX + B',
+        description: 'An element replaces another in a compound. Must be MORE active (higher on activity series).',
+        examples: [
+            { equation: 'Zn + CuSO4 --> ZnSO4 + Cu', explanation: 'Zinc is more active than copper' },
+            { equation: '2Na + 2H2O --> 2NaOH + H2', explanation: 'Sodium replaces hydrogen' },
+            { equation: 'Cl2 + 2NaBr --> 2NaCl + Br2', explanation: 'Chlorine more active than bromine' }
+        ]
+    },
+    doubleReplacement: {
+        name: 'Double Replacement',
+        pattern: 'AX + BY --> AY + BX',
+        description: 'Cations and anions switch partners. Forms precipitate, gas, or water.',
+        examples: [
+            { equation: 'AgNO3 + NaCl --> AgCl(s) + NaNO3', explanation: 'AgCl precipitates (insoluble)' },
+            { equation: 'BaCl2 + Na2SO4 --> BaSO4(s) + 2NaCl', explanation: 'BaSO4 precipitates' },
+            { equation: 'HCl + NaOH --> NaCl + H2O', explanation: 'Acid-base neutralization' }
+        ]
+    }
+};
+
+const ACTIVITY_SERIES = {
+    metals: ['Li', 'K', 'Ca', 'Na', 'Mg', 'Al', 'Mn', 'Zn', 'Fe', 'Ni', 'Sn', 'Pb', 'H', 'Cu', 'Ag', 'Pt', 'Au'],
+    halogens: ['F', 'Cl', 'Br', 'I']
+};
+
+const SOLUBILITY_RULES = [
+    { rule: 'Always Soluble', ions: 'NH4+, Group IA (Li+, Na+, K+), NO3-, ClO3-, CH3COO-', exceptions: 'None' },
+    { rule: 'Halides (Cl-, Br-, I-)', ions: 'Most chlorides, bromides, iodides', exceptions: 'INSOLUBLE: Ag+, Pb2+, Hg22+' },
+    { rule: 'Sulfates (SO42-)', ions: 'Most sulfates soluble', exceptions: 'INSOLUBLE: Ba2+, Pb2+, Ca2+, Sr2+, Ag+' },
+    { rule: 'Hydroxides (OH-)', ions: 'Group IA, Ca2+, Ba2+, Sr2+', exceptions: 'Most others INSOLUBLE' },
+    { rule: 'Carbonates (CO32-)', ions: 'NH4+, Group IA only', exceptions: 'All others INSOLUBLE' },
+    { rule: 'Phosphates (PO43-)', ions: 'NH4+, Group IA only', exceptions: 'All others INSOLUBLE' },
+    { rule: 'Sulfides (S2-)', ions: 'NH4+, Group IA, Group IIA', exceptions: 'All others INSOLUBLE' },
+    { rule: 'Oxides (O2-)', ions: 'Group IA, Ca2+, Ba2+, Sr2+', exceptions: 'Most others INSOLUBLE' }
+];
+
+const QUIZ_REACTIONS = [
+    { equation: '2Mg + O2 --> 2MgO', type: 'synthesis' },
+    { equation: '2H2O2 --> 2H2O + O2', type: 'decomposition' },
+    { equation: 'C6H12O6 + 6O2 --> 6CO2 + 6H2O', type: 'combustion' },
+    { equation: 'Fe + CuSO4 --> FeSO4 + Cu', type: 'singleReplacement' },
+    { equation: 'Pb(NO3)2 + 2KI --> PbI2 + 2KNO3', type: 'doubleReplacement' },
+    { equation: '4Fe + 3O2 --> 2Fe2O3', type: 'synthesis' },
+    { equation: '2NaN3 --> 2Na + 3N2', type: 'decomposition' },
+    { equation: '2C4H10 + 13O2 --> 8CO2 + 10H2O', type: 'combustion' },
+    { equation: 'Mg + 2HCl --> MgCl2 + H2', type: 'singleReplacement' },
+    { equation: 'Na2CO3 + CaCl2 --> CaCO3 + 2NaCl', type: 'doubleReplacement' },
+    { equation: 'N2 + 3H2 --> 2NH3', type: 'synthesis' },
+    { equation: '2HgO --> 2Hg + O2', type: 'decomposition' },
+    { equation: 'Br2 + 2KI --> 2KBr + I2', type: 'singleReplacement' },
+    { equation: 'AgNO3 + NaBr --> AgBr + NaNO3', type: 'doubleReplacement' }
+];
+
+const DR_PROBLEMS = [
+    { reactant1: 'AgNO3', reactant2: 'NaCl', products: 'AgCl + NaNO3', precipitate: 'AgCl', balanced: 'AgNO3 + NaCl --> AgCl(s) + NaNO3(aq)' },
+    { reactant1: 'BaCl2', reactant2: 'Na2SO4', products: 'BaSO4 + NaCl', precipitate: 'BaSO4', balanced: 'BaCl2 + Na2SO4 --> BaSO4(s) + 2NaCl(aq)' },
+    { reactant1: 'Pb(NO3)2', reactant2: 'KI', products: 'PbI2 + KNO3', precipitate: 'PbI2', balanced: '2Pb(NO3)2 + 2KI --> PbI2(s) + 2KNO3(aq)' },
+    { reactant1: 'CaCl2', reactant2: 'Na2CO3', products: 'CaCO3 + NaCl', precipitate: 'CaCO3', balanced: 'CaCl2 + Na2CO3 --> CaCO3(s) + 2NaCl(aq)' },
+    { reactant1: 'FeCl3', reactant2: 'NaOH', products: 'Fe(OH)3 + NaCl', precipitate: 'Fe(OH)3', balanced: 'FeCl3 + 3NaOH --> Fe(OH)3(s) + 3NaCl(aq)' },
+    { reactant1: 'CuSO4', reactant2: 'Na2S', products: 'CuS + Na2SO4', precipitate: 'CuS', balanced: 'CuSO4 + Na2S --> CuS(s) + Na2SO4(aq)' }
+];
+
+// STYLES
+const styles = {
+    container: { display: 'flex', minHeight: '100vh' },
+    sidebar: { width: '320px', background: 'rgba(15, 15, 30, 0.95)', borderRight: '1px solid #2a2a4a', padding: '20px', overflowY: 'auto', position: 'fixed', height: '100vh' },
+    main: { marginLeft: '320px', flex: 1, padding: '30px', minHeight: '100vh' },
+    title: { fontSize: '24px', fontWeight: 'bold', color: '#8b5cf6', marginBottom: '20px', textAlign: 'center' },
+    sectionTitle: { fontSize: '14px', fontWeight: 'bold', color: '#a78bfa', marginBottom: '10px', marginTop: '20px', borderBottom: '1px solid #3a3a5a', paddingBottom: '5px' },
+    metalItem: { display: 'inline-block', padding: '4px 8px', margin: '2px', background: '#1e1e3a', borderRadius: '4px', fontSize: '12px' },
+    ruleBox: { background: '#1a1a2e', padding: '10px', borderRadius: '6px', marginBottom: '8px', fontSize: '11px' },
+    tabs: { display: 'flex', gap: '10px', marginBottom: '30px', flexWrap: 'wrap' },
+    tab: { padding: '12px 24px', background: '#1a1a2e', border: 'none', borderRadius: '8px', color: '#a0a0a0', cursor: 'pointer', fontSize: '14px', transition: 'all 0.2s' },
+    tabActive: { padding: '12px 24px', background: 'linear-gradient(135deg, #8b5cf6, #6d28d9)', border: 'none', borderRadius: '8px', color: 'white', cursor: 'pointer', fontSize: '14px', fontWeight: 'bold' },
+    card: { background: 'rgba(26, 26, 46, 0.8)', borderRadius: '12px', padding: '24px', marginBottom: '20px', border: '1px solid #2a2a4a' },
+    button: { padding: '12px 24px', background: 'linear-gradient(135deg, #8b5cf6, #6d28d9)', border: 'none', borderRadius: '8px', color: 'white', cursor: 'pointer', fontSize: '14px', fontWeight: 'bold', transition: 'transform 0.2s' },
+    buttonSecondary: { padding: '10px 20px', background: '#2a2a4a', border: '1px solid #4a4a6a', borderRadius: '8px', color: '#e0e0e0', cursor: 'pointer', fontSize: '14px' },
+    input: { padding: '12px', background: '#0d0d1a', border: '1px solid #3a3a5a', borderRadius: '8px', color: '#e0e0e0', fontSize: '14px', width: '100%' },
+    correct: { background: 'rgba(34, 197, 94, 0.2)', border: '1px solid #22c55e', padding: '15px', borderRadius: '8px', marginTop: '15px' },
+    incorrect: { background: 'rgba(239, 68, 68, 0.2)', border: '1px solid #ef4444', padding: '15px', borderRadius: '8px', marginTop: '15px' },
+    equation: { fontFamily: 'monospace', fontSize: '18px', background: '#0d0d1a', padding: '15px', borderRadius: '8px', marginBottom: '15px' },
+    statsBox: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '15px', marginBottom: '20px' },
+    statCard: { background: '#1e1e3a', padding: '15px', borderRadius: '8px', textAlign: 'center' }
+};
+
+// COMPONENTS
+function Sidebar() {
+    return (
+        <div style={styles.sidebar}>
+            <h2 style={styles.title}>Reference Tables</h2>
+            
+            <div style={styles.sectionTitle}>ACTIVITY SERIES - Metals</div>
+            <div style={{fontSize: '10px', color: '#888', marginBottom: '8px'}}>Most Active (top) to Least Active (bottom)</div>
+            <div>
+                {ACTIVITY_SERIES.metals.map((m, i) => (
+                    <span key={m} style={{...styles.metalItem, background: m === 'H' ? '#4a3a2a' : '#1e1e3a', color: m === 'H' ? '#fbbf24' : '#e0e0e0'}}>
+                        {i+1}. {m}
+                    </span>
+                ))}
+            </div>
+            
+            <div style={styles.sectionTitle}>ACTIVITY SERIES - Halogens</div>
+            <div>
+                {ACTIVITY_SERIES.halogens.map((h, i) => (
+                    <span key={h} style={{...styles.metalItem, background: '#1e2a3a'}}>
+                        {i+1}. {h}
+                    </span>
+                ))}
+            </div>
+            <div style={{fontSize: '10px', color: '#888', marginTop: '8px'}}>Rule: Element can only replace elements BELOW it</div>
+            
+            <div style={styles.sectionTitle}>SOLUBILITY RULES</div>
+            {SOLUBILITY_RULES.map((r, i) => (
+                <div key={i} style={styles.ruleBox}>
+                    <div style={{color: '#a78bfa', fontWeight: 'bold'}}>{r.rule}</div>
+                    <div style={{color: '#8b8b8b', marginTop: '3px'}}>{r.ions}</div>
+                    <div style={{color: r.exceptions === 'None' ? '#22c55e' : '#ef4444', marginTop: '3px', fontSize: '10px'}}>{r.exceptions}</div>
+                </div>
+            ))}
+        </div>
+    );
+}
+
+function LearnTab() {
+    const [selected, setSelected] = useState('synthesis');
+    const type = REACTION_TYPES[selected];
+    
+    return (
+        <div>
+            <h2 style={{fontSize: '28px', marginBottom: '20px', color: '#fff'}}>Learn Reaction Types</h2>
+            
+            <div style={{display: 'flex', gap: '10px', marginBottom: '25px', flexWrap: 'wrap'}}>
+                {Object.keys(REACTION_TYPES).map(key => (
+                    <button key={key} onClick={() => setSelected(key)} 
+                        style={selected === key ? styles.tabActive : styles.tab}>
+                        {REACTION_TYPES[key].name}
+                    </button>
+                ))}
+            </div>
+            
+            <div style={styles.card}>
+                <h3 style={{fontSize: '24px', color: '#8b5cf6', marginBottom: '15px'}}>{type.name}</h3>
+                <div style={styles.equation}>{type.pattern}</div>
+                <p style={{color: '#a0a0a0', marginBottom: '20px', lineHeight: '1.6'}}>{type.description}</p>
+                
+                <h4 style={{color: '#a78bfa', marginBottom: '15px'}}>Examples:</h4>
+                {type.examples.map((ex, i) => (
+                    <div key={i} style={{background: '#0d0d1a', padding: '15px', borderRadius: '8px', marginBottom: '10px'}}>
+                        <div style={{fontFamily: 'monospace', fontSize: '16px', color: '#22c55e'}}>{ex.equation}</div>
+                        <div style={{color: '#888', marginTop: '8px', fontSize: '13px'}}>{ex.explanation}</div>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+}
+
+function FlashcardsTab() {
+    const [index, setIndex] = useState(0);
+    const [flipped, setFlipped] = useState(false);
+    const keys = Object.keys(REACTION_TYPES);
+    const type = REACTION_TYPES[keys[index]];
+    
+    return (
+        <div>
+            <h2 style={{fontSize: '28px', marginBottom: '20px', color: '#fff'}}>Flashcards</h2>
+            
+            <div onClick={() => setFlipped(!flipped)} style={{...styles.card, cursor: 'pointer', minHeight: '300px', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', transition: 'transform 0.3s'}}>
+                {!flipped ? (
+                    <>
+                        <div style={{fontSize: '32px', color: '#8b5cf6', marginBottom: '20px'}}>{type.name}</div>
+                        <div style={{color: '#666'}}>Click to reveal pattern</div>
+                    </>
+                ) : (
+                    <>
+                        <div style={{...styles.equation, fontSize: '28px', marginBottom: '20px'}}>{type.pattern}</div>
+                        <p style={{color: '#a0a0a0', textAlign: 'center', maxWidth: '500px'}}>{type.description}</p>
+                    </>
+                )}
+            </div>
+            
+            <div style={{display: 'flex', justifyContent: 'center', gap: '20px', marginTop: '20px'}}>
+                <button style={styles.buttonSecondary} onClick={() => { setIndex((index - 1 + keys.length) % keys.length); setFlipped(false); }}>Previous</button>
+                <span style={{padding: '10px', color: '#888'}}>{index + 1} / {keys.length}</span>
+                <button style={styles.button} onClick={() => { setIndex((index + 1) % keys.length); setFlipped(false); }}>Next</button>
+            </div>
+        </div>
+    );
+}
+
+function QuizTab({ onScore }) {
+    const [questions, setQuestions] = useState([]);
+    const [current, setCurrent] = useState(0);
+    const [selected, setSelected] = useState(null);
+    const [showResult, setShowResult] = useState(false);
+    const [score, setScore] = useState(0);
+    const [done, setDone] = useState(false);
+    
+    useEffect(() => {
+        const shuffled = [...QUIZ_REACTIONS].sort(() => Math.random() - 0.5).slice(0, 10);
+        setQuestions(shuffled);
+    }, []);
+    
+    const options = ['synthesis', 'decomposition', 'combustion', 'singleReplacement', 'doubleReplacement'];
+    
+    const handleAnswer = (answer) => {
+        setSelected(answer);
+        setShowResult(true);
+        const correct = questions[current]?.type === answer;
+        if (correct) {
+            setScore(s => s + 1);
+        }
+        onScore(questions[current]?.type, correct);
+    };
+    
+    const nextQuestion = () => {
+        if (current + 1 >= questions.length) {
+            setDone(true);
+        } else {
+            setCurrent(c => c + 1);
+            setSelected(null);
+            setShowResult(false);
+        }
+    };
+    
+    if (questions.length === 0) return <div>Loading...</div>;
+    
+    if (done) {
+        return (
+            <div style={styles.card}>
+                <h2 style={{fontSize: '32px', color: '#8b5cf6', marginBottom: '20px'}}>Quiz Complete!</h2>
+                <div style={{fontSize: '48px', color: score >= 7 ? '#22c55e' : score >= 5 ? '#fbbf24' : '#ef4444'}}>{score}/10</div>
+                <p style={{color: '#888', marginTop: '15px'}}>{score >= 8 ? 'Excellent work!' : score >= 6 ? 'Good job, keep practicing!' : 'Review the material and try again.'}</p>
+                <button style={{...styles.button, marginTop: '20px'}} onClick={() => { setDone(false); setCurrent(0); setScore(0); setSelected(null); setShowResult(false); setQuestions([...QUIZ_REACTIONS].sort(() => Math.random() - 0.5).slice(0, 10)); }}>Try Again</button>
+            </div>
+        );
+    }
+    
+    const q = questions[current];
+    
+    return (
+        <div>
+            <h2 style={{fontSize: '28px', marginBottom: '20px', color: '#fff'}}>Identify the Reaction Type</h2>
+            <div style={{color: '#888', marginBottom: '15px'}}>Question {current + 1} of {questions.length} | Score: {score}</div>
+            
+            <div style={styles.card}>
+                <div style={styles.equation}>{q.equation}</div>
+                
+                <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px'}}>
+                    {options.map(opt => (
+                        <button key={opt} onClick={() => !showResult && handleAnswer(opt)}
+                            style={{...styles.buttonSecondary, 
+                                background: showResult ? (opt === q.type ? '#22c55e33' : opt === selected ? '#ef444433' : '#2a2a4a') : '#2a2a4a',
+                                border: showResult && opt === q.type ? '2px solid #22c55e' : '1px solid #4a4a6a',
+                                cursor: showResult ? 'default' : 'pointer'
+                            }}>
+                            {REACTION_TYPES[opt].name}
+                        </button>
+                    ))}
+                </div>
+                
+                {showResult && (
+                    <div style={selected === q.type ? styles.correct : styles.incorrect}>
+                        <strong>{selected === q.type ? 'Correct!' : 'Incorrect!'}</strong>
+                        <p style={{marginTop: '8px'}}>This is a <strong>{REACTION_TYPES[q.type].name}</strong> reaction.</p>
+                        <p style={{color: '#888', marginTop: '5px'}}>Pattern: {REACTION_TYPES[q.type].pattern}</p>
+                        <button style={{...styles.button, marginTop: '15px'}} onClick={nextQuestion}>
+                            {current + 1 >= questions.length ? 'See Results' : 'Next Question'}
+                        </button>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+}
+
+function DoubleReplacementTab({ onScore }) {
+    const [problem, setProblem] = useState(null);
+    const [userAnswer, setUserAnswer] = useState('');
+    const [userPpt, setUserPpt] = useState('');
+    const [showResult, setShowResult] = useState(false);
+    const [isCorrect, setIsCorrect] = useState(false);
+    
+    useEffect(() => { newProblem(); }, []);
+    
+    const newProblem = () => {
+        const p = DR_PROBLEMS[Math.floor(Math.random() * DR_PROBLEMS.length)];
+        setProblem(p);
+        setUserAnswer('');
+        setUserPpt('');
+        setShowResult(false);
+    };
+    
+    const checkAnswer = () => {
+        const answerCorrect = userAnswer.toLowerCase().replace(/\s/g, '').includes(problem.products.toLowerCase().replace(/\s/g, '').split('+')[0]) ||
+                             userAnswer.toLowerCase().includes(problem.precipitate.toLowerCase());
+        const pptCorrect = userPpt.toLowerCase().replace(/\s/g, '') === problem.precipitate.toLowerCase().replace(/\s/g, '');
+        setIsCorrect(pptCorrect);
+        setShowResult(true);
+        onScore('doubleReplacement', pptCorrect);
+    };
+    
+    if (!problem) return null;
+    
+    return (
+        <div>
+            <h2 style={{fontSize: '28px', marginBottom: '10px', color: '#fff'}}>Double Replacement Practice</h2>
+            <p style={{color: '#888', marginBottom: '20px'}}>Write the products and identify the precipitate using solubility rules.</p>
+            
+            <div style={styles.card}>
+                <div style={{fontSize: '14px', color: '#a78bfa', marginBottom: '10px'}}>Reactants:</div>
+                <div style={styles.equation}>{problem.reactant1} + {problem.reactant2} --{'>'} ?</div>
+                
+                <div style={{marginBottom: '15px'}}>
+                    <label style={{color: '#888', display: 'block', marginBottom: '8px'}}>Write the products (e.g., AgCl + NaNO3):</label>
+                    <input style={styles.input} value={userAnswer} onChange={e => setUserAnswer(e.target.value)} placeholder="Products..." disabled={showResult} />
+                </div>
+                
+                <div style={{marginBottom: '15px'}}>
+                    <label style={{color: '#888', display: 'block', marginBottom: '8px'}}>Which product is the precipitate (s)?</label>
+                    <input style={styles.input} value={userPpt} onChange={e => setUserPpt(e.target.value)} placeholder="Precipitate formula..." disabled={showResult} />
+                </div>
+                
+                {!showResult && <button style={styles.button} onClick={checkAnswer}>Check Answer</button>}
+                
+                {showResult && (
+                    <div style={isCorrect ? styles.correct : styles.incorrect}>
+                        <strong>{isCorrect ? 'Correct!' : 'Not quite!'}</strong>
+                        <div style={{marginTop: '10px'}}>
+                            <div><strong>Balanced equation:</strong></div>
+                            <div style={{fontFamily: 'monospace', marginTop: '5px'}}>{problem.balanced}</div>
+                        </div>
+                        <div style={{marginTop: '10px'}}>
+                            <strong>Precipitate:</strong> {problem.precipitate} (s) - this is insoluble based on solubility rules.
+                        </div>
+                        <button style={{...styles.button, marginTop: '15px'}} onClick={newProblem}>Next Problem</button>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+}
+
+function TimedQuizTab({ onScore }) {
+    const [active, setActive] = useState(false);
+    const [timeLeft, setTimeLeft] = useState(120);
+    const [questions, setQuestions] = useState([]);
+    const [current, setCurrent] = useState(0);
+    const [score, setScore] = useState(0);
+    const [done, setDone] = useState(false);
+    
+    useEffect(() => {
+        let timer;
+        if (active && timeLeft > 0) {
+            timer = setInterval(() => setTimeLeft(t => t - 1), 1000);
+        } else if (timeLeft === 0 && active) {
+            setDone(true);
+            setActive(false);
+        }
+        return () => clearInterval(timer);
+    }, [active, timeLeft]);
+    
+    const startQuiz = () => {
+        setQuestions([...QUIZ_REACTIONS].sort(() => Math.random() - 0.5));
+        setCurrent(0);
+        setScore(0);
+        setTimeLeft(120);
+        setDone(false);
+        setActive(true);
+    };
+    
+    const answer = (type) => {
+        const correct = questions[current].type === type;
+        if (correct) setScore(s => s + 1);
+        onScore(questions[current].type, correct);
+        if (current + 1 >= questions.length) {
+            setDone(true);
+            setActive(false);
+        } else {
+            setCurrent(c => c + 1);
+        }
+    };
+    
+    const options = ['synthesis', 'decomposition', 'combustion', 'singleReplacement', 'doubleReplacement'];
+    
+    if (!active && !done) {
+        return (
+            <div style={styles.card}>
+                <h2 style={{fontSize: '28px', color: '#8b5cf6', marginBottom: '20px'}}>Timed Challenge</h2>
+                <p style={{color: '#888', marginBottom: '20px'}}>Answer as many reaction type questions as you can in 2 minutes!</p>
+                <button style={styles.button} onClick={startQuiz}>Start Challenge</button>
+            </div>
+        );
+    }
+    
+    if (done) {
+        return (
+            <div style={styles.card}>
+                <h2 style={{fontSize: '28px', color: '#8b5cf6', marginBottom: '20px'}}>Time's Up!</h2>
+                <div style={{fontSize: '48px', color: '#22c55e'}}>{score}/{questions.length}</div>
+                <p style={{color: '#888', marginTop: '10px'}}>Questions answered correctly</p>
+                <button style={{...styles.button, marginTop: '20px'}} onClick={startQuiz}>Try Again</button>
+            </div>
+        );
+    }
+    
+    return (
+        <div>
+            <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '20px'}}>
+                <span style={{fontSize: '24px', color: timeLeft <= 30 ? '#ef4444' : '#22c55e'}}>{Math.floor(timeLeft/60)}:{(timeLeft%60).toString().padStart(2,'0')}</span>
+                <span style={{color: '#888'}}>Score: {score} | Q{current + 1}/{questions.length}</span>
+            </div>
+            
+            <div style={styles.card}>
+                <div style={styles.equation}>{questions[current]?.equation}</div>
+                <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px'}}>
+                    {options.map(opt => (
+                        <button key={opt} style={styles.buttonSecondary} onClick={() => answer(opt)}>
+                            {REACTION_TYPES[opt].name}
+                        </button>
+                    ))}
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function StatsTab({ stats }) {
+    const types = ['synthesis', 'decomposition', 'combustion', 'singleReplacement', 'doubleReplacement'];
+    
+    return (
+        <div>
+            <h2 style={{fontSize: '28px', marginBottom: '20px', color: '#fff'}}>Your Progress</h2>
+            
+            <div style={styles.statsBox}>
+                <div style={styles.statCard}>
+                    <div style={{fontSize: '36px', color: '#8b5cf6'}}>{stats.total}</div>
+                    <div style={{color: '#888'}}>Total Attempts</div>
+                </div>
+                <div style={styles.statCard}>
+                    <div style={{fontSize: '36px', color: '#22c55e'}}>{stats.total > 0 ? Math.round((stats.correct/stats.total)*100) : 0}%</div>
+                    <div style={{color: '#888'}}>Accuracy</div>
+                </div>
+            </div>
+            
+            <div style={styles.card}>
+                <h3 style={{color: '#a78bfa', marginBottom: '15px'}}>Performance by Topic</h3>
+                {types.map(type => {
+                    const data = stats.byType[type] || { correct: 0, total: 0 };
+                    const pct = data.total > 0 ? Math.round((data.correct/data.total)*100) : 0;
+                    return (
+                        <div key={type} style={{marginBottom: '15px'}}>
+                            <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '5px'}}>
+                                <span>{REACTION_TYPES[type].name}</span>
+                                <span style={{color: pct >= 70 ? '#22c55e' : pct >= 50 ? '#fbbf24' : '#ef4444'}}>{data.correct}/{data.total} ({pct}%)</span>
+                            </div>
+                            <div style={{background: '#0d0d1a', borderRadius: '4px', height: '8px'}}>
+                                <div style={{background: pct >= 70 ? '#22c55e' : pct >= 50 ? '#fbbf24' : '#ef4444', height: '100%', width: pct+'%', borderRadius: '4px', transition: 'width 0.3s'}}></div>
+                            </div>
+                        </div>
+                    );
+                })}
+            </div>
+            
+            {stats.total > 0 && (
+                <div style={styles.card}>
+                    <h3 style={{color: '#ef4444', marginBottom: '10px'}}>Focus Areas</h3>
+                    <p style={{color: '#888'}}>
+                        {types.filter(t => {
+                            const d = stats.byType[t] || { correct: 0, total: 0 };
+                            return d.total > 0 && (d.correct/d.total) < 0.7;
+                        }).map(t => REACTION_TYPES[t].name).join(', ') || 'Great job! All topics above 70%!'}
+                    </p>
+                </div>
+            )}
+        </div>
+    );
+}
+
+function App() {
+    const [tab, setTab] = useState('learn');
+    const [stats, setStats] = useState({ total: 0, correct: 0, byType: {} });
+    
+    const handleScore = (type, correct) => {
+        setStats(s => ({
+            total: s.total + 1,
+            correct: s.correct + (correct ? 1 : 0),
+            byType: {
+                ...s.byType,
+                [type]: {
+                    total: (s.byType[type]?.total || 0) + 1,
+                    correct: (s.byType[type]?.correct || 0) + (correct ? 1 : 0)
+                }
+            }
+        }));
+    };
+    
+    const tabs = [
+        { id: 'learn', label: 'Learn' },
+        { id: 'flashcards', label: 'Flashcards' },
+        { id: 'quiz', label: 'Quiz' },
+        { id: 'doubleRep', label: 'Double Replacement' },
+        { id: 'timed', label: 'Timed Challenge' },
+        { id: 'stats', label: 'Progress' }
+    ];
+    
+    return (
+        <div style={styles.container}>
+            <Sidebar />
+            <div style={styles.main}>
+                <h1 style={{fontSize: '32px', fontWeight: 'bold', marginBottom: '10px', background: 'linear-gradient(90deg, #8b5cf6, #a78bfa)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}}>Chemistry Honors Study App</h1>
+                <p style={{color: '#666', marginBottom: '30px'}}>10th Grade Chemical Reactions</p>
+                
+                <div style={styles.tabs}>
+                    {tabs.map(t => (
+                        <button key={t.id} onClick={() => setTab(t.id)} style={tab === t.id ? styles.tabActive : styles.tab}>
+                            {t.label}
+                        </button>
+                    ))}
+                </div>
+                
+                {tab === 'learn' && <LearnTab />}
+                {tab === 'flashcards' && <FlashcardsTab />}
+                {tab === 'quiz' && <QuizTab onScore={handleScore} />}
+                {tab === 'doubleRep' && <DoubleReplacementTab onScore={handleScore} />}
+                {tab === 'timed' && <TimedQuizTab onScore={handleScore} />}
+                {tab === 'stats' && <StatsTab stats={stats} />}
+            </div>
+        </div>
+    );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+    </script>
+</body>
+</html>

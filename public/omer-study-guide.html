@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jewish Law Class - Omer Study Guide & Quiz</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #eee;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            color: #ffd700;
+            margin-bottom: 10px;
+            font-size: 2.2em;
+        }
+        h2 {
+            color: #4fc3f7;
+            margin: 25px 0 15px 0;
+            border-bottom: 2px solid #4fc3f7;
+            padding-bottom: 8px;
+        }
+        h3 {
+            color: #81c784;
+            margin: 20px 0 10px 0;
+        }
+        .subtitle {
+            text-align: center;
+            color: #aaa;
+            margin-bottom: 30px;
+        }
+        .section {
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #ffd700;
+        }
+        .key-point {
+            background: rgba(79, 195, 247, 0.1);
+            border-radius: 8px;
+            padding: 12px 15px;
+            margin: 10px 0;
+            border-left: 3px solid #4fc3f7;
+        }
+        .test-likely {
+            background: rgba(255, 215, 0, 0.15);
+            border-left: 4px solid #ffd700;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+        }
+        .test-likely::before {
+            content: "LIKELY ON TEST";
+            display: block;
+            color: #ffd700;
+            font-weight: bold;
+            font-size: 0.8em;
+            margin-bottom: 8px;
+        }
+        ul {
+            margin-left: 20px;
+            line-height: 1.8;
+        }
+        li {
+            margin: 8px 0;
+        }
+        .quiz-section {
+            margin-top: 40px;
+        }
+        .question {
+            background: rgba(255,255,255,0.08);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .question-text {
+            font-weight: bold;
+            color: #fff;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .option {
+            background: rgba(255,255,255,0.05);
+            padding: 12px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        .option:hover {
+            background: rgba(79, 195, 247, 0.2);
+            border-color: #4fc3f7;
+        }
+        .option.selected {
+            border-color: #4fc3f7;
+            background: rgba(79, 195, 247, 0.2);
+        }
+        .option.correct {
+            background: rgba(76, 175, 80, 0.4) !important;
+            border-color: #4caf50 !important;
+        }
+        .option.incorrect {
+            background: rgba(244, 67, 54, 0.4) !important;
+            border-color: #f44336 !important;
+        }
+        .feedback {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 6px;
+            display: none;
+        }
+        .feedback.show {
+            display: block;
+        }
+        .feedback.correct {
+            background: rgba(76, 175, 80, 0.2);
+            color: #81c784;
+        }
+        .feedback.incorrect {
+            background: rgba(244, 67, 54, 0.2);
+            color: #ef9a9a;
+        }
+        .check-btn {
+            background: linear-gradient(135deg, #4fc3f7, #29b6f6);
+            color: #000;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 15px;
+            transition: transform 0.2s;
+        }
+        .check-btn:hover {
+            transform: scale(1.05);
+        }
+        .score-section {
+            text-align: center;
+            padding: 30px;
+            background: linear-gradient(135deg, rgba(255,215,0,0.2), rgba(79,195,247,0.2));
+            border-radius: 15px;
+            margin-top: 30px;
+            display: none;
+        }
+        .score-section.show {
+            display: block;
+        }
+        .score-number {
+            font-size: 3em;
+            color: #ffd700;
+            font-weight: bold;
+        }
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .tab {
+            padding: 12px 25px;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            border-radius: 25px;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .tab.active {
+            background: linear-gradient(135deg, #ffd700, #ffb300);
+            color: #000;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .highlight {
+            color: #ffd700;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Jewish Law Class - The Omer</h1>
+        <p class="subtitle">Study Guide & Practice Quiz | Based on Class Lectures</p>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('summary')">Summary & Key Points</button>
+            <button class="tab" onclick="showTab('quiz')">Practice Quiz (20 Questions)</button>
+        </div>
+
+        <div id="summary" class="tab-content active">
+            <div class="section">
+                <h2>Part 1: The Crusades & Medieval Jewish History</h2>
+                
+                <div class="test-likely">
+                    <strong>The Crusades (1096-1350s CE)</strong>
+                    <ul>
+                        <li>There were <span class="highlight">four major Crusades</span></li>
+                        <li>Objective: Reclaim <span class="highlight">Jerusalem</span> from Muslim control for Christianity</li>
+                        <li>Recruited mainly <span class="highlight">German peasants</span> with money and religious zeal</li>
+                    </ul>
+                </div>
+
+                <div class="key-point">
+                    <h3>Impact on Jewish Communities</h3>
+                    <ul>
+                        <li>Jews were killed, tortured, and forced to convert</li>
+                        <li>Homes and synagogues were destroyed</li>
+                        <li>Communities were looted and dispossessed</li>
+                        <li>Jews were blamed for Jesus's death (though the Gospel says Romans crucified him)</li>
+                    </ul>
+                </div>
+
+                <div class="test-likely">
+                    <strong>The Dark Ages & Church Control</strong>
+                    <ul>
+                        <li>Lasted approximately <span class="highlight">1,000 years</span></li>
+                        <li>Common people were kept <span class="highlight">illiterate</span> by the Church</li>
+                        <li>Could not read the Gospel to verify Church teachings</li>
+                        <li>This enabled mass manipulation and control</li>
+                    </ul>
+                </div>
+
+                <div class="key-point">
+                    <h3>Easter & Anti-Jewish Violence</h3>
+                    <ul>
+                        <li>Easter falls around the same time as <span class="highlight">Passover</span></li>
+                        <li>Churches preached that Jews killed Jesus</li>
+                        <li>Mobs would attack Jewish communities after Easter services</li>
+                        <li>This connection explains some Omer mourning customs</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Part 2: Rabbi Akiva & The Bar Kokhba Revolt</h2>
+                
+                <div class="test-likely">
+                    <strong>Historical Context (132-135 CE)</strong>
+                    <ul>
+                        <li>Jews lived under Roman rule from early 1st century BCE to ~500 CE</li>
+                        <li>Temple destroyed in <span class="highlight">70 CE</span> by Romans</li>
+                        <li>Two Jewish factions existed:
+                            <ul>
+                                <li><strong>Group 1 (Judeans):</strong> Military opposition - fight Rome</li>
+                                <li><strong>Group 2 (Northern Jews):</strong> Diplomatic approach - don't provoke Rome</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="test-likely">
+                    <strong>Key Figures</strong>
+                    <ul>
+                        <li><span class="highlight">Rabbi Akiva</span> - Head of the ideological movement supporting revolt</li>
+                        <li><span class="highlight">Bar Kokhba</span> - Military leader of the revolt</li>
+                        <li>Rabbi Akiva believed Bar Kokhba would be the redeemer</li>
+                    </ul>
+                </div>
+
+                <div class="key-point">
+                    <h3>The Revolt's Outcome</h3>
+                    <ul>
+                        <li>Initially successful - briefly took Jerusalem</li>
+                        <li>Emperor sent <span class="highlight">40,000 troops</span> to exterminate Judeans</li>
+                        <li><span class="highlight">90% of the population</span> was exterminated</li>
+                        <li>First genocide in Jewish history</li>
+                        <li>Rabbi Akiva was <span class="highlight">skinned alive</span> (tortured to death)</li>
+                    </ul>
+                </div>
+
+                <div class="test-likely">
+                    <strong>Roman Restrictions on Jews</strong>
+                    <ul>
+                        <li>Jews banned from Jerusalem</li>
+                        <li>No circumcision allowed</li>
+                        <li>No Shabbat or holidays</li>
+                        <li>Could not sanctify the month/calendar</li>
+                        <li>Men could not wear tefillin publicly</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Part 3: The "Students" of Rabbi Akiva - Reinterpreted</h2>
+
+                <div class="test-likely">
+                    <strong>The Talmudic Account</strong>
+                    <ul>
+                        <li>Sources vary: <span class="highlight">24,000 pairs</span> (12,000 pairs) or <span class="highlight">12,000</span> or even <span class="highlight">300</span> students</li>
+                        <li>Location: From <span class="highlight">Givat (near Haifa)</span> to <span class="highlight">Antipatris (near Jerusalem)</span></li>
+                        <li>Both locations were Roman military/port cities</li>
+                        <li>Died between <span class="highlight">Passover and Shavuot</span></li>
+                    </ul>
+                </div>
+
+                <div class="key-point">
+                    <h3>Stated Reason for Death</h3>
+                    <ul>
+                        <li>Talmud says: "They did not treat each other with respect"</li>
+                        <li>Also: "They were stingy with Torah knowledge"</li>
+                        <li>Died of "Askara" - traditionally translated as diphtheria</li>
+                    </ul>
+                </div>
+
+                <div class="test-likely">
+                    <strong>The Real Meaning - Historical Analysis</strong>
+                    <ul>
+                        <li><span class="highlight">"Askara"</span> comes from Latin word <span class="highlight">"sicae"</span> = dagger/sword</li>
+                        <li><span class="highlight">"Sicarii"</span> = Jewish assassins who used hidden daggers against Romans</li>
+                        <li>"Students" = <span class="highlight">followers/soldiers</span> in the revolt, not Torah students</li>
+                        <li>They died <span class="highlight">by the sword</span> (killed by Romans), not from disease</li>
+                        <li>The Talmud disguised the true cause to protect Rabbi Akiva's image</li>
+                    </ul>
+                </div>
+
+                <div class="key-point">
+                    <h3>The Deeper Message</h3>
+                    <ul>
+                        <li>When Jews don't get along and disrespect each other = <span class="highlight">weakness</span></li>
+                        <li>Enemies take advantage of Jewish disunity</li>
+                        <li>Example: Israel's internal conflict before October 7th</li>
+                        <li>The Talmud's message: Unity is essential for survival</li>
+                    </ul>
+                </div>
+
+                <div class="test-likely">
+                    <strong>Important Note</strong>
+                    <p><span class="highlight">NOWHERE in the entire Talmud</span> does it say Jews commemorated their death with mourning customs during the Omer!</p>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Part 4: The Omer from the Bible</h2>
+
+                <div class="test-likely">
+                    <strong>Biblical Source</strong>
+                    <ul>
+                        <li>Found in <span class="highlight">Vayikra (Leviticus) Chapter 23</span></li>
+                        <li>Contains all Biblical holidays: Shabbat, Pesach, Omer, Shavuot, Sukkot, Yom Kippur</li>
+                        <li>Hanukkah and Purim are NOT in Torah (rabbinic/post-Biblical)</li>
+                    </ul>
+                </div>
+
+                <div class="key-point">
+                    <h3>What is the Omer?</h3>
+                    <ul>
+                        <li>A <span class="highlight">measurement</span>: ~2 quarts / 2/3 gallon / 2 liters</li>
+                        <li>A <span class="highlight">sheaf</span> of the first grain harvest (barley/wheat)</li>
+                        <li>Counting period: <span class="highlight">49 days</span> (7 weeks x 7 days)</li>
+                        <li>50th day = <span class="highlight">Shavuot</span> (means "weeks")</li>
+                    </ul>
+                </div>
+
+                <div class="test-likely">
+                    <strong>Purpose of the Omer</strong>
+                    <ul>
+                        <li><strong>Practical:</strong> Support the <span class="highlight">Kohanim and Levites</span> (they had no land)</li>
+                        <li><strong>Spiritual:</strong> Show <span class="highlight">gratitude to God</span> for providing</li>
+                        <li>Food was also a <span class="highlight">commodity for trade</span></li>
+                    </ul>
+                </div>
+
+                <div class="key-point">
+                    <h3>The Agricultural Cycle</h3>
+                    <ul>
+                        <li><strong>Pesach</strong> = Spring (abundance, harvest begins)</li>
+                        <li><strong>Shavuot</strong> = Early Summer (dry season begins)</li>
+                        <li><strong>Sukkot</strong> = Before Winter (rainy season)</li>
+                    </ul>
+                </div>
+
+                <div class="test-likely">
+                    <strong>Key Rules</strong>
+                    <ul>
+                        <li>"Shabbat after Pesach" = Second day of Pesach (holidays = "Shabbatot")</li>
+                        <li>Cannot eat <span class="highlight">new grain (chadash)</span> until offering is brought</li>
+                        <li>The Omer was <span class="highlight">elevated</span> symbolically to God</li>
+                        <li>Counting the Omer is a <span class="highlight">mitzvah from Torah</span> (still done today)</li>
+                    </ul>
+                </div>
+
+                <div class="test-likely">
+                    <strong>Israel as God's Gift</strong>
+                    <ul>
+                        <li>God gave the Land of Israel to Jews <span class="highlight">conditionally</span></li>
+                        <li>Condition: Follow the law/covenant</li>
+                        <li>Jewish claim to Israel = Divine gift, NOT just conquest</li>
+                        <li>Quran mentions Allah gave land to Jews <span class="highlight">3 times</span></li>
+                    </ul>
+                </div>
+
+                <div class="key-point">
+                    <h3>Was Omer Originally Sad or Happy?</h3>
+                    <p style="font-size: 1.2em; color: #ffd700;"><strong>HAPPY/FESTIVE!</strong></p>
+                    <p>It was a celebration of abundance and gratitude. The "sad" customs developed later in medieval Europe.</p>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Summary: Most Likely Test Topics</h2>
+                <ol style="line-height: 2;">
+                    <li>Number and purpose of the Crusades (4, reclaim Jerusalem)</li>
+                    <li>How the Church controlled people (kept them illiterate)</li>
+                    <li>Bar Kokhba Revolt dates (132-135 CE) and outcome (90% killed)</li>
+                    <li>Rabbi Akiva's role (ideological leader) and death (skinned alive)</li>
+                    <li>The two Jewish groups (military vs. diplomatic)</li>
+                    <li>Real meaning of "Askara" (sword, from Latin sicae, NOT diphtheria)</li>
+                    <li>"Students" = revolt followers, not Torah students</li>
+                    <li>Why Talmud disguised the truth (protect Rabbi Akiva's image)</li>
+                    <li>The message: Jewish disunity = weakness = enemies attack</li>
+                    <li>Omer measurement and counting (49 days, 50th = Shavuot)</li>
+                    <li>Purpose of Omer offering (support Kohanim, gratitude)</li>
+                    <li>Biblical holidays vs. Rabbinic (Hanukkah/Purim = rabbinic)</li>
+                    <li>Land of Israel = God's conditional gift</li>
+                    <li>Original Omer period was FESTIVE, not sad</li>
+                </ol>
+            </div>
+        </div>
+
+        <div id="quiz" class="tab-content">
+            <h2>Practice Quiz - 20 Questions</h2>
+            <p style="margin-bottom: 20px; color: #aaa;">Select your answer and click "Check Answer" for each question.</p>
+
+            <div class="question" data-correct="1">
+                <div class="question-text">1. How many major Crusades were there according to the lecture?</div>
+                <div class="options">
+                    <div class="option" data-value="0">A) Two</div>
+                    <div class="option" data-value="1">B) Four</div>
+                    <div class="option" data-value="2">C) Seven</div>
+                    <div class="option" data-value="3">D) Ten</div>
+                </div>
+                <button class="check-btn" onclick="checkAnswer(this)">Check Answer</button>
+                <div class="feedback"></div>
+            </div>
+
+            <div class="question" data-correct="2">
+                <div class="question-text">2. What was the primary objective of the Crusades?</div>
+                <div class="options">
+                    <div class="option" data-value="0">A) To convert Muslims to Christianity</div>
+                    <div class="option" data-value="1">B) To destroy the Roman Empire</div>
+                    <div class="option" data-value="2">C) To reclaim Jerusalem from Muslim control</div>
+                    <div class="option" data-value="3">D) To establish trade routes to Asia</div>
+                </div>
+                <button class="check-btn" onclick="checkAnswer(this)">Check Answer</button>
+                <div class="feedback"></div>
+            </div>
+
+            <div class="question" data-correct="0">
+                <div class="question-text">3. How did the Church maintain control over common people during the Dark Ages?</div>
+                <div class="options">
+                    <div class="option" data-value="0">A) By keeping them illiterate so they couldn't read the Gospel</div>
+                    <div class="option" data-value="1">B) By giving them wealth and land</div>
+                    <div class="option" data-value="2">C) By teaching them multiple languages</div>
+                    <div class="option" data-value="3">D) By encouraging them to question authority</div>
+                </div>
+                <button class="check-btn" onclick="checkAnswer(this)">Check Answer</button>
+                <div class="feedback"></div>
+            </div>
+
+            <div class="question" data-correct="3">
+                <div class="question-text">4. According to the Gospel, who actually crucified Jesus?</div>
+                <div class="options">
+                    <div class="option" data-value="0">A) The Jews</div>
+                    <div class="option" data-value="1">B) The Greeks</div>
+                    <div class="option" data-value="2">C) The Egyptians</div>
+                    <div class="option" data-value="3">D) The Romans</div>
+                </div>
+                <button class="check-btn" onclick="checkAnswer(this)">Check Answer</button>
+                <div class="feedback"></div>
+            </div>
+
+            <div class="question" data-correct="1">
+                <div class="question-text">5. When did the Bar Kokhba revolt take place?</div>
+                <div class="options">
+                    <div class="option" data-value="0">A) 70 CE</div>
+                    <div class="option" data-value="1">B) 132-135 CE</div>
+                    <div class="option" data-value="2">C) 200-205 CE</div>
+                    <div class="option" data-value="3">D) 1096-1100 CE</div>
+                </div>
+                <button class="check-btn" onclick="checkAnswer(this)">Check Answer</button>
+                <div class="feedback"></div>
+            </div>
+
+            <div class="question" data-correct="0">
+                <div class="question-text">6. Who was the ideological leader supporting the Bar Kokhba revolt?</div>
+                <div class="options">
+                    <div class="option" data-value="0">A) Rabbi Akiva</div>
+                    <div class="option" data-value="1">B) Bar Kokhba</div>
+                    <div class="option" data-value="2">C) Rabbeinu Tam</div>
+                    <div class="option" data-value="3">D) Josephus</div>
+                </div>
+                <button class="check-btn" onclick="checkAnswer(this)">Check Answer</button>
+                <div class="feedback"></div>
+            </div>
+
+            <div class="question" data-correct="2">
+                <div class="question-text">7. What percentage of the Jewish population was exterminated after the Bar Kokhba revolt?</div>
+                <div class="options">
+                    <div class="option" data-value="0">A) 50%</div>
+                    <div class="option" data-value="1">B) 75%</div>
+                    <div class="option" data-value="2">C) 90%</div>
+                    <div class="option" data-value="3">D) 100%</div>
+                </div>
+                <button class="check-btn" onclick="checkAnswer(this)">Check Answer</button>
+                <div class="feedback"></div>
+            </div>
+
+            <div class="question" data-correct="3">
+                <div class="question-text">8. How was Rabbi Akiva executed?</div>
+                <div class="options">
+                    <div class="option" data-value="0">A) Crucifixion</div>
+                    <div class="option" data-value="1">B) Beheading</div>
+                    <div class="option" data-value="2">C) Burning</div>
+                    <div class="option" data-value="3">D) Skinned alive (tortured)</div>
+                </div>
+                <button class="check-btn" onclick="checkAnswer(this)">Check Answer</button>
+                <div class="feedback"></div>
+            </div>
+
+            <div class="question" data-correct="1">
+                <div class="question-text">9. What does the Aramaic word "Askara" actually mean based on its Latin origin?</div>
+                <div class="options">
+                    <div class="option" data-value="0">A) Disease/Diphtheria</div>
+                    <div class="option" data-value="1">B) Dagger/Sword (from "sicae")</div>
+                    <div class="option" data-value="2">C) Plague</div>
+                    <div class="option" data-value="3">D) Punishment</div>
+                </div>
+                <button class="check-btn" onclick="checkAnswer(this)">Check Answer</button>
+                <div class="feedback"></div>
+            </div>
+
+            <div class="question" data-correct="2">
+                <div class="question-text">10. Who were the "Sicarii"?</div>
+                <div class="options">
+                    <div class="option" data-value="0">A) Roman soldiers</div>
+                    <div class="option" data-value="1">B) Greek philosophers</div>
+                    <div class="option" data-value="2">C) Jewish assassins who used hidden daggers against Romans</div>
+                    <div class="option" data-value="3">D) Priests in the Temple</div>
+                </div>
+                <button class="check-btn" onclick="checkAnswer(this)">Check Answer</button>
+                <div class="feedback"></div>
+            </div>
+
+            <div class="question" data-correct="0">
+                <div class="question-text">11. According to the lecture's interpretation, Rabbi Akiva's "students" were actually:</div>
+                <div class="options">
+                    <div class="option" data-value="0">A) Followers/soldiers in the revolt</div>
+                    <div class="option" data-value="1">B) Torah scholars in academies</div>
+                    <div class="option" data-value="2">C) Roman converts to Judaism</div>
+                    <div class="option" data-value="3">D) Priests serving in the Temple</div>
+                </div>
+                <button class="check-btn" onclick="checkAnswer(this)">Check Answer</button>
+                <div class="feedback"></div>
+            </div>
+
+            <div class="question" data-correct="3">
+                <div class="question-text">12. What is the real message behind the Talmud's account of students dying from "not respecting each other"?</div>
+                <div class="options">
+                    <div class="option" data-value="0">A) Torah study is dangerous</div>
+                    <div class="option" data-value="1">B) Diseases spread through communities</div>
+                    <div class="option" data-value="2">C) Students should always agree with their teachers</div>
+                    <div class="option" data-value="3">D) Jewish disunity leads to weakness and enemies taking advantage</div>
+                </div>
+                <button class="check-btn" onclick="checkAnswer(this)">Check Answer</button>
+                <div class="feedback"></div>
+            </div>
+
+            <div class="question" data-correct="1">
+                <div class="question-text">13. How many days is the Omer counting period?</div>
+                <div class="options">
+                    <div class="option" data-value="0">A) 40 days</div>
+                    <div class="option" data-value="1">B) 49 days</div>
+                    <div class="option" data-value="2">C) 50 days</div>
+                    <div class="option" data-value="3">D) 70 days</div>
+                </div>
+                <button class="check-btn" onclick="checkAnswer(this)">Check Answer</button>
+                <div class="feedback"></div>
+            </div>
+
+            <div class="question" data-correct="2">
+                <div class="question-text">14. What does "Shavuot" mean?</div>
+                <div class="options">
+                    <div class="option" data-value="0">A) Harvest</div>
+                    <div class="option" data-value="1">B) First fruits</div>
+                    <div class="option" data-value="2">C) Weeks</div>
+                    <div class="option" data-value="3">D) Counting</div>
+                </div>
+                <button class="check-btn" onclick="checkAnswer(this)">Check Answer</button>
+                <div class="feedback"></div>
+            </div>
+
+            <div class="question" data-correct="0">
+                <div class="question-text">15. What was the practical purpose of bringing the Omer offering?</div>
+                <div class="options">
+                    <div class="option" data-value="0">A) To support the Kohanim and Levites who had no land</div>
+                    <div class="option" data-value="1">B) To pay taxes to the Roman government</div>
+                    <div class="option" data-value="2">C) To feed the poor exclusively</div>
+                    <div class="option" data-value="3">D) To store food for winter</div>
+                </div>
+                <button class="check-btn" onclick="checkAnswer(this)">Check Answer</button>
+                <div class="feedback"></div>
+            </div>
+
+            <div class="question" data-correct="3">
+                <div class="question-text">16. Which holidays are NOT in the Torah (rabbinic/post-Biblical)?</div>
+                <div class="options">
+                    <div class="option" data-value="0">A) Pesach and Sukkot</div>
+                    <div class="option" data-value="1">B) Shavuot and Yom Kippur</div>
+                    <div class="option" data-value="2">C) Shabbat and Rosh Hashanah</div>
+                    <div class="option" data-value="3">D) Hanukkah and Purim</div>
+                </div>
+                <button class="check-btn" onclick="checkAnswer(this)">Check Answer</button>
+                <div class="feedback"></div>
+            </div>
+
+            <div class="question" data-correct="1">
+                <div class="question-text">17. According to the lecture, was the Omer period originally a sad or happy time?</div>
+                <div class="options">
+                    <div class="option" data-value="0">A) Sad - always a time of mourning</div>
+                    <div class="option" data-value="1">B) Happy/Festive - a celebration of abundance</div>
+                    <div class="option" data-value="2">C) Neutral - neither happy nor sad</div>
+                    <div class="option" data-value="3">D) Both - half sad, half happy</div>
+                </div>
+                <button class="check-btn" onclick="checkAnswer(this)">Check Answer</button>
+                <div class="feedback"></div>
+            </div>
+
+            <div class="question" data-correct="2">
+                <div class="question-text">18. What is "chadash" in the context of the Omer?</div>
+                <div class="options">
+                    <div class="option" data-value="0">A) A special prayer</div>
+                    <div class="option" data-value="1">B) A type of offering</div>
+                    <div class="option" data-value="2">C) New grain that cannot be eaten until the Omer is brought</div>
+                    <div class="option" data-value="3">D) The Temple ceremony</div>
+                </div>
+                <button class="check-btn" onclick="checkAnswer(this)">Check Answer</button>
+                <div class="feedback"></div>
+            </div>
+
+            <div class="question" data-correct="0">
+                <div class="question-text">19. According to the lecture, how many times does the Quran mention that Allah gave the land of Israel to the Jews?</div>
+                <div class="options">
+                    <div class="option" data-value="0">A) Three times</div>
+                    <div class="option" data-value="1">B) Once</div>
+                    <div class="option" data-value="2">C) Never</div>
+                    <div class="option" data-value="3">D) Seven times</div>
+                </div>
+                <button class="check-btn" onclick="checkAnswer(this)">Check Answer</button>
+                <div class="feedback"></div>
+            </div>
+
+            <div class="question" data-correct="1">
+                <div class="question-text">20. Does the Talmud say anywhere that Jews should have mourning customs during the Omer to commemorate Rabbi Akiva's students?</div>
+                <div class="options">
+                    <div class="option" data-value="0">A) Yes, it's clearly stated</div>
+                    <div class="option" data-value="1">B) No, nowhere in the entire Talmud</div>
+                    <div class="option" data-value="2">C) Only in the Jerusalem Talmud</div>
+                    <div class="option" data-value="3">D) Only in later commentaries on the Talmud</div>
+                </div>
+                <button class="check-btn" onclick="checkAnswer(this)">Check Answer</button>
+                <div class="feedback"></div>
+            </div>
+
+            <button class="check-btn" style="width: 100%; margin-top: 30px; padding: 15px; font-size: 1.1em;" onclick="calculateScore()">Calculate Final Score</button>
+
+            <div class="score-section" id="scoreSection">
+                <h2>Your Score</h2>
+                <div class="score-number" id="scoreDisplay">0/20</div>
+                <p id="scoreMessage" style="margin-top: 15px; font-size: 1.1em;"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showTab(tabName) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelector(`[onclick="showTab('${tabName}')"]`).classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+        }
+
+        document.querySelectorAll('.option').forEach(option => {
+            option.addEventListener('click', function() {
+                const question = this.closest('.question');
+                question.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+                this.classList.add('selected');
+            });
+        });
+
+        function checkAnswer(btn) {
+            const question = btn.closest('.question');
+            const selected = question.querySelector('.option.selected');
+            const feedback = question.querySelector('.feedback');
+            const correctIndex = question.dataset.correct;
+
+            if (!selected) {
+                feedback.textContent = 'Please select an answer first!';
+                feedback.className = 'feedback show incorrect';
+                return;
+            }
+
+            const selectedIndex = selected.dataset.value;
+            const correctOption = question.querySelectorAll('.option')[correctIndex];
+
+            question.querySelectorAll('.option').forEach(o => {
+                o.classList.remove('correct', 'incorrect');
+            });
+
+            if (selectedIndex === correctIndex) {
+                selected.classList.add('correct');
+                feedback.textContent = 'Correct!';
+                feedback.className = 'feedback show correct';
+            } else {
+                selected.classList.add('incorrect');
+                correctOption.classList.add('correct');
+                feedback.textContent = 'Incorrect. The correct answer is highlighted in green.';
+                feedback.className = 'feedback show incorrect';
+            }
+        }
+
+        function calculateScore() {
+            let correct = 0;
+            const questions = document.querySelectorAll('.question');
+            
+            questions.forEach(q => {
+                const selected = q.querySelector('.option.selected');
+                if (selected && selected.dataset.value === q.dataset.correct) {
+                    correct++;
+                }
+            });
+
+            const scoreSection = document.getElementById('scoreSection');
+            const scoreDisplay = document.getElementById('scoreDisplay');
+            const scoreMessage = document.getElementById('scoreMessage');
+
+            scoreDisplay.textContent = correct + '/20';
+            scoreSection.classList.add('show');
+
+            const percentage = (correct / 20) * 100;
+            if (percentage >= 90) {
+                scoreMessage.textContent = 'Excellent! You really know this material!';
+            } else if (percentage >= 70) {
+                scoreMessage.textContent = 'Good job! Review the topics you missed.';
+            } else if (percentage >= 50) {
+                scoreMessage.textContent = 'Keep studying! Focus on the summary section.';
+            } else {
+                scoreMessage.textContent = 'More review needed. Re-read the summary carefully.';
+            }
+
+            scoreSection.scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>

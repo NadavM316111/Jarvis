@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Our Technology Can Improve Baby Development Products - Sesami</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../edit-mode.css">
+    <style>
+        .sub-nav { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.1); padding: 0; position: sticky; top: 80px; z-index: 99; }
+        .sub-nav-container { max-width: 1400px; margin: 0 auto; display: flex; gap: 0; overflow-x: auto; scrollbar-width: none; }
+        .sub-nav-container::-webkit-scrollbar { display: none; }
+        .sub-nav-link { padding: 16px 24px; color: rgba(255,255,255,0.6); text-decoration: none; font-size: 14px; font-weight: 500; white-space: nowrap; border-bottom: 3px solid transparent; transition: all 0.3s ease; }
+        .sub-nav-link:hover { color: rgba(255,255,255,0.9); background: rgba(255,255,255,0.05); }
+        .sub-nav-link.active { color: #f472b6; border-bottom-color: #f472b6; background: rgba(244, 114, 182, 0.1); }
+        .research-content { max-width: 900px; margin: 0 auto; padding: 60px 24px; }
+        .research-header { margin-bottom: 48px; }
+        .research-header h1 { font-family: 'Playfair Display', serif; font-size: 48px; margin-bottom: 16px; background: linear-gradient(135deg, #f472b6, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .research-header .meta { color: rgba(255,255,255,0.5); font-size: 14px; }
+        .research-section { margin-bottom: 48px; }
+        .research-section h2 { font-size: 28px; margin-bottom: 20px; color: #fff; }
+        .research-section h3 { font-size: 22px; margin: 32px 0 16px; color: #f472b6; }
+        .research-section p { color: rgba(255,255,255,0.8); line-height: 1.8; margin-bottom: 16px; font-size: 16px; }
+        .research-section ul, .research-section ol { color: rgba(255,255,255,0.8); line-height: 1.8; margin: 16px 0; padding-left: 24px; }
+        .research-section li { margin-bottom: 12px; }
+        .stat-highlight { background: linear-gradient(135deg, rgba(244, 114, 182, 0.2), rgba(167, 139, 250, 0.2)); border: 1px solid rgba(244, 114, 182, 0.3); border-radius: 16px; padding: 32px; margin: 32px 0; text-align: center; }
+        .stat-highlight .big-number { font-size: 64px; font-weight: 700; background: linear-gradient(135deg, #f472b6, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .stat-highlight .stat-desc { font-size: 18px; color: rgba(255,255,255,0.7); margin-top: 8px; }
+        .data-table { width: 100%; border-collapse: collapse; margin: 24px 0; background: rgba(255,255,255,0.03); border-radius: 12px; overflow: hidden; }
+        .data-table th, .data-table td { padding: 16px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .data-table th { background: rgba(244, 114, 182, 0.2); color: #f472b6; font-weight: 600; }
+        .data-table td { color: rgba(255,255,255,0.8); }
+        .data-table tr:hover { background: rgba(255,255,255,0.05); }
+        .quote-box { background: rgba(167, 139, 250, 0.1); border-left: 4px solid #a78bfa; padding: 24px; margin: 24px 0; border-radius: 0 12px 12px 0; }
+        .quote-box p { font-style: italic; font-size: 18px; color: rgba(255,255,255,0.9); margin: 0; }
+        .quote-box cite { display: block; margin-top: 12px; color: rgba(255,255,255,0.5); font-size: 14px; }
+        .key-finding { background: linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(34, 197, 94, 0.05)); border: 1px solid rgba(34, 197, 94, 0.3); border-radius: 12px; padding: 20px; margin: 20px 0; }
+        .key-finding h4 { color: #22c55e; margin: 0 0 8px 0; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; }
+        .key-finding p { margin: 0; color: rgba(255,255,255,0.9); }
+        .back-link { display: inline-flex; align-items: center; gap: 8px; color: #f472b6; text-decoration: none; font-weight: 500; margin-bottom: 24px; transition: all 0.3s ease; }
+        .back-link:hover { gap: 12px; }
+        .tech-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin: 32px 0; }
+        .tech-card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 28px; transition: all 0.3s ease; }
+        .tech-card:hover { transform: translateY(-4px); border-color: rgba(244, 114, 182, 0.3); }
+        .tech-card h4 { color: #f472b6; margin: 0 0 12px 0; font-size: 18px; }
+        .tech-card p { color: rgba(255,255,255,0.7); margin: 0; font-size: 14px; line-height: 1.6; }
+        .tech-icon { width: 48px; height: 48px; background: linear-gradient(135deg, rgba(244, 114, 182, 0.2), rgba(167, 139, 250, 0.2)); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; font-size: 20px; color: #f472b6; }
+    </style>
+</head>
+<body data-page="background">
+    <div class="bg-gradient"></div>
+    <div class="bg-pattern"></div>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="../index.html" class="logo"><div class="logo-icon"><i class="fas fa-baby"></i></div><span class="logo-text">Sesami</span></a>
+            <ul class="nav-links">
+                <li class="nav-item"><a href="../index.html" class="nav-link">Home</a></li>
+                <li class="nav-item"><a href="../background.html" class="nav-link active">Background</a></li>
+                <li class="nav-item"><a href="../empathize.html" class="nav-link">Empathize</a></li>
+                <li class="nav-item"><a href="../define.html" class="nav-link">Define</a></li>
+                <li class="nav-item"><a href="../ideate.html" class="nav-link">Ideate</a></li>
+                <li class="nav-item"><a href="../engineering.html" class="nav-link">Engineering</a></li>
+                <li class="nav-item"><a href="../test.html" class="nav-link">Test</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="sub-nav">
+        <div class="sub-nav-container">
+            <a href="preliminary-research.html" class="sub-nav-link">Preliminary Research</a>
+            <a href="final-research.html" class="sub-nav-link">Final Research Paper</a>
+            <a href="baby-development-tech.html" class="sub-nav-link active">Baby Development Tech</a>
+            <a href="competitor-chart.html" class="sub-nav-link">Competitor Chart</a>
+            <a href="expert-source.html" class="sub-nav-link">Expert Source</a>
+            <a href="end-user.html" class="sub-nav-link">End User</a>
+            <a href="expert-survey.html" class="sub-nav-link">Expert Survey</a>
+            <a href="sensors-writeup.html" class="sub-nav-link">Sensors Writeup</a>
+            <a href="business-plan.html" class="sub-nav-link">Business Plan</a>
+            <a href="financials.html" class="sub-nav-link">Financials</a>
+        </div>
+    </div>
+
+    <div class="research-content">
+        <a href="../background.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Background</a>
+        
+        <div class="research-header">
+            <h1>How Our Technology Can Improve Baby Development Products</h1>
+            <p class="meta">Leveraging AI and sensor technology to revolutionize infant care</p>
+        </div>
+
+        <div class="research-section">
+            <h2>The Technology Gap in Baby Products</h2>
+            <p>Despite billions spent annually on baby products, the industry has largely ignored the opportunity to leverage modern AI and sensor technologies for developmental monitoring. Current products focus on safety and convenience, leaving parents without tools to understand their child's developmental progress.</p>
+            
+            <div class="stat-highlight">
+                <div class="big-number">0</div>
+                <div class="stat-desc">mainstream baby monitors offer automated developmental milestone tracking</div>
+            </div>
+        </div>
+
+        <div class="research-section">
+            <h2>Our Core Technologies</h2>
+            
+            <div class="tech-grid">
+                <div class="tech-card">
+                    <div class="tech-icon"><i class="fas fa-eye"></i></div>
+                    <h4>Computer Vision AI</h4>
+                    <p>MediaPipe and custom-trained pose estimation models detect infant body positions, movements, and motor milestones in real-time from standard video feeds.</p>
+                </div>
+                
+                <div class="tech-card">
+                    <div class="tech-icon"><i class="fas fa-microchip"></i></div>
+                    <h4>Edge Computing</h4>
+                    <p>On-device processing using Jetson Nano or equivalent ensures privacy by keeping video data local while enabling real-time analysis without cloud latency.</p>
+                </div>
+                
+                <div class="tech-card">
+                    <div class="tech-icon"><i class="fas fa-wave-square"></i></div>
+                    <h4>Wearable IMU Sensors</h4>
+                    <p>9-axis inertial measurement units (accelerometer, gyroscope, magnetometer) capture subtle movement patterns and body positions 24/7.</p>
+                </div>
+                
+                <div class="tech-card">
+                    <div class="tech-icon"><i class="fas fa-brain"></i></div>
+                    <h4>Machine Learning Models</h4>
+                    <p>Deep learning classifiers trained on thousands of infant movement samples identify developmental milestones and detect potential delays.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="research-section">
+            <h2>Applications for Baby Development</h2>
+            
+            <h3>Motor Milestone Tracking</h3>
+            <p>Our technology can automatically detect and log key motor milestones:</p>
+            <ul>
+                <li><strong>0-3 months:</strong> Head control, visual tracking, hand-to-mouth coordination</li>
+                <li><strong>3-6 months:</strong> Rolling over, reaching for objects, supported sitting</li>
+                <li><strong>6-9 months:</strong> Independent sitting, crawling initiation, standing with support</li>
+                <li><strong>9-12 months:</strong> Cruising, independent standing, first steps</li>
+                <li><strong>12-24 months:</strong> Walking refinement, running, climbing, fine motor skills</li>
+            </ul>
+            
+            <h3>Movement Quality Analysis</h3>
+            <p>Beyond milestone detection, our AI analyzes movement quality indicators that can signal developmental concerns:</p>
+            <ul>
+                <li>Movement symmetry (left vs. right side)</li>
+                <li>Movement fluidity and coordination</li>
+                <li>Fidgety movement patterns (key indicator for neurological development)</li>
+                <li>Muscle tone indicators through movement analysis</li>
+            </ul>
+            
+            <div class="key-finding">
+                <h4>Research Validation</h4>
+                <p>Studies published in Nature Communications demonstrate that wearable sensor systems can track infant motor development from lying supine through fluent walking with accuracy comparable to trained human observers.</p>
+            </div>
+        </div>
+
+        <div class="research-section">
+            <h2>Integration Opportunities</h2>
+            
+            <h3>Existing Baby Monitor Enhancement</h3>
+            <p>Our AI software stack can be integrated into existing baby monitor hardware through firmware updates or companion processing units, allowing manufacturers to add developmental tracking to their product lines.</p>
+            
+            <h3>Smart Clothing Integration</h3>
+            <p>Miniaturized sensors can be embedded in baby clothing (onesies, sleep sacks, socks) for continuous movement monitoring without requiring parents to remember separate wearable devices.</p>
+            
+            <h3>Play Mat Integration</h3>
+            <p>Activity gyms and play mats with embedded pressure sensors and overhead cameras can track tummy time quality, reaching attempts, and floor-based motor development.</p>
+            
+            <h3>Pediatric Office Integration</h3>
+            <p>Aggregated, anonymized data from home monitoring can provide pediatricians with longitudinal developmental data, improving the accuracy of clinical assessments during well-child visits.</p>
+        </div>
+
+        <div class="research-section">
+            <h2>Privacy and Safety Considerations</h2>
+            <p>Our technology prioritizes privacy and safety through several key design principles:</p>
+            
+            <ul>
+                <li><strong>Edge Processing:</strong> Video analysis occurs on-device; no video is uploaded to cloud servers</li>
+                <li><strong>Data Minimization:</strong> Only processed milestone data (not raw video) is stored long-term</li>
+                <li><strong>Parental Control:</strong> Complete transparency and control over what data is collected and shared</li>
+                <li><strong>Medical Disclaimers:</strong> Clear communication that the system supplements (not replaces) professional medical assessment</li>
+                <li><strong>FDA Considerations:</strong> Designed as a wellness product, not a medical device, to avoid inappropriate medical claims</li>
+            </ul>
+        </div>
+
+        <div class="research-section">
+            <h2>Market Impact Potential</h2>
+            <p>By introducing developmental tracking to baby products, we can:</p>
+            
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Impact Area</th>
+                        <th>Current State</th>
+                        <th>With Sesami Technology</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Detection of developmental delays</td>
+                        <td>Average 13-month delay after concern</td>
+                        <td>Potential 3-6 month earlier detection</td>
+                    </tr>
+                    <tr>
+                        <td>Parent confidence level</td>
+                        <td>62% report uncertainty about development</td>
+                        <td>Data-driven reassurance or early warning</td>
+                    </tr>
+                    <tr>
+                        <td>Pediatric visit efficiency</td>
+                        <td>Brief observation-based assessment</td>
+                        <td>Longitudinal data-informed discussions</td>
+                    </tr>
+                    <tr>
+                        <td>Product differentiation</td>
+                        <td>Commoditized safety features</td>
+                        <td>Premium developmental intelligence</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="../app.js"></script>
+    <script src="../edit-mode.js"></script>
+</body>
+</html>

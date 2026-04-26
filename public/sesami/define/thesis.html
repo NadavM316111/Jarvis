@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thesis Statement - Sesami Define</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../edit-mode.css">
+    <style>
+        .thesis-hero {
+            background: linear-gradient(135deg, rgba(212,175,55,0.2), rgba(212,175,55,0.05));
+            border-radius: 30px;
+            padding: 80px 60px;
+            margin-bottom: 60px;
+            border: 2px solid rgba(212,175,55,0.3);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .thesis-hero::before {
+            content: '"';
+            position: absolute;
+            top: 20px;
+            left: 40px;
+            font-size: 15rem;
+            color: rgba(212,175,55,0.1);
+            font-family: 'Playfair Display', serif;
+            line-height: 1;
+        }
+        .thesis-hero::after {
+            content: '"';
+            position: absolute;
+            bottom: -60px;
+            right: 40px;
+            font-size: 15rem;
+            color: rgba(212,175,55,0.1);
+            font-family: 'Playfair Display', serif;
+            line-height: 1;
+        }
+        .thesis-label {
+            display: inline-block;
+            background: var(--accent-gold);
+            color: #000;
+            padding: 10px 25px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 30px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .thesis-text {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(24px, 4vw, 38px);
+            line-height: 1.6;
+            color: var(--text-primary);
+            position: relative;
+            z-index: 1;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .thesis-text .highlight {
+            background: linear-gradient(135deg, var(--accent-gold), #ffd700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .breakdown-section {
+            margin: 60px 0;
+        }
+        .breakdown-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+        .breakdown-card {
+            background: rgba(255,255,255,0.03);
+            border-radius: 20px;
+            padding: 35px;
+            border: 1px solid rgba(255,255,255,0.08);
+            position: relative;
+        }
+        .breakdown-card::before {
+            content: attr(data-label);
+            position: absolute;
+            top: -12px;
+            left: 25px;
+            background: var(--accent-gold);
+            color: #000;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .breakdown-card h3 {
+            color: var(--text-primary);
+            font-size: 1.3rem;
+            margin-top: 15px;
+            margin-bottom: 15px;
+        }
+        .breakdown-card p {
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+        .pov-section {
+            background: rgba(0,0,0,0.3);
+            border-radius: 24px;
+            padding: 50px;
+            margin: 60px 0;
+        }
+        .pov-card {
+            background: rgba(255,255,255,0.03);
+            border-radius: 16px;
+            padding: 35px;
+            margin: 25px 0;
+            border-left: 5px solid var(--accent-gold);
+        }
+        .pov-card h4 {
+            color: var(--accent-gold);
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+        .pov-card p {
+            color: var(--text-primary);
+            font-size: 1.15rem;
+            line-height: 1.7;
+        }
+        .hmw-section {
+            margin: 60px 0;
+        }
+        .hmw-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+            margin-top: 40px;
+        }
+        .hmw-card {
+            background: linear-gradient(135deg, rgba(59,130,246,0.1), rgba(59,130,246,0.02));
+            border-radius: 16px;
+            padding: 30px;
+            border: 1px solid rgba(59,130,246,0.2);
+        }
+        .hmw-card h4 {
+            color: #60a5fa;
+            margin-bottom: 15px;
+            font-size: 1rem;
+        }
+        .hmw-card p {
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+        .validation-section {
+            background: linear-gradient(135deg, rgba(74,222,128,0.1), rgba(74,222,128,0.02));
+            border-radius: 20px;
+            padding: 40px;
+            margin: 50px 0;
+            border: 1px solid rgba(74,222,128,0.2);
+        }
+        .validation-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 25px;
+        }
+        .validation-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            padding: 15px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 12px;
+        }
+        .validation-item i {
+            color: #4ade80;
+            font-size: 1.3rem;
+            margin-top: 3px;
+        }
+        .validation-item p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+        .content-text {
+            color: var(--text-secondary);
+            line-height: 1.8;
+            font-size: 1.05rem;
+        }
+        .content-text strong {
+            color: var(--text-primary);
+        }
+    </style>
+</head>
+<body data-page="define">
+    <div class="bg-gradient"></div>
+    <div class="bg-pattern"></div>
+    <div class="floating-orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="../index.html" class="logo">
+                <div class="logo-icon"><i class="fas fa-baby"></i></div>
+                <span class="logo-text">Sesami</span>
+            </a>
+            <ul class="nav-links" id="navLinks">
+                <li class="nav-item"><a href="../index.html" class="nav-link">Home</a></li>
+                <li class="nav-item has-dropdown">
+                    <a href="../background.html" class="nav-link">Background <i class="fas fa-chevron-down arrow"></i></a>
+                    <div class="dropdown">
+                        <a href="../background/preliminary-research.html"><i class="fas fa-file-alt"></i> Preliminary Research</a>
+                        <a href="../background/final-research.html"><i class="fas fa-file-lines"></i> Final Research Paper</a>
+                        <a href="../background/baby-development-tech.html"><i class="fas fa-baby"></i> Baby Development Tech</a>
+                        <a href="../background/competitor-chart.html"><i class="fas fa-chart-bar"></i> Competitor Chart</a>
+                        <a href="../background/expert-source.html"><i class="fas fa-user-md"></i> Expert Source</a>
+                    </div>
+                </li>
+                <li class="nav-item has-dropdown">
+                    <a href="../empathize.html" class="nav-link">Empathize <i class="fas fa-chevron-down arrow"></i></a>
+                    <div class="dropdown">
+                        <a href="../empathize/end-users-survey.html"><i class="fas fa-poll"></i> End Users Survey</a>
+                        <a href="../empathize/deep-dive.html"><i class="fas fa-search"></i> Deep Dive of End Users</a>
+                        <a href="../empathize/potential-solutions.html"><i class="fas fa-lightbulb"></i> Potential Solutions</a>
+                        <a href="../empathize/direct-observation.html"><i class="fas fa-eye"></i> Direct Observation</a>
+                    </div>
+                </li>
+                <li class="nav-item has-dropdown">
+                    <a href="../define.html" class="nav-link active">Define <i class="fas fa-chevron-down arrow"></i></a>
+                    <div class="dropdown">
+                        <a href="purpose.html"><i class="fas fa-bullseye"></i> Purpose for Innovation</a>
+                        <a href="design-goals.html"><i class="fas fa-tasks"></i> Design Goals/Criteria</a>
+                        <a href="end-user-interview.html"><i class="fas fa-comments"></i> End User Interview</a>
+                        <a href="thesis.html"><i class="fas fa-scroll"></i> Thesis Statement</a>
+                        <a href="user-profiles.html"><i class="fas fa-users"></i> End User Profiles</a>
+                    </div>
+                </li>
+                <li class="nav-item has-dropdown">
+                    <a href="../ideate.html" class="nav-link">Ideate <i class="fas fa-chevron-down arrow"></i></a>
+                    <div class="dropdown">
+                        <a href="../ideate.html#brainstorm"><i class="fas fa-brain"></i> Brainstorming</a>
+                        <a href="../ideate.html#features"><i class="fas fa-list-check"></i> Feature Prioritization</a>
+                    </div>
+                </li>
+                <li class="nav-item has-dropdown">
+                    <a href="../engineering.html" class="nav-link">Engineering <i class="fas fa-chevron-down arrow"></i></a>
+                    <div class="dropdown">
+                        <a href="../engineering.html#specs"><i class="fas fa-cogs"></i> Technical Specs</a>
+                        <a href="../engineering.html#cad"><i class="fas fa-drafting-compass"></i> CAD Drawings</a>
+                    </div>
+                </li>
+                <li class="nav-item has-dropdown">
+                    <a href="../test.html" class="nav-link">Test <i class="fas fa-chevron-down arrow"></i></a>
+                    <div class="dropdown">
+                        <a href="../test.html#methods"><i class="fas fa-flask"></i> Testing Methods</a>
+                        <a href="../test.html#results"><i class="fas fa-chart-bar"></i> Results</a>
+                    </div>
+                </li>
+            </ul>
+            <button class="menu-toggle" id="menuToggle">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+
+    <section class="page-hero">
+        <div class="page-hero-content">
+            <div class="page-badge"><i class="fas fa-scroll"></i> Define Phase</div>
+            <h1>Thesis <span>Statement</span></h1>
+            <p>The core hypothesis that drives our design solution and product development.</p>
+        </div>
+    </section>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="thesis-hero" data-editable="true">
+                <div class="thesis-label">Our Thesis</div>
+                <p class="thesis-text">
+                    By providing parents with <span class="highlight">passive, continuous monitoring</span> of their infant's motor development through a comfortable wearable sock with embedded IMU sensors, we can <span class="highlight">reduce parental anxiety by 40%</span> while enabling <span class="highlight">earlier detection of developmental delays</span> - transforming uncertain worry into confident, data-driven parenting.
+                </p>
+            </div>
+
+            <div class="breakdown-section">
+                <div class="section-header">
+                    <h2>Thesis Breakdown</h2>
+                    <p>Understanding the components of our core hypothesis</p>
+                </div>
+
+                <div class="breakdown-grid">
+                    <div class="breakdown-card" data-label="User" data-editable="true">
+                        <h3>Parents of Infants (0-24 months)</h3>
+                        <p>First-time parents, experienced parents with new concerns, and caregivers who are responsible for monitoring child development but lack medical training and objective tools to assess progress.</p>
+                    </div>
+                    <div class="breakdown-card" data-label="Need" data-editable="true">
+                        <h3>Passive, Objective Monitoring</h3>
+                        <p>A way to continuously track developmental milestones without manual logging, subjective assessment, or waiting months between pediatric visits. Data that speaks for itself.</p>
+                    </div>
+                    <div class="breakdown-card" data-label="Solution" data-editable="true">
+                        <h3>Wearable IMU Sensor Sock</h3>
+                        <p>A comfortable, safe sock with an embedded inertial measurement unit that captures movement patterns 24/7, analyzed by machine learning algorithms to detect motor milestones.</p>
+                    </div>
+                    <div class="breakdown-card" data-label="Outcome" data-editable="true">
+                        <h3>Reduced Anxiety + Earlier Detection</h3>
+                        <p>Parents gain peace of mind through objective data, while subtle developmental concerns are flagged weeks or months earlier than traditional screening would catch them.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pov-section" data-editable="true">
+                <div class="section-header">
+                    <h2>Point of View Statements</h2>
+                    <p>Reframing user needs into actionable design challenges</p>
+                </div>
+
+                <div class="pov-card">
+                    <h4>POV 1: The Anxious First-Time Parent</h4>
+                    <p>Jennifer, a 34-year-old first-time mother, <strong>needs</strong> a way to know if her baby's development is on track <strong>because</strong> the uncertainty of not knowing causes constant anxiety that affects her sleep, her confidence as a parent, and her ability to enjoy the early months of motherhood.</p>
+                </div>
+
+                <div class="pov-card">
+                    <h4>POV 2: The Time-Starved Multi-Tasker</h4>
+                    <p>David, a 41-year-old father of twins, <strong>needs</strong> a completely passive way to monitor his babies' development <strong>because</strong> he doesn't have the time or mental bandwidth to manually log milestones, but he still wants to catch any concerning patterns before they become serious issues.</p>
+                </div>
+
+                <div class="pov-card">
+                    <h4>POV 3: The Data-Hungry Clinician</h4>
+                    <p>Dr. Sarah, a pediatrician and mother, <strong>needs</strong> access to longitudinal movement data from her patients <strong>because</strong> the 15-minute snapshots she gets during well-child visits are insufficient to detect subtle motor delays that would benefit from early intervention.</p>
+                </div>
+            </div>
+
+            <div class="hmw-section">
+                <div class="section-header">
+                    <h2>How Might We Questions</h2>
+                    <p>Design challenges that guide our ideation process</p>
+                </div>
+
+                <div class="hmw-grid">
+                    <div class="hmw-card" data-editable="true">
+                        <h4>HMW #1</h4>
+                        <p>How might we transform developmental tracking from a source of anxiety into a source of reassurance and confidence?</p>
+                    </div>
+                    <div class="hmw-card" data-editable="true">
+                        <h4>HMW #2</h4>
+                        <p>How might we capture meaningful developmental data without requiring any active effort from sleep-deprived parents?</p>
+                    </div>
+                    <div class="hmw-card" data-editable="true">
+                        <h4>HMW #3</h4>
+                        <p>How might we communicate complex motor development data in a way that informs without overwhelming?</p>
+                    </div>
+                    <div class="hmw-card" data-editable="true">
+                        <h4>HMW #4</h4>
+                        <p>How might we make wearable technology feel natural and safe for the most vulnerable users - newborn infants?</p>
+                    </div>
+                    <div class="hmw-card" data-editable="true">
+                        <h4>HMW #5</h4>
+                        <p>How might we bridge the gap between home monitoring and clinical assessment to improve pediatric care?</p>
+                    </div>
+                    <div class="hmw-card" data-editable="true">
+                        <h4>HMW #6</h4>
+                        <p>How might we detect developmental delays weeks earlier while minimizing false alarms that increase anxiety?</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="validation-section" data-editable="true">
+                <div class="section-header">
+                    <h2>Thesis Validation Evidence</h2>
+                    <p>Research and data supporting our core hypothesis</p>
+                </div>
+
+                <div class="validation-list">
+                    <div class="validation-item">
+                        <i class="fas fa-check-circle"></i>
+                        <p><strong>78% of parents</strong> in our survey reported moderate to severe anxiety about their child's development, validating the emotional need.</p>
+                    </div>
+                    <div class="validation-item">
+                        <i class="fas fa-check-circle"></i>
+                        <p><strong>IMU sensors</strong> have been clinically validated to detect motor patterns with 94% accuracy in adult rehabilitation contexts.</p>
+                    </div>
+                    <div class="validation-item">
+                        <i class="fas fa-check-circle"></i>
+                        <p><strong>72% of interviewed parents</strong> abandoned manual tracking apps within 3 weeks, proving the need for passive solutions.</p>
+                    </div>
+                    <div class="validation-item">
+                        <i class="fas fa-check-circle"></i>
+                        <p><strong>Research shows</strong> that early intervention before age 3 can improve developmental outcomes by 40-60% for children with delays.</p>
+                    </div>
+                    <div class="validation-item">
+                        <i class="fas fa-check-circle"></i>
+                        <p><strong>Sock-based wearables</strong> (Owlet) have proven market acceptance with over 1 million units sold, validating the form factor.</p>
+                    </div>
+                    <div class="validation-item">
+                        <i class="fas fa-check-circle"></i>
+                        <p><strong>89% of interviewed parents</strong> expressed frustration with brief pediatric visits, supporting the need for longitudinal data.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="cta-container" style="text-align: center; margin-top: 60px;">
+                <a href="user-profiles.html" class="btn-primary" style="display: inline-flex; align-items: center; gap: 10px;">
+                    Continue to User Profiles <i class="fas fa-arrow-right"></i>
+                </a>
+                <a href="end-user-interview.html" class="btn-secondary" style="display: inline-flex; align-items: center; gap: 10px; margin-left: 20px;">
+                    <i class="fas fa-arrow-left"></i> Back to Interviews
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p>Sesami - AI-Powered Infant Development Tracking</p>
+            <a href="thesis.html?edit=true" class="edit-link"><i class="fas fa-edit"></i> Edit Site</a>
+        </div>
+    </footer>
+
+    <script src="../app.js"></script>
+    <script src="../edit-mode.js"></script>
+</body>
+</html>

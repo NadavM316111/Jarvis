@@ -78,7 +78,13 @@ function queueBgResponse(userId, message) {
   if (!bgResponses[userId]) bgResponses[userId] = [];
   bgResponses[userId].push({ message, timestamp: Date.now() });
 }
+const bgSpokenQueue = [];
+const bgSpokenSeen = new Set();
 
+app.get('/bg-spoken', (req, res) => {
+  const msg = bgSpokenQueue.shift() || null;
+  res.json({ message: msg });
+});
 function addProactiveUpdate(message) {
   const update = { id: Date.now(), message, time: new Date().toLocaleTimeString(), date: new Date().toLocaleDateString(), read: false };
   proactiveUpdates.unshift(update);
@@ -402,6 +408,7 @@ async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame
     'For large websites/apps: break the build into steps — write HTML to disk first, then add CSS, then JS, saving incrementally. Never generate a full complex site in one code block — split across multiple run_code calls.',
     'ALL HTML files meant for viewing must be saved to C:/Users/nadav/jarvis-web/public/ — never to the root jarvis-web folder. Always open via http://localhost:3001/view/filename.html',
     'If told "Open the Design studio", use OPEN_URL with exactly http://localhost:3001/design',
+    'If told "Open HyperFlex" or "Open my HyperFlex studio", use OPEN_URL with exactly http://localhost:3001/hyperflex',
     'When creating a website with images, you must also save every image file into C:/Users/nadav/jarvis-web/public/',
     'In HTML, image src values must use relative paths like "./image-name.jpg" or "image-name.jpg"',
     'Never use file:// URLs, absolute Windows paths like C:/..., or /view/image-name.jpg inside img src',
@@ -452,6 +459,23 @@ async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame
     'ALWAYS search_3d_models first for organic shapes (armor, cosplay, characters).',
     'Metal printing: Craftcloud API. Post-process: sand + Bondo + Alclad chrome.',
     '',
+    '═══ AI VIDEO / ANIME GENERATION ═══',
+`LUMA AI: API key at process.env.LUMALABS_API_KEY | Base URL: https://api.lumalabs.ai/dream-machine/v1`,
+'To generate a video clip: POST /generations with { prompt, loop, aspect_ratio, keyframes: { frame0: { type: "image", url: imageUrl } } }',
+'To check status: GET /generations/{id} — poll until state = "completed"',
+'To download: use the generation.assets.video URL',
+'ANIME PIPELINE (when asked to make anime/video content):',
+'  1. Write a scene-by-scene script with dialogue and visual descriptions',
+'  2. Generate character reference image first using DALL-E or web search for style reference',
+'  3. For each scene: call Luma API with the scene prompt + character image as keyframe for consistency',
+'  4. Poll until each clip is ready (can take 2-5 minutes per clip)',
+'  5. Download all clips to C:/Users/nadav/jarvis-web/public/anime/',
+'  6. Use FFmpeg to stitch clips: ffmpeg -f concat -safe 0 -i filelist.txt -c copy output.mp4',
+'  7. Add ElevenLabs voice for dialogue, add music track with FFmpeg -i video -i audio -c:v copy output_final.mp4',
+'  8. Open finished video via OPEN_URL http://localhost:3001/view/anime/output_final.mp4',
+'CHARACTER CONSISTENCY TIP: Always use the same keyframe image across all scenes for the main character',
+'FFMPEG: Already available on Windows. Use run_code with powershell to execute ffmpeg commands.',
+'',
     '═══ BROWSER AUTOMATION ═══',
     'puppeteer for any site. Can login, fill forms, scrape, post.',
     'Amazon: always confirm before purchase.',
@@ -592,12 +616,15 @@ async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame
     }
   }
 
+  const userText = userMessage?.trim();
+const assistantText = (finalResponse || 'Done.').trim();
+if (userText && userText.length > 0 && assistantText.length > 0) {
   session.conversationHistory.push(
-    { role: 'user', content: [{ type: 'text', text: userMessage }] },
-    { role: 'assistant', content: finalResponse || 'Done.' }
+    { role: 'user', content: [{ type: 'text', text: userText }] },
+    { role: 'assistant', content: assistantText }
   );
   if (session.conversationHistory.length > 30) session.conversationHistory = session.conversationHistory.slice(-30);
-
+}
   return finalResponse || 'Done.';
 }
 
@@ -633,9 +660,8 @@ setTimeout(() => runVisionLoop(), 30000);
 let morningBriefingFiredToday = null;
 
 async function runMorningBriefing() {
-  const activeUsers = Object.keys(sessions);
-  if (activeUsers.length === 0) return;
-  const userId = activeUsers[0];
+  const userId = 'nadavminkowitz_gmail_com';
+  if (!sessions[userId]) getSession(userId);
   console.log('\n[MORNING BRIEFING] Running...');
   const prompt = [
     'Run the morning briefing for Nadav right now.',
@@ -773,10 +799,19 @@ app.post('/chat', authMiddleware, async (req, res) => {
     console.log(`\n[${req.user.name}]: ${message}${attachedFile ? ` [+ ${attachedFile.name}]` : ''}`);
 
     const session = getSession(userId);
-    if (session.conversationHistory.length > 0) {
-      const last = session.conversationHistory[session.conversationHistory.length - 1];
-      if (Array.isArray(last?.content)) session.conversationHistory = [];
-    }
+
+// Clear corrupted history entries with empty content
+session.conversationHistory = session.conversationHistory.filter(msg => {
+  if (!msg.content) return false;
+  if (typeof msg.content === 'string') return msg.content.trim().length > 0;
+  if (Array.isArray(msg.content)) {
+    return msg.content.every(block => {
+      if (block.type === 'text') return block.text && block.text.trim().length > 0;
+      return true;
+    });
+  }
+  return true;
+});
 
     if (message.toLowerCase().includes('check') && message.toLowerCase().includes('every day')) {
       if (!session.userMemory.dailyChecks) session.userMemory.dailyChecks = [];
@@ -792,9 +827,17 @@ app.post('/chat', authMiddleware, async (req, res) => {
     if (isLongTask) {
       res.json({ success: true, message: 'On it.', actions: [] });
       runAgenticLoop(message, screenshotBase64, userId, cameraFrame, attachedFile).then(response => {
-        console.log(`JARVIS (bg): ${response}`);
-        queueBgResponse(userId, response);
-      }).catch(e => console.error('Background error:', e));
+  console.log(`JARVIS (bg): ${response}`);
+  queueBgResponse(userId, response);
+  if (response && response !== 'Done.' && response !== 'On it.' && response.trim().length > 0) {
+    const hash = response.trim().substring(0, 100);
+    if (!bgSpokenSeen.has(hash)) {
+      bgSpokenSeen.add(hash);
+      bgSpokenQueue.push(response);
+      setTimeout(() => bgSpokenSeen.delete(hash), 30000);
+    }
+  }
+}).catch(e => console.error('Background error:', e));
     } else {
       const response = await runAgenticLoop(message, screenshotBase64, userId, cameraFrame, attachedFile);
       console.log(`JARVIS: ${response}`);
@@ -815,7 +858,13 @@ app.get('/vision/status', (req, res) => res.json({ active: visionLoopActive, obs
 app.get('/health', (req, res) => res.json({ ok: true, vision: visionLoopActive, camera: !!latestCameraFrame, facePresent: faceStatus.present, faceName: faceStatus.name }));
 app.post('/reset', authMiddleware, (req, res) => { getSession(req.user.userId).conversationHistory = []; res.json({ ok: true }); });
 app.get('/voice-status', (req, res) => res.json(voiceStatus));
-app.post('/voice-update', (req, res) => { voiceStatus = { ...voiceStatus, ...req.body }; res.json({ ok: true }); });
+app.post('/voice-update', (req, res) => {
+  voiceStatus = { ...voiceStatus, ...req.body };
+  if (req.body.response && req.body.speaking === false) {
+    setTimeout(() => { voiceStatus.response = ''; }, 1000);
+  }
+  res.json({ ok: true });
+});
 app.get('/proactive-updates', authMiddleware, (req, res) => res.json({ updates: proactiveUpdates }));
 app.post('/proactive-updates/read', authMiddleware, (req, res) => {
   proactiveUpdates = proactiveUpdates.map(u => ({ ...u, read: true }));
@@ -875,7 +924,8 @@ app.get('/iphone-command', authMiddleware, (req, res) => {
   iPhoneCommands[req.user.userId] = null;
   res.json({ command });
 });
-
+// ============ HYPERFLEX STUDIO ============
+app.get('/hyperflex', (req, res) => res.sendFile(path.join(__dirname, 'hyperflex.html')));
 // ============ DESIGN STUDIO ============
 app.get('/design', (req, res) => res.sendFile(path.join(__dirname, 'design.html')));
 app.post('/design-command', async (req, res) => {
@@ -889,42 +939,151 @@ app.post('/design-command', async (req, res) => {
 });
 
 // ============ MODEL SEARCH & PROXY ============
-app.post('/search-models', authMiddleware, async (req, res) => {
+// ============ MODEL SEARCH & PROXY ============
+app.post('/search-models', async (req, res) => {
   const { query } = req.body;
   const results = [];
+
   try {
-    const r = await axios.get('https://api.sketchfab.com/v3/models', {
-      params: { q: query, downloadable: true, count: 5, sort_by: '-likeCount' },
-      headers: process.env.SKETCHFAB_TOKEN ? { Authorization: `Token ${process.env.SKETCHFAB_TOKEN}` } : {},
-      timeout: 6000
+    const r = await axios.get(`https://poly.pizza/api/search/${encodeURIComponent(query)}`, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36',
+        'Referer': 'https://poly.pizza/',
+        'Origin': 'https://poly.pizza'
+      },
+      timeout: 8000
     });
-    (r.data?.results || []).forEach(m => results.push({ source: 'Sketchfab', name: m.name, thumbnail: m.thumbnails?.images?.[0]?.url, downloads: m.viewCount || 0, format: 'GLB', viewerUrl: `https://sketchfab.com/models/${m.uid}`, downloadUrl: null }));
-  } catch (e) {}
-  try {
-    const r = await axios.get('https://poly.pizza/api/search', { params: { q: query, limit: 5 }, timeout: 6000 });
-    (r.data?.results || []).forEach(m => results.push({ source: 'Poly Pizza', name: m.Title || m.name, thumbnail: m.Thumbnail, downloads: m.Downloads || 0, format: 'GLB', downloadUrl: m.Download }));
-  } catch (e) {}
-  console.log(`[MODEL SEARCH] "${query}" → ${results.length} results`);
-  res.json({ results: results.slice(0, 8) });
+    const items = r.data?.results || [];
+    console.log(`[MODEL SEARCH] Poly Pizza "${query}" → ${items.length} results`);
+
+    for (const m of items.slice(0, 8)) {
+      const publicID = m.publicID || m.publicId || '';
+      if (!publicID) continue;
+
+      // Check cache first
+      const cacheFile = path.join(MODEL_CACHE_DIR, `${publicID}.glb`);
+      if (fs.existsSync(cacheFile)) {
+        results.push({
+          source: 'Poly Pizza', name: m.title || 'Model',
+          thumbnail: m.previewUrl || null, downloads: 0, format: 'GLB',
+          downloadUrl: `/model-cache/${publicID}.glb`
+        });
+        continue;
+      }
+
+      // Try to download GLB and cache it
+      const glbUrls = [
+        `https://poly.pizza/m/${publicID}.glb`,
+        `https://poly.pizza/api/model/${publicID}/download`,
+      ];
+
+      let downloaded = false;
+      for (const glbUrl of glbUrls) {
+        try {
+          const glbRes = await axios.get(glbUrl, {
+            responseType: 'arraybuffer',
+            timeout: 20000,
+            maxRedirects: 10,
+            headers: {
+              'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36',
+              'Referer': 'https://poly.pizza/',
+              'Accept': '*/*'
+            }
+          });
+          const ct = glbRes.headers['content-type'] || '';
+          const data = Buffer.from(glbRes.data);
+          // Verify it's actually a GLB (starts with glTF magic bytes or is big enough)
+          if (data.length > 1000 && (ct.includes('octet') || ct.includes('gltf') || ct.includes('model') || data.slice(0,4).toString() === 'glTF')) {
+            fs.writeFileSync(cacheFile, data);
+            results.push({
+              source: 'Poly Pizza', name: m.title || 'Model',
+              thumbnail: m.previewUrl || null, downloads: 0, format: 'GLB',
+              downloadUrl: `/model-cache/${publicID}.glb`
+            });
+            console.log(`[MODEL SEARCH] Cached GLB: ${publicID} (${data.length} bytes)`);
+            downloaded = true;
+            break;
+          } else {
+            console.log(`[MODEL SEARCH] ${glbUrl} → not GLB (${ct}, ${data.length}b)`);
+          }
+        } catch(e) {
+          console.log(`[MODEL SEARCH] ${glbUrl} failed: ${e.message}`);
+        }
+      }
+    }
+  } catch (e) {
+    console.log(`[MODEL SEARCH] Poly Pizza error: ${e.message}`);
+  }
+
+  console.log(`[MODEL SEARCH] "${query}" → ${results.length} cached results`);
+  res.json({ results: results.slice(0, 4) });
 });
+
+// Serve cached models
+app.use('/model-cache', express.static(MODEL_CACHE_DIR));
 
 app.get('/proxy-model', async (req, res) => {
   const { url } = req.query;
   if (!url) return res.status(400).json({ error: 'No URL' });
-  const allowed = ['poly.pizza', 'sketchfab.com', 'nasa.gov', 'si.edu', 'github.com', 'raw.githubusercontent.com'];
+  const allowed = ['poly.pizza', 'static.poly.pizza', 'sketchfab.com', 'nasa.gov', 'si.edu', 'github.com', 'raw.githubusercontent.com'];
   try {
     const urlObj = new URL(url);
     if (!allowed.some(h => urlObj.hostname.includes(h))) return res.status(403).json({ error: 'Domain not allowed' });
-    const response = await axios.get(url, { responseType: 'arraybuffer', timeout: 30000, maxRedirects: 5 });
+    const response = await axios.get(url, {
+      responseType: 'arraybuffer', timeout: 30000, maxRedirects: 10,
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36',
+        'Referer': 'https://poly.pizza/', 'Accept': '*/*'
+      }
+    });
     res.set('Content-Type', response.headers['content-type'] || 'model/gltf-binary');
     res.set('Access-Control-Allow-Origin', '*');
     res.send(response.data);
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) {
+    console.log(`[PROXY] Error: ${e.response?.status} ${e.message}`);
+    res.status(500).json({ error: e.message });
+  }
 });
 
 // ============ STATIC FILE VIEWER ============
 app.use('/view', express.static(PUBLIC_DIR));
+// ============ SPOKEN UPDATES TOGGLE ============
+let spokenUpdatesEnabled = false;
+const spokenUpdateIds = new Set();
 
+app.get('/voice/spoken-updates', (req, res) => {
+  res.json({ enabled: spokenUpdatesEnabled });
+});
+
+app.post('/voice/spoken-updates', (req, res) => {
+  spokenUpdatesEnabled = req.body.enabled ?? !spokenUpdatesEnabled;
+  console.log(`[SPOKEN UPDATES] ${spokenUpdatesEnabled ? 'ON' : 'OFF'}`);
+  res.json({ enabled: spokenUpdatesEnabled });
+});
+
+app.get('/proactive-updates/latest-unspoken', (req, res) => {
+  const update = proactiveUpdates.find(u => !spokenUpdateIds.has(u.id));
+  res.json({ update: update || null });
+});
+
+app.post('/proactive-updates/mark-spoken', (req, res) => {
+  if (req.body.id) spokenUpdateIds.add(req.body.id);
+  res.json({ ok: true });
+});
+app.get('/test-glb', async (req, res) => {
+  try {
+    const r = await axios.get('https://poly.pizza/m/9lLmH8Et4K.glb', {
+      responseType: 'arraybuffer',
+      maxRedirects: 0,  // don't follow redirects — show us where it goes
+      validateStatus: s => true,
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36',
+        'Referer': 'https://poly.pizza/'
+      }
+    });
+    res.json({ status: r.status, location: r.headers.location, contentType: r.headers['content-type'], size: r.data?.length });
+  } catch(e) { res.json({ error: e.message, code: e.code }); }
+});
 app.listen(3001, () => {
   console.log('\n╔════════════════════════════════════════╗');
   console.log('║       J.A.R.V.I.S. ONLINE              ║');

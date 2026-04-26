@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Potential Solutions - Sesami Ideate</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            min-height: 100vh;
+            color: #e0e0e0;
+            line-height: 1.7;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+        
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        .breadcrumb a {
+            color: #888;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        .breadcrumb a:hover { color: #00d4ff; }
+        .breadcrumb span { color: #00d4ff; }
+        
+        .page-header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding: 40px;
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(0, 255, 136, 0.1));
+            border-radius: 20px;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+        }
+        .page-header h1 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #00d4ff, #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+        }
+        .page-header p {
+            color: #aaa;
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .section {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 16px;
+            padding: 35px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .section h2 {
+            font-size: 1.6rem;
+            color: #00d4ff;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .section h3 {
+            font-size: 1.3rem;
+            color: #00ff88;
+            margin: 25px 0 15px 0;
+        }
+        .section p, .section li {
+            color: #cccccc;
+            font-size: 1.05rem;
+            margin-bottom: 12px;
+        }
+        
+        .solutions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-top: 25px;
+        }
+        .solution-card {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 16px;
+            padding: 30px;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        .solution-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(0, 212, 255, 0.5);
+            box-shadow: 0 10px 40px rgba(0, 212, 255, 0.2);
+        }
+        .solution-card.winner {
+            border: 2px solid #00ff88;
+            background: rgba(0, 255, 136, 0.05);
+        }
+        .solution-card h4 {
+            font-size: 1.3rem;
+            color: #ffffff;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .solution-card.winner h4::after {
+            content: "SELECTED";
+            font-size: 0.7rem;
+            background: #00ff88;
+            color: #000;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+        .solution-card p {
+            color: #bbb;
+            margin-bottom: 15px;
+        }
+        
+        .pros-cons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .pros, .cons {
+            padding: 15px;
+            border-radius: 10px;
+        }
+        .pros {
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid rgba(0, 255, 136, 0.3);
+        }
+        .cons {
+            background: rgba(255, 100, 100, 0.1);
+            border: 1px solid rgba(255, 100, 100, 0.3);
+        }
+        .pros h5 { color: #00ff88; margin-bottom: 10px; }
+        .cons h5 { color: #ff6b6b; margin-bottom: 10px; }
+        .pros li, .cons li {
+            color: #ccc;
+            font-size: 0.9rem;
+            margin-bottom: 6px;
+            margin-left: 15px;
+        }
+        
+        .feasibility-score {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .score-bar {
+            flex: 1;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .score-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        .score-fill.high { background: linear-gradient(90deg, #00ff88, #00d4ff); }
+        .score-fill.medium { background: linear-gradient(90deg, #ffcc00, #ff9900); }
+        .score-fill.low { background: linear-gradient(90deg, #ff6b6b, #ff4444); }
+        
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .nav-btn {
+            padding: 15px 30px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        .nav-btn.back {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .nav-btn.next {
+            background: linear-gradient(135deg, #00d4ff, #00ff88);
+            color: #000;
+        }
+        .nav-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(0, 212, 255, 0.3); }
+        
+        .edit-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: 500;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s;
+            z-index: 100;
+        }
+        .edit-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 30px rgba(102, 126, 234, 0.6); }
+        
+        [contenteditable="true"] {
+            outline: 2px dashed #00d4ff;
+            outline-offset: 4px;
+            padding: 5px;
+        }
+        
+        ul { list-style: none; padding-left: 0; }
+        ul li::before {
+            content: ">";
+            color: #00d4ff;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="index.html">Sesami</a>
+            <span>/</span>
+            <a href="ideate.html">Ideate</a>
+            <span>/</span>
+            <span>Potential Solutions</span>
+        </nav>
+        
+        <header class="page-header">
+            <h1>Potential Solutions to Solve Our Problem</h1>
+            <p>Exploring every possible approach to passive infant developmental monitoring before selecting our winning concept</p>
+        </header>
+        
+        <section class="section">
+            <h2>The Core Problem We're Solving</h2>
+            <p>Parents lack accessible, continuous tools to monitor their infant's developmental progress. Current methods rely on periodic pediatric checkups (typically every 2-3 months) and subjective parental observation. Developmental delays affecting 15% of children often go undetected until age 4+, missing critical early intervention windows.</p>
+            
+            <h3>Solution Requirements</h3>
+            <ul>
+                <li>Must be passive (no active parent involvement required for data collection)</li>
+                <li>Must be non-invasive and safe for infants 0-24 months</li>
+                <li>Must track motor, cognitive, and social developmental milestones</li>
+                <li>Must provide actionable insights, not just raw data</li>
+                <li>Must integrate with existing parenting routines</li>
+                <li>Must be affordable for middle-class families (under $300 total cost)</li>
+            </ul>
+        </section>
+        
+        <section class="section">
+            <h2>All Solutions Explored</h2>
+            <p>Our team generated 127 unique ideas across 8 brainstorming sessions. After initial screening, we narrowed to 6 viable technology approaches for deep evaluation.</p>
+            
+            <div class="solutions-grid">
+                <div class="solution-card winner">
+                    <h4>AI-Powered Video Analysis</h4>
+                    <p>Computer vision algorithms analyze footage from existing baby monitors to detect developmental milestones automatically. Uses pose estimation, movement pattern recognition, and behavioral analysis.</p>
+                    <div class="pros-cons">
+                        <div class="pros">
+                            <h5>Advantages</h5>
+                            <ul>
+                                <li>Uses existing hardware (baby monitors)</li>
+                                <li>Completely passive monitoring</li>
+                                <li>Rich visual data for milestone detection</li>
+                                <li>Can track motor, social, and cognitive cues</li>
+                                <li>Scalable cloud-based processing</li>
+                            </ul>
+                        </div>
+                        <div class="cons">
+                            <h5>Challenges</h5>
+                            <ul>
+                                <li>Privacy concerns with video data</li>
+                                <li>Requires good camera positioning</li>
+                                <li>Limited to monitored areas only</li>
+                                <li>Processing costs for video AI</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="feasibility-score">
+                        <span style="color: #00ff88;">Feasibility: 92%</span>
+                        <div class="score-bar"><div class="score-fill high" style="width: 92%;"></div></div>
+                    </div>
+                </div>
+                
+                <div class="solution-card">
+                    <h4>Wearable Smart Sock/Anklet</h4>
+                    <p>IMU sensors embedded in soft fabric track leg movements, kick patterns, and motor development. Similar to Owlet but focused on development vs. vitals.</p>
+                    <div class="pros-cons">
+                        <div class="pros">
+                            <h5>Advantages</h5>
+                            <ul>
+                                <li>Continuous 24/7 monitoring</li>
+                                <li>Precise movement data</li>
+                                <li>Works anywhere baby goes</li>
+                                <li>No camera privacy concerns</li>
+                            </ul>
+                        </div>
+                        <div class="cons">
+                            <h5>Challenges</h5>
+                            <ul>
+                                <li>Hardware manufacturing required</li>
+                                <li>Parents must remember to put it on</li>
+                                <li>Battery life limitations</li>
+                                <li>Higher unit cost ($150-200)</li>
+                                <li>Only tracks motor development</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="feasibility-score">
+                        <span style="color: #ffcc00;">Feasibility: 68%</span>
+                        <div class="score-bar"><div class="score-fill medium" style="width: 68%;"></div></div>
+                    </div>
+                </div>
+                
+                <div class="solution-card">
+                    <h4>Smart Play Mat with Sensors</h4>
+                    <p>Pressure-sensitive mat tracks where baby moves, reaches, and interacts. Embedded toys provide cognitive stimulation while collecting data.</p>
+                    <div class="pros-cons">
+                        <div class="pros">
+                            <h5>Advantages</h5>
+                            <ul>
+                                <li>Natural play environment</li>
+                                <li>Tracks reaching and grasping</li>
+                                <li>Can measure tummy time</li>
+                                <li>No wearables required</li>
+                            </ul>
+                        </div>
+                        <div class="cons">
+                            <h5>Challenges</h5>
+                            <ul>
+                                <li>Limited to mat area only</li>
+                                <li>Expensive manufacturing</li>
+                                <li>Large physical product</li>
+                                <li>Babies outgrow it quickly</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="feasibility-score">
+                        <span style="color: #ff9900;">Feasibility: 45%</span>
+                        <div class="score-bar"><div class="score-fill medium" style="width: 45%;"></div></div>
+                    </div>
+                </div>
+                
+                <div class="solution-card">
+                    <h4>Audio Analysis System</h4>
+                    <p>AI analyzes baby sounds, cries, coos, and early babbling to track speech and language development milestones.</p>
+                    <div class="pros-cons">
+                        <div class="pros">
+                            <h5>Advantages</h5>
+                            <ul>
+                                <li>Uses existing baby monitors</li>
+                                <li>Less privacy-invasive than video</li>
+                                <li>24/7 passive monitoring</li>
+                                <li>Tracks speech development well</li>
+                            </ul>
+                        </div>
+                        <div class="cons">
+                            <h5>Challenges</h5>
+                            <ul>
+                                <li>Cannot track motor milestones</li>
+                                <li>Background noise interference</li>
+                                <li>Limited to audio-based milestones</li>
+                                <li>Speech milestones start later (6+ months)</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="feasibility-score">
+                        <span style="color: #ffcc00;">Feasibility: 72%</span>
+                        <div class="score-bar"><div class="score-fill medium" style="width: 72%;"></div></div>
+                    </div>
+                </div>
+                
+                <div class="solution-card">
+                    <h4>App-Only Manual Tracking</h4>
+                    <p>Mobile app with guided prompts helps parents log and track milestones manually with AI-powered analysis of their entries.</p>
+                    <div class="pros-cons">
+                        <div class="pros">
+                            <h5>Advantages</h5>
+                            <ul>
+                                <li>No hardware costs</li>
+                                <li>Easy to develop and deploy</li>
+                                <li>Works on any smartphone</li>
+                                <li>Low technical barriers</li>
+                            </ul>
+                        </div>
+                        <div class="cons">
+                            <h5>Challenges</h5>
+                            <ul>
+                                <li>Not passive - requires parent effort</li>
+                                <li>Subjective parent observations</li>
+                                <li>Low engagement over time</li>
+                                <li>Misses what parents don't notice</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="feasibility-score">
+                        <span style="color: #00ff88;">Feasibility: 95%</span>
+                        <div class="score-bar"><div class="score-fill high" style="width: 95%;"></div></div>
+                    </div>
+                </div>
+                
+                <div class="solution-card">
+                    <h4>Smart Crib with Embedded Sensors</h4>
+                    <p>Crib mattress with pressure sensors and side-mounted cameras tracks sleep patterns, movements, and development during rest time.</p>
+                    <div class="pros-cons">
+                        <div class="pros">
+                            <h5>Advantages</h5>
+                            <ul>
+                                <li>Natural monitoring location</li>
+                                <li>Combines multiple sensor types</li>
+                                <li>Tracks sleep development</li>
+                                <li>Always in position</li>
+                            </ul>
+                        </div>
+                        <div class="cons">
+                            <h5>Challenges</h5>
+                            <ul>
+                                <li>Very expensive ($500+)</li>
+                                <li>Complex hardware integration</li>
+                                <li>Safety certifications required</li>
+                                <li>Only monitors during sleep/rest</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="feasibility-score">
+                        <span style="color: #ff6b6b;">Feasibility: 35%</span>
+                        <div class="score-bar"><div class="score-fill low" style="width: 35%;"></div></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="section">
+            <h2>Why AI Video Analysis Won</h2>
+            <p>After extensive evaluation, AI-powered video analysis emerged as the clear winner for several key reasons:</p>
+            <ul>
+                <li><strong>Leverage Existing Hardware:</strong> 78% of parents already own baby monitors with cameras. Zero additional hardware purchase required.</li>
+                <li><strong>Comprehensive Tracking:</strong> Video captures motor skills, social smiles, eye tracking, reaching, rolling - the full spectrum of visual milestones.</li>
+                <li><strong>True Passive Monitoring:</strong> Once set up, parents don't need to do anything. The AI works 24/7 in the background.</li>
+                <li><strong>Scalable Technology:</strong> Cloud-based AI processing means the system gets smarter over time with more data.</li>
+                <li><strong>Addressable Privacy:</strong> End-to-end encryption, on-device processing options, and transparent data policies can address concerns.</li>
+            </ul>
+        </section>
+        
+        <nav class="nav-buttons">
+            <a href="ideate.html" class="nav-btn back">Back to Ideate Overview</a>
+            <a href="decision-matrix.html" class="nav-btn next">Next: Decision Matrix</a>
+        </nav>
+    </div>
+    
+    <a href="?edit=true" class="edit-btn" id="editBtn">Edit Site</a>
+    
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('edit') === 'true') {
+            document.querySelectorAll('h1, h2, h3, h4, h5, p, li, span').forEach(el => {
+                if (!el.closest('nav') && !el.closest('.edit-btn')) {
+                    el.contentEditable = true;
+                }
+            });
+            document.getElementById('editBtn').textContent = 'Editing Mode';
+            document.getElementById('editBtn').style.background = 'linear-gradient(135deg, #00ff88, #00d4ff)';
+        }
+    </script>
+</body>
+</html>

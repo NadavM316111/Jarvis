@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TROY AI — Dynamic Market Intelligence Network · Developer Spec</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+  :root {
+    --navy: #0a1628; --navy2: #0f2035; --navy3: #1a3a5e;
+    --gold: #e8c84a; --gold2: #c9a83c; --gold3: #f5e09a;
+    --blue: #4a9eff; --green: #4aff8a; --red: #ff6b4a; --purple: #c084fc;
+    --text: #c8ddf0; --text2: #7aadda; --text3: #4a7ab5;
+    --border: #1a3a5e; --mono: 'JetBrains Mono', monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #060d1a; color: var(--text); font-family: 'Inter', sans-serif; font-size: 14px; line-height: 1.7; }
+  .page { max-width: 1100px; margin: 0 auto; padding: 40px 32px; }
+
+  /* HEADER */
+  .doc-header { border-bottom: 2px solid var(--gold2); padding-bottom: 28px; margin-bottom: 40px; }
+  .doc-header .logo { font-size: 11px; color: var(--gold); letter-spacing: 3px; text-transform: uppercase; font-weight: 700; margin-bottom: 10px; }
+  .doc-header h1 { font-size: 32px; font-weight: 700; color: #fff; line-height: 1.2; margin-bottom: 8px; }
+  .doc-header .subtitle { font-size: 14px; color: var(--text2); margin-bottom: 16px; }
+  .meta-row { display: flex; gap: 24px; flex-wrap: wrap; }
+  .meta-badge { background: var(--navy2); border: 1px solid var(--border); border-radius: 6px; padding: 6px 12px; font-size: 11px; }
+  .meta-badge span { color: var(--text3); margin-right: 6px; }
+  .meta-badge strong { color: var(--gold); }
+
+  /* TOC */
+  .toc { background: var(--navy2); border: 1px solid var(--border); border-radius: 10px; padding: 24px 28px; margin-bottom: 40px; }
+  .toc h2 { font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 16px; }
+  .toc ol { padding-left: 20px; }
+  .toc li { margin: 6px 0; }
+  .toc a { color: var(--blue); text-decoration: none; font-size: 13px; }
+  .toc a:hover { color: var(--gold); }
+  .toc .sub { color: var(--text3); font-size: 12px; margin-left: 12px; }
+
+  /* SECTIONS */
+  .section { margin-bottom: 52px; }
+  .section-label { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); font-weight: 700; margin-bottom: 8px; font-family: var(--mono); }
+  .section h2 { font-size: 22px; font-weight: 700; color: #fff; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 20px; }
+  .section h3 { font-size: 16px; font-weight: 600; color: var(--gold3); margin: 24px 0 10px; }
+  .section h4 { font-size: 13px; font-weight: 600; color: var(--text2); margin: 18px 0 8px; letter-spacing: .5px; text-transform: uppercase; }
+  p { margin-bottom: 14px; color: var(--text); }
+
+  /* CODE */
+  pre { background: #020810; border: 1px solid var(--border); border-radius: 8px; padding: 20px; overflow-x: auto; margin: 16px 0; position: relative; }
+  pre .lang-label { position: absolute; top: 8px; right: 12px; font-size: 10px; color: var(--text3); font-family: var(--mono); letter-spacing: 1px; }
+  code { font-family: var(--mono); font-size: 13px; line-height: 1.6; color: #a8d8f0; }
+  code .c { color: #4a7a5a; } /* comments */
+  code .k { color: var(--gold); } /* keywords */
+  code .s { color: #9ade7a; } /* strings */
+  code .n { color: var(--blue); } /* numbers/values */
+  code .f { color: var(--purple); } /* function names */
+  code .t { color: #ff9a6a; } /* types */
+  inline-code, .ic { background: #0a1a2a; border: 1px solid var(--border); border-radius: 4px; padding: 1px 6px; font-family: var(--mono); font-size: 12px; color: var(--blue); }
+
+  /* TABLES */
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 13px; }
+  th { background: var(--navy3); color: var(--gold); font-weight: 600; padding: 10px 14px; text-align: left; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; border-bottom: 2px solid var(--gold2); }
+  td { padding: 9px 14px; border-bottom: 1px solid var(--navy2); vertical-align: top; }
+  tr:hover td { background: #0a1628; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; font-family: var(--mono); }
+  .badge-macro { background: #2a2000; color: var(--gold); border: 1px solid #4a3800; }
+  .badge-geo { background: #001a3a; color: var(--blue); border: 1px solid #1a4a8a; }
+  .badge-sector { background: #001a10; color: var(--green); border: 1px solid #0a4a28; }
+  .badge-risk { background: #2a0800; color: var(--red); border: 1px solid #5a2000; }
+  .badge-data { background: #1a1a2a; color: #d0d8e8; border: 1px solid #2a3a5a; }
+  .badge-portfolio { background: #1a0a2a; color: var(--purple); border: 1px solid #4a2a7a; }
+
+  /* CALLOUT BOXES */
+  .callout { border-radius: 8px; padding: 16px 20px; margin: 20px 0; display: flex; gap: 12px; }
+  .callout-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+  .callout-critical { background: #2a0800; border-left: 3px solid var(--red); }
+  .callout-info { background: #001a3a; border-left: 3px solid var(--blue); }
+  .callout-troy { background: #2a2000; border-left: 3px solid var(--gold); }
+  .callout-title { font-weight: 700; font-size: 13px; margin-bottom: 4px; }
+  .callout-critical .callout-title { color: var(--red); }
+  .callout-info .callout-title { color: var(--blue); }
+  .callout-troy .callout-title { color: var(--gold); }
+  .callout p { margin: 0; font-size: 13px; }
+
+  /* NODE REFERENCE CARDS */
+  .node-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; margin: 16px 0; }
+  .node-card { background: var(--navy2); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; }
+  .node-card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .node-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+  .node-name { font-weight: 700; font-size: 14px; color: #fff; }
+  .node-id { font-family: var(--mono); font-size: 11px; color: var(--text3); }
+  .node-desc { font-size: 12px; color: var(--text2); margin-bottom: 8px; line-height: 1.5; }
+  .node-rec { font-size: 11px; color: var(--green); font-family: var(--mono); padding: 4px 8px; background: #001a10; border-left: 2px solid var(--green); border-radius: 0 4px 4px 0; }
+
+  /* API SECTION */
+  .api-endpoint { background: #020810; border: 1px solid var(--border); border-radius: 8px; margin: 12px 0; overflow: hidden; }
+  .api-endpoint-header { background: var(--navy2); padding: 10px 16px; display: flex; align-items: center; gap: 10px; }
+  .method { font-family: var(--mono); font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 4px; }
+  .method-get { background: #002a15; color: var(--green); }
+  .method-post { background: #001a3a; color: var(--blue); }
+  .method-ws { background: #2a1a00; color: var(--gold); }
+  .api-path { font-family: var(--mono); font-size: 13px; color: var(--text); }
+  .api-desc { font-size: 12px; color: var(--text3); margin-left: auto; }
+  .api-body { padding: 16px; }
+
+  /* ARCH DIAGRAM */
+  .arch-box { background: var(--navy2); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; text-align: center; }
+  .arch-title { font-size: 12px; font-weight: 700; color: var(--gold); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+  .arch-sub { font-size: 11px; color: var(--text3); }
+  .arch-arrow { text-align: center; font-size: 20px; color: var(--border); line-height: 1; padding: 4px 0; }
+  .arch-row { display: flex; gap: 8px; align-items: center; margin: 8px 0; }
+  .arch-row .arch-box { flex: 1; }
+  .arch-row .arch-arrow { flex: 0 0 20px; }
+
+  hr.section-divider { border: none; border-top: 1px solid var(--border); margin: 48px 0; }
+
+  /* FOOTER */
+  .doc-footer { border-top: 1px solid var(--border); padding-top: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: gap; font-size: 12px; color: var(--text3); margin-top: 60px; }
+  .doc-footer .brand { color: var(--gold); font-weight: 700; letter-spacing: 1px; }
+
+  @media print { body { background: white; color: #111; } .page { padding: 20px; } }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="doc-header">
+    <div class="logo">TROY Capital · TroyAI Platform</div>
+    <h1>Dynamic Market Intelligence<br>Network Graph — Developer Specification</h1>
+    <div class="subtitle">Full build spec for the TroyAI live market network visualization, backend data pipeline, and recommendation engine integration.</div>
+    <div class="meta-row">
+      <div class="meta-badge"><span>Version</span><strong>1.0</strong></div>
+      <div class="meta-badge"><span>Date</span><strong>April 2026</strong></div>
+      <div class="meta-badge"><span>Platform</span><strong>troyai.co</strong></div>
+      <div class="meta-badge"><span>Status</span><strong>Build Ready</strong></div>
+      <div class="meta-badge"><span>Classification</span><strong>Internal / Dev</strong></div>
+    </div>
+  </div>
+
+  <!-- TOC -->
+  <div class="toc">
+    <h2>Contents</h2>
+    <ol>
+      <li><a href="#overview">System Overview</a> <span class="sub">— Architecture, purpose, TROY integration</span></li>
+      <li><a href="#tech">Tech Stack</a> <span class="sub">— Frontend, backend, data, real-time</span></li>
+      <li><a href="#data-model">Data Model</a> <span class="sub">— Node schema, link schema, portfolio schema</span></li>
+      <li><a href="#nodes">Node Reference</a> <span class="sub">— All 30+ nodes with types, signals, and TROY actions</span></li>
+      <li><a href="#links">Link Reference</a> <span class="sub">— Full connection matrix with strength ratings</span></li>
+      <li><a href="#frontend">Frontend Implementation</a> <span class="sub">— D3.js force graph, views, interactions</span></li>
+      <li><a href="#backend">Backend API Spec</a> <span class="sub">— Endpoints, WebSocket events, data refresh</span></li>
+      <li><a href="#newsengine">News Signal Engine</a> <span class="sub">— Feed ingestion, NLP tagging, node mapping</span></li>
+      <li><a href="#portfolio">Portfolio Overlay</a> <span class="sub">— Student portfolio input, personal network view</span></li>
+      <li><a href="#recommendation">Recommendation Engine</a> <span class="sub">— Chain-reaction logic, output format</span></li>
+      <li><a href="#safety">Safety Score Layer</a> <span class="sub">— Node risk scoring, visual encoding</span></li>
+      <li><a href="#deployment">Deployment &amp; Hosting</a> <span class="sub">— Environment setup, VPS config</span></li>
+    </ol>
+  </div>
+
+  <!-- SECTION 1: OVERVIEW -->
+  <div class="section" id="overview">
+    <div class="section-label">Section 01</div>
+    <h2>System Overview</h2>
+    <p>The TroyAI Dynamic Market Intelligence Network is a live, interactive force-directed graph that maps the relationships between macro-economic forces, geopolitical actors, market sectors, and individual instruments. It is the visual and analytical backbone of TroyAI's recommendation engine — every buy/sell/hold signal traces back to a chain of connected nodes in this graph.</p>
+    <p>Unlike a static diagram, this network updates daily (or intraday) from live news feeds, economic data releases, and market price action. Node signal strengths pulse in real time. New events inject as temporary nodes and show their chain-reaction connections. Students and subscribers can overlay their own portfolios and see exactly how macro forces are hitting their specific holdings.</p>
+
+    <h3>Core Capabilities</h3>
+    <table>
+      <thead><tr><th>Capability</th><th>Description</th><th>Update Frequency</th></tr></thead>
+      <tbody>
+        <tr><td>Live Node Signal Strength</td><td>Each node's influence score updates based on news volume, price data, and macro releases</td><td>Intraday / 15min</td></tr>
+        <tr><td>News Event Injection</td><td>Breaking news auto-creates event nodes and draws connections to affected sectors</td><td>Real-time</td></tr>
+        <tr><td>Chain-Reaction Analysis</td><td>Click any node → TroyAI explains downstream consequences through 3 layers</td><td>On-demand</td></tr>
+        <tr><td>Portfolio Overlay</td><td>Student inputs holdings → network highlights their exposure to active risk nodes</td><td>On-demand</td></tr>
+        <tr><td>Safety Score</td><td>Each node and sector displays a risk score (0–100) color-coded green/yellow/red</td><td>Daily</td></tr>
+        <tr><td>Geopolitical Tracker</td><td>18+ world leaders/CEOs monitored — statements auto-map to sector nodes</td><td>Real-time</td></tr>
+        <tr><td>TROY Recommendation Output</td><td>Network state feeds TroyAI recommendation engine with structured action signals</td><td>Daily / On-event</td></tr>
+      </tbody>
+    </table>
+
+    <h3>How It Integrates with TroyAI</h3>
+    <p>The network graph is not cosmetic — it is the <strong>reasoning map</strong> that TroyAI uses internally. When TroyAI makes a recommendation, it:</p>
+    <ol style="padding-left:24px;margin:12px 0">
+      <li style="margin:6px 0">Reads the current state of all nodes (signal strength, recent events, price triggers)</li>
+      <li style="margin:6px 0">Traverses the link graph outward from the triggering node up to 3 hops</li>
+      <li style="margin:6px 0">Applies TROY investment logic to determine action: BUY / SELL / HOLD / WATCH</li>
+      <li style="margin:6px 0">Returns a structured recommendation with chain-reaction explanation</li>
+      <li style="margin:6px 0">Displays the reasoning visually in the network graph for the student</li>
+    </ol>
+  </div>
+
+  <hr class="section-divider">
+
+  <!-- SECTION 2: TECH STACK -->
+  <div class="section" id="tech">
+    <div class="section-label">Section 02</div>
+    <h2>Tech Stack</h2>
+
+    <h3>Frontend</h3>
+    <table>
+      <thead><tr><th>Component</th><th>Technology</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><td>Network Graph</td><td>D3.js v7 (force simulation)</td><td>Core interactive graph rendering</td></tr>
+        <tr><td>Framework</td><td>React 18 or Next.js 14</td><td>Component architecture, routing</td></tr>
+        <tr><td>Styling</td><td>Tailwind CSS + custom CSS vars</td><td>TROY dark theme, responsive layout</td></tr>
+        <tr><td>Real-time Updates</td><td>WebSocket (native) or Socket.io</td><td>Live node signal pulsing</td></tr>
+        <tr><td>State Management</td><td>Zustand or React Context</td><td>Graph state, portfolio state</td></tr>
+        <tr><td>Charts (auxiliary)</td><td>Recharts or Chart.js</td><td>Mini price charts on node click</td></tr>
+        <tr><td>Animations</td><td>Framer Motion</td><td>Node entrance, signal pulse effects</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Backend</h3>
+    <table>
+      <thead><tr><th>Component</th><th>Technology</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><td>API Server</td><td>Node.js + Express or FastAPI (Python)</td><td>REST API for graph data</td></tr>
+        <tr><td>WebSocket Server</td><td>ws (Node) or FastAPI WebSocket</td><td>Live updates push to clients</td></tr>
+        <tr><td>News Ingestion</td><td>RSS feeds + NewsAPI + X API</td><td>Pull breaking news for event injection</td></tr>
+        <tr><td>NLP Tagging</td><td>OpenAI API or Anthropic Claude API</td><td>Map news articles to graph node IDs</td></tr>
+        <tr><td>Market Data</td><td>Polygon.io, Alpha Vantage, or Yahoo Finance API</td><td>Live price/signal data for nodes</td></tr>
+        <tr><td>Database</td><td>PostgreSQL (graph state) + Redis (real-time cache)</td><td>Persistent graph + fast live data</td></tr>
+        <tr><td>Scheduler</td><td>node-cron or Celery (Python)</td><td>Scheduled data refresh jobs</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Infrastructure</h3>
+    <table>
+      <thead><tr><th>Component</th><th>Technology</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Hosting</td><td>AWS EC2 / DigitalOcean / Vultr VPS</td><td>Minimum 2vCPU, 4GB RAM for WS server</td></tr>
+        <tr><td>CDN</td><td>Cloudflare</td><td>Static assets, DDoS protection</td></tr>
+        <tr><td>SSL</td><td>Let's Encrypt / Cloudflare SSL</td><td>Required for WSS (secure WebSocket)</td></tr>
+        <tr><td>Process Manager</td><td>PM2</td><td>Node.js process management</td></tr>
+        <tr><td>Reverse Proxy</td><td>Nginx</td><td>Route HTTP/WS to Node processes</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <hr class="section-divider">
+
+  <!-- SECTION 3: DATA MODEL -->
+  <div class="section" id="data-model">
+    <div class="section-label">Section 03</div>
+    <h2>Data Model</h2>
+
+    <h3>Node Schema</h3>
+    <p>Every entity in the network (macro force, geopolitical actor, sector, indicator, risk event) is a Node object.</p>
+    <pre><span class="lang-label">TypeScript</span><code><span class="k">interface</span> <span class="t">TroyNode</span> {
+  id:          <span class="t">string</span>;         <span class="c">// Unique slug e.g. "fed", "china", "tech"</span>
+  label:       <span class="t">string</span>;         <span class="c">// Display name on graph</span>
+  type:        <span class="t">NodeType</span>;       <span class="c">// "macro" | "geo" | "sector" | "risk" | "data" | "portfolio"</span>
+  r:           <span class="t">number</span>;         <span class="c">// Node radius (visual size = importance)</span>
+  signal:      <span class="t">number</span>;         <span class="c">// 0–100 current signal strength (updates live)</span>
+  delta:       <span class="t">number</span>;         <span class="c">// Signal change in last 24h (-100 to +100)</span>
+  safetyScore: <span class="t">number</span>;         <span class="c">// 0–100 risk score (100 = safest)</span>
+  action:      <span class="t">string</span>;         <span class="c">// TROY monitoring action label</span>
+  desc:        <span class="t">string</span>;         <span class="c">// Chain-reaction description</span>
+  rec:         <span class="t">string</span>;         <span class="c">// TROY recommendation string</span>
+  ticker?:     <span class="t">string</span>;         <span class="c">// Optional: associated ticker symbol</span>
+  sentiment?:  <span class="t">number</span>;         <span class="c">// -1 to +1 news sentiment score</span>
+  lastEvent?:  <span class="t">string</span>;         <span class="c">// Description of most recent triggering event</span>
+  updatedAt:   <span class="t">Date</span>;           <span class="c">// Last data refresh timestamp</span>
+  isLive:      <span class="t">boolean</span>;        <span class="c">// true = actively updating from live feeds</span>
+  newsItems?:  <span class="t">NewsItem[]</span>;     <span class="c">// Recent news articles mapped to this node</span>
+}
+
+<span class="k">type</span> <span class="t">NodeType</span> = <span class="s">"macro"</span> | <span class="s">"geo"</span> | <span class="s">"sector"</span> | <span class="s">"risk"</span> | <span class="s">"data"</span> | <span class="s">"portfolio"</span> | <span class="s">"event"</span>;
+</code></pre>
+
+    <h3>Link Schema</h3>
+    <pre><span class="lang-label">TypeScript</span><code><span class="k">interface</span> <span class="t">TroyLink</span> {
+  id:          <span class="t">string</span>;         <span class="c">// Auto-generated: "source_id-target_id"</span>
+  source:      <span class="t">string</span>;         <span class="c">// Source node ID</span>
+  target:      <span class="t">string</span>;         <span class="c">// Target node ID</span>
+  strength:    <span class="n">1</span> | <span class="n">2</span> | <span class="n">3</span>;      <span class="c">// 1=weak, 2=moderate, 3=strong</span>
+  direction:   <span class="t">LinkDirection</span>;  <span class="c">// "unidirectional" | "bidirectional"</span>
+  type:        <span class="t">LinkType</span>;       <span class="c">// "causal" | "correlational" | "reactive"</span>
+  label?:      <span class="t">string</span>;         <span class="c">// Optional: edge label e.g. "Controls", "Impacts"</span>
+  active:      <span class="t">boolean</span>;        <span class="c">// false = link temporarily dormant (low signal)</span>
+  liveWeight?: <span class="t">number</span>;         <span class="c">// Real-time computed weight (correlation rolling 30d)</span>
+}
+
+<span class="k">type</span> <span class="t">LinkDirection</span> = <span class="s">"unidirectional"</span> | <span class="s">"bidirectional"</span>;
+<span class="k">type</span> <span class="t">LinkType</span> = <span class="s">"causal"</span> | <span class="s">"correlational"</span> | <span class="s">"reactive"</span>;
+</code></pre>
+
+    <h3>News Item Schema</h3>
+    <pre><span class="lang-label">TypeScript</span><code><span class="k">interface</span> <span class="t">NewsItem</span> {
+  id:          <span class="t">string</span>;
+  headline:    <span class="t">string</span>;
+  source:      <span class="t">string</span>;         <span class="c">// "Reuters" | "Bloomberg" | "CNBC" | "X" | etc.</span>
+  url:         <span class="t">string</span>;
+  publishedAt: <span class="t">Date</span>;
+  sentiment:   <span class="t">number</span>;         <span class="c">// -1 (bearish) to +1 (bullish)</span>
+  nodeIds:     <span class="t">string[]</span>;       <span class="c">// Nodes this article affects e.g. ["fed","rates","tech"]</span>
+  signalDelta: <span class="t">number</span>;         <span class="c">// How much this article moved signal scores</span>
+  troyAction?: <span class="t">string</span>;         <span class="c">// Auto-generated TROY action from this news item</span>
+}
+</code></pre>
+
+    <h3>Portfolio Schema</h3>
+    <pre><span class="lang-label">TypeScript</span><code><span class="k">interface</span> <span class="t">StudentPortfolio</span> {
+  userId:      <span class="t">string</span>;
+  holdings:    <span class="t">Holding[]</span>;
+  createdAt:   <span class="t">Date</span>;
+  updatedAt:   <span class="t">Date</span>;
+}
+
+<span class="k">interface</span> <span class="t">Holding</span> {
+  ticker:      <span class="t">string</span>;          <span class="c">// e.g. "NVDA", "XOM", "GLD"</span>
+  name:        <span class="t">string</span>;          <span class="c">// Display name</span>
+  shares:      <span class="t">number</span>;
+  avgCost:     <span class="t">number</span>;
+  nodeId:      <span class="t">string</span>;          <span class="c">// Maps to graph node e.g. "tech", "energy"</span>
+  sectorId:    <span class="t">string</span>;          <span class="c">// TROY sector classification</span>
+  weight:      <span class="t">number</span>;          <span class="c">// Portfolio % weight (auto-calculated)</span>
+  riskExposure: <span class="t">RiskExposure[]</span>; <span class="c">// Which risk nodes threaten this holding</span>
+}
+
+<span class="k">interface</span> <span class="t">RiskExposure</span> {
+  nodeId:      <span class="t">string</span>;          <span class="c">// e.g. "fed", "china", "recession"</span>
+  severity:    <span class="n">1</span> | <span class="n">2</span> | <span class="n">3</span>;       <span class="c">// 1=monitor, 2=caution, 3=alert</span>
+  explanation: <span class="t">string</span>;          <span class="c">// TROY chain-reaction explanation</span>
+}
+</code></pre>
+  </div>
+
+  <hr class="section-divider">
+
+  <!-- SECTION 4: NODES -->
+  <div class="section" id="nodes">
+    <div class="section-label">Section 04</div>
+    <h2>Node Reference — All Network Nodes</h2>
+    <p>The following table defines every node in the TroyAI Market Intelligence Network. Node <strong>radius</strong> determines visual size. <strong>Signal strength</strong> is a live 0–100 score. <strong>Type</strong> determines color coding.</p>
+
+    <table>
+      <thead><tr><th>ID</th><th>Label</th><th>Type</th><th>Radius</th><th>Base Signal</th><th>TROY Action</th></tr></thead>
+      <tbody>
+        <tr><td><code>fed</code></td><td>Fed Reserve</td><td><span class="badge badge-macro">MACRO</span></td><td>28</td><td>95</td><td>MONITOR RATES</td></tr>
+        <tr><td><code>inflation</code></td><td>Inflation</td><td><span class="badge badge-macro">MACRO</span></td><td>24</td><td>88</td><td>MONITOR CPI/PCE</td></tr>
+        <tr><td><code>rates</code></td><td>Interest Rates</td><td><span class="badge badge-macro">MACRO</span></td><td>26</td><td>92</td><td>TRACK 10Y YIELD</td></tr>
+        <tr><td><code>dollar</code></td><td>USD Strength</td><td><span class="badge badge-macro">MACRO</span></td><td>20</td><td>78</td><td>WATCH DXY</td></tr>
+        <tr><td><code>economy</code></td><td>U.S. Economy</td><td><span class="badge badge-macro">MACRO</span></td><td>30</td><td>90</td><td>TRACK GDP/PMI</td></tr>
+        <tr><td><code>employment</code></td><td>Employment</td><td><span class="badge badge-data">DATA</span></td><td>18</td><td>72</td><td>WATCH NFP</td></tr>
+        <tr><td><code>housing</code></td><td>Housing Market</td><td><span class="badge badge-data">DATA</span></td><td>18</td><td>65</td><td>WATCH EXISTING SALES</td></tr>
+        <tr><td><code>recession</code></td><td>Recession Risk</td><td><span class="badge badge-risk">RISK</span></td><td>22</td><td>80</td><td>YIELD CURVE WATCH</td></tr>
+        <tr><td><code>us</code></td><td>United States</td><td><span class="badge badge-geo">GEO</span></td><td>34</td><td>96</td><td>CORE MARKET</td></tr>
+        <tr><td><code>china</code></td><td>China</td><td><span class="badge badge-geo">GEO</span></td><td>32</td><td>88</td><td>MONITOR PBOC</td></tr>
+        <tr><td><code>geopolitics</code></td><td>Geopolitics</td><td><span class="badge badge-geo">GEO</span></td><td>22</td><td>82</td><td>SIGNAL MONITOR</td></tr>
+        <tr><td><code>trump</code></td><td>Trump/Policy</td><td><span class="badge badge-geo">GEO</span></td><td>20</td><td>85</td><td>POLICY TRACKER</td></tr>
+        <tr><td><code>europe</code></td><td>Europe/ECB</td><td><span class="badge badge-geo">GEO</span></td><td>22</td><td>75</td><td>MONITOR ECB</td></tr>
+        <tr><td><code>mideast</code></td><td>Middle East</td><td><span class="badge badge-geo">GEO</span></td><td>20</td><td>78</td><td>OIL CONFLICT WATCH</td></tr>
+        <tr><td><code>india</code></td><td>India / Modi</td><td><span class="badge badge-geo">GEO</span></td><td>18</td><td>70</td><td>EMERGING MARKETS</td></tr>
+        <tr><td><code>stockmkt</code></td><td>Stock Markets</td><td><span class="badge badge-sector">SECTOR</span></td><td>26</td><td>88</td><td>SPY/QQQ MONITOR</td></tr>
+        <tr><td><code>sp500</code></td><td>S&amp;P 500</td><td><span class="badge badge-sector">SECTOR</span></td><td>20</td><td>84</td><td>TRACK PRICE ACTION</td></tr>
+        <tr><td><code>tech</code></td><td>Tech / AI</td><td><span class="badge badge-sector">SECTOR</span></td><td>24</td><td>90</td><td>PRIORITY SECTOR</td></tr>
+        <tr><td><code>energy</code></td><td>Energy</td><td><span class="badge badge-sector">SECTOR</span></td><td>22</td><td>82</td><td>PRIORITY SECTOR</td></tr>
+        <tr><td><code>healthcare</code></td><td>Healthcare</td><td><span class="badge badge-sector">SECTOR</span></td><td>22</td><td>80</td><td>PRIORITY SECTOR</td></tr>
+        <tr><td><code>defense</code></td><td>Defense</td><td><span class="badge badge-sector">SECTOR</span></td><td>20</td><td>78</td><td>PRIORITY SECTOR</td></tr>
+        <tr><td><code>minerals</code></td><td>Minerals/Mining</td><td><span class="badge badge-sector">SECTOR</span></td><td>20</td><td>76</td><td>PRIORITY SECTOR</td></tr>
+        <tr><td><code>cleanenergy</code></td><td>Clean Energy</td><td><span class="badge badge-sector">SECTOR</span></td><td>20</td><td>74</td><td>POLICY SENSITIVE</td></tr>
+        <tr><td><code>financials</code></td><td>Financials</td><td><span class="badge badge-sector">SECTOR</span></td><td>20</td><td>76</td><td>RATE SENSITIVE</td></tr>
+        <tr><td><code>bonds</code></td><td>Bond Market</td><td><span class="badge badge-data">DATA</span></td><td>20</td><td>82</td><td>TRACK 10Y/2Y SPREAD</td></tr>
+        <tr><td><code>commodities</code></td><td>Commodities</td><td><span class="badge badge-data">DATA</span></td><td>18</td><td>72</td><td>WATCH OIL/GOLD/COPPER</td></tr>
+        <tr><td><code>consumer</code></td><td>Consumer</td><td><span class="badge badge-data">DATA</span></td><td>18</td><td>68</td><td>WATCH SPENDING DATA</td></tr>
+        <tr><td><code>gold</code></td><td>Gold / GLD</td><td><span class="badge badge-data">DATA</span></td><td>18</td><td>70</td><td>SAFE HAVEN TRACKER</td></tr>
+        <tr><td><code>vix</code></td><td>Volatility / VIX</td><td><span class="badge badge-risk">RISK</span></td><td>18</td><td>68</td><td>FEAR GAUGE</td></tr>
+        <tr><td><code>covid_risk</code></td><td>Black Swan</td><td><span class="badge badge-risk">RISK</span></td><td>18</td><td>60</td><td>TAIL RISK MONITOR</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-troy">
+      <div class="callout-icon">⚡</div>
+      <div>
+        <div class="callout-title">TROY Priority Sectors</div>
+        <p>The five TROY Priority Sectors — Tech/AI, Energy, Healthcare, Defense, Minerals — should always be visible in the default graph view and receive enhanced visual treatment (larger radius, gold ring indicator). These represent Tom's core long-term investment thesis sectors.</p>
+      </div>
+    </div>
+  </div>
+
+  <hr class="section-divider">
+
+  <!-- SECTION 5: LINKS -->
+  <div class="section" id="links">
+    <div class="section-label">Section 05</div>
+    <h2>Link Reference — Connection Matrix</h2>
+    <p>Links define how nodes influence each other. Strength 3 = strong/direct causal. Strength 2 = moderate influence. Strength 1 = weak/indirect correlation. All links are directional by default (source influences target).</p>
+
+    <table>
+      <thead><tr><th>Source</th><th>Target</th><th>Strength</th><th>Type</th><th>Relationship</th></tr></thead>
+      <tbody>
+        <tr><td>fed</td><td>rates</td><td>3 — Strong</td><td>Causal</td><td>Fed directly sets the federal funds rate</td></tr>
+        <tr><td>fed</td><td>inflation</td><td>3 — Strong</td><td>Causal</td><td>Fed's primary mandate is inflation control</td></tr>
+        <tr><td>fed</td><td>economy</td><td>2 — Moderate</td><td>Causal</td><td>Monetary policy shapes economic conditions</td></tr>
+        <tr><td>rates</td><td>housing</td><td>3 — Strong</td><td>Causal</td><td>Mortgage rates are directly tied to 10Y yield</td></tr>
+        <tr><td>rates</td><td>bonds</td><td>3 — Strong</td><td>Causal</td><td>Bond prices move inverse to rates</td></tr>
+        <tr><td>rates</td><td>tech</td><td>2 — Moderate</td><td>Causal</td><td>Higher rates compress growth stock multiples</td></tr>
+        <tr><td>rates</td><td>stockmkt</td><td>2 — Moderate</td><td>Causal</td><td>Risk-free rate alternative affects equity valuations</td></tr>
+        <tr><td>rates</td><td>financials</td><td>2 — Moderate</td><td>Causal</td><td>Higher rates expand bank net interest margins</td></tr>
+        <tr><td>inflation</td><td>commodities</td><td>2 — Moderate</td><td>Correlational</td><td>Commodity prices are a component of inflation</td></tr>
+        <tr><td>inflation</td><td>fed</td><td>2 — Moderate</td><td>Reactive</td><td>Rising inflation triggers Fed response</td></tr>
+        <tr><td>inflation</td><td>consumer</td><td>2 — Moderate</td><td>Causal</td><td>Inflation erodes consumer purchasing power</td></tr>
+        <tr><td>economy</td><td>employment</td><td>3 — Strong</td><td>Causal</td><td>GDP growth drives job creation</td></tr>
+        <tr><td>economy</td><td>consumer</td><td>2 — Moderate</td><td>Causal</td><td>Economic health affects consumer confidence</td></tr>
+        <tr><td>economy</td><td>stockmkt</td><td>2 — Moderate</td><td>Correlational</td><td>Corporate earnings track economic growth</td></tr>
+        <tr><td>us</td><td>economy</td><td>3 — Strong</td><td>Causal</td><td>U.S. policy defines domestic economic conditions</td></tr>
+        <tr><td>us</td><td>geopolitics</td><td>2 — Moderate</td><td>Causal</td><td>U.S. foreign policy drives geopolitical environment</td></tr>
+        <tr><td>us</td><td>trump</td><td>3 — Strong</td><td>Causal</td><td>Executive leadership shapes policy direction</td></tr>
+        <tr><td>china</td><td>commodities</td><td>3 — Strong</td><td>Causal</td><td>China is world's largest commodity consumer</td></tr>
+        <tr><td>china</td><td>minerals</td><td>2 — Moderate</td><td>Causal</td><td>China dominates rare earth supply chains</td></tr>
+        <tr><td>china</td><td>tech</td><td>2 — Moderate</td><td>Causal</td><td>China tech competition/decoupling affects sector</td></tr>
+        <tr><td>china</td><td>geopolitics</td><td>2 — Moderate</td><td>Causal</td><td>China-U.S. tension is primary geopolitical axis</td></tr>
+        <tr><td>geopolitics</td><td>energy</td><td>3 — Strong</td><td>Causal</td><td>Conflict disrupts energy supply chains</td></tr>
+        <tr><td>geopolitics</td><td>defense</td><td>3 — Strong</td><td>Causal</td><td>Escalation drives defense budget expansion</td></tr>
+        <tr><td>geopolitics</td><td>gold</td><td>2 — Moderate</td><td>Causal</td><td>Uncertainty drives safe haven demand</td></tr>
+        <tr><td>trump</td><td>energy</td><td>2 — Moderate</td><td>Causal</td><td>Deregulation and drill mandates boost oil/gas</td></tr>
+        <tr><td>trump</td><td>defense</td><td>2 — Moderate</td><td>Causal</td><td>Military spending priorities affect defense stocks</td></tr>
+        <tr><td>trump</td><td>tech</td><td>2 — Moderate</td><td>Causal</td><td>Tariffs and AI policy affect tech sector</td></tr>
+        <tr><td>recession</td><td>consumer</td><td>2 — Moderate</td><td>Causal</td><td>Recession crushes consumer spending</td></tr>
+        <tr><td>recession</td><td>housing</td><td>2 — Moderate</td><td>Causal</td><td>Economic contraction hits housing demand</td></tr>
+        <tr><td>recession</td><td>vix</td><td>3 — Strong</td><td>Causal</td><td>Recession risk spikes volatility</td></tr>
+        <tr><td>bonds</td><td>recession</td><td>2 — Moderate</td><td>Reactive</td><td>Inverted yield curve = recession predictor</td></tr>
+        <tr><td>minerals</td><td>cleanenergy</td><td>2 — Moderate</td><td>Causal</td><td>Lithium/cobalt supply drives EV/clean energy cost</td></tr>
+        <tr><td>mideast</td><td>energy</td><td>3 — Strong</td><td>Causal</td><td>Middle East conflict directly moves oil prices</td></tr>
+        <tr><td>dollar</td><td>commodities</td><td>2 — Moderate</td><td>Causal</td><td>Dollar strength inversely affects commodity prices</td></tr>
+        <tr><td>vix</td><td>stockmkt</td><td>2 — Moderate</td><td>Reactive</td><td>High VIX signals market stress, affects prices</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <hr class="section-divider">
+
+  <!-- SECTION 6: FRONTEND -->
+  <div class="section" id="frontend">
+    <div class="section-label">Section 06</div>
+    <h2>Frontend Implementation</h2>
+
+    <h3>Core D3.js Force Simulation Setup</h3>
+    <pre><span class="lang-label">JavaScript</span><code><span class="k">import</span> * <span class="k">as</span> d3 <span class="k">from</span> <span class="s">'d3'</span>;
+
+<span class="c">// Initialize force simulation</span>
+<span class="k">const</span> simulation = d3.<span class="f">forceSimulation</span>(nodes)
+  .<span class="f">force</span>(<span class="s">'link'</span>, d3.<span class="f">forceLink</span>(links)
+    .<span class="f">id</span>(d => d.id)
+    .<span class="f">distance</span>(d => <span class="n">80</span> + d.source.r + d.target.r)
+    .<span class="f">strength</span>(<span class="n">0.4</span>))
+  .<span class="f">force</span>(<span class="s">'charge'</span>, d3.<span class="f">forceManyBody</span>().<span class="f">strength</span>(<span class="n">-350</span>))
+  .<span class="f">force</span>(<span class="s">'center'</span>, d3.<span class="f">forceCenter</span>(width / <span class="n">2</span>, height / <span class="n">2</span>))
+  .<span class="f">force</span>(<span class="s">'collision'</span>, d3.<span class="f">forceCollide</span>(d => d.r + <span class="n">14</span>))
+  .<span class="f">on</span>(<span class="s">'tick'</span>, <span class="f">ticked</span>);
+</code></pre>
+
+    <h3>Node Color System</h3>
+    <pre><span class="lang-label">JavaScript</span><code><span class="k">const</span> NODE_COLORS = {
+  macro:     <span class="s">'#e8c84a'</span>,  <span class="c">// Gold — economic forces</span>
+  geo:       <span class="s">'#4a9eff'</span>,  <span class="c">// Blue — geopolitical actors</span>
+  sector:    <span class="s">'#4aff8a'</span>,  <span class="c">// Green — market sectors</span>
+  risk:      <span class="s">'#ff6b4a'</span>,  <span class="c">// Red/Orange — risk signals</span>
+  data:      <span class="s">'#d0d8e8'</span>,  <span class="c">// Light — data/indicators</span>
+  portfolio: <span class="s">'#c084fc'</span>,  <span class="c">// Purple — student holdings</span>
+  event:     <span class="s">'#ff9a4a'</span>,  <span class="c">// Orange — injected news events</span>
+};
+
+<span class="c">// Safety score → ring color</span>
+<span class="k">function</span> <span class="f">safetyColor</span>(score) {
+  <span class="k">if</span> (score >= <span class="n">70</span>) <span class="k">return</span> <span class="s">'#4aff8a'</span>;  <span class="c">// Green: safe</span>
+  <span class="k">if</span> (score >= <span class="n">40</span>) <span class="k">return</span> <span class="s">'#e8c84a'</span>;  <span class="c">// Yellow: caution</span>
+  <span class="k">return</span> <span class="s">'#ff6b4a'</span>;                    <span class="c">// Red: alert</span>
+}
+</code></pre>
+
+    <h3>Graph View Modes</h3>
+    <table>
+      <thead><tr><th>View</th><th>Nodes Shown</th><th>Use Case</th></tr></thead>
+      <tbody>
+        <tr><td>All Nodes</td><td>All 30+ nodes</td><td>Full market intelligence overview</td></tr>
+        <tr><td>Macro</td><td>macro, data, risk types</td><td>Economic cycle analysis</td></tr>
+        <tr><td>Sectors</td><td>sector, stockmkt, sp500, macro</td><td>Sector rotation analysis</td></tr>
+        <tr><td>Geopolitical</td><td>geo, risk, energy, defense, minerals</td><td>Geopolitical chain-reaction view</td></tr>
+        <tr><td>Portfolio Net</td><td>TROY priority sectors + key macro drivers</td><td>Portfolio risk exposure view</td></tr>
+        <tr><td>Student Portfolio</td><td>Student's holdings + connected macro nodes</td><td>Personal risk mapping</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Node Click — Chain Reaction Logic</h3>
+    <pre><span class="lang-label">JavaScript</span><code><span class="k">function</span> <span class="f">onNodeClick</span>(event, d) {
+  <span class="c">// 1. Find all directly connected nodes (1 hop)</span>
+  <span class="k">const</span> directConnections = <span class="k">new</span> <span class="t">Set</span>();
+  links.<span class="f">forEach</span>(l => {
+    <span class="k">const</span> s = l.source.id || l.source, t = l.target.id || l.target;
+    <span class="k">if</span> (s === d.id) directConnections.<span class="f">add</span>(t);
+    <span class="k">if</span> (t === d.id) directConnections.<span class="f">add</span>(s);
+  });
+
+  <span class="c">// 2. Find 2-hop connections</span>
+  <span class="k">const</span> secondaryConnections = <span class="k">new</span> <span class="t">Set</span>();
+  directConnections.<span class="f">forEach</span>(connId => {
+    links.<span class="f">forEach</span>(l => {
+      <span class="k">const</span> s = l.source.id || l.source, t = l.target.id || l.target;
+      <span class="k">if</span> (s === connId && !directConnections.<span class="f">has</span>(t) && t !== d.id)
+        secondaryConnections.<span class="f">add</span>(t);
+    });
+  });
+
+  <span class="c">// 3. Highlight graph</span>
+  nodeSelection.<span class="f">select</span>(<span class="s">'circle'</span>)
+    .<span class="f">attr</span>(<span class="s">'fill-opacity'</span>, n =>
+      n.id === d.id ? <span class="n">0.6</span> :
+      directConnections.<span class="f">has</span>(n.id) ? <span class="n">0.35</span> :
+      secondaryConnections.<span class="f">has</span>(n.id) ? <span class="n">0.2</span> : <span class="n">0.05</span>
+    );
+
+  <span class="c">// 4. Fetch TROY analysis from backend</span>
+  <span class="f">fetchChainReactionAnalysis</span>(d.id).<span class="f">then</span>(analysis => {
+    <span class="f">renderInfoPanel</span>(d, analysis);
+  });
+}
+
+<span class="k">async function</span> <span class="f">fetchChainReactionAnalysis</span>(nodeId) {
+  <span class="k">const</span> res = <span class="k">await</span> <span class="f">fetch</span>(<span class="s">`/api/analysis/chain-reaction?node=<span class="n">${nodeId}</span>`</span>);
+  <span class="k">return</span> res.<span class="f">json</span>();
+}
+</code></pre>
+
+    <h3>Live Signal Pulse Animation</h3>
+    <pre><span class="lang-label">CSS + JavaScript</span><code><span class="c">/* CSS: Pulse ring for high-signal nodes */</span>
+@keyframes <span class="f">signal-pulse</span> {
+  <span class="n">0%</span>   { transform: <span class="f">scale</span>(<span class="n">1</span>);   opacity: <span class="n">0.8</span>; }
+  <span class="n">50%</span>  { transform: <span class="f">scale</span>(<span class="n">1.15</span>); opacity: <span class="n">0.4</span>; }
+  <span class="n">100%</span> { transform: <span class="f">scale</span>(<span class="n">1</span>);   opacity: <span class="n">0.8</span>; }
+}
+
+.<span class="f">node-pulse</span> { animation: <span class="f">signal-pulse</span> <span class="n">2</span>s ease-in-out infinite; }
+
+<span class="c">// JavaScript: Apply pulse to high-signal nodes (signal > 85)</span>
+nodeSelection.<span class="f">classed</span>(<span class="s">'node-pulse'</span>, d => d.signal > <span class="n">85</span>);
+
+<span class="c">// Update node size dynamically when signal changes</span>
+<span class="k">function</span> <span class="f">updateNodeSignal</span>(nodeId, newSignal) {
+  <span class="k">const</span> node = nodes.<span class="f">find</span>(n => n.id === nodeId);
+  <span class="k">if</span> (node) {
+    node.signal = newSignal;
+    node.r = <span class="f">baseRadius</span>(node) * (<span class="n">0.8</span> + newSignal / <span class="n">500</span>); <span class="c">// Scale radius with signal</span>
+    simulation.<span class="f">force</span>(<span class="s">'collision'</span>).<span class="f">radius</span>(d => d.r + <span class="n">14</span>);
+    simulation.<span class="f">alpha</span>(<span class="n">0.1</span>).<span class="f">restart</span>();
+    <span class="f">renderNodeUpdates</span>();
+  }
+}
+</code></pre>
+  </div>
+
+  <hr class="section-divider">
+
+  <!-- SECTION 7: BACKEND API -->
+  <div class="section" id="backend">
+    <div class="section-label">Section 07</div>
+    <h2>Backend API Specification</h2>
+
+    <h3>REST Endpoints</h3>
+
+    <div class="api-endpoint">
+      <div class="api-endpoint-header">
+        <span class="method method-get">GET</span>
+        <span class="api-path">/api/graph</span>
+        <span class="api-desc">Returns full graph state (all nodes + links)</span>
+      </div>
+      <div class="api-body">
+        <p>Response includes current signal strengths, safety scores, and latest news events for all nodes.</p>
+        <pre><code><span class="c">// Response schema</span>
+{
+  nodes: TroyNode[],
+  links: TroyLink[],
+  lastUpdated: <span class="t">Date</span>,
+  marketOpen: <span class="t">boolean</span>,
+  activeEvents: NewsItem[]   <span class="c">// News events injected in last 24h</span>
+}
+</code></pre>
+      </div>
+    </div>
+
+    <div class="api-endpoint">
+      <div class="api-endpoint-header">
+        <span class="method method-get">GET</span>
+        <span class="api-path">/api/analysis/chain-reaction?node={nodeId}</span>
+        <span class="api-desc">Returns TROY chain-reaction analysis for a node</span>
+      </div>
+      <div class="api-body">
+        <pre><code>{
+  nodeId: <span class="t">string</span>,
+  layer1: { nodes: <span class="t">string[]</span>, explanation: <span class="t">string</span> },
+  layer2: { nodes: <span class="t">string[]</span>, explanation: <span class="t">string</span> },
+  layer3: { nodes: <span class="t">string[]</span>, explanation: <span class="t">string</span> },
+  troyAction: <span class="t">string</span>,
+  recommendation: <span class="t">string</span>,
+  confidence: <span class="t">number</span>  <span class="c">// 0-100</span>
+}
+</code></pre>
+      </div>
+    </div>
+
+    <div class="api-endpoint">
+      <div class="api-endpoint-header">
+        <span class="method method-post">POST</span>
+        <span class="api-path">/api/portfolio/analyze</span>
+        <span class="api-desc">Analyzes student portfolio against current network state</span>
+      </div>
+      <div class="api-body">
+        <pre><code><span class="c">// Request body</span>
+{ holdings: Holding[] }
+
+<span class="c">// Response</span>
+{
+  portfolio: StudentPortfolio,
+  networkOverlay: {
+    threatenedNodes: <span class="t">string[]</span>,
+    supportingNodes: <span class="t">string[]</span>,
+    overallRisk: <span class="t">number</span>
+  },
+  recommendations: TroyRecommendation[]
+}
+</code></pre>
+      </div>
+    </div>
+
+    <div class="api-endpoint">
+      <div class="api-endpoint-header">
+        <span class="method method-ws">WS</span>
+        <span class="api-path">wss://troyai.co/ws/graph</span>
+        <span class="api-desc">WebSocket stream for live graph updates</span>
+      </div>
+      <div class="api-body">
+        <pre><code><span class="c">// Server → Client event types:</span>
+{ type: <span class="s">'node_update'</span>,  data: { nodeId, signal, delta, safetyScore } }
+{ type: <span class="s">'news_event'</span>,   data: NewsItem }
+{ type: <span class="s">'link_update'</span>,  data: { linkId, strength, active } }
+{ type: <span class="s">'market_alert'</span>, data: { severity, message, affectedNodes } }
+
+<span class="c">// Client → Server:</span>
+{ type: <span class="s">'subscribe_portfolio'</span>, portfolioId: <span class="t">string</span> }
+{ type: <span class="s">'subscribe_node'</span>,      nodeId: <span class="t">string</span> }
+</code></pre>
+      </div>
+    </div>
+
+    <h3>Data Refresh Schedule</h3>
+    <table>
+      <thead><tr><th>Data Source</th><th>Frequency</th><th>Method</th><th>Nodes Updated</th></tr></thead>
+      <tbody>
+        <tr><td>Reuters / Bloomberg RSS</td><td>Every 5 min</td><td>RSS poll + NLP tag</td><td>All relevant nodes</td></tr>
+        <tr><td>X (Twitter) Financial Signals</td><td>Every 2 min</td><td>X API filtered stream</td><td>geo, sector nodes</td></tr>
+        <tr><td>Market Price Data (Polygon.io)</td><td>Every 15 min</td><td>REST poll</td><td>sector, data nodes</td></tr>
+        <tr><td>FRED Economic Data</td><td>On release</td><td>Webhook/scheduled</td><td>macro, data nodes</td></tr>
+        <tr><td>Safety Score Recalculation</td><td>Daily 6am ET</td><td>Batch job</td><td>All nodes</td></tr>
+        <tr><td>Full Graph Recalculation</td><td>Daily 7am ET</td><td>Batch job</td><td>Full graph</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <hr class="section-divider">
+
+  <!-- SECTION 8: NEWS ENGINE -->
+  <div class="section" id="newsengine">
+    <div class="section-label">Section 08</div>
+    <h2>News Signal Engine</h2>
+    <p>The News Signal Engine is the pipeline that converts raw news articles into graph node updates and event injections. It is the most critical real-time component of the TroyAI network.</p>
+
+    <h3>Pipeline Architecture</h3>
+    <div class="arch-row">
+      <div class="arch-box"><div class="arch-title">News Sources</div><div class="arch-sub">RSS, X API, NewsAPI, CNBC</div></div>
+      <div style="font-size:20px;color:#1a3a5e;padding:0 4px">→</div>
+      <div class="arch-box"><div class="arch-title">Ingestion Worker</div><div class="arch-sub">Fetch, deduplicate, normalize</div></div>
+      <div style="font-size:20px;color:#1a3a5e;padding:0 4px">→</div>
+      <div class="arch-box"><div class="arch-title">NLP Tagger</div><div class="arch-sub">Claude API → node IDs + sentiment</div></div>
+      <div style="font-size:20px;color:#1a3a5e;padding:0 4px">→</div>
+      <div class="arch-box"><div class="arch-title">Signal Updater</div><div class="arch-sub">Update node scores + push to WS</div></div>
+    </div>
+
+    <h3>NLP Tagging Prompt (Claude API)</h3>
+    <pre><span class="lang-label">Prompt Template</span><code>You are TROY AI's market intelligence system. Given this news headline and summary, 
+return a JSON object identifying:
+1. Which graph node IDs are affected (from the master node list)
+2. Sentiment score for each node (-1 bearish to +1 bullish)
+3. Signal delta for each node (-20 to +20, how much this moves the signal)
+4. Whether this warrants a new event node injection (true/false)
+5. TROY action recommendation if applicable
+
+Node IDs available: [fed, inflation, rates, dollar, economy, employment, 
+housing, recession, us, china, geopolitics, trump, europe, mideast, india,
+stockmkt, sp500, tech, energy, healthcare, defense, minerals, cleanenergy, 
+financials, bonds, commodities, consumer, gold, vix, covid_risk]
+
+Headline: {headline}
+Summary: {summary}
+Source: {source}
+Published: {publishedAt}
+
+Return ONLY valid JSON. No explanation text.
+</code></pre>
+
+    <h3>Node Signal Score Algorithm</h3>
+    <pre><span class="lang-label">JavaScript</span><code><span class="k">function</span> <span class="f">calculateSignalScore</span>(node, recentNewsItems, priceData) {
+  <span class="k">const</span> weights = {
+    newsVolume:  <span class="n">0.30</span>,  <span class="c">// Number of articles in last 24h</span>
+    sentiment:   <span class="n">0.25</span>,  <span class="c">// Average sentiment of recent articles</span>
+    priceAction: <span class="n">0.25</span>,  <span class="c">// Price momentum if node has ticker</span>
+    baseSignal:  <span class="n">0.20</span>,  <span class="c">// Node's intrinsic importance</span>
+  };
+
+  <span class="k">const</span> newsVolScore = <span class="t">Math</span>.<span class="f">min</span>(recentNewsItems.length / <span class="n">20</span>, <span class="n">1</span>) * <span class="n">100</span>;
+  <span class="k">const</span> sentimentScore = ((recentNewsItems.<span class="f">reduce</span>((a, b) => a + b.sentiment, <span class="n">0</span>) 
+    / recentNewsItems.length) + <span class="n">1</span>) * <span class="n">50</span>;
+  <span class="k">const</span> priceScore = priceData ? <span class="f">momentumScore</span>(priceData) : <span class="n">50</span>;
+
+  <span class="k">return</span> (
+    newsVolScore * weights.newsVolume +
+    sentimentScore * weights.sentiment +
+    priceScore * weights.priceAction +
+    node.baseSignal * weights.baseSignal
+  );
+}
+</code></pre>
+  </div>
+
+  <hr class="section-divider">
+
+  <!-- SECTION 9: PORTFOLIO -->
+  <div class="section" id="portfolio">
+    <div class="section-label">Section 09</div>
+    <h2>Portfolio Overlay System</h2>
+    <p>Students can input their holdings and TroyAI generates a personalized network view showing which macro forces and risk nodes are threatening or supporting their specific positions.</p>
+
+    <h3>Portfolio Input UI Requirements</h3>
+    <table>
+      <thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Ticker Symbol</td><td>Text input with autocomplete</td><td>Yes</td><td>Must validate against market data API</td></tr>
+        <tr><td>Number of Shares</td><td>Number input</td><td>Yes</td><td>Accepts decimals for fractional shares</td></tr>
+        <tr><td>Average Cost Basis</td><td>Number input (USD)</td><td>Optional</td><td>Used for P&amp;L calculation</td></tr>
+        <tr><td>Sector Override</td><td>Dropdown (TROY sectors)</td><td>No</td><td>Auto-classified, student can override</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Ticker → Node ID Mapping Logic</h3>
+    <pre><span class="lang-label">JavaScript</span><code><span class="k">const</span> TICKER_TO_NODE = {
+  <span class="c">// Tech/AI</span>
+  <span class="s">'NVDA'</span>: <span class="s">'tech'</span>, <span class="s">'MSFT'</span>: <span class="s">'tech'</span>, <span class="s">'AAPL'</span>: <span class="s">'tech'</span>, <span class="s">'GOOGL'</span>: <span class="s">'tech'</span>,
+  <span class="s">'AMD'</span>:  <span class="s">'tech'</span>, <span class="s">'META'</span>:  <span class="s">'tech'</span>, <span class="s">'AMZN'</span>: <span class="s">'tech'</span>,
+  <span class="c">// Energy</span>
+  <span class="s">'XOM'</span>:  <span class="s">'energy'</span>, <span class="s">'CVX'</span>:  <span class="s">'energy'</span>, <span class="s">'COP'</span>: <span class="s">'energy'</span>,
+  <span class="s">'NEE'</span>:  <span class="s">'cleanenergy'</span>, <span class="s">'ENPH'</span>: <span class="s">'cleanenergy'</span>,
+  <span class="c">// Healthcare</span>
+  <span class="s">'JNJ'</span>:  <span class="s">'healthcare'</span>, <span class="s">'PFE'</span>: <span class="s">'healthcare'</span>, <span class="s">'UNH'</span>: <span class="s">'healthcare'</span>,
+  <span class="c">// Defense</span>
+  <span class="s">'LMT'</span>:  <span class="s">'defense'</span>, <span class="s">'RTX'</span>: <span class="s">'defense'</span>, <span class="s">'NOC'</span>: <span class="s">'defense'</span>,
+  <span class="c">// Minerals</span>
+  <span class="s">'LTHM'</span>: <span class="s">'minerals'</span>, <span class="s">'FCX'</span>: <span class="s">'minerals'</span>, <span class="s">'MP'</span>: <span class="s">'minerals'</span>,
+  <span class="c">// Safe Havens</span>
+  <span class="s">'GLD'</span>:  <span class="s">'gold'</span>, <span class="s">'TLT'</span>: <span class="s">'bonds'</span>, <span class="s">'SPY'</span>: <span class="s">'sp500'</span>, <span class="s">'QQQ'</span>: <span class="s">'tech'</span>,
+  <span class="c">// Financials</span>
+  <span class="s">'JPM'</span>:  <span class="s">'financials'</span>, <span class="s">'BAC'</span>: <span class="s">'financials'</span>, <span class="s">'GS'</span>: <span class="s">'financials'</span>,
+};
+
+<span class="c">// For unknown tickers, classify via market data API sector tag</span>
+<span class="k">async function</span> <span class="f">classifyTicker</span>(ticker) {
+  <span class="k">if</span> (TICKER_TO_NODE[ticker]) <span class="k">return</span> TICKER_TO_NODE[ticker];
+  <span class="k">const</span> sector = <span class="k">await</span> <span class="f">fetchTickerSector</span>(ticker);
+  <span class="k">return</span> SECTOR_TO_NODE[sector] || <span class="s">'stockmkt'</span>;
+}
+</code></pre>
+  </div>
+
+  <hr class="section-divider">
+
+  <!-- SECTION 10: RECOMMENDATION -->
+  <div class="section" id="recommendation">
+    <div class="section-label">Section 10</div>
+    <h2>Recommendation Engine</h2>
+
+    <h3>TROY Action Signal Taxonomy</h3>
+    <table>
+      <thead><tr><th>Signal</th><th>Definition</th><th>Display Color</th></tr></thead>
+      <tbody>
+        <tr><td><strong>BUY</strong></td><td>Strong tailwind across 2+ connected nodes. Accumulate position.</td><td style="color:#4aff8a">#4aff8a Green</td></tr>
+        <tr><td><strong>ADD</strong></td><td>Moderate positive signal. Scale into existing position.</td><td style="color:#9ade7a">#9ade7a Light Green</td></tr>
+        <tr><td><strong>HOLD</strong></td><td>Mixed or neutral signals. Maintain current exposure.</td><td style="color:#e8c84a">#e8c84a Gold</td></tr>
+        <tr><td><strong>WATCH</strong></td><td>Signal developing. Monitor closely. Do not act yet.</td><td style="color:#4a9eff">#4a9eff Blue</td></tr>
+        <tr><td><strong>REDUCE</strong></td><td>Moderate headwind. Trim position size.</td><td style="color:#ff9a4a">#ff9a4a Orange</td></tr>
+        <tr><td><strong>SELL</strong></td><td>Strong negative signal across multiple connected nodes.</td><td style="color:#ff6b4a">#ff6b4a Red</td></tr>
+        <tr><td><strong>HEDGE</strong></td><td>Tail risk elevated. Add protection (puts, gold, cash).</td><td style="color:#c084fc">#c084fc Purple</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Recommendation Output Format</h3>
+    <pre><span class="lang-label">TypeScript</span><code><span class="k">interface</span> <span class="t">TroyRecommendation</span> {
+  id:            <span class="t">string</span>;
+  generatedAt:   <span class="t">Date</span>;
+  triggerNode:   <span class="t">string</span>;     <span class="c">// Node that triggered this recommendation</span>
+  action:        <span class="t">TroyAction</span>;  <span class="c">// BUY | ADD | HOLD | WATCH | REDUCE | SELL | HEDGE</span>
+  sector:        <span class="t">string</span>;     <span class="c">// Target sector</span>
+  instrument?:   <span class="t">string</span>;     <span class="c">// Specific ticker if applicable</span>
+  confidence:    <span class="t">number</span>;     <span class="c">// 0–100</span>
+  timeHorizon:   <span class="t">string</span>;     <span class="c">// "intraday" | "swing" | "position" | "long-term"</span>
+  chainReaction: <span class="t">string[]</span>;  <span class="c">// ["Fed raises rates", "Growth multiples compress", "Rotate to value"]</span>
+  keyRisks:      <span class="t">string[]</span>;
+  exitTriggers:  <span class="t">string[]</span>;   <span class="c">// Conditions that would change recommendation</span>
+  disclaimer:    <span class="t">string</span>;     <span class="c">// Always include TROY legal disclaimer</span>
+}
+</code></pre>
+
+    <div class="callout callout-critical">
+      <div class="callout-icon">⚠</div>
+      <div>
+        <div class="callout-title">Legal Disclaimer — Required on All Recommendation Outputs</div>
+        <p>Every recommendation output MUST include this text: "This information is provided for educational purposes only under the publisher's exclusion (Investment Advisers Act of 1940, 15 U.S.C. § 80b-2(a)(11)(D)) and Lowe v. SEC (472 U.S. 181, 1985). TROY Capital is an educational platform, not a registered investment adviser. Past performance does not guarantee future results."</p>
+      </div>
+    </div>
+  </div>
+
+  <hr class="section-divider">
+
+  <!-- SECTION 11: SAFETY SCORE -->
+  <div class="section" id="safety">
+    <div class="section-label">Section 11</div>
+    <h2>Safety Score Layer</h2>
+    <p>The Safety Score is a 0–100 composite risk metric for each node, displayed as a visual ring around the node and as a numerical badge. It is recalculated daily and on major news events.</p>
+
+    <h3>Safety Score Components</h3>
+    <table>
+      <thead><tr><th>Component</th><th>Weight</th><th>Data Source</th></tr></thead>
+      <tbody>
+        <tr><td>News Sentiment (30-day rolling)</td><td>25%</td><td>NLP pipeline</td></tr>
+        <tr><td>Price Volatility (vs 90-day avg)</td><td>20%</td><td>Market data API</td></tr>
+        <tr><td>Connection Risk (how many risk nodes connected)</td><td>20%</td><td>Graph analysis</td></tr>
+        <tr><td>Macro Cycle Alignment</td><td>20%</td><td>Fed/economic data</td></tr>
+        <tr><td>Geopolitical Exposure Score</td><td>15%</td><td>Geopolitical tracker</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Visual Encoding</h3>
+    <pre><span class="lang-label">JavaScript</span><code><span class="c">// Add safety score ring to each node</span>
+nodeG.<span class="f">append</span>(<span class="s">'circle'</span>)
+  .<span class="f">attr</span>(<span class="s">'class'</span>, <span class="s">'safety-ring'</span>)
+  .<span class="f">attr</span>(<span class="s">'r'</span>, d => d.r + <span class="n">4</span>)
+  .<span class="f">attr</span>(<span class="s">'fill'</span>, <span class="s">'none'</span>)
+  .<span class="f">attr</span>(<span class="s">'stroke'</span>, d => <span class="f">safetyColor</span>(d.safetyScore))
+  .<span class="f">attr</span>(<span class="s">'stroke-width'</span>, <span class="n">2</span>)
+  .<span class="f">attr</span>(<span class="s">'stroke-dasharray'</span>, d => {
+    <span class="c">// Score as arc: full circle = 100, partial = score%</span>
+    <span class="k">const</span> circumference = <span class="n">2</span> * <span class="t">Math</span>.PI * (d.r + <span class="n">4</span>);
+    <span class="k">const</span> filled = (d.safetyScore / <span class="n">100</span>) * circumference;
+    <span class="k">return</span> <span class="s">`<span class="n">${filled}</span> <span class="n">${circumference - filled}</span>`</span>;
+  })
+  .<span class="f">attr</span>(<span class="s">'stroke-dashoffset'</span>, d => {
+    <span class="k">const</span> circumference = <span class="n">2</span> * <span class="t">Math</span>.PI * (d.r + <span class="n">4</span>);
+    <span class="k">return</span> circumference / <span class="n">4</span>; <span class="c">// Start arc from top</span>
+  });
+</code></pre>
+  </div>
+
+  <hr class="section-divider">
+
+  <!-- SECTION 12: DEPLOYMENT -->
+  <div class="section" id="deployment">
+    <div class="section-label">Section 12</div>
+    <h2>Deployment &amp; Hosting</h2>
+
+    <h3>Recommended VPS Configuration</h3>
+    <table>
+      <thead><tr><th>Component</th><th>Spec</th><th>Provider Options</th></tr></thead>
+      <tbody>
+        <tr><td>App Server</td><td>2 vCPU, 4GB RAM, 80GB SSD</td><td>DigitalOcean Droplet, Vultr Cloud Compute, AWS EC2 t3.medium</td></tr>
+        <tr><td>Database Server</td><td>2 vCPU, 4GB RAM, 100GB SSD</td><td>DigitalOcean Managed PostgreSQL, AWS RDS</td></tr>
+        <tr><td>Redis Cache</td><td>1GB managed</td><td>DigitalOcean Managed Redis, AWS ElastiCache</td></tr>
+        <tr><td>CDN / Proxy</td><td>Cloudflare Free/Pro</td><td>Cloudflare</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Environment Variables Required</h3>
+    <pre><span class="lang-label">.env</span><code>PORT=3000
+NODE_ENV=production
+
+<span class="c"># Database</span>
+DATABASE_URL=postgresql://user:pass@host:5432/troyai
+REDIS_URL=redis://localhost:6379
+
+<span class="c"># Market Data APIs</span>
+POLYGON_API_KEY=your_key
+ALPHA_VANTAGE_KEY=your_key
+
+<span class="c"># News APIs</span>
+NEWS_API_KEY=your_key
+X_BEARER_TOKEN=your_token
+
+<span class="c"># AI (for NLP tagging)</span>
+ANTHROPIC_API_KEY=your_key
+
+<span class="c"># Security</span>
+JWT_SECRET=your_secret
+CORS_ORIGIN=https://troyai.co
+</code></pre>
+
+    <h3>PM2 Process Config</h3>
+    <pre><span class="lang-label">ecosystem.config.js</span><code>module.exports = {
+  apps: [
+    {
+      name: <span class="s">'troy-api'</span>,
+      script: <span class="s">'./server/index.js'</span>,
+      instances: <span class="n">2</span>,
+      exec_mode: <span class="s">'cluster'</span>,
+      env: { NODE_ENV: <span class="s">'production'</span>, PORT: <span class="n">3000</span> }
+    },
+    {
+      name: <span class="s">'troy-news-worker'</span>,
+      script: <span class="s">'./workers/newsIngestion.js'</span>,
+      instances: <span class="n">1</span>,
+      cron_restart: <span class="s">'*/5 * * * *'</span>  <span class="c">// Restart every 5 min as backup</span>
+    },
+    {
+      name: <span class="s">'troy-signal-worker'</span>,
+      script: <span class="s">'./workers/signalUpdater.js'</span>,
+      instances: <span class="n">1</span>
+    }
+  ]
+};
+</code></pre>
+  </div>
+
+  <hr class="section-divider">
+
+  <!-- FOOTER -->
+  <div class="doc-footer">
+    <div>
+      <div class="brand">TROY Capital · troyai.co</div>
+      <div style="margin-top:4px;">TroyAI Dynamic Market Intelligence Network · Developer Specification v1.0</div>
+    </div>
+    <div style="text-align:right;">
+      <div>Internal document — not for distribution</div>
+      <div style="margin-top:4px;">April 2026 · For questions contact the TROY development team</div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

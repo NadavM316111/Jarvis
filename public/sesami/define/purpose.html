@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Purpose for Innovation - Sesami Define</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../edit-mode.css">
+    <style>
+        .purpose-hero {
+            text-align: center;
+            padding: 60px 40px;
+            background: linear-gradient(135deg, rgba(212,175,55,0.15), rgba(212,175,55,0.05));
+            border-radius: 24px;
+            margin-bottom: 50px;
+            border: 1px solid rgba(212,175,55,0.3);
+        }
+        .purpose-hero h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(28px, 5vw, 42px);
+            color: var(--text-primary);
+            margin-bottom: 20px;
+        }
+        .purpose-hero p {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.8;
+        }
+        .vision-statement {
+            background: rgba(0,0,0,0.4);
+            border-radius: 20px;
+            padding: 50px;
+            margin: 40px 0;
+            border-left: 5px solid var(--accent-gold);
+        }
+        .vision-statement h3 {
+            color: var(--accent-gold);
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .vision-statement p {
+            font-size: 1.25rem;
+            color: var(--text-primary);
+            line-height: 1.9;
+            font-style: italic;
+        }
+        .why-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+            margin: 50px 0;
+        }
+        .why-card {
+            background: rgba(255,255,255,0.03);
+            border-radius: 20px;
+            padding: 35px;
+            border: 1px solid rgba(255,255,255,0.08);
+            transition: all 0.3s ease;
+        }
+        .why-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(212,175,55,0.3);
+        }
+        .why-card i {
+            font-size: 2.5rem;
+            color: var(--accent-gold);
+            margin-bottom: 20px;
+        }
+        .why-card h4 {
+            color: var(--text-primary);
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+        }
+        .why-card p {
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+        .stat-box {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--accent-gold), #ffd700);
+            color: #000;
+            font-weight: 700;
+            padding: 10px 20px;
+            border-radius: 12px;
+            margin: 8px;
+            font-size: 1.1rem;
+        }
+        .impact-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 25px;
+            margin: 50px 0;
+        }
+        @media (max-width: 900px) {
+            .impact-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        .impact-card {
+            background: rgba(0,0,0,0.3);
+            padding: 30px 20px;
+            border-radius: 16px;
+            text-align: center;
+        }
+        .impact-card .number {
+            font-size: 2.8rem;
+            font-weight: 700;
+            color: var(--accent-gold);
+            display: block;
+        }
+        .impact-card .label {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin-top: 10px;
+        }
+        .stakeholder-section {
+            background: rgba(255,255,255,0.02);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 50px 0;
+        }
+        .stakeholder-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+        .stakeholder-card {
+            background: rgba(0,0,0,0.3);
+            border-radius: 16px;
+            padding: 30px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .stakeholder-card h4 {
+            color: var(--accent-gold);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .stakeholder-card ul {
+            list-style: none;
+            padding: 0;
+        }
+        .stakeholder-card li {
+            color: var(--text-secondary);
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+        .stakeholder-card li:before {
+            content: ">";
+            position: absolute;
+            left: 0;
+            color: var(--accent-gold);
+            font-weight: bold;
+        }
+        .content-text {
+            color: var(--text-secondary);
+            line-height: 1.8;
+            font-size: 1.05rem;
+        }
+        .content-text strong {
+            color: var(--text-primary);
+        }
+    </style>
+</head>
+<body data-page="define">
+    <div class="bg-gradient"></div>
+    <div class="bg-pattern"></div>
+    <div class="floating-orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="../index.html" class="logo">
+                <div class="logo-icon"><i class="fas fa-baby"></i></div>
+                <span class="logo-text">Sesami</span>
+            </a>
+            <ul class="nav-links" id="navLinks">
+                <li class="nav-item"><a href="../index.html" class="nav-link">Home</a></li>
+                <li class="nav-item has-dropdown">
+                    <a href="../background.html" class="nav-link">Background <i class="fas fa-chevron-down arrow"></i></a>
+                    <div class="dropdown">
+                        <a href="../background/preliminary-research.html"><i class="fas fa-file-alt"></i> Preliminary Research</a>
+                        <a href="../background/final-research.html"><i class="fas fa-file-lines"></i> Final Research Paper</a>
+                        <a href="../background/baby-development-tech.html"><i class="fas fa-baby"></i> Baby Development Tech</a>
+                        <a href="../background/competitor-chart.html"><i class="fas fa-chart-bar"></i> Competitor Chart</a>
+                        <a href="../background/expert-source.html"><i class="fas fa-user-md"></i> Expert Source</a>
+                    </div>
+                </li>
+                <li class="nav-item has-dropdown">
+                    <a href="../empathize.html" class="nav-link">Empathize <i class="fas fa-chevron-down arrow"></i></a>
+                    <div class="dropdown">
+                        <a href="../empathize/end-users-survey.html"><i class="fas fa-poll"></i> End Users Survey</a>
+                        <a href="../empathize/deep-dive.html"><i class="fas fa-search"></i> Deep Dive of End Users</a>
+                        <a href="../empathize/potential-solutions.html"><i class="fas fa-lightbulb"></i> Potential Solutions</a>
+                        <a href="../empathize/direct-observation.html"><i class="fas fa-eye"></i> Direct Observation</a>
+                    </div>
+                </li>
+                <li class="nav-item has-dropdown">
+                    <a href="../define.html" class="nav-link active">Define <i class="fas fa-chevron-down arrow"></i></a>
+                    <div class="dropdown">
+                        <a href="purpose.html"><i class="fas fa-bullseye"></i> Purpose for Innovation</a>
+                        <a href="design-goals.html"><i class="fas fa-tasks"></i> Design Goals/Criteria</a>
+                        <a href="end-user-interview.html"><i class="fas fa-comments"></i> End User Interview</a>
+                        <a href="thesis.html"><i class="fas fa-scroll"></i> Thesis Statement</a>
+                        <a href="user-profiles.html"><i class="fas fa-users"></i> End User Profiles</a>
+                    </div>
+                </li>
+                <li class="nav-item has-dropdown">
+                    <a href="../ideate.html" class="nav-link">Ideate <i class="fas fa-chevron-down arrow"></i></a>
+                    <div class="dropdown">
+                        <a href="../ideate.html#brainstorm"><i class="fas fa-brain"></i> Brainstorming</a>
+                        <a href="../ideate.html#features"><i class="fas fa-list-check"></i> Feature Prioritization</a>
+                    </div>
+                </li>
+                <li class="nav-item has-dropdown">
+                    <a href="../engineering.html" class="nav-link">Engineering <i class="fas fa-chevron-down arrow"></i></a>
+                    <div class="dropdown">
+                        <a href="../engineering.html#specs"><i class="fas fa-cogs"></i> Technical Specs</a>
+                        <a href="../engineering.html#cad"><i class="fas fa-drafting-compass"></i> CAD Drawings</a>
+                    </div>
+                </li>
+                <li class="nav-item has-dropdown">
+                    <a href="../test.html" class="nav-link">Test <i class="fas fa-chevron-down arrow"></i></a>
+                    <div class="dropdown">
+                        <a href="../test.html#methods"><i class="fas fa-flask"></i> Testing Methods</a>
+                        <a href="../test.html#results"><i class="fas fa-chart-bar"></i> Results</a>
+                    </div>
+                </li>
+            </ul>
+            <button class="menu-toggle" id="menuToggle">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+
+    <section class="page-hero">
+        <div class="page-hero-content">
+            <div class="page-badge"><i class="fas fa-bullseye"></i> Define Phase</div>
+            <h1>Purpose for <span>Innovation</span></h1>
+            <p>Understanding why Sesami exists and the fundamental problem we are solving for families.</p>
+        </div>
+    </section>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="purpose-hero" data-editable="true">
+                <h2>Why We Built Sesami</h2>
+                <p>Every parent deserves peace of mind about their child's development. Sesami exists to bridge the gap between anxious uncertainty and informed confidence, providing continuous developmental insights that empower families and healthcare providers alike.</p>
+            </div>
+
+            <div class="vision-statement" data-editable="true">
+                <h3><i class="fas fa-eye"></i> Our Vision</h3>
+                <p>"To create a world where no developmental delay goes undetected, where every parent has access to objective data about their child's progress, and where early intervention becomes the norm rather than the exception."</p>
+            </div>
+
+            <section class="section-header">
+                <h2>The Problem We're Solving</h2>
+                <p>Understanding the critical gaps in current developmental monitoring</p>
+            </section>
+
+            <div class="impact-grid">
+                <div class="impact-card" data-editable="true">
+                    <span class="number">1 in 6</span>
+                    <span class="label">Children have a developmental disability (CDC, 2023)</span>
+                </div>
+                <div class="impact-card" data-editable="true">
+                    <span class="number">37%</span>
+                    <span class="label">Are identified before kindergarten entry</span>
+                </div>
+                <div class="impact-card" data-editable="true">
+                    <span class="number">2.7 yrs</span>
+                    <span class="label">Average delay between first concern and diagnosis</span>
+                </div>
+                <div class="impact-card" data-editable="true">
+                    <span class="number">$17B</span>
+                    <span class="label">Annual cost of delayed intervention in the US</span>
+                </div>
+            </div>
+
+            <div class="why-section">
+                <div class="why-card" data-editable="true">
+                    <i class="fas fa-clock"></i>
+                    <h4>Time-Limited Checkups</h4>
+                    <p>Pediatricians have an average of 18 minutes per well-child visit to assess development, nutrition, behavior, and dozens of other health factors. Subtle delays are easily missed in these brief encounters.</p>
+                </div>
+                <div class="why-card" data-editable="true">
+                    <i class="fas fa-brain"></i>
+                    <h4>Parental Recall Bias</h4>
+                    <p>Parents are asked to remember developmental milestones that happened weeks or months ago. Research shows parental recall has only 60-70% accuracy for motor milestones, leading to unreliable assessments.</p>
+                </div>
+                <div class="why-card" data-editable="true">
+                    <i class="fas fa-chart-line"></i>
+                    <h4>Subjective Assessments</h4>
+                    <p>Current screening tools rely heavily on questionnaires and observational checklists. These subjective methods have sensitivity rates of only 70-80%, missing nearly a quarter of children who need intervention.</p>
+                </div>
+                <div class="why-card" data-editable="true">
+                    <i class="fas fa-heart-crack"></i>
+                    <h4>Parental Anxiety</h4>
+                    <p>78% of new parents report significant anxiety about their child's development. Without objective data, they turn to unreliable internet searches and comparison with other children, often increasing stress.</p>
+                </div>
+            </div>
+
+            <div class="stakeholder-section" data-editable="true">
+                <div class="section-header">
+                    <h2>Who Benefits from Sesami</h2>
+                    <p>Our innovation serves multiple stakeholders in the child development ecosystem</p>
+                </div>
+                
+                <div class="stakeholder-grid">
+                    <div class="stakeholder-card">
+                        <h4><i class="fas fa-home"></i> Parents & Caregivers</h4>
+                        <ul>
+                            <li>Real-time insights into developmental progress</li>
+                            <li>Reduced anxiety through objective data</li>
+                            <li>Early alerts when intervention may be needed</li>
+                            <li>Better preparation for pediatric visits</li>
+                            <li>Peace of mind through continuous monitoring</li>
+                        </ul>
+                    </div>
+                    <div class="stakeholder-card">
+                        <h4><i class="fas fa-user-md"></i> Pediatricians</h4>
+                        <ul>
+                            <li>Longitudinal data between visits</li>
+                            <li>Objective movement and milestone tracking</li>
+                            <li>Better informed clinical decisions</li>
+                            <li>Reduced reliance on parental recall</li>
+                            <li>More efficient use of appointment time</li>
+                        </ul>
+                    </div>
+                    <div class="stakeholder-card">
+                        <h4><i class="fas fa-hands-helping"></i> Early Intervention Specialists</h4>
+                        <ul>
+                            <li>Earlier referrals for therapy services</li>
+                            <li>Baseline data for treatment planning</li>
+                            <li>Progress tracking during intervention</li>
+                            <li>Evidence for insurance authorization</li>
+                            <li>Improved outcomes through early start</li>
+                        </ul>
+                    </div>
+                    <div class="stakeholder-card">
+                        <h4><i class="fas fa-building"></i> Healthcare Systems</h4>
+                        <ul>
+                            <li>Reduced long-term intervention costs</li>
+                            <li>Better population health data</li>
+                            <li>Improved screening efficiency</li>
+                            <li>Higher quality metrics for HEDIS measures</li>
+                            <li>Value-based care alignment</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="vision-statement" data-editable="true">
+                <h3><i class="fas fa-rocket"></i> Our Mission</h3>
+                <p>To democratize developmental monitoring by providing every family with affordable, accurate, and actionable insights about their child's growth - transforming parental anxiety into informed confidence and ensuring no child falls through the cracks of the healthcare system.</p>
+            </div>
+
+            <div class="cta-container" style="text-align: center; margin-top: 60px;">
+                <a href="design-goals.html" class="btn-primary" style="display: inline-flex; align-items: center; gap: 10px;">
+                    Continue to Design Goals <i class="fas fa-arrow-right"></i>
+                </a>
+                <a href="../define.html" class="btn-secondary" style="display: inline-flex; align-items: center; gap: 10px; margin-left: 20px;">
+                    <i class="fas fa-arrow-left"></i> Back to Define Overview
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p>Sesami - AI-Powered Infant Development Tracking</p>
+            <a href="../define.html?edit=true" class="edit-link"><i class="fas fa-edit"></i> Edit Site</a>
+        </div>
+    </footer>
+
+    <script src="../app.js"></script>
+    <script src="../edit-mode.js"></script>
+</body>
+</html>

@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Potential Solutions - Sesami Empathize</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../edit-mode.css">
+    <style>
+        .solution-card {
+            background: rgba(255,255,255,0.03);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255,255,255,0.08);
+            position: relative;
+            overflow: hidden;
+        }
+        .solution-card.selected {
+            border-color: var(--accent-gold);
+            background: linear-gradient(135deg, rgba(212,175,55,0.08), rgba(212,175,55,0.02));
+        }
+        .solution-card.selected::before {
+            content: 'SELECTED APPROACH';
+            position: absolute;
+            top: 20px;
+            right: -35px;
+            background: var(--accent-gold);
+            color: #000;
+            padding: 5px 50px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            transform: rotate(45deg);
+        }
+        .solution-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+        .solution-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 20px;
+            background: linear-gradient(135deg, var(--accent-gold), #ffd700);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .solution-icon i {
+            font-size: 2rem;
+            color: #000;
+        }
+        .solution-title h3 {
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+        }
+        .solution-title p {
+            color: var(--text-secondary);
+        }
+        .pros-cons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 25px 0;
+        }
+        @media (max-width: 768px) {
+            .pros-cons { grid-template-columns: 1fr; }
+        }
+        .pros, .cons {
+            padding: 25px;
+            border-radius: 15px;
+        }
+        .pros {
+            background: rgba(40, 167, 69, 0.1);
+            border: 1px solid rgba(40, 167, 69, 0.3);
+        }
+        .cons {
+            background: rgba(220, 53, 69, 0.1);
+            border: 1px solid rgba(220, 53, 69, 0.3);
+        }
+        .pros h4 { color: #28a745; }
+        .cons h4 { color: #dc3545; }
+        .pros ul, .cons ul {
+            list-style: none;
+            padding: 0;
+            margin-top: 15px;
+        }
+        .pros li, .cons li {
+            padding: 8px 0;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        .pros li::before { content: '+'; color: #28a745; font-weight: bold; }
+        .cons li::before { content: '-'; color: #dc3545; font-weight: bold; }
+        .feasibility-score {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        .score-item {
+            text-align: center;
+        }
+        .score-item .score {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-gold);
+        }
+        .score-item .label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 30px 0;
+        }
+        .comparison-table th, .comparison-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .comparison-table th {
+            background: rgba(0,0,0,0.3);
+            color: var(--accent-gold);
+            font-weight: 600;
+        }
+        .comparison-table td {
+            color: var(--text-secondary);
+        }
+        .comparison-table tr:hover {
+            background: rgba(255,255,255,0.02);
+        }
+        .check { color: #28a745; }
+        .cross { color: #dc3545; }
+        .partial { color: #ffc107; }
+        .tech-stack {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 25px 0;
+        }
+        .tech-item {
+            background: rgba(0,0,0,0.3);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        .tech-item i {
+            font-size: 2rem;
+            color: var(--accent-gold);
+            margin-bottom: 10px;
+        }
+        .tech-item h5 {
+            color: var(--text-primary);
+            margin-bottom: 5px;
+        }
+        .tech-item p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+        .research-ref {
+            background: rgba(0,0,0,0.2);
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+            border-left: 4px solid var(--accent-gold);
+        }
+        .research-ref h5 {
+            color: var(--accent-gold);
+            margin-bottom: 10px;
+        }
+        .research-ref p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        .content-text {
+            color: var(--text-secondary);
+            line-height: 1.8;
+            font-size: 1.05rem;
+        }
+        .content-text strong {
+            color: var(--text-primary);
+        }
+    </style>
+</head>
+<body data-page="empathize">
+    <!-- Animated Background -->
+    <div class="bg-gradient"></div>
+    <div class="bg-pattern"></div>
+    <div class="floating-orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="../index.html" class="logo">
+                <div class="logo-icon"><i class="fas fa-baby"></i></div>
+                <span class="logo-text">Sesami</span>
+            </a>
+            <ul class="nav-links" id="navLinks">
+                <li class="nav-item"><a href="../index.html" class="nav-link">Home</a></li>
+                <li class="nav-item has-dropdown">
+                    <a href="../background.html" class="nav-link">Background <i class="fas fa-chevron-down arrow"></i></a>
+                    <div class="dropdown" style="width: 280px;">
+                        <a href="../background/preliminary-research.html"><i class="fas fa-file-alt"></i> Preliminary Research</a>
+                        <a href="../background/final-research.html"><i class="fas fa-file-lines"></i> Final Research Paper</a>
+                        <a href="../background/baby-development-tech.html"><i class="fas fa-baby"></i> Baby Development Tech</a>
+                        <a href="../background/competitor-chart.html"><i class="fas fa-chart-bar"></i> Competitor Chart</a>
+                        <a href="../background/expert-source.html"><i class="fas fa-user-md"></i> Expert Source</a>
+                        <a href="../background/end-user.html"><i class="fas fa-users"></i> End User</a>
+                        <a href="../background/expert-survey.html"><i class="fas fa-poll"></i> Expert Survey</a>
+                        <a href="../background/sensors-writeup.html"><i class="fas fa-microchip"></i> Sensors Writeup</a>
+                        <a href="../background/business-plan.html"><i class="fas fa-briefcase"></i> Business Plan</a>
+                        <a href="../background/financials.html"><i class="fas fa-dollar-sign"></i> Financials</a>
+                    </div>
+                </li>
+                <li class="nav-item has-dropdown">
+                    <a href="../empathize.html" class="nav-link active">Empathize <i class="fas fa-chevron-down arrow"></i></a>
+                    <div class="dropdown">
+                        <a href="end-users-survey.html"><i class="fas fa-poll"></i> End Users Survey</a>
+                        <a href="deep-dive.html"><i class="fas fa-microscope"></i> Deep Dive of End Users</a>
+                        <a href="potential-solutions.html"><i class="fas fa-lightbulb"></i> Potential Solutions</a>
+                        <a href="direct-observation.html"><i class="fas fa-eye"></i> Direct Observation</a>
+                    </div>
+                </li>
+                <li class="nav-item"><a href="../define.html" class="nav-link">Define</a></li>
+                <li class="nav-item"><a href="../ideate.html" class="nav-link">Ideate</a></li>
+                <li class="nav-item"><a href="../engineering.html" class="nav-link">Engineering</a></li>
+                <li class="nav-item"><a href="../test.html" class="nav-link">Test</a></li>
+            </ul>
+            <button class="menu-toggle" id="menuToggle">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Page Hero -->
+    <section class="page-hero">
+        <div class="page-hero-content">
+            <div class="page-badge"><i class="fas fa-lightbulb"></i> Solution Exploration</div>
+            <h1>Potential <span>Solutions</span></h1>
+            <p>Analysis of technology approaches to address parent needs for developmental monitoring, informed by research and user insights.</p>
+        </div>
+    </section>
+
+    <!-- Solution Overview -->
+    <section class="content-section">
+        <div class="section-header">
+            <h2>Solution <span>Exploration</span></h2>
+            <p>We evaluated multiple approaches before converging on our final solution</p>
+        </div>
+
+        <!-- Solution 1: Wearable Sock (Selected) -->
+        <div class="solution-card selected">
+            <div class="solution-header" contenteditable="false">
+                <div class="solution-icon">
+                    <i class="fas fa-socks"></i>
+                </div>
+                <div class="solution-title">
+                    <h3>Wearable Smart Sock with IMU Sensors</h3>
+                    <p>A comfortable, fabric-based sock embedded with accelerometer and gyroscope sensors to passively track infant movement patterns throughout the day.</p>
+                </div>
+            </div>
+
+            <p class="content-text" contenteditable="false">
+                <strong>The Core Concept:</strong> Unlike vital sign monitors (Owlet, Nanit), our smart sock focuses specifically on motor development tracking. Using a 3-axis accelerometer and gyroscope (IMU - Inertial Measurement Unit), we capture leg movement data that research has proven can differentiate typical development from developmental delay. The sock connects via Bluetooth Low Energy to a smartphone app that uses machine learning to analyze movement patterns against normative developmental databases.
+            </p>
+
+            <div class="research-ref" contenteditable="false">
+                <h5><i class="fas fa-microscope"></i> Supporting Research</h5>
+                <p>Abrishami et al. (IEEE, 2019) demonstrated that accelerometer features from full-day leg movement data successfully differentiated infants at risk for developmental delay from typically developing infants. Their study used wearable sensors on 36 infants, collecting 8-13 hours of movement data, showing that passive monitoring outperforms brief clinical observations.</p>
+            </div>
+
+            <div class="tech-stack">
+                <div class="tech-item" contenteditable="false">
+                    <i class="fas fa-microchip"></i>
+                    <h5>IMU Sensor</h5>
+                    <p>MPU-6050 or LSM6DS3</p>
+                </div>
+                <div class="tech-item" contenteditable="false">
+                    <i class="fas fa-bluetooth-b"></i>
+                    <h5>Connectivity</h5>
+                    <p>BLE 5.0</p>
+                </div>
+                <div class="tech-item" contenteditable="false">
+                    <i class="fas fa-battery-full"></i>
+                    <h5>Power</h5>
+                    <p>Rechargeable LiPo</p>
+                </div>
+                <div class="tech-item" contenteditable="false">
+                    <i class="fas fa-brain"></i>
+                    <h5>ML Model</h5>
+                    <p>TensorFlow Lite</p>
+                </div>
+                <div class="tech-item" contenteditable="false">
+                    <i class="fas fa-tshirt"></i>
+                    <h5>Material</h5>
+                    <p>Medical-grade fabric</p>
+                </div>
+                <div class="tech-item" contenteditable="false">
+                    <i class="fas fa-mobile-alt"></i>
+                    <h5>App</h5>
+                    <p>iOS & Android</p>
+                </div>
+            </div>
+
+            <div class="pros-cons">
+                <div class="pros" contenteditable="false">
+                    <h4><i class="fas fa-check-circle"></i> Advantages</h4>
+                    <ul>
+                        <li>Passive monitoring - no parent input required</li>
+                        <li>Full-day data collection vs. brief clinical snapshots</li>
+                        <li>Non-invasive, comfortable for infants</li>
+                        <li>Directly measures motor development (not just vitals)</li>
+                        <li>Research-validated approach with published studies</li>
+                        <li>Differentiates from existing products (Owlet, Nanit)</li>
+                        <li>Scalable manufacturing with standard components</li>
+                    </ul>
+                </div>
+                <div class="cons" contenteditable="false">
+                    <h4><i class="fas fa-times-circle"></i> Challenges</h4>
+                    <ul>
+                        <li>Requires FDA clearance for medical claims</li>
+                        <li>Battery life constraints with continuous sensing</li>
+                        <li>ML model needs large training dataset</li>
+                        <li>Sock fit varies across infant sizes</li>
+                        <li>Data privacy concerns with health information</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="feasibility-score">
+                <div class="score-item">
+                    <div class="score">9/10</div>
+                    <div class="label">Technical Feasibility</div>
+                </div>
+                <div class="score-item">
+                    <div class="score">8/10</div>
+                    <div class="label">Market Demand</div>
+                </div>
+                <div class="score-item">
+                    <div class="score">7/10</div>
+                    <div class="label">Regulatory Path</div>
+                </div>
+                <div class="score-item">
+                    <div class="score">9/10</div>
+                    <div class="label">Differentiation</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Solution 2: Camera-Based -->
+        <div class="solution-card">
+            <div class="solution-header" contenteditable="false">
+                <div class="solution-icon">
+                    <i class="fas fa-video"></i>
+                </div>
+                <div class="solution-title">
+                    <h3>AI-Powered Camera Analysis</h3>
+                    <p>Computer vision system using existing baby monitors or dedicated cameras to analyze infant movements and postures.</p>
+                </div>
+            </div>
+
+            <p class="content-text" contenteditable="false">
+                <strong>The Concept:</strong> Leverage advances in computer vision and pose estimation (like OpenPose) to analyze video feeds from baby monitors. AI algorithms would track limb movements, body positions, and motor behaviors to assess developmental progress without any wearable device.
+            </p>
+
+            <div class="pros-cons">
+                <div class="pros" contenteditable="false">
+                    <h4><i class="fas fa-check-circle"></i> Advantages</h4>
+                    <ul>
+                        <li>No wearable required - completely non-contact</li>
+                        <li>Could integrate with existing baby monitors</li>
+                        <li>Captures full-body movement patterns</li>
+                        <li>Software-only solution reduces hardware costs</li>
+                    </ul>
+                </div>
+                <div class="cons" contenteditable="false">
+                    <h4><i class="fas fa-times-circle"></i> Challenges</h4>
+                    <ul>
+                        <li>Requires constant camera positioning and lighting</li>
+                        <li>Privacy concerns with continuous video recording</li>
+                        <li>Less accurate than direct sensor contact</li>
+                        <li>Occlusion issues (blankets, clothing)</li>
+                        <li>High computational requirements</li>
+                        <li>Competitors like Nanit already in market</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="feasibility-score">
+                <div class="score-item">
+                    <div class="score">6/10</div>
+                    <div class="label">Technical Feasibility</div>
+                </div>
+                <div class="score-item">
+                    <div class="score">6/10</div>
+                    <div class="label">Market Demand</div>
+                </div>
+                <div class="score-item">
+                    <div class="score">5/10</div>
+                    <div class="label">Regulatory Path</div>
+                </div>
+                <div class="score-item">
+                    <div class="score">4/10</div>
+                    <div class="label">Differentiation</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Solution 3: Smart Mat -->
+        <div class="solution-card">
+            <div class="solution-header" contenteditable="false">
+                <div class="solution-icon">
+                    <i class="fas fa-th-large"></i>
+                </div>
+                <div class="solution-title">
+                    <h3>Pressure-Sensing Play Mat</h3>
+                    <p>An interactive mat with embedded pressure sensors that tracks infant movements during tummy time and play.</p>
+                </div>
+            </div>
+
+            <p class="content-text" contenteditable="false">
+                <strong>The Concept:</strong> A soft play mat with a grid of pressure sensors that detect when and how the baby moves, rolls, pushes up, and crawls. Data would be transmitted to an app for developmental analysis.
+            </p>
+
+            <div class="pros-cons">
+                <div class="pros" contenteditable="false">
+                    <h4><i class="fas fa-check-circle"></i> Advantages</h4>
+                    <ul>
+                        <li>No wearable attached to baby</li>
+                        <li>Safe, soft surface for play</li>
+                        <li>Could include interactive elements</li>
+                        <li>Tracks crawling and rolling patterns</li>
+                    </ul>
+                </div>
+                <div class="cons" contenteditable="false">
+                    <h4><i class="fas fa-times-circle"></i> Challenges</h4>
+                    <ul>
+                        <li>Only captures data during mat use (not full-day)</li>
+                        <li>Complex manufacturing with sensor array</li>
+                        <li>Expensive to produce at scale</li>
+                        <li>Limited portability</li>
+                        <li>Cannot track during sleep or feeding</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="feasibility-score">
+                <div class="score-item">
+                    <div class="score">5/10</div>
+                    <div class="label">Technical Feasibility</div>
+                </div>
+                <div class="score-item">
+                    <div class="score">5/10</div>
+                    <div class="label">Market Demand</div>
+                </div>
+                <div class="score-item">
+                    <div class="score">6/10</div>
+                    <div class="label">Regulatory Path</div>
+                </div>
+                <div class="score-item">
+                    <div class="score">5/10</div>
+                    <div class="label">Differentiation</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Solution 4: App-Only -->
+        <div class="solution-card">
+            <div class="solution-header" contenteditable="false">
+                <div class="solution-icon">
+                    <i class="fas fa-mobile-alt"></i>
+                </div>
+                <div class="solution-title">
+                    <h3>Parent-Input Milestone App</h3>
+                    <p>A smartphone app where parents manually log milestones and receive AI-powered insights and recommendations.</p>
+                </div>
+            </div>
+
+            <p class="content-text" contenteditable="false">
+                <strong>The Concept:</strong> Similar to CDC's Milestone Tracker, but enhanced with AI analysis. Parents would log observations, upload videos, and complete assessments. The app would provide personalized recommendations and flag potential concerns.
+            </p>
+
+            <div class="pros-cons">
+                <div class="pros" contenteditable="false">
+                    <h4><i class="fas fa-check-circle"></i> Advantages</h4>
+                    <ul>
+                        <li>No hardware costs - pure software</li>
+                        <li>Easy to develop and iterate</li>
+                        <li>Low barrier to adoption (free/low cost)</li>
+                        <li>Can launch quickly</li>
+                    </ul>
+                </div>
+                <div class="cons" contenteditable="false">
+                    <h4><i class="fas fa-times-circle"></i> Challenges</h4>
+                    <ul>
+                        <li>Relies on subjective parent observations</li>
+                        <li>Requires active parent engagement (time)</li>
+                        <li>Cannot provide objective, continuous data</li>
+                        <li>Many competitors already exist</li>
+                        <li>Doesn't solve the core problem of anxiety from uncertainty</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="feasibility-score">
+                <div class="score-item">
+                    <div class="score">10/10</div>
+                    <div class="label">Technical Feasibility</div>
+                </div>
+                <div class="score-item">
+                    <div class="score">4/10</div>
+                    <div class="label">Market Demand</div>
+                </div>
+                <div class="score-item">
+                    <div class="score">9/10</div>
+                    <div class="label">Regulatory Path</div>
+                </div>
+                <div class="score-item">
+                    <div class="score">2/10</div>
+                    <div class="label">Differentiation</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Comparison Table -->
+    <section class="content-section" style="padding-top: 0;">
+        <div class="section-header">
+            <h2>Solution <span>Comparison</span></h2>
+            <p>Side-by-side analysis of all approaches</p>
+        </div>
+
+        <div style="overflow-x: auto;">
+            <table class="comparison-table" contenteditable="false">
+                <thead>
+                    <tr>
+                        <th>Criteria</th>
+                        <th>Wearable Sock</th>
+                        <th>Camera AI</th>
+                        <th>Smart Mat</th>
+                        <th>App Only</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Passive Monitoring</td>
+                        <td><i class="fas fa-check check"></i> Full-day</td>
+                        <td><i class="fas fa-minus partial"></i> In-view only</td>
+                        <td><i class="fas fa-minus partial"></i> Mat use only</td>
+                        <td><i class="fas fa-times cross"></i> Active input</td>
+                    </tr>
+                    <tr>
+                        <td>Objective Data</td>
+                        <td><i class="fas fa-check check"></i> Sensor-based</td>
+                        <td><i class="fas fa-check check"></i> Video analysis</td>
+                        <td><i class="fas fa-check check"></i> Pressure data</td>
+                        <td><i class="fas fa-times cross"></i> Subjective</td>
+                    </tr>
+                    <tr>
+                        <td>Research Validation</td>
+                        <td><i class="fas fa-check check"></i> USC/IEEE study</td>
+                        <td><i class="fas fa-minus partial"></i> Limited</td>
+                        <td><i class="fas fa-times cross"></i> None</td>
+                        <td><i class="fas fa-minus partial"></i> Some</td>
+                    </tr>
+                    <tr>
+                        <td>Privacy Friendly</td>
+                        <td><i class="fas fa-check check"></i> No video</td>
+                        <td><i class="fas fa-times cross"></i> Video recording</td>
+                        <td><i class="fas fa-check check"></i> No video</td>
+                        <td><i class="fas fa-check check"></i> User controlled</td>
+                    </tr>
+                    <tr>
+                        <td>Market Differentiation</td>
+                        <td><i class="fas fa-check check"></i> Unique focus</td>
+                        <td><i class="fas fa-times cross"></i> Nanit exists</td>
+                        <td><i class="fas fa-check check"></i> Novel</td>
+                        <td><i class="fas fa-times cross"></i> Crowded</td>
+                    </tr>
+                    <tr>
+                        <td>Estimated Unit Cost</td>
+                        <td>$45-65</td>
+                        <td>$80-150</td>
+                        <td>$120-200</td>
+                        <td>$0 (software)</td>
+                    </tr>
+                    <tr>
+                        <td>Time to Market</td>
+                        <td>12-18 months</td>
+                        <td>18-24 months</td>
+                        <td>24+ months</td>
+                        <td>3-6 months</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Why We Chose the Sock -->
+    <section class="content-section" style="padding-top: 0;">
+        <div class="section-header">
+            <h2>Why the <span>Wearable Sock</span></h2>
+            <p>Our decision rationale based on research and user needs</p>
+        </div>
+
+        <div class="solution-card" style="border-color: var(--accent-gold);">
+            <h3 style="color: var(--text-primary); margin-bottom: 20px;" contenteditable="false">Decision Rationale</h3>
+            
+            <p class="content-text" contenteditable="false">After extensive research and analysis, we selected the <strong>wearable smart sock with IMU sensors</strong> as our primary solution for the following reasons:</p>
+
+            <ol style="color: var(--text-secondary); line-height: 2; padding-left: 20px; margin-top: 20px;" contenteditable="false">
+                <li><strong>Research Validation:</strong> The USC/IEEE study (Abrishami et al., 2019) provides peer-reviewed evidence that accelerometer-based leg movement analysis can detect developmental delays - giving us scientific credibility that competitors lack.</li>
+                <li><strong>Full-Day Passive Monitoring:</strong> Unlike camera or mat solutions, a wearable sock provides continuous data collection throughout the day, including during sleep, feeding, and travel - matching the "always-on" nature of parent anxiety.</li>
+                <li><strong>Market Gap:</strong> While Owlet and Nanit focus on vital signs and sleep, no major player offers motor development-specific monitoring. This is a clear blue ocean opportunity.</li>
+                <li><strong>Privacy Advantage:</strong> Parents expressed strong concerns about video recording (82% in our survey). Our sensor-only approach avoids these concerns entirely.</li>
+                <li><strong>Technical Feasibility:</strong> IMU sensors (accelerometer + gyroscope) are mature, low-cost, and low-power technologies. We can leverage existing ML research for our algorithms.</li>
+                <li><strong>Pediatrician Alignment:</strong> The AAP recommends continuous developmental monitoring between visits. Our solution directly addresses this clinical need, creating partnership opportunities.</li>
+            </ol>
+        </div>
+    </section>
+
+    <!-- Navigation -->
+    <section class="content-section" style="padding-top: 0; text-align: center;">
+        <a href="direct-observation.html" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 10px;">
+            Continue to Direct Observation <i class="fas fa-arrow-right"></i>
+        </a>
+        <br><br>
+        <a href="deep-dive.html" class="btn btn-secondary">Back to Deep Dive</a>
+        <br><br>
+        <a href="potential-solutions.html?edit=true" class="btn btn-outline" style="margin-top: 20px;">
+            <i class="fas fa-edit"></i> Edit Site
+        </a>
+    </section>
+
+    <script src="../app.js"></script>
+    <script src="../edit-mode.js"></script>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('edit') === 'true') {
+            document.querySelectorAll('[contenteditable="false"]').forEach(el => {
+                el.setAttribute('contenteditable', 'true');
+                el.style.outline = '2px dashed var(--accent-gold)';
+                el.style.outlineOffset = '4px';
+            });
+        }
+    </script>
+</body>
+</html>

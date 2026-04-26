@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>End User Profiles - Sesami Define</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../edit-mode.css">
+    <style>
+        .persona-card {
+            background: rgba(255,255,255,0.03);
+            border-radius: 24px;
+            padding: 0;
+            margin-bottom: 50px;
+            border: 1px solid rgba(255,255,255,0.08);
+            overflow: hidden;
+        }
+        .persona-header {
+            background: linear-gradient(135deg, rgba(212,175,55,0.2), rgba(212,175,55,0.05));
+            padding: 40px;
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+        .persona-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-gold), #ffd700);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            font-weight: 700;
+            color: #000;
+            flex-shrink: 0;
+            box-shadow: 0 10px 30px rgba(212,175,55,0.3);
+        }
+        .persona-intro h2 {
+            font-family: 'Playfair Display', serif;
+            color: var(--text-primary);
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+        .persona-intro .tagline {
+            color: var(--accent-gold);
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+        .persona-intro .demographics {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+        .persona-body {
+            padding: 40px;
+        }
+        .persona-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+        .persona-section {
+            background: rgba(0,0,0,0.2);
+            border-radius: 16px;
+            padding: 25px;
+        }
+        .persona-section h4 {
+            color: var(--accent-gold);
+            font-size: 1rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .persona-section ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .persona-section li {
+            color: var(--text-secondary);
+            padding: 10px 0;
+            padding-left: 20px;
+            position: relative;
+            line-height: 1.5;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .persona-section li:last-child {
+            border-bottom: none;
+        }
+        .persona-section li::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 16px;
+            width: 8px;
+            height: 8px;
+            background: var(--accent-gold);
+            border-radius: 50%;
+        }
+        .persona-quote {
+            background: linear-gradient(135deg, rgba(212,175,55,0.15), rgba(212,175,55,0.05));
+            border-left: 4px solid var(--accent-gold);
+            padding: 25px 30px;
+            margin: 30px 0;
+            border-radius: 0 16px 16px 0;
+        }
+        .persona-quote p {
+            color: var(--text-primary);
+            font-size: 1.2rem;
+            font-style: italic;
+            line-height: 1.7;
+        }
+        .persona-quote .attribution {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-top: 10px;
+            font-style: normal;
+        }
+        .journey-map {
+            background: rgba(255,255,255,0.02);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 50px 0;
+            overflow-x: auto;
+        }
+        .journey-stages {
+            display: flex;
+            gap: 0;
+            min-width: 900px;
+        }
+        .journey-stage {
+            flex: 1;
+            text-align: center;
+            padding: 20px 15px;
+            position: relative;
+        }
+        .journey-stage::after {
+            content: "";
+            position: absolute;
+            top: 50px;
+            right: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--accent-gold), transparent);
+        }
+        .journey-stage:last-child::after {
+            display: none;
+        }
+        .stage-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--accent-gold);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            position: relative;
+            z-index: 1;
+        }
+        .stage-icon i {
+            font-size: 1.5rem;
+            color: #000;
+        }
+        .stage-name {
+            color: var(--text-primary);
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        .stage-feeling {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+        .stage-thought {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            font-style: italic;
+        }
+        .empathy-map {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+            margin: 40px 0;
+        }
+        @media (max-width: 768px) {
+            .empathy-map { grid-template-columns: 1fr; }
+        }
+        .empathy-quadrant {
+            background: rgba(0,0,0,0.2);
+            border-radius: 16px;
+            padding: 25px;
+        }
+        .empathy-quadrant h4 {
+            color: var(--text-primary);
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--accent-gold);
+        }
+        .empathy-quadrant ul {
+            list-style: none;
+            padding: 0;
+        }
+        .empathy-quadrant li {
+            color: var(--text-secondary);
+            padding: 8px 0;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        .content-text {
+            color: var(--text-secondary);
+            line-height: 1.8;
+            font-size: 1.05rem;
+        }
+        .content-text strong {
+            color: var(--text-primary);
+        }
+    </style>
+</head>
+<body data-page="define">
+    <div class="bg-gradient"></div>
+    <div class="bg-pattern"></div>
+    <div class="floating-orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="../index.html" class="logo">
+                <div class="logo-icon"><i class="fas fa-baby"></i></div>
+                <span class="logo-text">Sesami</span>
+            </a>
+            <ul class="nav-links" id="navLinks">
+                <li class="nav-item"><a href="../index.html" class="nav-link">Home</a></li>
+                <li class="nav-item has-dropdown">
+                    <a href="../background.html" class="nav-link">Background <i class="fas fa-chevron-down arrow"></i></a>
+                    <div class="dropdown">
+                        <a href="../background/preliminary-research.html"><i class="fas fa-file-alt"></i> Preliminary Research</a>
+                        <a href="../background/final-research.html"><i class="fas fa-file-lines"></i> Final Research Paper</a>
+                        <a href="../background/baby-development-tech.html"><i class="fas fa-baby"></i> Baby Development Tech</a>
+                        <a href="../background/competitor-chart.html"><i class="fas fa-chart-bar"></i> Competitor Chart</a>
+                        <a href="../background/expert-source.html"><i class="fas fa-user-md"></i> Expert Source</a>
+                    </div>
+                </li>
+                <li class="nav-item has-dropdown">
+                    <a href="../empathize.html" class="nav-link">Empathize <i class="fas fa-chevron-down arrow"></i></a>
+                    <div class="dropdown">
+                        <a href="../empathize/end-users-survey.html"><i class="fas fa-poll"></i> End Users Survey</a>
+                        <a href="../empathize/deep-dive.html"><i class="fas fa-search"></i> Deep Dive of End Users</a>
+                        <a href="../empathize/potential-solutions.html"><i class="fas fa-lightbulb"></i> Potential Solutions</a>
+                        <a href="../empathize/direct-observation.html"><i class="fas fa-eye"></i> Direct Observation</a>
+                    </div>
+                </li>
+                <li class="nav-item has-dropdown">
+                    <a href="../define.html" class="nav-link active">Define <i class="fas fa-chevron-down arrow"></i></a>
+                    <div class="dropdown">
+                        <a href="purpose.html"><i class="fas fa-bullseye"></i> Purpose for Innovation</a>
+                        <a href="design-goals.html"><i class="fas fa-tasks"></i> Design Goals/Criteria</a>
+                        <a href="end-user-interview.html"><i class="fas fa-comments"></i> End User Interview</a>
+                        <a href="thesis.html"><i class="fas fa-scroll"></i> Thesis Statement</a>
+                        <a href="user-profiles.html"><i class="fas fa-users"></i> End User Profiles</a>
+                    </div>
+                </li>
+                <li class="nav-item has-dropdown">
+                    <a href="../ideate.html" class="nav-link">Ideate <i class="fas fa-chevron-down arrow"></i></a>
+                    <div class="dropdown">
+                        <a href="../ideate.html#brainstorm"><i class="fas fa-brain"></i> Brainstorming</a>
+                        <a href="../ideate.html#features"><i class="fas fa-list-check"></i> Feature Prioritization</a>
+                    </div>
+                </li>
+                <li class="nav-item has-dropdown">
+                    <a href="../engineering.html" class="nav-link">Engineering <i class="fas fa-chevron-down arrow"></i></a>
+                    <div class="dropdown">
+                        <a href="../engineering.html#specs"><i class="fas fa-cogs"></i> Technical Specs</a>
+                        <a href="../engineering.html#cad"><i class="fas fa-drafting-compass"></i> CAD Drawings</a>
+                    </div>
+                </li>
+                <li class="nav-item has-dropdown">
+                    <a href="../test.html" class="nav-link">Test <i class="fas fa-chevron-down arrow"></i></a>
+                    <div class="dropdown">
+                        <a href="../test.html#methods"><i class="fas fa-flask"></i> Testing Methods</a>
+                        <a href="../test.html#results"><i class="fas fa-chart-bar"></i> Results</a>
+                    </div>
+                </li>
+            </ul>
+            <button class="menu-toggle" id="menuToggle">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+
+    <section class="page-hero">
+        <div class="page-hero-content">
+            <div class="page-badge"><i class="fas fa-users"></i> Define Phase</div>
+            <h1>End User <span>Profiles</span></h1>
+            <p>Detailed personas representing our target users, based on research and interview insights.</p>
+        </div>
+    </section>
+
+    <main class="main-content">
+        <div class="container">
+            
+            <!-- Persona 1: Sarah -->
+            <div class="persona-card" data-editable="true">
+                <div class="persona-header">
+                    <div class="persona-avatar">SC</div>
+                    <div class="persona-intro">
+                        <h2>Sarah Chen</h2>
+                        <div class="tagline">The Anxious First-Time Mom</div>
+                        <div class="demographics">34 years old | Marketing Manager | Miami, FL | 8-month-old daughter Emma</div>
+                    </div>
+                </div>
+                <div class="persona-body">
+                    <div class="persona-quote">
+                        <p>"I just want to know if she's on track. Every time she doesn't hit a milestone exactly when the app says she should, I spiral into panic mode. Is that normal? Am I crazy?"</p>
+                        <div class="attribution">- From user interview, November 2024</div>
+                    </div>
+                    
+                    <div class="persona-grid">
+                        <div class="persona-section">
+                            <h4><i class="fas fa-user"></i> Background</h4>
+                            <ul>
+                                <li>Works remotely as a marketing manager for a tech startup</li>
+                                <li>First pregnancy after 2 years of trying, making her extra protective</li>
+                                <li>Research-oriented: reads 10+ parenting articles weekly</li>
+                                <li>Active in 3 Facebook mom groups for advice and support</li>
+                                <li>Partner travels frequently for work, often solo parenting</li>
+                            </ul>
+                        </div>
+                        <div class="persona-section">
+                            <h4><i class="fas fa-bullseye"></i> Goals</h4>
+                            <ul>
+                                <li>Know with certainty that Emma is developing normally</li>
+                                <li>Catch any potential issues early enough to intervene</li>
+                                <li>Feel confident and prepared for pediatrician visits</li>
+                                <li>Stop the 3 AM Google searches that fuel her anxiety</li>
+                                <li>Enjoy motherhood without constant worry</li>
+                            </ul>
+                        </div>
+                        <div class="persona-section">
+                            <h4><i class="fas fa-heart-crack"></i> Pain Points</h4>
+                            <ul>
+                                <li>Overwhelmed by conflicting information online</li>
+                                <li>Pediatrician visits feel rushed (15 min average)</li>
+                                <li>No objective way to track milestones between visits</li>
+                                <li>Constant comparison to other babies on social media</li>
+                                <li>Guilt about potentially missing warning signs</li>
+                            </ul>
+                        </div>
+                        <div class="persona-section">
+                            <h4><i class="fas fa-mobile-alt"></i> Tech Behavior</h4>
+                            <ul>
+                                <li>Uses 4 baby apps: Wonder Weeks, Huckleberry, Baby Tracker, What to Expect</li>
+                                <li>Takes 50+ photos/videos of Emma weekly</li>
+                                <li>Comfortable with smart home devices (Nest, Alexa)</li>
+                                <li>Already owns Owlet sock for oxygen monitoring</li>
+                                <li>Would pay premium for peace of mind ($100-200 range)</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="empathy-map">
+                        <div class="empathy-quadrant">
+                            <h4>What Sarah THINKS</h4>
+                            <ul>
+                                <li>"Other babies seem more advanced than Emma"</li>
+                                <li>"The pediatrician probably thinks I'm overreacting"</li>
+                                <li>"If something's wrong, I need to catch it early"</li>
+                                <li>"I wish there was a way to just KNOW she's okay"</li>
+                            </ul>
+                        </div>
+                        <div class="empathy-quadrant">
+                            <h4>What Sarah FEELS</h4>
+                            <ul>
+                                <li>Anxious about hitting milestones "on time"</li>
+                                <li>Guilty when she can't remember details for the doctor</li>
+                                <li>Frustrated by vague answers like "every baby is different"</li>
+                                <li>Exhausted from constant vigilance and worry</li>
+                            </ul>
+                        </div>
+                        <div class="empathy-quadrant">
+                            <h4>What Sarah SAYS</h4>
+                            <ul>
+                                <li>"Is she rolling over enough?"</li>
+                                <li>"My friend's baby was crawling by now"</li>
+                                <li>"Should I be worried about this?"</li>
+                                <li>"I just need someone to tell me she's normal"</li>
+                            </ul>
+                        </div>
+                        <div class="empathy-quadrant">
+                            <h4>What Sarah DOES</h4>
+                            <ul>
+                                <li>Googles development questions at 2 AM</li>
+                                <li>Films Emma attempting milestones to show the doctor</li>
+                                <li>Asks mom groups for validation and advice</li>
+                                <li>Counts and times everything (feeds, poops, awake windows)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Persona 2: Marcus -->
+            <div class="persona-card" data-editable="true">
+                <div class="persona-header">
+                    <div class="persona-avatar">MJ</div>
+                    <div class="persona-intro">
+                        <h2>Marcus Johnson</h2>
+                        <div class="tagline">The Efficiency-Focused Dad of Twins</div>
+                        <div class="demographics">41 years old | Software Engineer | Fort Lauderdale, FL | 11-month-old twin boys</div>
+                    </div>
+                </div>
+                <div class="persona-body">
+                    <div class="persona-quote">
+                        <p>"I need something that works in the background. I'm an engineer - give me the data, show me the trends, and flag anomalies. I don't have time for manual logging with two babies."</p>
+                        <div class="attribution">- From user interview, November 2024</div>
+                    </div>
+                    
+                    <div class="persona-grid">
+                        <div class="persona-section">
+                            <h4><i class="fas fa-user"></i> Background</h4>
+                            <ul>
+                                <li>Senior software engineer at a Fortune 500 company</li>
+                                <li>Wife is an ER nurse working 12-hour shifts</li>
+                                <li>Manages household logistics like a project</li>
+                                <li>Data-driven decision maker in all aspects of life</li>
+                                <li>Twins conceived via IVF after fertility struggles</li>
+                            </ul>
+                        </div>
+                        <div class="persona-section">
+                            <h4><i class="fas fa-bullseye"></i> Goals</h4>
+                            <ul>
+                                <li>Track both twins efficiently without doubling effort</li>
+                                <li>Share developmental data easily with wife</li>
+                                <li>Get alerts only when something actually needs attention</li>
+                                <li>Understand if the twins' different paces are normal</li>
+                                <li>Minimize time spent on baby admin tasks</li>
+                            </ul>
+                        </div>
+                        <div class="persona-section">
+                            <h4><i class="fas fa-heart-crack"></i> Pain Points</h4>
+                            <ul>
+                                <li>Zero time for manual milestone logging</li>
+                                <li>Twins developing at different rates causes confusion</li>
+                                <li>Existing apps are too basic for his data needs</li>
+                                <li>Hard to coordinate care info with wife's schedule</li>
+                                <li>Frustrated by lack of comparative analytics</li>
+                            </ul>
+                        </div>
+                        <div class="persona-section">
+                            <h4><i class="fas fa-mobile-alt"></i> Tech Behavior</h4>
+                            <ul>
+                                <li>Early adopter of smart home technology</li>
+                                <li>Builds custom automations (Home Assistant, IFTTT)</li>
+                                <li>Prefers dashboards and data visualizations</li>
+                                <li>Will pay for quality ($200+ if it saves time)</li>
+                                <li>Values API access and data export capabilities</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Persona 3: Dr. Emily -->
+            <div class="persona-card" data-editable="true">
+                <div class="persona-header">
+                    <div class="persona-avatar">EP</div>
+                    <div class="persona-intro">
+                        <h2>Dr. Emily Patel</h2>
+                        <div class="tagline">The Evidence-Based Pediatrician & Mom</div>
+                        <div class="demographics">42 years old | Pediatrician (15 years) | Boca Raton, FL | 14-month-old son, 6-year-old daughter</div>
+                    </div>
+                </div>
+                <div class="persona-body">
+                    <div class="persona-quote">
+                        <p>"I see 25 patients a day, 15 minutes each. I know we're missing subtle delays because I can't see these kids in their natural environment. If parents could bring me real movement data, it would change everything."</p>
+                        <div class="attribution">- From user interview, December 2024</div>
+                    </div>
+                    
+                    <div class="persona-grid">
+                        <div class="persona-section">
+                            <h4><i class="fas fa-user"></i> Background</h4>
+                            <ul>
+                                <li>Board-certified pediatrician with fellowship in developmental medicine</li>
+                                <li>Partner at a 5-physician pediatric practice</li>
+                                <li>Published researcher on early intervention outcomes</li>
+                                <li>Advocate for technology-enabled care</li>
+                                <li>Experienced postpartum anxiety with first child</li>
+                            </ul>
+                        </div>
+                        <div class="persona-section">
+                            <h4><i class="fas fa-bullseye"></i> Goals (Professional)</h4>
+                            <ul>
+                                <li>Catch developmental delays earlier than current screening allows</li>
+                                <li>Access objective, longitudinal patient data</li>
+                                <li>Spend appointment time on counseling, not data gathering</li>
+                                <li>Reduce over-referrals while catching true positives</li>
+                                <li>Empower parents without overwhelming them</li>
+                            </ul>
+                        </div>
+                        <div class="persona-section">
+                            <h4><i class="fas fa-bullseye"></i> Goals (Personal)</h4>
+                            <ul>
+                                <li>Balance medical knowledge with normal parental worry</li>
+                                <li>Model healthy developmental tracking for other parents</li>
+                                <li>Have objective data to quiet her own anxious thoughts</li>
+                                <li>Avoid over-analyzing her son like a patient</li>
+                            </ul>
+                        </div>
+                        <div class="persona-section">
+                            <h4><i class="fas fa-heart-crack"></i> Pain Points</h4>
+                            <ul>
+                                <li>Current screening tools have 20-25% miss rate</li>
+                                <li>Parental recall is unreliable for milestone timing</li>
+                                <li>Brief visits don't capture natural movement patterns</li>
+                                <li>EHR integration is often clunky or nonexistent</li>
+                                <li>As a mom, still experiences irrational worry despite expertise</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- User Journey Map -->
+            <div class="journey-map" data-editable="true">
+                <div class="section-header">
+                    <h2>User Journey Map</h2>
+                    <p>Sarah's emotional journey through the developmental monitoring experience</p>
+                </div>
+
+                <div class="journey-stages">
+                    <div class="journey-stage">
+                        <div class="stage-icon"><i class="fas fa-baby"></i></div>
+                        <div class="stage-name">Birth</div>
+                        <div class="stage-feeling">:)</div>
+                        <div class="stage-thought">"Everything is perfect, she's here!"</div>
+                    </div>
+                    <div class="journey-stage">
+                        <div class="stage-icon"><i class="fas fa-question"></i></div>
+                        <div class="stage-name">First Concerns</div>
+                        <div class="stage-feeling">:|</div>
+                        <div class="stage-thought">"Is she supposed to be doing X by now?"</div>
+                    </div>
+                    <div class="journey-stage">
+                        <div class="stage-icon"><i class="fas fa-search"></i></div>
+                        <div class="stage-name">Research Spiral</div>
+                        <div class="stage-feeling">:(</div>
+                        <div class="stage-thought">"Google says this could be serious..."</div>
+                    </div>
+                    <div class="journey-stage">
+                        <div class="stage-icon"><i class="fas fa-user-md"></i></div>
+                        <div class="stage-name">Doctor Visit</div>
+                        <div class="stage-feeling">:|</div>
+                        <div class="stage-thought">"She said it's fine but I still feel uncertain"</div>
+                    </div>
+                    <div class="journey-stage">
+                        <div class="stage-icon"><i class="fas fa-redo"></i></div>
+                        <div class="stage-name">Waiting & Worrying</div>
+                        <div class="stage-feeling">:(</div>
+                        <div class="stage-thought">"3 months until next checkup... what if I miss something?"</div>
+                    </div>
+                    <div class="journey-stage">
+                        <div class="stage-icon"><i class="fas fa-star"></i></div>
+                        <div class="stage-name">With Sesami</div>
+                        <div class="stage-feeling">:D</div>
+                        <div class="stage-thought">"The data shows she's on track - I can relax!"</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="cta-container" style="text-align: center; margin-top: 60px;">
+                <a href="../ideate.html" class="btn-primary" style="display: inline-flex; align-items: center; gap: 10px;">
+                    Continue to Ideation <i class="fas fa-arrow-right"></i>
+                </a>
+                <a href="thesis.html" class="btn-secondary" style="display: inline-flex; align-items: center; gap: 10px; margin-left: 20px;">
+                    <i class="fas fa-arrow-left"></i> Back to Thesis
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p>Sesami - AI-Powered Infant Development Tracking</p>
+            <a href="user-profiles.html?edit=true" class="edit-link"><i class="fas fa-edit"></i> Edit Site</a>
+        </div>
+    </footer>
+
+    <script src="../app.js"></script>
+    <script src="../edit-mode.js"></script>
+</body>
+</html>

@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Belonging - An Anime Short Film</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #000;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', sans-serif;
+            overflow: hidden;
+        }
+        
+        #cinema {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            background: #000;
+        }
+        
+        /* Letterbox bars */
+        .letterbox {
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 12%;
+            background: #000;
+            z-index: 10;
+        }
+        .letterbox.top { top: 0; }
+        .letterbox.bottom { bottom: 0; }
+        
+        /* Scene container */
+        #scene-container {
+            position: absolute;
+            top: 12%;
+            left: 0;
+            right: 0;
+            bottom: 12%;
+            overflow: hidden;
+        }
+        
+        .scene {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 1.5s ease;
+        }
+        
+        .scene.active {
+            opacity: 1;
+        }
+        
+        .scene img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            animation: slowZoom 12s ease-out forwards;
+        }
+        
+        @keyframes slowZoom {
+            from { transform: scale(1); }
+            to { transform: scale(1.15); }
+        }
+        
+        /* Subtitles */
+        #subtitles {
+            position: absolute;
+            bottom: 15%;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 20;
+            text-align: center;
+            max-width: 80%;
+        }
+        
+        #subtitle-text {
+            font-size: 28px;
+            color: #fff;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.9), 0 0 20px rgba(0,0,0,0.8);
+            padding: 15px 30px;
+            background: rgba(0,0,0,0.5);
+            border-radius: 8px;
+            line-height: 1.5;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+        
+        #subtitle-text.visible {
+            opacity: 1;
+        }
+        
+        /* Title screen */
+        #title-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0a0a0a 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            transition: opacity 2s;
+        }
+        
+        #title-screen h1 {
+            font-size: 72px;
+            color: #fff;
+            letter-spacing: 20px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            animation: titleGlow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes titleGlow {
+            from { text-shadow: 0 0 20px rgba(100,149,237,0.5); }
+            to { text-shadow: 0 0 40px rgba(100,149,237,0.8), 0 0 60px rgba(100,149,237,0.4); }
+        }
+        
+        #title-screen p {
+            font-size: 18px;
+            color: #888;
+            letter-spacing: 5px;
+            margin-bottom: 60px;
+        }
+        
+        #begin-btn {
+            padding: 20px 60px;
+            font-size: 18px;
+            letter-spacing: 3px;
+            background: transparent;
+            border: 2px solid #fff;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        #begin-btn:hover {
+            background: #fff;
+            color: #000;
+        }
+        
+        /* Film grain overlay */
+        #grain {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 50;
+            opacity: 0.05;
+            background-image: url('data:image/svg+xml,<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23noise)"/></svg>');
+        }
+        
+        /* YouTube player (hidden) */
+        #youtube-player {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 1px;
+            height: 1px;
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        /* Progress bar */
+        #progress {
+            position: absolute;
+            bottom: 11%;
+            left: 5%;
+            right: 5%;
+            height: 3px;
+            background: rgba(255,255,255,0.2);
+            z-index: 30;
+            border-radius: 2px;
+        }
+        
+        #progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #6495ED, #fff);
+            border-radius: 2px;
+            transition: width 0.5s linear;
+        }
+    </style>
+</head>
+<body>
+    <div id="cinema">
+        <div class="letterbox top"></div>
+        <div class="letterbox bottom"></div>
+        
+        <div id="scene-container"></div>
+        
+        <div id="subtitles">
+            <div id="subtitle-text"></div>
+        </div>
+        
+        <div id="progress">
+            <div id="progress-bar"></div>
+        </div>
+        
+        <div id="title-screen">
+            <h1>Belonging</h1>
+            <p>An Anime Short Film</p>
+            <button id="begin-btn">BEGIN</button>
+        </div>
+        
+        <div id="grain"></div>
+        
+        <iframe id="youtube-player" 
+                src="https://www.youtube.com/embed/XFkzRNyygfk?enablejsapi=1&autoplay=0&controls=0&loop=1" 
+                allow="autoplay; encrypted-media" 
+                allowfullscreen>
+        </iframe>
+    </div>
+
+    <script>
+        const scenes = [
+            {
+                image: './anime_scenes/scene_1.png',
+                voice: './anime_scenes/voice_1.mp3',
+                subtitle: 'Every day feels the same... surrounded by people, yet completely alone.',
+                duration: 10000
+            },
+            {
+                image: './anime_scenes/scene_2.png',
+                voice: './anime_scenes/voice_2.mp3',
+                subtitle: 'They laugh, they talk, they share their lives... but I am just a ghost among them.',
+                duration: 10000
+            },
+            {
+                image: './anime_scenes/scene_3.png',
+                voice: './anime_scenes/voice_3.mp3',
+                subtitle: 'I wear this mask every day... smiling when I feel nothing inside.',
+                duration: 10000
+            },
+            {
+                image: './anime_scenes/scene_4.png',
+                voice: './anime_scenes/voice_4.mp3',
+                subtitle: 'Sometimes I want to scream... to shatter this silence that imprisons me.',
+                duration: 10000
+            },
+            {
+                image: './anime_scenes/scene_5.png',
+                voice: './anime_scenes/voice_5.mp3',
+                subtitle: 'They see my face but never my soul... I wonder if anyone truly sees me.',
+                duration: 10000
+            },
+            {
+                image: './anime_scenes/scene_6.png',
+                voice: './anime_scenes/voice_6.mp3',
+                subtitle: 'The rain falls and I let it wash over me... each drop a tear I cannot cry.',
+                duration: 10000
+            },
+            {
+                image: './anime_scenes/scene_7.png',
+                voice: './anime_scenes/voice_7.mp3',
+                subtitle: 'What if I just... disappeared? Would anyone notice the empty space?',
+                duration: 10000
+            },
+            {
+                image: './anime_scenes/scene_8.png',
+                voice: './anime_scenes/voice_8.mp3',
+                subtitle: 'But somewhere deep inside... a small light refuses to fade. Maybe tomorrow... I will find where I belong.',
+                duration: 12000
+            }
+        ];
+
+        let currentScene = 0;
+        let ytPlayer;
+        
+        // Create scene elements
+        const container = document.getElementById('scene-container');
+        scenes.forEach((scene, i) => {
+            const div = document.createElement('div');
+            div.className = 'scene';
+            div.id = 'scene-' + i;
+            div.innerHTML = '<img src="' + scene.image + '" alt="Scene ' + (i+1) + '">';
+            container.appendChild(div);
+        });
+
+        // YouTube API
+        const tag = document.createElement('script');
+        tag.src = 'https://www.youtube.com/iframe_api';
+        document.head.appendChild(tag);
+
+        window.onYouTubeIframeAPIReady = function() {
+            ytPlayer = new YT.Player('youtube-player', {
+                events: {
+                    'onReady': function(e) {
+                        console.log('YouTube ready');
+                    }
+                }
+            });
+        };
+
+        function playScene(index) {
+            if (index >= scenes.length) {
+                // End of film
+                document.getElementById('subtitle-text').textContent = 'The End';
+                document.getElementById('subtitle-text').classList.add('visible');
+                return;
+            }
+            
+            const scene = scenes[index];
+            
+            // Update progress
+            document.getElementById('progress-bar').style.width = ((index + 1) / scenes.length * 100) + '%';
+            
+            // Hide all scenes
+            document.querySelectorAll('.scene').forEach(s => s.classList.remove('active'));
+            
+            // Show current scene with fresh animation
+            const sceneEl = document.getElementById('scene-' + index);
+            const img = sceneEl.querySelector('img');
+            img.style.animation = 'none';
+            img.offsetHeight; // Trigger reflow
+            img.style.animation = 'slowZoom ' + (scene.duration/1000) + 's ease-out forwards';
+            sceneEl.classList.add('active');
+            
+            // Show subtitle
+            const subtitleEl = document.getElementById('subtitle-text');
+            subtitleEl.classList.remove('visible');
+            setTimeout(() => {
+                subtitleEl.textContent = scene.subtitle;
+                subtitleEl.classList.add('visible');
+            }, 500);
+            
+            // Play voice
+            const audio = new Audio(scene.voice);
+            audio.volume = 0.9;
+            audio.play().catch(e => console.log('Voice play blocked'));
+            
+            // Next scene
+            currentScene = index;
+            setTimeout(() => playScene(index + 1), scene.duration);
+        }
+
+        document.getElementById('begin-btn').addEventListener('click', function() {
+            // Fade out title
+            document.getElementById('title-screen').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('title-screen').style.display = 'none';
+            }, 2000);
+            
+            // Start YouTube music
+            if (ytPlayer && ytPlayer.playVideo) {
+                ytPlayer.setVolume(40);
+                ytPlayer.playVideo();
+            }
+            
+            // Start first scene after fade
+            setTimeout(() => playScene(0), 2500);
+        });
+    </script>
+</body>
+</html>

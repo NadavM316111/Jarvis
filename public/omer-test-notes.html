@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Omer Test Notes - PRINT ME</title>
+    <style>
+        @media print {
+            body { font-size: 10pt; }
+            .no-print { display: none; }
+            .page-break { page-break-before: always; }
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Georgia', serif;
+            line-height: 1.4;
+            padding: 20px;
+            max-width: 8.5in;
+            margin: 0 auto;
+            background: #fff;
+            color: #000;
+        }
+        h1 { 
+            text-align: center; 
+            font-size: 18pt; 
+            border-bottom: 3px double #000;
+            padding-bottom: 8px;
+            margin-bottom: 15px;
+        }
+        h2 { 
+            font-size: 13pt; 
+            background: #000; 
+            color: #fff; 
+            padding: 4px 8px;
+            margin: 12px 0 8px 0;
+        }
+        h3 { 
+            font-size: 11pt;
+            border-bottom: 1px solid #000;
+            margin: 10px 0 5px 0;
+        }
+        .two-col { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 15px; 
+        }
+        .section { margin-bottom: 10px; }
+        ul { margin-left: 18px; }
+        li { margin-bottom: 3px; font-size: 10pt; }
+        .highlight { 
+            background: #ffff00; 
+            font-weight: bold;
+            padding: 0 3px;
+        }
+        .critical {
+            border: 2px solid #000;
+            padding: 8px;
+            margin: 8px 0;
+            background: #f5f5f5;
+        }
+        .critical-title {
+            font-weight: bold;
+            text-decoration: underline;
+        }
+        .fact { font-size: 10pt; margin: 3px 0; }
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin: 8px 0;
+            font-size: 9pt;
+        }
+        th, td { 
+            border: 1px solid #000; 
+            padding: 4px; 
+            text-align: left; 
+        }
+        th { background: #ddd; }
+        .print-btn {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            padding: 15px 30px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            z-index: 1000;
+        }
+        .print-btn:hover { background: #0056b3; }
+        .header-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 10pt;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <button class="print-btn no-print" onclick="window.print()">PRINT / SAVE AS PDF</button>
+    
+    <h1>THE OMER - COMPLETE TEST NOTES</h1>
+    <div class="header-info">
+        <span>Jewish Law Class</span>
+        <span>Open Note Test Reference Sheet</span>
+    </div>
+
+    <div class="two-col">
+        <div>
+            <h2>PART 1: THE CRUSADES</h2>
+            <div class="section">
+                <h3>Basic Facts</h3>
+                <ul>
+                    <li><span class="highlight">4 Major Crusades</span> (1096-1350s CE)</li>
+                    <li><strong>Objective:</strong> Reclaim Jerusalem from Muslim control for Christianity</li>
+                    <li>Recruited mainly <strong>German peasants</strong> with money & religious zeal</li>
+                </ul>
+            </div>
+            <div class="section">
+                <h3>Impact on Jews</h3>
+                <ul>
+                    <li>Killed, tortured, forced to convert</li>
+                    <li>Homes & synagogues destroyed</li>
+                    <li>Communities looted</li>
+                    <li>Blamed for Jesus's death (though Gospel says <strong>Romans crucified him</strong>)</li>
+                </ul>
+            </div>
+            <div class="section">
+                <h3>The Dark Ages (1,000 years)</h3>
+                <ul>
+                    <li><span class="highlight">Church kept people illiterate</span> - couldn't read Gospel</li>
+                    <li>Enabled mass manipulation</li>
+                    <li>Easter = same time as Passover</li>
+                    <li>Mobs attacked Jews after Easter services</li>
+                </ul>
+            </div>
+        </div>
+
+        <div>
+            <h2>PART 2: BAR KOKHBA REVOLT</h2>
+            <div class="section">
+                <h3>Key Dates & Numbers</h3>
+                <ul>
+                    <li><span class="highlight">132-135 CE</span> - The Revolt</li>
+                    <li>Temple destroyed: <strong>70 CE</strong></li>
+                    <li>Roman rule: 1st century BCE to ~500 CE</li>
+                    <li><span class="highlight">90% of population exterminated</span></li>
+                    <li><strong>40,000 Roman troops</strong> sent by Emperor</li>
+                    <li><span class="highlight">First genocide in Jewish history</span></li>
+                </ul>
+            </div>
+            <div class="section">
+                <h3>Two Jewish Groups</h3>
+                <table>
+                    <tr><th>Judeans (South)</th><th>Northern Jews</th></tr>
+                    <tr><td>Military opposition</td><td>Diplomatic approach</td></tr>
+                    <tr><td>Fight Rome</td><td>Don't provoke Rome</td></tr>
+                </table>
+            </div>
+            <div class="section">
+                <h3>Key Figures</h3>
+                <ul>
+                    <li><strong>Rabbi Akiva</strong> - Head of ideological movement; believed Bar Kokhba = redeemer; <span class="highlight">skinned alive</span></li>
+                    <li><strong>Bar Kokhba</strong> - Military leader of revolt</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="critical">
+        <span class="critical-title">ROMAN RESTRICTIONS AFTER REVOLT:</span>
+        Jews banned from Jerusalem | No circumcision | No Shabbat/holidays | Could not sanctify month | No tefillin publicly
+    </div>
+
+    <h2>PART 3: THE "STUDENTS" - CRITICAL REINTERPRETATION</h2>
+    <div class="two-col">
+        <div>
+            <h3>Talmudic Account</h3>
+            <ul>
+                <li>24,000 pairs (or 12,000 / 300) "students"</li>
+                <li>From Givat to Antipatris (Roman military cities)</li>
+                <li>Died between Passover and Shavuot</li>
+                <li>Stated reason: "Did not treat each other with respect"</li>
+                <li>Died of <span class="highlight">"Askara"</span></li>
+            </ul>
+        </div>
+        <div>
+            <h3>THE REAL MEANING</h3>
+            <div class="critical">
+                <ul>
+                    <li><span class="highlight">"Askara" = Latin "sicae" = SWORD</span> (NOT diphtheria!)</li>
+                    <li>"Sicarii" = Jewish assassins with hidden daggers</li>
+                    <li><span class="highlight">"Students" = followers/SOLDIERS</span>, not Torah students</li>
+                    <li>Died by Roman sword, not disease</li>
+                    <li>Talmud disguised truth to protect Rabbi Akiva's image</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <div class="critical">
+        <span class="critical-title">CRITICAL POINT:</span> <span class="highlight">NOWHERE in the Talmud does it say Jews commemorated their death with mourning customs during the Omer!</span> The "sad" customs developed LATER in medieval Europe. Original Omer was FESTIVE.
+    </div>
+
+    <div class="critical">
+        <span class="critical-title">THE DEEPER MESSAGE:</span> Jewish disunity = weakness = enemies attack. When Jews don't respect each other, they become vulnerable. Example: Israel's internal conflict before October 7th.
+    </div>
+
+    <h2>PART 4: THE OMER FROM THE BIBLE</h2>
+    <div class="two-col">
+        <div>
+            <h3>Biblical Source</h3>
+            <ul>
+                <li>Vayikra (Leviticus) Chapter 23</li>
+                <li>Contains: Shabbat, Pesach, Omer, Shavuot, Sukkot, Yom Kippur</li>
+                <li><span class="highlight">Hanukkah & Purim NOT in Torah</span> (rabbinic/post-Biblical)</li>
+            </ul>
+            <h3>What is the Omer?</h3>
+            <ul>
+                <li><span class="highlight">Measurement: ~2 quarts / 2/3 gallon / 2 liters</span></li>
+                <li>A sheaf of first grain harvest (barley/wheat)</li>
+                <li><span class="highlight">49 days (7 weeks x 7 days)</span></li>
+                <li><span class="highlight">50th day = Shavuot</span> (means "weeks")</li>
+            </ul>
+        </div>
+        <div>
+            <h3>Purpose of Omer</h3>
+            <ul>
+                <li><strong>Practical:</strong> Support Kohanim & Levites (had no land)</li>
+                <li><strong>Spiritual:</strong> Show gratitude to God</li>
+                <li>Food was also a trade commodity</li>
+            </ul>
+            <h3>Key Rules</h3>
+            <ul>
+                <li>"Shabbat after Pesach" = 2nd day of Pesach (holidays = "Shabbatot")</li>
+                <li><span class="highlight">Cannot eat new grain (chadash) until offering brought</span></li>
+                <li>Counting = mitzvah from Torah (still done today)</li>
+            </ul>
+            <h3>Agricultural Cycle</h3>
+            <table>
+                <tr><th>Holiday</th><th>Season</th></tr>
+                <tr><td>Pesach</td><td>Spring (harvest begins)</td></tr>
+                <tr><td>Shavuot</td><td>Early Summer (dry season)</td></tr>
+                <tr><td>Sukkot</td><td>Before Winter (rainy season)</td></tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="critical">
+        <span class="critical-title">LAND OF ISRAEL:</span> God gave land to Jews <strong>conditionally</strong> (follow covenant). Jewish claim = Divine gift, NOT just conquest. <span class="highlight">Quran mentions Allah gave land to Jews 3 times.</span>
+    </div>
+
+    <h2 style="background: #c00;">MOST LIKELY TEST QUESTIONS - MEMORIZE!</h2>
+    <table>
+        <tr><th>#</th><th>Question</th><th>Answer</th></tr>
+        <tr><td>1</td><td>How many Crusades?</td><td><strong>4</strong></td></tr>
+        <tr><td>2</td><td>Purpose of Crusades?</td><td><strong>Reclaim Jerusalem from Muslims</strong></td></tr>
+        <tr><td>3</td><td>How did Church control people?</td><td><strong>Kept them illiterate</strong></td></tr>
+        <tr><td>4</td><td>Bar Kokhba Revolt dates?</td><td><strong>132-135 CE</strong></td></tr>
+        <tr><td>5</td><td>How many killed?</td><td><strong>90% of population</strong></td></tr>
+        <tr><td>6</td><td>Rabbi Akiva's role?</td><td><strong>Ideological leader of revolt</strong></td></tr>
+        <tr><td>7</td><td>How did Rabbi Akiva die?</td><td><strong>Skinned alive</strong></td></tr>
+        <tr><td>8</td><td>What does "Askara" really mean?</td><td><strong>SWORD (Latin sicae) - NOT diphtheria</strong></td></tr>
+        <tr><td>9</td><td>Who were the "students"?</td><td><strong>Revolt followers/soldiers, not Torah students</strong></td></tr>
+        <tr><td>10</td><td>Why disguise the truth?</td><td><strong>Protect Rabbi Akiva's image</strong></td></tr>
+        <tr><td>11</td><td>The message?</td><td><strong>Jewish disunity = weakness = enemies attack</strong></td></tr>
+        <tr><td>12</td><td>Omer counting period?</td><td><strong>49 days (7x7)</strong></td></tr>
+        <tr><td>13</td><td>What is 50th day?</td><td><strong>Shavuot</strong></td></tr>
+        <tr><td>14</td><td>Omer measurement?</td><td><strong>~2 quarts / 2 liters</strong></td></tr>
+        <tr><td>15</td><td>Purpose of Omer offering?</td><td><strong>Support Kohanim, show gratitude</strong></td></tr>
+        <tr><td>16</td><td>Which holidays are NOT in Torah?</td><td><strong>Hanukkah & Purim (rabbinic)</strong></td></tr>
+        <tr><td>17</td><td>Original Omer mood?</td><td><strong>FESTIVE/HAPPY - sad customs came later</strong></td></tr>
+        <tr><td>18</td><td>Land of Israel is what?</td><td><strong>God's conditional gift (follow covenant)</strong></td></tr>
+        <tr><td>19</td><td>Does Talmud mention Omer mourning?</td><td><strong>NO - nowhere in Talmud!</strong></td></tr>
+        <tr><td>20</td><td>Temple destroyed when?</td><td><strong>70 CE</strong></td></tr>
+    </table>
+
+    <div style="margin-top: 15px; text-align: center; font-size: 9pt; border-top: 1px solid #000; padding-top: 5px;">
+        Good luck on your test, Nadav! - JARVIS
+    </div>
+</body>
+</html>

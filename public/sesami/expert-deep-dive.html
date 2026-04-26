@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deep Dive of Experts - Sesami Ideate</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            min-height: 100vh;
+            color: #e0e0e0;
+            line-height: 1.7;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+        
+        .breadcrumb { display: flex; align-items: center; gap: 10px; margin-bottom: 30px; font-size: 14px; }
+        .breadcrumb a { color: #888; text-decoration: none; transition: color 0.3s; }
+        .breadcrumb a:hover { color: #00d4ff; }
+        .breadcrumb span { color: #00d4ff; }
+        
+        .page-header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding: 40px;
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(0, 255, 136, 0.1));
+            border-radius: 20px;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+        }
+        .page-header h1 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #00d4ff, #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+        }
+        .page-header p { color: #aaa; font-size: 1.2rem; max-width: 700px; margin: 0 auto; }
+        
+        .section {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 16px;
+            padding: 35px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .section h2 { font-size: 1.6rem; color: #00d4ff; margin-bottom: 20px; }
+        .section h3 { font-size: 1.3rem; color: #00ff88; margin: 25px 0 15px 0; }
+        .section p, .section li { color: #cccccc; font-size: 1.05rem; margin-bottom: 12px; }
+        
+        .expert-card {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 20px;
+            padding: 35px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+        }
+        .expert-header {
+            display: flex;
+            gap: 25px;
+            margin-bottom: 25px;
+            align-items: flex-start;
+        }
+        .expert-avatar {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #00d4ff, #00ff88);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 700;
+            color: #000;
+            flex-shrink: 0;
+        }
+        .expert-info h3 {
+            color: #fff;
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+        .expert-info .title {
+            color: #00d4ff;
+            font-size: 1rem;
+            margin-bottom: 5px;
+        }
+        .expert-info .affiliation {
+            color: #888;
+            font-size: 0.9rem;
+        }
+        .expert-credentials {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+        }
+        .credential {
+            background: rgba(0, 212, 255, 0.15);
+            color: #00d4ff;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+        
+        .expert-content h4 {
+            color: #fff;
+            margin: 20px 0 12px 0;
+            font-size: 1.1rem;
+        }
+        .expert-content p {
+            color: #bbb;
+            margin-bottom: 15px;
+        }
+        .expert-content blockquote {
+            background: rgba(0, 212, 255, 0.1);
+            border-left: 4px solid #00d4ff;
+            padding: 20px 25px;
+            margin: 20px 0;
+            border-radius: 0 12px 12px 0;
+            font-style: italic;
+            color: #ddd;
+        }
+        
+        .insights-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .insight-item {
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+        }
+        .insight-item h5 {
+            color: #00ff88;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+        .insight-item p {
+            color: #bbb;
+            font-size: 0.9rem;
+            margin: 0;
+        }
+        
+        .consultation-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin: 30px 0;
+        }
+        .stat {
+            text-align: center;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+        }
+        .stat .number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #00d4ff;
+        }
+        .stat .label {
+            color: #888;
+            font-size: 0.85rem;
+            margin-top: 5px;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .nav-btn {
+            padding: 15px 30px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        .nav-btn.back { background: rgba(255, 255, 255, 0.1); color: #fff; border: 1px solid rgba(255, 255, 255, 0.2); }
+        .nav-btn.next { background: linear-gradient(135deg, #00d4ff, #00ff88); color: #000; }
+        .nav-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(0, 212, 255, 0.3); }
+        
+        .edit-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: 500;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s;
+            z-index: 100;
+        }
+        .edit-btn:hover { transform: translateY(-2px); }
+        
+        [contenteditable="true"] { outline: 2px dashed #00d4ff; outline-offset: 4px; padding: 5px; }
+        
+        ul { list-style: none; padding-left: 0; }
+        ul li::before { content: ">"; color: #00d4ff; font-weight: bold; margin-right: 10px; }
+        
+        @media (max-width: 768px) {
+            .expert-header { flex-direction: column; align-items: center; text-align: center; }
+            .consultation-stats { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="index.html">Sesami</a>
+            <span>/</span>
+            <a href="ideate.html">Ideate</a>
+            <span>/</span>
+            <span>Deep Dive of Experts</span>
+        </nav>
+        
+        <header class="page-header">
+            <h1>Deep Dive of Experts</h1>
+            <p>Detailed profiles of the domain experts who shaped Sesami's development approach</p>
+        </header>
+        
+        <section class="section">
+            <h2>Expert Consultation Overview</h2>
+            <div class="consultation-stats">
+                <div class="stat">
+                    <div class="number">6</div>
+                    <div class="label">Pediatric Specialists</div>
+                </div>
+                <div class="stat">
+                    <div class="number">4</div>
+                    <div class="label">AI/ML Researchers</div>
+                </div>
+                <div class="stat">
+                    <div class="number">5</div>
+                    <div class="label">Child Development Experts</div>
+                </div>
+                <div class="stat">
+                    <div class="number">3</div>
+                    <div class="label">Privacy/Legal Advisors</div>
+                </div>
+            </div>
+        </section>
+        
+        <div class="expert-card">
+            <div class="expert-header">
+                <div class="expert-avatar">KM</div>
+                <div class="expert-info">
+                    <h3>Dr. Karen Mitchell, MD, FAAP</h3>
+                    <div class="title">Developmental-Behavioral Pediatrician</div>
+                    <div class="affiliation">Children's National Hospital, Washington D.C.</div>
+                    <div class="expert-credentials">
+                        <span class="credential">20+ Years Experience</span>
+                        <span class="credential">AAP Fellow</span>
+                        <span class="credential">ASQ-3 Trainer</span>
+                    </div>
+                </div>
+            </div>
+            <div class="expert-content">
+                <h4>Background</h4>
+                <p>Dr. Mitchell has evaluated over 5,000 children for developmental delays and leads the developmental screening program at Children's National. She co-authored the AAP's guidelines on developmental surveillance and served on the CDC's Learn the Signs committee.</p>
+                
+                <h4>Key Consultation Focus</h4>
+                <p>Milestone selection and age-appropriate expectations. Ensuring our AI tracks clinically meaningful behaviors, not just easily-detectable movements.</p>
+                
+                <blockquote>"The biggest mistake I see in baby apps is treating development as a checklist. Every baby develops differently - you need to track trajectories, not just binary yes/no milestones. A baby who rolls at 6 months isn't 'better' than one who rolls at 5 months."</blockquote>
+                
+                <div class="insights-grid">
+                    <div class="insight-item">
+                        <h5>Insight 1</h5>
+                        <p>Focus on "regression" detection - losing previously acquired skills is more concerning than delayed acquisition.</p>
+                    </div>
+                    <div class="insight-item">
+                        <h5>Insight 2</h5>
+                        <p>Include adjusted age calculations for premature infants - they develop on a different timeline.</p>
+                    </div>
+                    <div class="insight-item">
+                        <h5>Insight 3</h5>
+                        <p>Social smiling at faces vs. objects is a key early autism indicator worth tracking.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="expert-card">
+            <div class="expert-header">
+                <div class="expert-avatar">JC</div>
+                <div class="expert-info">
+                    <h3>Dr. James Chen, PhD</h3>
+                    <div class="title">Research Scientist, Human-Centered AI</div>
+                    <div class="affiliation">Stanford Institute for Human-Centered AI (HAI)</div>
+                    <div class="expert-credentials">
+                        <span class="credential">Computer Vision</span>
+                        <span class="credential">Pose Estimation</span>
+                        <span class="credential">Medical AI Ethics</span>
+                    </div>
+                </div>
+            </div>
+            <div class="expert-content">
+                <h4>Background</h4>
+                <p>Dr. Chen leads Stanford's research on pose estimation for non-standard body types, including infants and individuals with physical disabilities. His lab developed the first accurate infant pose estimation model, published in CVPR 2024.</p>
+                
+                <h4>Key Consultation Focus</h4>
+                <p>Technical feasibility of infant-specific computer vision, confidence calibration for medical-adjacent AI, and ethical considerations for developmental screening technology.</p>
+                
+                <blockquote>"Adult pose estimation models fail catastrophically on infants. Their proportions are completely different - huge heads, short limbs, flexible joints. We had to retrain from scratch on infant-specific datasets. The good news? Once trained, accuracy is actually higher because infant movements are more constrained."</blockquote>
+                
+                <div class="insights-grid">
+                    <div class="insight-item">
+                        <h5>Insight 1</h5>
+                        <p>Use temporal smoothing - single-frame predictions are noisy, but 10-second windows give reliable pose data.</p>
+                    </div>
+                    <div class="insight-item">
+                        <h5>Insight 2</h5>
+                        <p>Clothing and swaddles don't block detection as much as expected - thermal signatures help.</p>
+                    </div>
+                    <div class="insight-item">
+                        <h5>Insight 3</h5>
+                        <p>Night vision IR footage actually works better for movement detection than color video.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="expert-card">
+            <div class="expert-header">
+                <div class="expert-avatar">SN</div>
+                <div class="expert-info">
+                    <h3>Dr. Sarah Nguyen, PhD, OTR/L</h3>
+                    <div class="title">Pediatric Occupational Therapist & Researcher</div>
+                    <div class="affiliation">University of Southern California, Chan Division</div>
+                    <div class="expert-credentials">
+                        <span class="credential">Sensory Processing</span>
+                        <span class="credential">Motor Development</span>
+                        <span class="credential">Early Intervention</span>
+                    </div>
+                </div>
+            </div>
+            <div class="expert-content">
+                <h4>Background</h4>
+                <p>Dr. Nguyen specializes in early motor development and sensory processing disorders. She developed the Infant Motor Assessment Protocol (IMAP) used by early intervention programs in 12 states and has trained over 500 therapists in developmental screening.</p>
+                
+                <h4>Key Consultation Focus</h4>
+                <p>Motor milestone definitions and observable indicators. What specific movements indicate developmental progress vs. reflexive or random motion.</p>
+                
+                <blockquote>"When a baby reaches across midline - that's huge. It shows brain hemisphere integration. But you can't just detect 'arm moved left to right.' You need to see intentional reaching toward an object with visual tracking. Context matters enormously in motor assessment."</blockquote>
+                
+                <div class="insights-grid">
+                    <div class="insight-item">
+                        <h5>Insight 1</h5>
+                        <p>Quality of movement matters more than presence - jerky vs. smooth reaching indicates different things.</p>
+                    </div>
+                    <div class="insight-item">
+                        <h5>Insight 2</h5>
+                        <p>Asymmetry is a red flag - if baby always uses one hand/side, flag for evaluation.</p>
+                    </div>
+                    <div class="insight-item">
+                        <h5>Insight 3</h5>
+                        <p>Tummy time duration and head control are the most predictive early motor indicators.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="expert-card">
+            <div class="expert-header">
+                <div class="expert-avatar">MP</div>
+                <div class="expert-info">
+                    <h3>Dr. Maria Patel, MD, PhD</h3>
+                    <div class="title">Pediatric Neurologist</div>
+                    <div class="affiliation">Boston Children's Hospital, Harvard Medical School</div>
+                    <div class="expert-credentials">
+                        <span class="credential">Autism Research</span>
+                        <span class="credential">Neurodevelopment</span>
+                        <span class="credential">Clinical Trials</span>
+                    </div>
+                </div>
+            </div>
+            <div class="expert-content">
+                <h4>Background</h4>
+                <p>Dr. Patel leads the Early Autism Detection Lab at Boston Children's and has published over 80 papers on early biomarkers of neurodevelopmental disorders. She was instrumental in lowering the average autism diagnosis age from 4+ years to under 3 years through her screening protocols.</p>
+                
+                <h4>Key Consultation Focus</h4>
+                <p>Legal and ethical boundaries of developmental screening technology. What claims we can and cannot make about detecting developmental disorders.</p>
+                
+                <blockquote>"Eye contact detection is extremely valuable data, but you cannot call it 'autism screening.' Reduced eye contact has dozens of potential causes. What you CAN say is 'social engagement pattern differs from typical range - worth discussing with pediatrician.' The language matters legally and ethically."</blockquote>
+                
+                <div class="insights-grid">
+                    <div class="insight-item">
+                        <h5>Insight 1</h5>
+                        <p>Response to name is one of the earliest and most reliable social communication markers.</p>
+                    </div>
+                    <div class="insight-item">
+                        <h5>Insight 2</h5>
+                        <p>Joint attention (following a point, showing objects) appears around 9-12 months - critical window.</p>
+                    </div>
+                    <div class="insight-item">
+                        <h5>Insight 3</h5>
+                        <p>Repetitive movements are normal in infants - it's the persistence and rigidity that's concerning.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <section class="section">
+            <h2>Expert Advisory Board</h2>
+            <p>Based on our consultations, we've invited four experts to join Sesami's ongoing advisory board:</p>
+            <ul>
+                <li><strong>Dr. Karen Mitchell</strong> - Clinical milestone validation and pediatric integration strategy</li>
+                <li><strong>Dr. James Chen</strong> - AI/ML architecture review and model accuracy auditing</li>
+                <li><strong>Rachel Lopez, LCSW</strong> - Early intervention pathway design and family support resources</li>
+                <li><strong>Tom Wilson, JD</strong> - Privacy compliance, HIPAA considerations, and liability protection</li>
+            </ul>
+            <p>The advisory board meets quarterly to review product updates, research findings, and ethical considerations as Sesami scales.</p>
+        </section>
+        
+        <nav class="nav-buttons">
+            <a href="professional-feedback.html" class="nav-btn back">Back: Professional Feedback</a>
+            <a href="approach-reasoning.html" class="nav-btn next">Next: Approach Reasoning</a>
+        </nav>
+    </div>
+    
+    <a href="?edit=true" class="edit-btn" id="editBtn">Edit Site</a>
+    
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('edit') === 'true') {
+            document.querySelectorAll('h1, h2, h3, h4, h5, p, li, blockquote, span').forEach(el => {
+                if (!el.closest('nav') && !el.closest('.edit-btn')) {
+                    el.contentEditable = true;
+                }
+            });
+            document.getElementById('editBtn').textContent = 'Editing Mode';
+            document.getElementById('editBtn').style.background = 'linear-gradient(135deg, #00ff88, #00d4ff)';
+        }
+    </script>
+</body>
+</html>

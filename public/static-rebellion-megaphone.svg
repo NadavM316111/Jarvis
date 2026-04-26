@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200">
+  <defs>
+    <linearGradient id="megaphoneGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#F5DEB3;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#DEB887;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <!-- Megaphone body -->
+  <ellipse cx="80" cy="100" rx="25" ry="35" fill="url(#megaphoneGrad)" stroke="#8B4513" stroke-width="2"/>
+  <polygon points="95,70 180,40 180,160 95,130" fill="url(#megaphoneGrad)" stroke="#8B4513" stroke-width="2"/>
+  <!-- Handle -->
+  <rect x="50" y="85" width="35" height="30" rx="5" fill="url(#megaphoneGrad)" stroke="#8B4513" stroke-width="2"/>
+  <!-- Sound waves -->
+  <path d="M190,80 Q210,100 190,120" stroke="#C41E3A" stroke-width="4" fill="none"/>
+  <path d="M200,60 Q230,100 200,140" stroke="#C41E3A" stroke-width="4" fill="none"/>
+  <!-- Lightning bolts -->
+  <polygon points="205,50 215,70 208,70 218,90 205,68 212,68" fill="#C41E3A"/>
+  <polygon points="215,110 225,130 218,130 228,150 215,128 222,128" fill="#C41E3A"/>
+</svg>

@@ -1,0 +1,1314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Belonging - An Anime Short Film</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&family=Cinzel:wght@700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #000;
+            overflow: hidden;
+            font-family: 'Noto Sans JP', sans-serif;
+        }
+        
+        #container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            background: #000;
+        }
+        
+        #startScreen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, #0a0a12 0%, #1a1a2e 50%, #0a0a12 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+        
+        #startScreen h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 72px;
+            color: #fff;
+            text-shadow: 0 0 30px rgba(100, 149, 237, 0.5);
+            margin-bottom: 20px;
+            letter-spacing: 15px;
+        }
+        
+        #startScreen p {
+            color: #888;
+            font-size: 18px;
+            margin-bottom: 50px;
+        }
+        
+        #beginBtn {
+            padding: 20px 60px;
+            font-size: 24px;
+            background: transparent;
+            border: 2px solid #6495ED;
+            color: #6495ED;
+            cursor: pointer;
+            font-family: 'Cinzel', serif;
+            letter-spacing: 5px;
+            transition: all 0.3s;
+        }
+        
+        #beginBtn:hover {
+            background: #6495ED;
+            color: #000;
+            box-shadow: 0 0 30px rgba(100, 149, 237, 0.7);
+        }
+        
+        #animeCanvas {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: none;
+        }
+        
+        #letterboxTop, #letterboxBottom {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 10%;
+            background: #000;
+            z-index: 50;
+        }
+        
+        #letterboxTop { top: 0; }
+        #letterboxBottom { bottom: 0; }
+        
+        #subtitles {
+            position: absolute;
+            bottom: 15%;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            z-index: 60;
+            width: 80%;
+            display: none;
+        }
+        
+        .japanese {
+            font-size: 28px;
+            color: #fff;
+            text-shadow: 2px 2px 4px #000, -2px -2px 4px #000;
+            margin-bottom: 10px;
+        }
+        
+        .english {
+            font-size: 22px;
+            color: #FFD700;
+            text-shadow: 2px 2px 4px #000;
+            font-style: italic;
+        }
+        
+        #audioPlayer {
+            display: none;
+        }
+        
+        .rain {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 45;
+            display: none;
+        }
+        
+        .raindrop {
+            position: absolute;
+            width: 2px;
+            height: 20px;
+            background: linear-gradient(transparent, rgba(174, 194, 224, 0.5));
+            animation: fall linear infinite;
+        }
+        
+        @keyframes fall {
+            to {
+                transform: translateY(100vh);
+            }
+        }
+        
+        .grain {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 55;
+            opacity: 0.05;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%' height='100%' filter='url(%23noise)'/%3E%3C/svg%3E");
+        }
+        
+        #sceneTitle {
+            position: absolute;
+            top: 15%;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: 'Cinzel', serif;
+            font-size: 36px;
+            color: #fff;
+            text-shadow: 0 0 20px rgba(100, 149, 237, 0.8);
+            opacity: 0;
+            z-index: 60;
+            letter-spacing: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div id="startScreen">
+            <h1>BELONGING</h1>
+            <p>An Anime Short Film</p>
+            <button id="beginBtn">BEGIN</button>
+        </div>
+        
+        <canvas id="animeCanvas"></canvas>
+        
+        <div id="letterboxTop"></div>
+        <div id="letterboxBottom"></div>
+        
+        <div class="rain" id="rain"></div>
+        <div class="grain"></div>
+        
+        <div id="sceneTitle"></div>
+        
+        <div id="subtitles">
+            <div class="japanese"></div>
+            <div class="english"></div>
+        </div>
+        
+        <iframe id="audioPlayer" 
+            src="https://www.youtube.com/embed/XFkzRNyygfk?autoplay=0&enablejsapi=1&start=0" 
+            allow="autoplay; encrypted-media" 
+            allowfullscreen>
+        </iframe>
+    </div>
+    
+    <script>
+        const canvas = document.getElementById('animeCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Set canvas size
+        function resizeCanvas() {
+            const ratio = 16/9;
+            let w = window.innerWidth * 0.9;
+            let h = w / ratio;
+            if (h > window.innerHeight * 0.8) {
+                h = window.innerHeight * 0.8;
+                w = h * ratio;
+            }
+            canvas.width = 1280;
+            canvas.height = 720;
+            canvas.style.width = w + 'px';
+            canvas.style.height = h + 'px';
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+        
+        // Create rain
+        const rainContainer = document.getElementById('rain');
+        for (let i = 0; i < 100; i++) {
+            const drop = document.createElement('div');
+            drop.className = 'raindrop';
+            drop.style.left = Math.random() * 100 + '%';
+            drop.style.animationDuration = (0.5 + Math.random() * 0.5) + 's';
+            drop.style.animationDelay = Math.random() * 2 + 's';
+            rainContainer.appendChild(drop);
+        }
+        
+        // Animation utilities
+        function lerp(a, b, t) { return a + (b - a) * t; }
+        function easeInOut(t) { return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t; }
+        
+        // Character drawing functions - ANIME STYLE
+        function drawAnimeCharacter(x, y, scale, emotion, direction = 1, colors = {}) {
+            const c = {
+                hair: colors.hair || '#1a1a2e',
+                skin: colors.skin || '#fce4d6',
+                shirt: colors.shirt || '#2d3436',
+                eyes: colors.eyes || '#4a69bd',
+                ...colors
+            };
+            
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.scale(scale * direction, scale);
+            
+            // Body/Torso
+            ctx.fillStyle = c.shirt;
+            ctx.beginPath();
+            ctx.moveTo(-30, 0);
+            ctx.quadraticCurveTo(-35, 60, -25, 120);
+            ctx.lineTo(25, 120);
+            ctx.quadraticCurveTo(35, 60, 30, 0);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Neck
+            ctx.fillStyle = c.skin;
+            ctx.fillRect(-10, -20, 20, 30);
+            
+            // Head shape (anime style - larger)
+            ctx.fillStyle = c.skin;
+            ctx.beginPath();
+            ctx.ellipse(0, -60, 45, 55, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Hair (spiky anime style)
+            ctx.fillStyle = c.hair;
+            ctx.beginPath();
+            // Back hair
+            ctx.ellipse(0, -70, 50, 50, 0, Math.PI, Math.PI * 2);
+            ctx.fill();
+            
+            // Spiky bangs
+            ctx.beginPath();
+            ctx.moveTo(-45, -60);
+            ctx.lineTo(-35, -100);
+            ctx.lineTo(-25, -70);
+            ctx.lineTo(-15, -110);
+            ctx.lineTo(-5, -75);
+            ctx.lineTo(5, -105);
+            ctx.lineTo(15, -70);
+            ctx.lineTo(25, -95);
+            ctx.lineTo(35, -65);
+            ctx.lineTo(45, -60);
+            ctx.quadraticCurveTo(50, -80, 45, -60);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Side hair
+            ctx.beginPath();
+            ctx.moveTo(-48, -50);
+            ctx.quadraticCurveTo(-55, -20, -45, 10);
+            ctx.lineTo(-40, -50);
+            ctx.closePath();
+            ctx.fill();
+            
+            ctx.beginPath();
+            ctx.moveTo(48, -50);
+            ctx.quadraticCurveTo(55, -20, 45, 10);
+            ctx.lineTo(40, -50);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Eyes (BIG anime eyes)
+            const eyeY = -55;
+            const eyeSpacing = 18;
+            
+            // Eye whites
+            ctx.fillStyle = '#fff';
+            ctx.beginPath();
+            ctx.ellipse(-eyeSpacing, eyeY, 14, 18, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.ellipse(eyeSpacing, eyeY, 14, 18, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Iris
+            ctx.fillStyle = c.eyes;
+            ctx.beginPath();
+            ctx.ellipse(-eyeSpacing, eyeY + 2, 10, 14, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.ellipse(eyeSpacing, eyeY + 2, 10, 14, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Pupil
+            ctx.fillStyle = '#000';
+            ctx.beginPath();
+            ctx.ellipse(-eyeSpacing, eyeY + 3, 5, 8, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.ellipse(eyeSpacing, eyeY + 3, 5, 8, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Eye shine (anime sparkle)
+            ctx.fillStyle = '#fff';
+            ctx.beginPath();
+            ctx.ellipse(-eyeSpacing - 3, eyeY - 3, 4, 5, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.ellipse(eyeSpacing - 3, eyeY - 3, 4, 5, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Small secondary shine
+            ctx.beginPath();
+            ctx.ellipse(-eyeSpacing + 3, eyeY + 5, 2, 2, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.ellipse(eyeSpacing + 3, eyeY + 5, 2, 2, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Eyebrows
+            ctx.strokeStyle = c.hair;
+            ctx.lineWidth = 3;
+            ctx.lineCap = 'round';
+            
+            if (emotion === 'sad') {
+                // Sad eyebrows - angled up in middle
+                ctx.beginPath();
+                ctx.moveTo(-eyeSpacing - 12, eyeY - 25);
+                ctx.lineTo(-eyeSpacing + 8, eyeY - 30);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(eyeSpacing + 12, eyeY - 25);
+                ctx.lineTo(eyeSpacing - 8, eyeY - 30);
+                ctx.stroke();
+                
+                // Tears
+                ctx.fillStyle = 'rgba(135, 206, 250, 0.7)';
+                ctx.beginPath();
+                ctx.ellipse(-eyeSpacing - 5, eyeY + 25, 3, 8, 0.2, 0, Math.PI * 2);
+                ctx.fill();
+            } else if (emotion === 'lonely') {
+                // Downcast eyes
+                ctx.beginPath();
+                ctx.moveTo(-eyeSpacing - 10, eyeY - 22);
+                ctx.lineTo(-eyeSpacing + 10, eyeY - 25);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(eyeSpacing - 10, eyeY - 25);
+                ctx.lineTo(eyeSpacing + 10, eyeY - 22);
+                ctx.stroke();
+            } else {
+                // Normal
+                ctx.beginPath();
+                ctx.moveTo(-eyeSpacing - 10, eyeY - 25);
+                ctx.lineTo(-eyeSpacing + 10, eyeY - 25);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(eyeSpacing - 10, eyeY - 25);
+                ctx.lineTo(eyeSpacing + 10, eyeY - 25);
+                ctx.stroke();
+            }
+            
+            // Nose (simple anime style)
+            ctx.strokeStyle = 'rgba(0,0,0,0.2)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(0, -40);
+            ctx.lineTo(3, -30);
+            ctx.stroke();
+            
+            // Mouth
+            ctx.strokeStyle = '#c0392b';
+            ctx.lineWidth = 2;
+            if (emotion === 'sad' || emotion === 'lonely') {
+                ctx.beginPath();
+                ctx.arc(0, -15, 8, 0.2, Math.PI - 0.2);
+                ctx.stroke();
+            } else if (emotion === 'scream') {
+                ctx.fillStyle = '#2d3436';
+                ctx.beginPath();
+                ctx.ellipse(0, -10, 15, 20, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#c0392b';
+                ctx.beginPath();
+                ctx.ellipse(0, -5, 8, 5, 0, 0, Math.PI * 2);
+                ctx.fill();
+            } else {
+                ctx.beginPath();
+                ctx.moveTo(-8, -18);
+                ctx.lineTo(8, -18);
+                ctx.stroke();
+            }
+            
+            // Arms
+            ctx.fillStyle = c.shirt;
+            // Left arm
+            ctx.beginPath();
+            ctx.moveTo(-30, 10);
+            ctx.quadraticCurveTo(-50, 40, -45, 80);
+            ctx.lineTo(-35, 80);
+            ctx.quadraticCurveTo(-35, 45, -25, 20);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Right arm
+            ctx.beginPath();
+            ctx.moveTo(30, 10);
+            ctx.quadraticCurveTo(50, 40, 45, 80);
+            ctx.lineTo(35, 80);
+            ctx.quadraticCurveTo(35, 45, 25, 20);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Hands
+            ctx.fillStyle = c.skin;
+            ctx.beginPath();
+            ctx.ellipse(-42, 85, 8, 10, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.ellipse(42, 85, 8, 10, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.restore();
+        }
+        
+        // Background drawing functions
+        function drawCityBackground(time) {
+            // Night sky gradient
+            const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            grad.addColorStop(0, '#0a0a1a');
+            grad.addColorStop(0.5, '#1a1a3a');
+            grad.addColorStop(1, '#2a2a4a');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Stars
+            ctx.fillStyle = '#fff';
+            for (let i = 0; i < 100; i++) {
+                const x = (i * 137 + time * 0.01) % canvas.width;
+                const y = (i * 73) % (canvas.height * 0.5);
+                const size = (Math.sin(time * 0.01 + i) + 1) * 1.5;
+                ctx.beginPath();
+                ctx.arc(x, y, size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
+            // Moon
+            ctx.fillStyle = '#f5f5dc';
+            ctx.beginPath();
+            ctx.arc(1000, 100, 60, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = 'rgba(245, 245, 220, 0.2)';
+            ctx.beginPath();
+            ctx.arc(1000, 100, 80, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // City buildings
+            const buildings = [
+                {x: 0, w: 100, h: 300},
+                {x: 90, w: 80, h: 400},
+                {x: 160, w: 120, h: 350},
+                {x: 270, w: 90, h: 450},
+                {x: 350, w: 110, h: 380},
+                {x: 450, w: 85, h: 420},
+                {x: 530, w: 130, h: 360},
+                {x: 650, w: 95, h: 480},
+                {x: 740, w: 100, h: 400},
+                {x: 830, w: 120, h: 350},
+                {x: 940, w: 90, h: 430},
+                {x: 1020, w: 110, h: 380},
+                {x: 1120, w: 85, h: 450},
+                {x: 1200, w: 100, h: 400}
+            ];
+            
+            buildings.forEach((b, i) => {
+                ctx.fillStyle = '#1a1a2e';
+                ctx.fillRect(b.x, canvas.height - b.h, b.w, b.h);
+                
+                // Windows
+                ctx.fillStyle = '#ffd700';
+                for (let row = 0; row < Math.floor(b.h / 30); row++) {
+                    for (let col = 0; col < Math.floor(b.w / 20); col++) {
+                        if (Math.random() > 0.3 || (Math.sin(time * 0.001 + i + row + col) > 0)) {
+                            ctx.fillRect(b.x + 8 + col * 18, canvas.height - b.h + 15 + row * 28, 10, 15);
+                        }
+                    }
+                }
+            });
+        }
+        
+        function drawClassroomBackground() {
+            // Classroom walls
+            ctx.fillStyle = '#f5f5dc';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Floor
+            ctx.fillStyle = '#8b7355';
+            ctx.fillRect(0, canvas.height * 0.6, canvas.width, canvas.height * 0.4);
+            
+            // Blackboard
+            ctx.fillStyle = '#2d4a3e';
+            ctx.fillRect(100, 80, 500, 250);
+            ctx.strokeStyle = '#8b4513';
+            ctx.lineWidth = 15;
+            ctx.strokeRect(100, 80, 500, 250);
+            
+            // Chalk writing
+            ctx.fillStyle = 'rgba(255,255,255,0.7)';
+            ctx.font = '30px serif';
+            ctx.fillText('数学 - Mathematics', 150, 180);
+            
+            // Windows
+            ctx.fillStyle = '#87ceeb';
+            for (let i = 0; i < 3; i++) {
+                ctx.fillRect(700 + i * 150, 80, 120, 200);
+                ctx.strokeStyle = '#fff';
+                ctx.lineWidth = 8;
+                ctx.strokeRect(700 + i * 150, 80, 120, 200);
+                ctx.beginPath();
+                ctx.moveTo(760 + i * 150, 80);
+                ctx.lineTo(760 + i * 150, 280);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(700 + i * 150, 180);
+                ctx.lineTo(820 + i * 150, 180);
+                ctx.stroke();
+            }
+            
+            // Desks
+            ctx.fillStyle = '#deb887';
+            for (let row = 0; row < 3; row++) {
+                for (let col = 0; col < 5; col++) {
+                    const dx = 100 + col * 200;
+                    const dy = 380 + row * 100;
+                    ctx.fillRect(dx, dy, 150, 60);
+                    ctx.fillStyle = '#4a4a4a';
+                    ctx.fillRect(dx + 10, dy + 60, 10, 30);
+                    ctx.fillRect(dx + 130, dy + 60, 10, 30);
+                    ctx.fillStyle = '#deb887';
+                }
+            }
+        }
+        
+        function drawRooftopBackground(time) {
+            // Sunset sky
+            const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            grad.addColorStop(0, '#1a0a2e');
+            grad.addColorStop(0.3, '#4a1a5e');
+            grad.addColorStop(0.5, '#ff6b6b');
+            grad.addColorStop(0.7, '#feca57');
+            grad.addColorStop(1, '#ff9f43');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Sun
+            ctx.fillStyle = '#fff';
+            ctx.beginPath();
+            ctx.arc(640, canvas.height * 0.55, 80, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Rooftop floor
+            ctx.fillStyle = '#4a4a5a';
+            ctx.fillRect(0, canvas.height * 0.7, canvas.width, canvas.height * 0.3);
+            
+            // Fence
+            ctx.strokeStyle = '#2a2a3a';
+            ctx.lineWidth = 5;
+            for (let i = 0; i < 20; i++) {
+                ctx.beginPath();
+                ctx.moveTo(i * 70, canvas.height * 0.7);
+                ctx.lineTo(i * 70, canvas.height * 0.55);
+                ctx.stroke();
+            }
+            ctx.beginPath();
+            ctx.moveTo(0, canvas.height * 0.58);
+            ctx.lineTo(canvas.width, canvas.height * 0.58);
+            ctx.stroke();
+            
+            // Distant city silhouette
+            ctx.fillStyle = '#1a1a2e';
+            for (let i = 0; i < 15; i++) {
+                const h = 50 + Math.random() * 100;
+                ctx.fillRect(i * 90, canvas.height * 0.55 - h, 80, h);
+            }
+        }
+        
+        function drawRainScene(time) {
+            // Dark stormy background
+            const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            grad.addColorStop(0, '#0a0a12');
+            grad.addColorStop(1, '#1a1a2a');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Rain drops
+            ctx.strokeStyle = 'rgba(174, 194, 224, 0.4)';
+            ctx.lineWidth = 1;
+            for (let i = 0; i < 200; i++) {
+                const x = (i * 37 + time * 5) % canvas.width;
+                const y = (i * 53 + time * 10) % canvas.height;
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+                ctx.lineTo(x - 5, y + 20);
+                ctx.stroke();
+            }
+            
+            // Street
+            ctx.fillStyle = '#2a2a3a';
+            ctx.fillRect(0, canvas.height * 0.75, canvas.width, canvas.height * 0.25);
+            
+            // Puddles with reflections
+            ctx.fillStyle = 'rgba(100, 149, 237, 0.3)';
+            ctx.beginPath();
+            ctx.ellipse(400, canvas.height * 0.85, 150, 20, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.ellipse(900, canvas.height * 0.9, 100, 15, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Street lamps
+            ctx.fillStyle = '#3a3a4a';
+            ctx.fillRect(200, canvas.height * 0.4, 10, canvas.height * 0.35);
+            ctx.fillRect(800, canvas.height * 0.4, 10, canvas.height * 0.35);
+            
+            // Lamp glow
+            ctx.fillStyle = 'rgba(255, 200, 100, 0.3)';
+            ctx.beginPath();
+            ctx.arc(205, canvas.height * 0.4, 50, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(805, canvas.height * 0.4, 50, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        
+        // Scenes definition
+        const scenes = [
+            {
+                duration: 8000,
+                draw: function(progress, time) {
+                    drawCityBackground(time);
+                    
+                    // Title fade in
+                    ctx.fillStyle = 'rgba(255,255,255,' + Math.min(1, progress * 3) + ')';
+                    ctx.font = 'bold 72px Cinzel, serif';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('BELONGING', canvas.width/2, canvas.height/2 - 50);
+                    
+                    ctx.font = '28px serif';
+                    ctx.fillStyle = 'rgba(200,200,200,' + Math.min(1, progress * 3) + ')';
+                    ctx.fillText('- An Anime Short Film -', canvas.width/2, canvas.height/2 + 20);
+                },
+                subtitle: { jp: '', en: '' }
+            },
+            {
+                duration: 10000,
+                draw: function(progress, time) {
+                    drawClassroomBackground();
+                    
+                    // Friends group laughing
+                    drawAnimeCharacter(300, 420, 0.8, 'happy', 1, {hair: '#4a3728', shirt: '#1e3a5f'});
+                    drawAnimeCharacter(450, 410, 0.85, 'happy', -1, {hair: '#8b4513', shirt: '#5f1e3a'});
+                    drawAnimeCharacter(600, 420, 0.8, 'happy', 1, {hair: '#2c1810', shirt: '#3a5f1e'});
+                    
+                    // Main character slightly apart, looking lonely
+                    const mcX = 850 + Math.sin(time * 0.002) * 5;
+                    drawAnimeCharacter(mcX, 430, 0.9, 'lonely', -1, {hair: '#1a1a2e', shirt: '#2d3436', eyes: '#6495ed'});
+                    
+                    // Thought bubble effect
+                    ctx.strokeStyle = 'rgba(100, 149, 237, 0.3)';
+                    ctx.lineWidth = 2;
+                    ctx.setLineDash([5, 5]);
+                    ctx.beginPath();
+                    ctx.arc(850, 300, 80 + Math.sin(time * 0.003) * 10, 0, Math.PI * 2);
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+                },
+                subtitle: { jp: 'みんなは笑っている...', en: 'Everyone is laughing...' }
+            },
+            {
+                duration: 10000,
+                draw: function(progress, time) {
+                    drawClassroomBackground();
+                    
+                    // Close up on main character's face
+                    const scale = 2.5 + progress * 0.5;
+                    ctx.save();
+                    ctx.translate(canvas.width/2, canvas.height/2 + 100);
+                    ctx.scale(scale, scale);
+                    
+                    // Just the face
+                    const c = {hair: '#1a1a2e', skin: '#fce4d6', eyes: '#6495ed'};
+                    
+                    // Head
+                    ctx.fillStyle = c.skin;
+                    ctx.beginPath();
+                    ctx.ellipse(0, 0, 45, 55, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // Hair
+                    ctx.fillStyle = c.hair;
+                    ctx.beginPath();
+                    ctx.ellipse(0, -10, 50, 50, 0, Math.PI, Math.PI * 2);
+                    ctx.fill();
+                    ctx.beginPath();
+                    ctx.moveTo(-45, 0);
+                    ctx.lineTo(-35, -40);
+                    ctx.lineTo(-25, -10);
+                    ctx.lineTo(-15, -50);
+                    ctx.lineTo(-5, -15);
+                    ctx.lineTo(5, -45);
+                    ctx.lineTo(15, -10);
+                    ctx.lineTo(25, -35);
+                    ctx.lineTo(35, -5);
+                    ctx.lineTo(45, 0);
+                    ctx.closePath();
+                    ctx.fill();
+                    
+                    // Sad eyes
+                    ctx.fillStyle = '#fff';
+                    ctx.beginPath();
+                    ctx.ellipse(-18, 5, 14, 16, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.beginPath();
+                    ctx.ellipse(18, 5, 14, 16, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    ctx.fillStyle = c.eyes;
+                    ctx.beginPath();
+                    ctx.ellipse(-18, 7, 10, 12, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.beginPath();
+                    ctx.ellipse(18, 7, 10, 12, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    ctx.fillStyle = '#000';
+                    ctx.beginPath();
+                    ctx.ellipse(-18, 8, 5, 7, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.beginPath();
+                    ctx.ellipse(18, 8, 5, 7, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // Shine
+                    ctx.fillStyle = '#fff';
+                    ctx.beginPath();
+                    ctx.ellipse(-21, 3, 4, 5, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.beginPath();
+                    ctx.ellipse(15, 3, 4, 5, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // Sad eyebrows
+                    ctx.strokeStyle = c.hair;
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.moveTo(-30, -12);
+                    ctx.lineTo(-8, -18);
+                    ctx.stroke();
+                    ctx.beginPath();
+                    ctx.moveTo(30, -12);
+                    ctx.lineTo(8, -18);
+                    ctx.stroke();
+                    
+                    // Frown
+                    ctx.strokeStyle = '#c0392b';
+                    ctx.beginPath();
+                    ctx.arc(0, 40, 10, 0.2, Math.PI - 0.2);
+                    ctx.stroke();
+                    
+                    ctx.restore();
+                    
+                    // Vignette effect
+                    const vigGrad = ctx.createRadialGradient(canvas.width/2, canvas.height/2, 100, canvas.width/2, canvas.height/2, 600);
+                    vigGrad.addColorStop(0, 'rgba(0,0,0,0)');
+                    vigGrad.addColorStop(1, 'rgba(0,0,0,0.7)');
+                    ctx.fillStyle = vigGrad;
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                },
+                subtitle: { jp: 'でも俺は...何も感じない', en: "But I... feel nothing" }
+            },
+            {
+                duration: 10000,
+                draw: function(progress, time) {
+                    drawRooftopBackground(time);
+                    
+                    // Main character alone on rooftop
+                    const breathe = Math.sin(time * 0.003) * 3;
+                    drawAnimeCharacter(640, 450 + breathe, 1.2, 'lonely', 1, {hair: '#1a1a2e', shirt: '#2d3436', eyes: '#6495ed'});
+                    
+                    // Wind effect on hair (particles)
+                    ctx.fillStyle = 'rgba(100, 149, 237, 0.3)';
+                    for (let i = 0; i < 20; i++) {
+                        const px = 640 + (time * 0.1 + i * 50) % 400 - 200;
+                        const py = 350 + Math.sin(time * 0.005 + i) * 30;
+                        ctx.beginPath();
+                        ctx.arc(px, py, 3, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                },
+                subtitle: { jp: '俺はここにいるのに...', en: "I'm here, and yet..." }
+            },
+            {
+                duration: 10000,
+                draw: function(progress, time) {
+                    drawRainScene(time);
+                    
+                    // Walking alone in rain
+                    const walkX = 200 + progress * 800;
+                    const bobY = Math.sin(time * 0.01) * 5;
+                    
+                    drawAnimeCharacter(walkX, 480 + bobY, 1, 'sad', 1, {hair: '#1a1a2e', shirt: '#2d3436', eyes: '#6495ed'});
+                    
+                    // Reflection in puddle
+                    ctx.globalAlpha = 0.3;
+                    ctx.save();
+                    ctx.translate(walkX, 620);
+                    ctx.scale(1, -0.3);
+                    drawAnimeCharacter(0, 0, 1, 'sad', 1, {hair: '#1a1a2e', shirt: '#2d3436', eyes: '#6495ed'});
+                    ctx.restore();
+                    ctx.globalAlpha = 1;
+                },
+                subtitle: { jp: '誰も本当の俺を見ていない', en: "No one sees the real me" }
+            },
+            {
+                duration: 12000,
+                draw: function(progress, time) {
+                    // Black background with spotlight
+                    ctx.fillStyle = '#000';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    
+                    // Spotlight on character
+                    const spotGrad = ctx.createRadialGradient(640, 400, 0, 640, 400, 300);
+                    spotGrad.addColorStop(0, 'rgba(100, 149, 237, 0.3)');
+                    spotGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+                    ctx.fillStyle = spotGrad;
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    
+                    // Screaming pose
+                    const shake = Math.sin(time * 0.05) * (progress > 0.3 ? 5 : 0);
+                    
+                    ctx.save();
+                    ctx.translate(640 + shake, 380);
+                    
+                    const c = {hair: '#1a1a2e', skin: '#fce4d6', eyes: '#6495ed', shirt: '#2d3436'};
+                    
+                    // Body leaning back
+                    ctx.fillStyle = c.shirt;
+                    ctx.beginPath();
+                    ctx.moveTo(-40, 0);
+                    ctx.quadraticCurveTo(-50, 80, -35, 160);
+                    ctx.lineTo(35, 160);
+                    ctx.quadraticCurveTo(50, 80, 40, 0);
+                    ctx.closePath();
+                    ctx.fill();
+                    
+                    // Arms up in anguish
+                    ctx.beginPath();
+                    ctx.moveTo(-40, 10);
+                    ctx.quadraticCurveTo(-80, -30, -70, -80);
+                    ctx.lineTo(-55, -75);
+                    ctx.quadraticCurveTo(-60, -20, -30, 15);
+                    ctx.closePath();
+                    ctx.fill();
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(40, 10);
+                    ctx.quadraticCurveTo(80, -30, 70, -80);
+                    ctx.lineTo(55, -75);
+                    ctx.quadraticCurveTo(60, -20, 30, 15);
+                    ctx.closePath();
+                    ctx.fill();
+                    
+                    // Hands near head
+                    ctx.fillStyle = c.skin;
+                    ctx.beginPath();
+                    ctx.ellipse(-65, -85, 12, 15, -0.3, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.beginPath();
+                    ctx.ellipse(65, -85, 12, 15, 0.3, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // Neck
+                    ctx.fillRect(-12, -30, 24, 40);
+                    
+                    // Head tilted back
+                    ctx.fillStyle = c.skin;
+                    ctx.beginPath();
+                    ctx.ellipse(0, -80, 50, 60, -0.1, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // Hair
+                    ctx.fillStyle = c.hair;
+                    ctx.beginPath();
+                    ctx.ellipse(0, -95, 55, 50, 0, Math.PI, Math.PI * 2);
+                    ctx.fill();
+                    ctx.beginPath();
+                    ctx.moveTo(-50, -80);
+                    for (let i = 0; i < 8; i++) {
+                        ctx.lineTo(-40 + i * 12, -130 - Math.random() * 20);
+                        ctx.lineTo(-35 + i * 12, -90);
+                    }
+                    ctx.closePath();
+                    ctx.fill();
+                    
+                    // Closed eyes (screaming)
+                    ctx.strokeStyle = c.hair;
+                    ctx.lineWidth = 3;
+                    ctx.beginPath();
+                    ctx.moveTo(-30, -75);
+                    ctx.lineTo(-10, -80);
+                    ctx.stroke();
+                    ctx.beginPath();
+                    ctx.moveTo(30, -75);
+                    ctx.lineTo(10, -80);
+                    ctx.stroke();
+                    
+                    // Screaming eyebrows
+                    ctx.beginPath();
+                    ctx.moveTo(-35, -95);
+                    ctx.lineTo(-10, -100);
+                    ctx.stroke();
+                    ctx.beginPath();
+                    ctx.moveTo(35, -95);
+                    ctx.lineTo(10, -100);
+                    ctx.stroke();
+                    
+                    // Open screaming mouth
+                    ctx.fillStyle = '#2d3436';
+                    ctx.beginPath();
+                    ctx.ellipse(0, -50, 20, 30, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.fillStyle = '#8b0000';
+                    ctx.beginPath();
+                    ctx.ellipse(0, -45, 12, 10, 0, 0, Math.PI);
+                    ctx.fill();
+                    
+                    // Tears
+                    ctx.fillStyle = 'rgba(135, 206, 250, 0.8)';
+                    ctx.beginPath();
+                    ctx.ellipse(-25, -65 + progress * 30, 4, 10, 0.2, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.beginPath();
+                    ctx.ellipse(25, -65 + progress * 25, 4, 10, -0.2, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    ctx.restore();
+                    
+                    // Action lines
+                    ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+                    ctx.lineWidth = 2;
+                    for (let i = 0; i < 30; i++) {
+                        const angle = (i / 30) * Math.PI * 2;
+                        const r1 = 200;
+                        const r2 = 400 + Math.random() * 200;
+                        ctx.beginPath();
+                        ctx.moveTo(640 + Math.cos(angle) * r1, 400 + Math.sin(angle) * r1);
+                        ctx.lineTo(640 + Math.cos(angle) * r2, 400 + Math.sin(angle) * r2);
+                        ctx.stroke();
+                    }
+                },
+                subtitle: { jp: 'なぜ俺はこんなに孤独なんだ！', en: "WHY AM I SO ALONE?!" }
+            },
+            {
+                duration: 10000,
+                draw: function(progress, time) {
+                    // Fade to contemplative scene
+                    const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+                    grad.addColorStop(0, '#0a0a1a');
+                    grad.addColorStop(1, '#1a1a3a');
+                    ctx.fillStyle = grad;
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    
+                    // Stars
+                    ctx.fillStyle = '#fff';
+                    for (let i = 0; i < 150; i++) {
+                        const x = (i * 137) % canvas.width;
+                        const y = (i * 73) % canvas.height;
+                        const twinkle = (Math.sin(time * 0.003 + i) + 1) * 1.5;
+                        ctx.beginPath();
+                        ctx.arc(x, y, twinkle, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                    
+                    // Character sitting, looking at stars
+                    ctx.save();
+                    ctx.translate(640, 550);
+                    
+                    const c = {hair: '#1a1a2e', skin: '#fce4d6', eyes: '#6495ed', shirt: '#2d3436'};
+                    
+                    // Sitting body
+                    ctx.fillStyle = c.shirt;
+                    ctx.beginPath();
+                    ctx.ellipse(0, 0, 50, 30, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // Torso leaning back
+                    ctx.fillStyle = c.shirt;
+                    ctx.beginPath();
+                    ctx.moveTo(-30, -10);
+                    ctx.quadraticCurveTo(-35, -60, -25, -100);
+                    ctx.lineTo(25, -100);
+                    ctx.quadraticCurveTo(35, -60, 30, -10);
+                    ctx.closePath();
+                    ctx.fill();
+                    
+                    // Arms behind for support
+                    ctx.beginPath();
+                    ctx.moveTo(-30, -30);
+                    ctx.quadraticCurveTo(-60, 0, -70, 20);
+                    ctx.lineTo(-60, 25);
+                    ctx.quadraticCurveTo(-50, 10, -25, -20);
+                    ctx.closePath();
+                    ctx.fill();
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(30, -30);
+                    ctx.quadraticCurveTo(60, 0, 70, 20);
+                    ctx.lineTo(60, 25);
+                    ctx.quadraticCurveTo(50, 10, 25, -20);
+                    ctx.closePath();
+                    ctx.fill();
+                    
+                    // Neck
+                    ctx.fillStyle = c.skin;
+                    ctx.fillRect(-10, -120, 20, 25);
+                    
+                    // Head looking up
+                    ctx.beginPath();
+                    ctx.ellipse(0, -155, 40, 50, 0.1, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // Hair
+                    ctx.fillStyle = c.hair;
+                    ctx.beginPath();
+                    ctx.ellipse(0, -165, 45, 45, 0, Math.PI, Math.PI * 2);
+                    ctx.fill();
+                    ctx.beginPath();
+                    ctx.moveTo(-42, -155);
+                    ctx.lineTo(-32, -195);
+                    ctx.lineTo(-22, -160);
+                    ctx.lineTo(-12, -200);
+                    ctx.lineTo(-2, -165);
+                    ctx.lineTo(8, -195);
+                    ctx.lineTo(18, -160);
+                    ctx.lineTo(28, -190);
+                    ctx.lineTo(38, -155);
+                    ctx.closePath();
+                    ctx.fill();
+                    
+                    // Eyes looking up
+                    ctx.fillStyle = '#fff';
+                    ctx.beginPath();
+                    ctx.ellipse(-15, -150, 12, 14, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.beginPath();
+                    ctx.ellipse(15, -150, 12, 14, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    ctx.fillStyle = c.eyes;
+                    ctx.beginPath();
+                    ctx.ellipse(-15, -153, 8, 10, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.beginPath();
+                    ctx.ellipse(15, -153, 8, 10, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    ctx.fillStyle = '#000';
+                    ctx.beginPath();
+                    ctx.ellipse(-15, -154, 4, 6, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.beginPath();
+                    ctx.ellipse(15, -154, 4, 6, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // Shine reflecting stars
+                    ctx.fillStyle = '#fff';
+                    ctx.beginPath();
+                    ctx.ellipse(-18, -157, 3, 4, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.beginPath();
+                    ctx.ellipse(12, -157, 3, 4, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // Peaceful expression
+                    ctx.strokeStyle = '#c0392b';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.moveTo(-8, -130);
+                    ctx.lineTo(8, -130);
+                    ctx.stroke();
+                    
+                    ctx.restore();
+                },
+                subtitle: { jp: 'でも、いつか...', en: "But someday..." }
+            },
+            {
+                duration: 10000,
+                draw: function(progress, time) {
+                    // Hopeful ending - dawn scene
+                    const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+                    grad.addColorStop(0, lerp(0x1a, 0x87, progress) / 255, lerp(0x1a, 0xce, progress) / 255, lerp(0x3a, 0xeb, progress) / 255);
+                    grad.addColorStop(0, `rgb(${Math.floor(lerp(26, 135, progress))}, ${Math.floor(lerp(26, 206, progress))}, ${Math.floor(lerp(58, 235, progress))})`);
+                    grad.addColorStop(0.5, `rgb(${Math.floor(lerp(58, 255, progress))}, ${Math.floor(lerp(42, 183, progress))}, ${Math.floor(lerp(80, 140, progress))})`);
+                    grad.addColorStop(1, `rgb(${Math.floor(lerp(90, 255, progress))}, ${Math.floor(lerp(60, 200, progress))}, ${Math.floor(lerp(100, 150, progress))})`);
+                    ctx.fillStyle = grad;
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    
+                    // Rising sun
+                    const sunY = canvas.height * 0.6 - progress * 100;
+                    ctx.fillStyle = '#fff';
+                    ctx.beginPath();
+                    ctx.arc(640, sunY, 60 + progress * 20, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // Sun glow
+                    ctx.fillStyle = 'rgba(255, 200, 100, 0.3)';
+                    ctx.beginPath();
+                    ctx.arc(640, sunY, 100 + progress * 40, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // Silhouette of character facing sunrise
+                    ctx.fillStyle = '#1a1a2e';
+                    ctx.save();
+                    ctx.translate(640, 500);
+                    
+                    // Body silhouette
+                    ctx.beginPath();
+                    ctx.moveTo(-35, 0);
+                    ctx.quadraticCurveTo(-40, -60, -30, -120);
+                    ctx.lineTo(30, -120);
+                    ctx.quadraticCurveTo(40, -60, 35, 0);
+                    ctx.closePath();
+                    ctx.fill();
+                    
+                    // Head
+                    ctx.beginPath();
+                    ctx.ellipse(0, -160, 45, 55, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // Spiky hair silhouette
+                    ctx.beginPath();
+                    ctx.moveTo(-48, -160);
+                    ctx.lineTo(-38, -210);
+                    ctx.lineTo(-28, -170);
+                    ctx.lineTo(-18, -220);
+                    ctx.lineTo(-8, -175);
+                    ctx.lineTo(2, -215);
+                    ctx.lineTo(12, -170);
+                    ctx.lineTo(22, -205);
+                    ctx.lineTo(32, -165);
+                    ctx.lineTo(42, -195);
+                    ctx.lineTo(48, -160);
+                    ctx.closePath();
+                    ctx.fill();
+                    
+                    // Arms slightly raised
+                    ctx.beginPath();
+                    ctx.moveTo(-35, -100);
+                    ctx.quadraticCurveTo(-60, -80, -70, -40);
+                    ctx.lineTo(-60, -35);
+                    ctx.quadraticCurveTo(-50, -70, -30, -90);
+                    ctx.closePath();
+                    ctx.fill();
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(35, -100);
+                    ctx.quadraticCurveTo(60, -80, 70, -40);
+                    ctx.lineTo(60, -35);
+                    ctx.quadraticCurveTo(50, -70, 30, -90);
+                    ctx.closePath();
+                    ctx.fill();
+                    
+                    ctx.restore();
+                    
+                    // Text overlay
+                    ctx.fillStyle = 'rgba(255, 255, 255, ' + progress + ')';
+                    ctx.font = 'bold 48px Cinzel, serif';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('きっと見つかる', canvas.width/2, 150);
+                    ctx.font = '28px serif';
+                    ctx.fillText('I will find where I belong', canvas.width/2, 200);
+                },
+                subtitle: { jp: 'きっと居場所が見つかる', en: "I will find where I belong" }
+            },
+            {
+                duration: 8000,
+                draw: function(progress, time) {
+                    // End credits
+                    ctx.fillStyle = '#000';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    
+                    ctx.fillStyle = 'rgba(255, 255, 255, ' + (1 - progress) + ')';
+                    ctx.font = 'bold 60px Cinzel, serif';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('BELONGING', canvas.width/2, canvas.height/2 - 50);
+                    
+                    ctx.font = '24px serif';
+                    ctx.fillText('Created by JARVIS for Nadav', canvas.width/2, canvas.height/2 + 20);
+                    ctx.fillText('Music: "Creep" by Radiohead', canvas.width/2, canvas.height/2 + 60);
+                },
+                subtitle: { jp: '終わり', en: 'The End' }
+            }
+        ];
+        
+        let currentScene = 0;
+        let sceneStartTime = 0;
+        let isPlaying = false;
+        let animationId;
+        
+        function updateSubtitles(scene) {
+            const subtitleDiv = document.getElementById('subtitles');
+            const jpDiv = subtitleDiv.querySelector('.japanese');
+            const enDiv = subtitleDiv.querySelector('.english');
+            
+            if (scene.subtitle && (scene.subtitle.jp || scene.subtitle.en)) {
+                jpDiv.textContent = scene.subtitle.jp;
+                enDiv.textContent = scene.subtitle.en;
+                subtitleDiv.style.display = 'block';
+            } else {
+                subtitleDiv.style.display = 'none';
+            }
+        }
+        
+        function animate(timestamp) {
+            if (!isPlaying) return;
+            
+            const scene = scenes[currentScene];
+            const elapsed = timestamp - sceneStartTime;
+            const progress = Math.min(1, elapsed / scene.duration);
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw current scene
+            scene.draw(progress, timestamp);
+            
+            // Update subtitles
+            updateSubtitles(scene);
+            
+            // Check if scene is complete
+            if (elapsed >= scene.duration) {
+                currentScene++;
+                sceneStartTime = timestamp;
+                
+                if (currentScene >= scenes.length) {
+                    isPlaying = false;
+                    document.getElementById('subtitles').style.display = 'none';
+                    return;
+                }
+            }
+            
+            animationId = requestAnimationFrame(animate);
+        }
+        
+        document.getElementById('beginBtn').addEventListener('click', function() {
+            document.getElementById('startScreen').style.display = 'none';
+            document.getElementById('animeCanvas').style.display = 'block';
+            document.getElementById('rain').style.display = 'block';
+            document.getElementById('subtitles').style.display = 'block';
+            
+            // Start YouTube audio
+            const iframe = document.getElementById('audioPlayer');
+            iframe.src = "https://www.youtube.com/embed/XFkzRNyygfk?autoplay=1&enablejsapi=1&start=0";
+            
+            isPlaying = true;
+            sceneStartTime = performance.now();
+            animationId = requestAnimationFrame(animate);
+        });
+    </script>
+</body>
+</html>

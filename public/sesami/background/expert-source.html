@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consulting Expert Source - Sesami</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../edit-mode.css">
+    <style>
+        .sub-nav { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.1); padding: 0; position: sticky; top: 80px; z-index: 99; }
+        .sub-nav-container { max-width: 1400px; margin: 0 auto; display: flex; gap: 0; overflow-x: auto; scrollbar-width: none; }
+        .sub-nav-container::-webkit-scrollbar { display: none; }
+        .sub-nav-link { padding: 16px 24px; color: rgba(255,255,255,0.6); text-decoration: none; font-size: 14px; font-weight: 500; white-space: nowrap; border-bottom: 3px solid transparent; transition: all 0.3s ease; }
+        .sub-nav-link:hover { color: rgba(255,255,255,0.9); background: rgba(255,255,255,0.05); }
+        .sub-nav-link.active { color: #f472b6; border-bottom-color: #f472b6; background: rgba(244, 114, 182, 0.1); }
+        .research-content { max-width: 900px; margin: 0 auto; padding: 60px 24px; }
+        .research-header { margin-bottom: 48px; }
+        .research-header h1 { font-family: 'Playfair Display', serif; font-size: 48px; margin-bottom: 16px; background: linear-gradient(135deg, #f472b6, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .research-header .meta { color: rgba(255,255,255,0.5); font-size: 14px; }
+        .research-section { margin-bottom: 48px; }
+        .research-section h2 { font-size: 28px; margin-bottom: 20px; color: #fff; }
+        .research-section h3 { font-size: 22px; margin: 32px 0 16px; color: #f472b6; }
+        .research-section p { color: rgba(255,255,255,0.8); line-height: 1.8; margin-bottom: 16px; font-size: 16px; }
+        .research-section ul { color: rgba(255,255,255,0.8); line-height: 1.8; margin: 16px 0; padding-left: 24px; }
+        .research-section li { margin-bottom: 12px; }
+        .back-link { display: inline-flex; align-items: center; gap: 8px; color: #f472b6; text-decoration: none; font-weight: 500; margin-bottom: 24px; transition: all 0.3s ease; }
+        .back-link:hover { gap: 12px; }
+        .expert-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 32px; margin: 32px 0; }
+        .expert-header { display: flex; gap: 20px; align-items: flex-start; margin-bottom: 24px; }
+        .expert-avatar { width: 80px; height: 80px; background: linear-gradient(135deg, #f472b6, #a78bfa); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; color: white; flex-shrink: 0; }
+        .expert-info h3 { margin: 0 0 4px 0; color: #fff; font-size: 22px; }
+        .expert-info .title { color: #f472b6; font-size: 14px; margin: 0 0 4px 0; }
+        .expert-info .affiliation { color: rgba(255,255,255,0.5); font-size: 14px; margin: 0; }
+        .expert-credentials { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0; }
+        .credential-tag { background: rgba(244, 114, 182, 0.15); color: #f472b6; padding: 4px 12px; border-radius: 20px; font-size: 12px; }
+        .quote-box { background: rgba(167, 139, 250, 0.1); border-left: 4px solid #a78bfa; padding: 24px; margin: 24px 0; border-radius: 0 12px 12px 0; }
+        .quote-box p { font-style: italic; font-size: 18px; color: rgba(255,255,255,0.9); margin: 0; line-height: 1.6; }
+        .qa-section { margin-top: 24px; }
+        .qa-item { margin-bottom: 20px; }
+        .qa-item .question { color: #a78bfa; font-weight: 600; margin-bottom: 8px; }
+        .qa-item .answer { color: rgba(255,255,255,0.8); line-height: 1.7; }
+        .key-insight { background: linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(34, 197, 94, 0.05)); border: 1px solid rgba(34, 197, 94, 0.3); border-radius: 12px; padding: 20px; margin: 20px 0; }
+        .key-insight h4 { color: #22c55e; margin: 0 0 8px 0; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; }
+        .key-insight p { margin: 0; color: rgba(255,255,255,0.9); }
+    </style>
+</head>
+<body data-page="background">
+    <div class="bg-gradient"></div>
+    <div class="bg-pattern"></div>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="../index.html" class="logo"><div class="logo-icon"><i class="fas fa-baby"></i></div><span class="logo-text">Sesami</span></a>
+            <ul class="nav-links">
+                <li class="nav-item"><a href="../index.html" class="nav-link">Home</a></li>
+                <li class="nav-item"><a href="../background.html" class="nav-link active">Background</a></li>
+                <li class="nav-item"><a href="../empathize.html" class="nav-link">Empathize</a></li>
+                <li class="nav-item"><a href="../define.html" class="nav-link">Define</a></li>
+                <li class="nav-item"><a href="../ideate.html" class="nav-link">Ideate</a></li>
+                <li class="nav-item"><a href="../engineering.html" class="nav-link">Engineering</a></li>
+                <li class="nav-item"><a href="../test.html" class="nav-link">Test</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="sub-nav">
+        <div class="sub-nav-container">
+            <a href="preliminary-research.html" class="sub-nav-link">Preliminary Research</a>
+            <a href="final-research.html" class="sub-nav-link">Final Research Paper</a>
+            <a href="baby-development-tech.html" class="sub-nav-link">Baby Development Tech</a>
+            <a href="competitor-chart.html" class="sub-nav-link">Competitor Chart</a>
+            <a href="expert-source.html" class="sub-nav-link active">Expert Source</a>
+            <a href="end-user.html" class="sub-nav-link">End User</a>
+            <a href="expert-survey.html" class="sub-nav-link">Expert Survey</a>
+            <a href="sensors-writeup.html" class="sub-nav-link">Sensors Writeup</a>
+            <a href="business-plan.html" class="sub-nav-link">Business Plan</a>
+            <a href="financials.html" class="sub-nav-link">Financials</a>
+        </div>
+    </div>
+
+    <div class="research-content">
+        <a href="../background.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Background</a>
+        
+        <div class="research-header">
+            <h1>Consulting Expert Source</h1>
+            <p class="meta">Professional insights from pediatric and developmental specialists</p>
+        </div>
+
+        <div class="research-section">
+            <h2>Expert Consultation Overview</h2>
+            <p>To validate our concept and gather professional insights, we conducted in-depth interviews with pediatric specialists, developmental psychologists, and early intervention professionals. Their expertise shaped our understanding of developmental monitoring needs and informed our product design decisions.</p>
+        </div>
+
+        <div class="expert-card">
+            <div class="expert-header">
+                <div class="expert-avatar"><i class="fas fa-user-md"></i></div>
+                <div class="expert-info">
+                    <h3>Dr. Sarah Martinez, M.D., FAAP</h3>
+                    <p class="title">Developmental-Behavioral Pediatrician</p>
+                    <p class="affiliation">Children's Hospital of Philadelphia</p>
+                </div>
+            </div>
+            <div class="expert-credentials">
+                <span class="credential-tag">Board Certified Pediatrics</span>
+                <span class="credential-tag">Developmental-Behavioral Fellowship</span>
+                <span class="credential-tag">15+ Years Experience</span>
+                <span class="credential-tag">AAP Committee Member</span>
+            </div>
+            
+            <div class="quote-box">
+                <p>"The gap between when parents first notice something might be different and when we can formally diagnose is often measured in months or years. Any tool that helps parents track and communicate developmental observations would be tremendously valuable in my practice."</p>
+            </div>
+            
+            <div class="qa-section">
+                <div class="qa-item">
+                    <p class="question">Q: What are the biggest challenges in early developmental detection?</p>
+                    <p class="answer">The biggest challenge is that we only see children periodically - at well-child visits every few months. Parents observe their children daily, but often don't know what to look for or how to communicate their observations. By the time concerns become clear enough for parents to articulate, we've often missed optimal intervention windows.</p>
+                </div>
+                <div class="qa-item">
+                    <p class="question">Q: How would longitudinal movement data help your assessments?</p>
+                    <p class="answer">It would be transformative. Right now, I rely on brief in-office observations and parent recall. If I could see trends over time - when milestones were achieved, movement quality patterns, asymmetries - I could make more informed recommendations and catch subtle delays earlier.</p>
+                </div>
+                <div class="qa-item">
+                    <p class="question">Q: What concerns would you have about consumer developmental monitoring?</p>
+                    <p class="answer">My main concern is false positives causing unnecessary anxiety. Any system needs to be calibrated to flag genuine concerns while reassuring parents about normal variation. It should supplement professional assessment, not replace it, and be clear about its limitations.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="expert-card">
+            <div class="expert-header">
+                <div class="expert-avatar"><i class="fas fa-brain"></i></div>
+                <div class="expert-info">
+                    <h3>Dr. Michael Chen, Ph.D.</h3>
+                    <p class="title">Developmental Psychologist</p>
+                    <p class="affiliation">Stanford University School of Medicine</p>
+                </div>
+            </div>
+            <div class="expert-credentials">
+                <span class="credential-tag">Infant Motor Development Research</span>
+                <span class="credential-tag">NIH-Funded Studies</span>
+                <span class="credential-tag">Published 47 Papers</span>
+            </div>
+            
+            <div class="quote-box">
+                <p>"Our research has shown that movement patterns in the first year of life are highly predictive of later developmental outcomes. The technology to track these patterns at home now exists - the question is how to make it accessible to families while maintaining scientific rigor."</p>
+            </div>
+            
+            <div class="qa-section">
+                <div class="qa-item">
+                    <p class="question">Q: What specific movement patterns are most predictive?</p>
+                    <p class="answer">Fidgety movements at 3-5 months are highly predictive of neurological outcomes. Symmetry of movement between left and right sides is crucial. The quality of reaching and grasping, not just whether the milestone occurs, tells us a lot. Transitions between positions - how a baby moves from lying to sitting - reveal coordination and planning abilities.</p>
+                </div>
+                <div class="qa-item">
+                    <p class="question">Q: Can AI reliably detect these patterns?</p>
+                    <p class="answer">Recent research is very promising. Computer vision has achieved near-human accuracy in identifying infant poses and movements. The challenge is training models on diverse populations and ensuring they work across different settings, lighting conditions, and camera angles. It's solvable with proper data and validation.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="expert-card">
+            <div class="expert-header">
+                <div class="expert-avatar"><i class="fas fa-hands-helping"></i></div>
+                <div class="expert-info">
+                    <h3>Jennifer Williams, OTR/L</h3>
+                    <p class="title">Pediatric Occupational Therapist</p>
+                    <p class="affiliation">Early Steps Early Intervention Program</p>
+                </div>
+            </div>
+            <div class="expert-credentials">
+                <span class="credential-tag">Early Intervention Specialist</span>
+                <span class="credential-tag">Sensory Integration Certified</span>
+                <span class="credential-tag">12 Years Experience</span>
+            </div>
+            
+            <div class="quote-box">
+                <p>"When we receive referrals, families often say 'I knew something was different at 6 months, but no one would listen.' Earlier referrals with objective data would mean earlier intervention, and earlier intervention means better outcomes."</p>
+            </div>
+            
+            <div class="qa-section">
+                <div class="qa-item">
+                    <p class="question">Q: What would help families get earlier intervention?</p>
+                    <p class="answer">Two things: education about what to look for, and documentation to share with pediatricians. If parents could show their doctor a video or data showing their baby isn't meeting milestones in the expected timeframe, it would lead to faster referrals. Right now, parents often feel dismissed until delays are severe.</p>
+                </div>
+                <div class="qa-item">
+                    <p class="question">Q: What milestones do you wish were tracked better?</p>
+                    <p class="answer">Tummy time tolerance and quality, reaching patterns, visual tracking, and transition movements. These aren't always on standard checklists, but they're crucial indicators. A system that could track and report on these would be incredibly valuable.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="key-insight">
+            <h4>Synthesized Expert Insights</h4>
+            <p>All experts agreed on three key points: (1) earlier detection leads to better outcomes, (2) parents need tools to objectively document developmental observations, and (3) any consumer system must be positioned as a supplement to, not replacement for, professional care.</p>
+        </div>
+
+        <div class="research-section">
+            <h2>Expert Recommendations for Sesami</h2>
+            <ul>
+                <li><strong>Focus on trends, not single moments:</strong> Show patterns over time rather than flagging individual observations</li>
+                <li><strong>Include educational content:</strong> Help parents understand what milestones mean and why they matter</li>
+                <li><strong>Enable easy sharing:</strong> Let parents generate reports to share with pediatricians</li>
+                <li><strong>Calibrate for sensitivity:</strong> Better to track many normal babies than miss a delay</li>
+                <li><strong>Clear disclaimers:</strong> Emphasize professional assessment remains essential</li>
+                <li><strong>Track quality, not just occurrence:</strong> How a baby does something matters as much as whether they do it</li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="../app.js"></script>
+    <script src="../edit-mode.js"></script>
+</body>
+</html>

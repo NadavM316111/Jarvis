@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <defs>
+    <linearGradient id="purpleGold" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#4A1C6B;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#6B2D8B;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8B3DAB;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="goldFlame" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#B8860B;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#DAA520;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FFD700;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="fireGlow" x1="50%" y1="100%" x2="50%" y2="0%">
+      <stop offset="0%" style="stop-color:#FF4500;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#FF8C00;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FFD700;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background circle -->
+  <circle cx="200" cy="200" r="190" fill="url(#purpleGold)" stroke="url(#goldFlame)" stroke-width="6"/>
+  
+  <!-- Phoenix body - rising upward -->
+  <path d="M200 320 
+           Q180 280 170 240
+           Q160 200 180 160
+           Q190 130 200 100
+           Q210 130 220 160
+           Q240 200 230 240
+           Q220 280 200 320Z" 
+        fill="url(#goldFlame)"/>
+  
+  <!-- Left wing -->
+  <path d="M170 240
+           Q120 220 80 180
+           Q100 200 90 160
+           Q110 180 100 140
+           Q130 170 120 130
+           Q150 160 150 120
+           Q170 160 180 160
+           Q160 200 170 240Z"
+        fill="url(#goldFlame)"/>
+  
+  <!-- Right wing -->
+  <path d="M230 240
+           Q280 220 320 180
+           Q300 200 310 160
+           Q290 180 300 140
+           Q270 170 280 130
+           Q250 160 250 120
+           Q230 160 220 160
+           Q240 200 230 240Z"
+        fill="url(#goldFlame)"/>
+  
+  <!-- Phoenix head -->
+  <ellipse cx="200" cy="95" rx="25" ry="30" fill="url(#goldFlame)"/>
+  
+  <!-- Crown flames -->
+  <path d="M175 80 Q180 50 185 70 Q190 40 200 65 Q210 40 215 70 Q220 50 225 80" 
+        fill="url(#fireGlow)" stroke="url(#fireGlow)" stroke-width="3"/>
+  
+  <!-- Eye -->
+  <circle cx="200" cy="90" r="6" fill="#4A1C6B"/>
+  <circle cx="202" cy="88" r="2" fill="#FFD700"/>
+  
+  <!-- Tail flames -->
+  <path d="M185 320 Q170 350 160 380 Q180 360 200 390 Q220 360 240 380 Q230 350 215 320"
+        fill="url(#fireGlow)"/>
+  
+  <!-- Inner detail lines on wings -->
+  <path d="M150 180 Q130 170 110 150" stroke="#4A1C6B" stroke-width="2" fill="none" opacity="0.5"/>
+  <path d="M160 200 Q140 190 120 170" stroke="#4A1C6B" stroke-width="2" fill="none" opacity="0.5"/>
+  <path d="M250 180 Q270 170 290 150" stroke="#4A1C6B" stroke-width="2" fill="none" opacity="0.5"/>
+  <path d="M240 200 Q260 190 280 170" stroke="#4A1C6B" stroke-width="2" fill="none" opacity="0.5"/>
+</svg>

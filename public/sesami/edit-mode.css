@@ -1,0 +1,395 @@
+
+/* ===== SESAMI EDIT MODE STYLES ===== */
+
+/* Edit Button - Sleek Floating Pill */
+#sesamiEditBtn {
+    position: fixed;
+    bottom: 32px;
+    right: 32px;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 24px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.4),
+                0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+}
+
+#sesamiEditBtn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    transition: left 0.6s ease;
+}
+
+#sesamiEditBtn:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 12px 40px rgba(102, 126, 234, 0.5),
+                0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+#sesamiEditBtn:hover::before {
+    left: 100%;
+}
+
+#sesamiEditBtn.editing {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    box-shadow: 0 8px 32px rgba(245, 87, 108, 0.4),
+                0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+#sesamiEditBtn i {
+    font-size: 16px;
+}
+
+/* Edit Toolbar */
+#sesamiEditToolbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 9999;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    color: white;
+    padding: 0;
+    transform: translateY(-100%);
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+}
+
+#sesamiEditToolbar.visible {
+    transform: translateY(0);
+}
+
+.toolbar-inner {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 32px;
+    gap: 24px;
+}
+
+.toolbar-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.toolbar-left i {
+    font-size: 18px;
+    color: #f093fb;
+}
+
+.toolbar-center {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+.toolbar-hint {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.7);
+    padding: 6px 14px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+}
+
+.toolbar-hint i {
+    color: #f093fb;
+    font-size: 12px;
+}
+
+.toolbar-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.toolbar-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.toolbar-btn.save-btn {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    color: white;
+}
+
+.toolbar-btn.save-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(56, 239, 125, 0.4);
+}
+
+.toolbar-btn.exit-btn {
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.toolbar-btn.exit-btn:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateY(-2px);
+}
+
+/* Editable Elements */
+.editable-element {
+    outline: none;
+    transition: all 0.3s ease;
+    border-radius: 4px;
+}
+
+.edit-mode-active .editable-element:hover {
+    background: rgba(102, 126, 234, 0.1);
+    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.3);
+}
+
+.editable-element.editing-active {
+    background: rgba(102, 126, 234, 0.15) !important;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.5) !important;
+}
+
+/* Delete Buttons on Cards */
+.delete-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a5a 100%);
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    opacity: 0;
+    transform: scale(0.8);
+    transition: all 0.3s ease;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+}
+
+.edit-mode-active *:hover > .delete-btn,
+.delete-btn:hover {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.delete-btn:hover {
+    background: linear-gradient(135deg, #ff5252 0%, #e04343 100%);
+    transform: scale(1.1);
+}
+
+/* Delete Modal */
+.delete-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 100000;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.delete-modal.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.delete-modal-content {
+    background: white;
+    padding: 40px;
+    border-radius: 20px;
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.3);
+}
+
+.delete-modal.visible .delete-modal-content {
+    transform: scale(1);
+}
+
+.delete-modal-icon {
+    width: 70px;
+    height: 70px;
+    margin: 0 auto 20px;
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeeba 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    color: #856404;
+}
+
+.delete-modal-content h3 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #1a1a2e;
+    margin-bottom: 10px;
+}
+
+.delete-modal-content p {
+    color: #666;
+    margin-bottom: 28px;
+}
+
+.delete-modal-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.modal-btn {
+    padding: 12px 28px;
+    border: none;
+    border-radius: 10px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.modal-btn.cancel-btn {
+    background: #f0f0f0;
+    color: #666;
+}
+
+.modal-btn.cancel-btn:hover {
+    background: #e0e0e0;
+}
+
+.modal-btn.confirm-btn {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a5a 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+}
+
+.modal-btn.confirm-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+}
+
+/* Toast Notifications */
+.edit-toast {
+    position: fixed;
+    bottom: 100px;
+    right: 32px;
+    z-index: 100001;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 24px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: #1a1a2e;
+    transform: translateX(120%);
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.edit-toast.visible {
+    transform: translateX(0);
+}
+
+.edit-toast.success {
+    border-left: 4px solid #38ef7d;
+}
+
+.edit-toast.success i {
+    color: #38ef7d;
+}
+
+.edit-toast.error {
+    border-left: 4px solid #ff6b6b;
+}
+
+.edit-toast.error i {
+    color: #ff6b6b;
+}
+
+.edit-toast.info {
+    border-left: 4px solid #667eea;
+}
+
+.edit-toast.info i {
+    color: #667eea;
+}
+
+.edit-toast i {
+    font-size: 18px;
+}
+
+/* Adjust navbar when toolbar is visible */
+.edit-mode-active .navbar {
+    top: 52px;
+}
+
+/* Hide edit button when toolbar is showing */
+.edit-mode-active #sesamiEditBtn {
+    display: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .toolbar-center {
+        display: none;
+    }
+    
+    .toolbar-inner {
+        padding: 12px 16px;
+    }
+    
+    #sesamiEditBtn {
+        bottom: 20px;
+        right: 20px;
+        padding: 12px 20px;
+        font-size: 13px;
+    }
+}

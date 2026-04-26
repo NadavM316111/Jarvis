@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Phoenix Party - Rise Above the Ashes</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --navy: #1a2d5a;
+            --red: #b22234;
+            --white: #ffffff;
+            --gold: #d4af37;
+            --dark: #0d1117;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--dark);
+            color: var(--white);
+            line-height: 1.6;
+        }
+        
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--navy) 0%, #0d1a33 50%, var(--dark) 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="1" fill="%23ffffff" opacity="0.1"/></svg>');
+            background-size: 50px 50px;
+            opacity: 0.3;
+        }
+        
+        .logo-container {
+            position: relative;
+            z-index: 2;
+            margin-bottom: 2rem;
+        }
+        
+        .logo {
+            width: 280px;
+            height: auto;
+            filter: drop-shadow(0 0 30px rgba(178, 34, 52, 0.5));
+            animation: rise 3s ease-in-out infinite;
+        }
+        
+        @keyframes rise {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+        
+        .hero h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 4.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--white) 0%, var(--gold) 50%, var(--white) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 40px rgba(212, 175, 55, 0.3);
+            position: relative;
+            z-index: 2;
+        }
+        
+        .tagline {
+            font-size: 1.8rem;
+            color: var(--gold);
+            font-weight: 300;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-bottom: 2rem;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .hero-stats {
+            display: flex;
+            gap: 3rem;
+            margin-top: 2rem;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--red);
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.7);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        /* The Problem Section */
+        .problem {
+            padding: 6rem 2rem;
+            background: linear-gradient(180deg, var(--dark) 0%, #1a1a2e 100%);
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .section-title {
+            font-family: 'Cinzel', serif;
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 3rem;
+            color: var(--white);
+        }
+        
+        .problem-text {
+            font-size: 1.4rem;
+            line-height: 2;
+            text-align: center;
+        }
+        
+        .problem-text .highlight {
+            color: var(--red);
+            font-weight: 700;
+        }
+        
+        .anaphora {
+            display: block;
+            margin: 1.5rem 0;
+            font-size: 1.5rem;
+            padding-left: 2rem;
+            border-left: 4px solid var(--red);
+            font-style: italic;
+        }
+        
+        /* Platform Section */
+        .platform {
+            padding: 6rem 2rem;
+            background: var(--navy);
+        }
+        
+        .platform-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .platform-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .platform-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--gold);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+        
+        .platform-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--red), var(--gold));
+        }
+        
+        .platform-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: var(--gold);
+        }
+        
+        .platform-card p {
+            color: rgba(255,255,255,0.8);
+            margin-bottom: 1rem;
+        }
+        
+        .percent-bar {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            height: 30px;
+            overflow: hidden;
+            margin-top: 1rem;
+            position: relative;
+        }
+        
+        .percent-fill {
+            height: 100%;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 10px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            transition: width 1.5s ease;
+        }
+        
+        .percent-fill.high {
+            background: linear-gradient(90deg, var(--red), #ff6b6b);
+        }
+        
+        .percent-label {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.6);
+        }
+        
+        /* Manifesto Section */
+        .manifesto {
+            padding: 6rem 2rem;
+            background: linear-gradient(180deg, #1a1a2e 0%, var(--dark) 100%);
+            text-align: center;
+        }
+        
+        .manifesto-text {
+            font-size: 1.6rem;
+            line-height: 2.2;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .manifesto-text .em {
+            color: var(--gold);
+            font-weight: 700;
+        }
+        
+        .call-response {
+            margin: 3rem 0;
+            padding: 2rem;
+            background: rgba(178, 34, 52, 0.1);
+            border-radius: 16px;
+            border: 1px solid var(--red);
+        }
+        
+        .call {
+            font-size: 1.4rem;
+            color: var(--white);
+            margin-bottom: 0.5rem;
+        }
+        
+        .response {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--red);
+            font-family: 'Cinzel', serif;
+        }
+        
+        /* Comparison Section */
+        .comparison {
+            padding: 6rem 2rem;
+            background: var(--dark);
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 2rem;
+        }
+        
+        .comparison-table th {
+            background: var(--navy);
+            padding: 1.5rem;
+            text-align: center;
+            font-size: 1.2rem;
+        }
+        
+        .comparison-table th:nth-child(2) {
+            color: #3b82f6;
+        }
+        
+        .comparison-table th:nth-child(3) {
+            color: #ef4444;
+        }
+        
+        .comparison-table th:nth-child(4) {
+            background: linear-gradient(135deg, var(--red), var(--navy));
+            color: var(--gold);
+        }
+        
+        .comparison-table td {
+            padding: 1.2rem;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .comparison-table tr:hover {
+            background: rgba(255,255,255,0.05);
+        }
+        
+        .check {
+            color: #22c55e;
+            font-size: 1.5rem;
+        }
+        
+        .cross {
+            color: #ef4444;
+            font-size: 1.5rem;
+        }
+        
+        .partial {
+            color: #f59e0b;
+            font-size: 1.5rem;
+        }
+        
+        /* Roadmap */
+        .roadmap {
+            padding: 6rem 2rem;
+            background: linear-gradient(180deg, var(--navy) 0%, var(--dark) 100%);
+        }
+        
+        .timeline {
+            position: relative;
+            max-width: 800px;
+            margin: 3rem auto;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(180deg, var(--red), var(--gold));
+        }
+        
+        .timeline-item {
+            padding: 2rem;
+            position: relative;
+            width: 50%;
+        }
+        
+        .timeline-item:nth-child(odd) {
+            left: 0;
+            text-align: right;
+            padding-right: 3rem;
+        }
+        
+        .timeline-item:nth-child(even) {
+            left: 50%;
+            padding-left: 3rem;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: var(--gold);
+            border-radius: 50%;
+            top: 2rem;
+        }
+        
+        .timeline-item:nth-child(odd)::before {
+            right: -10px;
+        }
+        
+        .timeline-item:nth-child(even)::before {
+            left: -10px;
+        }
+        
+        .timeline-year {
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            color: var(--gold);
+            margin-bottom: 0.5rem;
+        }
+        
+        /* Final CTA */
+        .cta {
+            padding: 6rem 2rem;
+            background: linear-gradient(135deg, var(--red) 0%, var(--navy) 100%);
+            text-align: center;
+        }
+        
+        .cta h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .cta p {
+            font-size: 1.4rem;
+            max-width: 700px;
+            margin: 0 auto 2rem;
+            opacity: 0.9;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            padding: 1.2rem 3rem;
+            background: var(--gold);
+            color: var(--dark);
+            font-size: 1.2rem;
+            font-weight: 700;
+            text-decoration: none;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .cta-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.4);
+        }
+        
+        /* Footer */
+        footer {
+            padding: 2rem;
+            text-align: center;
+            background: var(--dark);
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        footer p {
+            color: rgba(255,255,255,0.5);
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .tagline {
+                font-size: 1.2rem;
+            }
+            
+            .hero-stats {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+            
+            .timeline-item {
+                width: 100%;
+                left: 0 !important;
+                text-align: left !important;
+                padding-left: 3rem !important;
+                padding-right: 1rem !important;
+            }
+            
+            .timeline::before {
+                left: 0;
+            }
+            
+            .timeline-item::before {
+                left: -10px !important;
+                right: auto !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <section class="hero">
+        <div class="logo-container">
+            <img src="./phoenix-party-logo.png" alt="Phoenix Party Logo" class="logo">
+        </div>
+        <h1>THE PHOENIX PARTY</h1>
+        <p class="tagline">Rise Above the Ashes of Division</p>
+        
+        <div class="hero-stats">
+            <div class="stat">
+                <div class="stat-number">63%</div>
+                <div class="stat-label">Want a Third Party</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">28%</div>
+                <div class="stat-label">Trust Congress</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">0</div>
+                <div class="stat-label">Major Third Parties</div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="problem">
+        <div class="container">
+            <h2 class="section-title">The System is Broken. You Know It.</h2>
+            
+            <div class="problem-text">
+                <p>For decades, they told you there were only two choices.</p>
+                
+                <span class="anaphora">They told you to pick a side - even when neither side represented you.</span>
+                <span class="anaphora">They told you third parties "can't win" - while rigging the rules to make sure they don't.</span>
+                <span class="anaphora">They told you to vote for the "lesser evil" - and evil kept winning.</span>
+                
+                <p style="margin-top: 2rem;">
+                    <span class="highlight">83% of Americans</span> believe money has too much influence in politics.<br>
+                    <span class="highlight">87% of Americans</span> support term limits for Congress.<br>
+                    <span class="highlight">77% of Americans</span> want Medicare to negotiate drug prices.<br>
+                    <span class="highlight">63% of Americans</span> want a viable third party option.
+                </p>
+                
+                <p style="margin-top: 2rem; font-size: 1.6rem; font-weight: 600;">
+                    If we already agree... <span class="highlight">why isn't it happening?</span>
+                </p>
+            </div>
+        </div>
+    </section>
+    
+    <section class="platform">
+        <div class="container">
+            <h2 class="section-title">Our Platform: What 60%+ of ALL Americans Support</h2>
+            <p style="text-align: center; opacity: 0.8; margin-bottom: 2rem;">We don't guess. We don't assume. We build on consensus.</p>
+            
+            <div class="platform-grid">
+                <div class="platform-card">
+                    <h3>Congressional Term Limits</h3>
+                    <p>End career politicians. 12-year maximum for Senators, 12 years for Representatives. Fresh ideas, accountable leaders.</p>
+                    <div class="percent-bar">
+                        <span class="percent-label">Americans who agree</span>
+                        <div class="percent-fill high" style="width: 87%;">87%</div>
+                    </div>
+                </div>
+                
+                <div class="platform-card">
+                    <h3>Get Money Out of Politics</h3>
+                    <p>Overturn Citizens United. Ban corporate PAC donations to candidates. Public financing of elections.</p>
+                    <div class="percent-bar">
+                        <span class="percent-label">Americans who agree</span>
+                        <div class="percent-fill high" style="width: 83%;">83%</div>
+                    </div>
+                </div>
+                
+                <div class="platform-card">
+                    <h3>Medicare Drug Negotiation</h3>
+                    <p>Let Medicare negotiate prescription drug prices like every other developed nation. End Big Pharma's blank check.</p>
+                    <div class="percent-bar">
+                        <span class="percent-label">Americans who agree</span>
+                        <div class="percent-fill high" style="width: 77%;">77%</div>
+                    </div>
+                </div>
+                
+                <div class="platform-card">
+                    <h3>Secure the Border + Path Forward</h3>
+                    <p>Strong border security AND a practical path for Dreamers who've known no other home. Both. Not neither.</p>
+                    <div class="percent-bar">
+                        <span class="percent-label">Americans who agree</span>
+                        <div class="percent-fill high" style="width: 72%;">72%</div>
+                    </div>
+                </div>
+                
+                <div class="platform-card">
+                    <h3>Balanced Budget Amendment</h3>
+                    <p>Force Congress to stop spending money we don't have. Exceptions only for declared wars and national emergencies.</p>
+                    <div class="percent-bar">
+                        <span class="percent-label">Americans who agree</span>
+                        <div class="percent-fill high" style="width: 68%;">68%</div>
+                    </div>
+                </div>
+                
+                <div class="platform-card">
+                    <h3>Ranked Choice Voting</h3>
+                    <p>Vote your conscience without "wasting" your vote. Eliminate the spoiler effect. Let the best candidate win.</p>
+                    <div class="percent-bar">
+                        <span class="percent-label">Americans who agree</span>
+                        <div class="percent-fill high" style="width: 62%;">62%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="manifesto">
+        <div class="container">
+            <h2 class="section-title">The Phoenix Rises</h2>
+            
+            <div class="manifesto-text">
+                <p>
+                    We are not the left. We are not the right.<br>
+                    We are <span class="em">forward</span>.
+                </p>
+                
+                <p style="margin-top: 2rem;">
+                    We don't ask you to abandon your values.<br>
+                    We ask you to <span class="em">find what unites us</span>.
+                </p>
+                
+                <p style="margin-top: 2rem;">
+                    When <span class="em">87% of Americans</span> agree on something,<br>
+                    and Congress does <span class="em">nothing</span>...<br>
+                    that's not democracy. That's <span class="em">corruption</span>.
+                </p>
+            </div>
+            
+            <div class="call-response">
+                <p class="call">They say a third party can never win.</p>
+                <p class="response">The Republican Party was a third party in 1854. Six years later, they elected Lincoln.</p>
+            </div>
+            
+            <div class="call-response">
+                <p class="call">They say you're throwing away your vote.</p>
+                <p class="response">The only wasted vote is one cast against your own conscience.</p>
+            </div>
+            
+            <div class="call-response">
+                <p class="call">They say change takes too long.</p>
+                <p class="response">Change takes exactly as long as we allow. Not one day more.</p>
+            </div>
+        </div>
+    </section>
+    
+    <section class="comparison">
+        <div class="container">
+            <h2 class="section-title">Where Do They Really Stand?</h2>
+            
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Issue (% Support)</th>
+                        <th>Democrats</th>
+                        <th>Republicans</th>
+                        <th>Phoenix</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Term Limits (87%)</td>
+                        <td><span class="partial">~</span></td>
+                        <td><span class="partial">~</span></td>
+                        <td><span class="check">Yes</span></td>
+                    </tr>
+                    <tr>
+                        <td>Money Out of Politics (83%)</td>
+                        <td><span class="partial">~</span></td>
+                        <td><span class="cross">X</span></td>
+                        <td><span class="check">Yes</span></td>
+                    </tr>
+                    <tr>
+                        <td>Medicare Negotiation (77%)</td>
+                        <td><span class="check">Yes</span></td>
+                        <td><span class="cross">X</span></td>
+                        <td><span class="check">Yes</span></td>
+                    </tr>
+                    <tr>
+                        <td>Border Security (70%+)</td>
+                        <td><span class="partial">~</span></td>
+                        <td><span class="check">Yes</span></td>
+                        <td><span class="check">Yes</span></td>
+                    </tr>
+                    <tr>
+                        <td>DREAMER Path (65%+)</td>
+                        <td><span class="check">Yes</span></td>
+                        <td><span class="cross">X</span></td>
+                        <td><span class="check">Yes</span></td>
+                    </tr>
+                    <tr>
+                        <td>Balanced Budget (68%)</td>
+                        <td><span class="cross">X</span></td>
+                        <td><span class="partial">~</span></td>
+                        <td><span class="check">Yes</span></td>
+                    </tr>
+                    <tr>
+                        <td>Ranked Choice Voting (62%)</td>
+                        <td><span class="partial">~</span></td>
+                        <td><span class="cross">X</span></td>
+                        <td><span class="check">Yes</span></td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <p style="text-align: center; margin-top: 2rem; color: var(--gold); font-size: 1.2rem;">
+                <em>"The parties don't represent you. They represent themselves."</em>
+            </p>
+        </div>
+    </section>
+    
+    <section class="roadmap">
+        <div class="container">
+            <h2 class="section-title">The 10-Year Path to Power</h2>
+            <p style="text-align: center; opacity: 0.8;">We're not chasing the presidency. We're building a foundation.</p>
+            
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-year">2026-2027</div>
+                    <p>FEC registration. Build core team. Establish state chapters in 10 key states. Social media presence.</p>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-year">2028</div>
+                    <p>Run 50+ candidates for local office: city councils, school boards, county commissioners. Win 10+.</p>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-year">2030</div>
+                    <p>State legislature races in 15 states. Target 5+ seats. Build donor base. Prove electability.</p>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-year">2032</div>
+                    <p>First Congressional candidates. Target 3 House seats in swing districts. Not spoilers - winners.</p>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-year">2034-2036</div>
+                    <p>Expand Congressional presence to 10+ seats. First Senate race. Become the tiebreaker vote that forces compromise.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="cta">
+        <h2>The Phoenix Rises Only If You Rise With It</h2>
+        <p>
+            Every movement started with people who refused to accept "impossible."<br>
+            We're not asking for your vote yet. We're asking for your belief.
+        </p>
+        <a href="#" class="cta-button">Join the Movement</a>
+    </section>
+    
+    <footer>
+        <p>The Phoenix Party - Not Left. Not Right. Forward.</p>
+        <p style="margin-top: 0.5rem; font-size: 0.8rem;">This is the beginning. Help us write the rest.</p>
+    </footer>
+    
+    <script>
+        // Animate percent bars on scroll
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const fills = entry.target.querySelectorAll('.percent-fill');
+                    fills.forEach(fill => {
+                        const width = fill.style.width;
+                        fill.style.width = '0%';
+                        setTimeout(() => {
+                            fill.style.width = width;
+                        }, 100);
+                    });
+                }
+            });
+        }, { threshold: 0.2 });
+        
+        document.querySelectorAll('.platform-card').forEach(card => {
+            observer.observe(card);
+        });
+    </script>
+</body>
+</html>

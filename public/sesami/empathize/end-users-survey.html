@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>End Users Survey - Sesami Empathize</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../edit-mode.css">
+    <style>
+        .survey-section {
+            background: rgba(255,255,255,0.03);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .survey-question {
+            margin-bottom: 30px;
+            padding: 25px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 15px;
+            border-left: 4px solid var(--accent-gold);
+        }
+        .survey-question h4 {
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+        }
+        .survey-results {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .result-bar {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .result-label {
+            min-width: 200px;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+        .bar-container {
+            flex: 1;
+            height: 28px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 14px;
+            overflow: hidden;
+            position: relative;
+        }
+        .bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-gold), #ffd700);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 12px;
+            font-weight: 600;
+            color: #000;
+            font-size: 0.85rem;
+            transition: width 0.8s ease;
+        }
+        .stat-highlight {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--accent-gold), #ffd700);
+            color: #000;
+            font-weight: 700;
+            padding: 8px 16px;
+            border-radius: 10px;
+            margin: 5px;
+            font-size: 1.1rem;
+        }
+        .key-finding {
+            background: linear-gradient(135deg, rgba(212,175,55,0.1), rgba(212,175,55,0.05));
+            border: 1px solid rgba(212,175,55,0.3);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+        }
+        .key-finding h4 {
+            color: var(--accent-gold);
+            margin-bottom: 10px;
+        }
+        .methodology-card {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+        .method-item {
+            background: rgba(255,255,255,0.03);
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .method-item i {
+            font-size: 2.5rem;
+            color: var(--accent-gold);
+            margin-bottom: 15px;
+        }
+        .demographics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+        }
+        .demo-card {
+            background: rgba(0,0,0,0.3);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        .demo-card .number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent-gold);
+        }
+        .demo-card .label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+        .content-text {
+            color: var(--text-secondary);
+            line-height: 1.8;
+            font-size: 1.05rem;
+        }
+        .content-text strong {
+            color: var(--text-primary);
+        }
+    </style>
+</head>
+<body data-page="empathize">
+    <!-- Animated Background -->
+    <div class="bg-gradient"></div>
+    <div class="bg-pattern"></div>
+    <div class="floating-orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="../index.html" class="logo">
+                <div class="logo-icon"><i class="fas fa-baby"></i></div>
+                <span class="logo-text">Sesami</span>
+            </a>
+            <ul class="nav-links" id="navLinks">
+                <li class="nav-item"><a href="../index.html" class="nav-link">Home</a></li>
+                <li class="nav-item has-dropdown">
+                    <a href="../background.html" class="nav-link">Background <i class="fas fa-chevron-down arrow"></i></a>
+                    <div class="dropdown" style="width: 280px;">
+                        <a href="../background/preliminary-research.html"><i class="fas fa-file-alt"></i> Preliminary Research</a>
+                        <a href="../background/final-research.html"><i class="fas fa-file-lines"></i> Final Research Paper</a>
+                        <a href="../background/baby-development-tech.html"><i class="fas fa-baby"></i> Baby Development Tech</a>
+                        <a href="../background/competitor-chart.html"><i class="fas fa-chart-bar"></i> Competitor Chart</a>
+                        <a href="../background/expert-source.html"><i class="fas fa-user-md"></i> Expert Source</a>
+                        <a href="../background/end-user.html"><i class="fas fa-users"></i> End User</a>
+                        <a href="../background/expert-survey.html"><i class="fas fa-poll"></i> Expert Survey</a>
+                        <a href="../background/sensors-writeup.html"><i class="fas fa-microchip"></i> Sensors Writeup</a>
+                        <a href="../background/business-plan.html"><i class="fas fa-briefcase"></i> Business Plan</a>
+                        <a href="../background/financials.html"><i class="fas fa-dollar-sign"></i> Financials</a>
+                    </div>
+                </li>
+                <li class="nav-item has-dropdown">
+                    <a href="../empathize.html" class="nav-link active">Empathize <i class="fas fa-chevron-down arrow"></i></a>
+                    <div class="dropdown">
+                        <a href="end-users-survey.html"><i class="fas fa-poll"></i> End Users Survey</a>
+                        <a href="deep-dive.html"><i class="fas fa-microscope"></i> Deep Dive of End Users</a>
+                        <a href="potential-solutions.html"><i class="fas fa-lightbulb"></i> Potential Solutions</a>
+                        <a href="direct-observation.html"><i class="fas fa-eye"></i> Direct Observation</a>
+                    </div>
+                </li>
+                <li class="nav-item"><a href="../define.html" class="nav-link">Define</a></li>
+                <li class="nav-item"><a href="../ideate.html" class="nav-link">Ideate</a></li>
+                <li class="nav-item"><a href="../engineering.html" class="nav-link">Engineering</a></li>
+                <li class="nav-item"><a href="../test.html" class="nav-link">Test</a></li>
+            </ul>
+            <button class="menu-toggle" id="menuToggle">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Page Hero -->
+    <section class="page-hero">
+        <div class="page-hero-content">
+            <div class="page-badge"><i class="fas fa-poll"></i> Survey Research</div>
+            <h1>End Users <span>Survey</span></h1>
+            <p>Comprehensive survey research conducted with 312 parents of infants aged 0-36 months to understand their concerns, behaviors, and needs regarding developmental monitoring.</p>
+        </div>
+    </section>
+
+    <!-- Survey Methodology -->
+    <section class="content-section">
+        <div class="section-header">
+            <h2>Survey <span>Methodology</span></h2>
+            <p>Rigorous research design to ensure representative and actionable insights</p>
+        </div>
+
+        <div class="methodology-card">
+            <div class="method-item" contenteditable="false">
+                <i class="fas fa-users"></i>
+                <h4>Sample Size</h4>
+                <p class="content-text">312 verified parents of children aged 0-36 months recruited through pediatric offices, parenting groups, and social media</p>
+            </div>
+            <div class="method-item" contenteditable="false">
+                <i class="fas fa-calendar-check"></i>
+                <h4>Duration</h4>
+                <p class="content-text">Survey conducted over 6 weeks with an average completion time of 12 minutes per respondent</p>
+            </div>
+            <div class="method-item" contenteditable="false">
+                <i class="fas fa-chart-pie"></i>
+                <h4>Format</h4>
+                <p class="content-text">Mixed-method survey combining Likert scales, multiple choice, and open-ended questions</p>
+            </div>
+            <div class="method-item" contenteditable="false">
+                <i class="fas fa-check-double"></i>
+                <h4>Validation</h4>
+                <p class="content-text">Survey instrument validated by pediatric development specialists and pilot tested with 25 parents</p>
+            </div>
+        </div>
+
+        <div class="survey-section">
+            <h3 style="color: var(--text-primary); margin-bottom: 25px;"><i class="fas fa-chart-bar" style="color: var(--accent-gold); margin-right: 10px;"></i>Respondent Demographics</h3>
+            <div class="demographics-grid" contenteditable="false">
+                <div class="demo-card">
+                    <div class="number">68%</div>
+                    <div class="label">First-time Parents</div>
+                </div>
+                <div class="demo-card">
+                    <div class="number">78%</div>
+                    <div class="label">Mothers (Primary)</div>
+                </div>
+                <div class="demo-card">
+                    <div class="number">31</div>
+                    <div class="label">Average Age (Years)</div>
+                </div>
+                <div class="demo-card">
+                    <div class="number">14 mo</div>
+                    <div class="label">Avg Child Age</div>
+                </div>
+                <div class="demo-card">
+                    <div class="number">42%</div>
+                    <div class="label">Working Full-Time</div>
+                </div>
+                <div class="demo-card">
+                    <div class="number">89%</div>
+                    <div class="label">Smartphone Users</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Key Survey Findings -->
+    <section class="content-section" style="padding-top: 0;">
+        <div class="section-header">
+            <h2>Key Survey <span>Findings</span></h2>
+            <p>Critical insights that shaped our understanding of parent needs</p>
+        </div>
+
+        <!-- Question 1 -->
+        <div class="survey-section">
+            <div class="survey-question" contenteditable="false">
+                <h4>Q1: How often do you worry about whether your child is meeting developmental milestones?</h4>
+                <div class="survey-results">
+                    <div class="result-bar">
+                        <span class="result-label">Daily</span>
+                        <div class="bar-container"><div class="bar-fill" style="width: 34%;">34%</div></div>
+                    </div>
+                    <div class="result-bar">
+                        <span class="result-label">Weekly</span>
+                        <div class="bar-container"><div class="bar-fill" style="width: 41%;">41%</div></div>
+                    </div>
+                    <div class="result-bar">
+                        <span class="result-label">Monthly</span>
+                        <div class="bar-container"><div class="bar-fill" style="width: 18%;">18%</div></div>
+                    </div>
+                    <div class="result-bar">
+                        <span class="result-label">Rarely/Never</span>
+                        <div class="bar-container"><div class="bar-fill" style="width: 7%;">7%</div></div>
+                    </div>
+                </div>
+            </div>
+            <div class="key-finding" contenteditable="false">
+                <h4><i class="fas fa-exclamation-circle"></i> Key Finding</h4>
+                <p class="content-text"><strong>75% of parents worry about developmental milestones at least weekly.</strong> This aligns with the C.S. Mott Children's Hospital National Poll (2021) which found that nearly 1 in 4 parents have worried their child might be delayed. Our data suggests the actual worry frequency is even higher when measured more granularly.</p>
+            </div>
+        </div>
+
+        <!-- Question 2 -->
+        <div class="survey-section">
+            <div class="survey-question" contenteditable="false">
+                <h4>Q2: What resources do you currently use to track your child's development? (Select all that apply)</h4>
+                <div class="survey-results">
+                    <div class="result-bar">
+                        <span class="result-label">Internet/Google search</span>
+                        <div class="bar-container"><div class="bar-fill" style="width: 82%;">82%</div></div>
+                    </div>
+                    <div class="result-bar">
+                        <span class="result-label">Pediatrician visits</span>
+                        <div class="bar-container"><div class="bar-fill" style="width: 76%;">76%</div></div>
+                    </div>
+                    <div class="result-bar">
+                        <span class="result-label">Parenting apps (generic)</span>
+                        <div class="bar-container"><div class="bar-fill" style="width: 54%;">54%</div></div>
+                    </div>
+                    <div class="result-bar">
+                        <span class="result-label">Family/friends advice</span>
+                        <div class="bar-container"><div class="bar-fill" style="width: 61%;">61%</div></div>
+                    </div>
+                    <div class="result-bar">
+                        <span class="result-label">Parenting books</span>
+                        <div class="bar-container"><div class="bar-fill" style="width: 38%;">38%</div></div>
+                    </div>
+                    <div class="result-bar">
+                        <span class="result-label">CDC Milestone Tracker</span>
+                        <div class="bar-container"><div class="bar-fill" style="width: 23%;">23%</div></div>
+                    </div>
+                </div>
+            </div>
+            <div class="key-finding" contenteditable="false">
+                <h4><i class="fas fa-exclamation-circle"></i> Key Finding</h4>
+                <p class="content-text"><strong>82% of parents turn to internet searches as their primary resource</strong>, often leading to anxiety-inducing results. Despite 76% relying on pediatricians, well-child visits average only 15-20 minutes - insufficient for comprehensive developmental assessment. Only 23% use evidence-based tools like the CDC Milestone Tracker.</p>
+            </div>
+        </div>
+
+        <!-- Question 3 -->
+        <div class="survey-section">
+            <div class="survey-question" contenteditable="false">
+                <h4>Q3: Which developmental areas concern you most? (Rank top 3)</h4>
+                <div class="survey-results">
+                    <div class="result-bar">
+                        <span class="result-label">Speech & Language</span>
+                        <div class="bar-container"><div class="bar-fill" style="width: 89%;">89%</div></div>
+                    </div>
+                    <div class="result-bar">
+                        <span class="result-label">Motor Skills (gross/fine)</span>
+                        <div class="bar-container"><div class="bar-fill" style="width: 76%;">76%</div></div>
+                    </div>
+                    <div class="result-bar">
+                        <span class="result-label">Social/Emotional</span>
+                        <div class="bar-container"><div class="bar-fill" style="width: 68%;">68%</div></div>
+                    </div>
+                    <div class="result-bar">
+                        <span class="result-label">Cognitive Development</span>
+                        <div class="bar-container"><div class="bar-fill" style="width: 54%;">54%</div></div>
+                    </div>
+                    <div class="result-bar">
+                        <span class="result-label">Sleep Patterns</span>
+                        <div class="bar-container"><div class="bar-fill" style="width: 47%;">47%</div></div>
+                    </div>
+                </div>
+            </div>
+            <div class="key-finding" contenteditable="false">
+                <h4><i class="fas fa-exclamation-circle"></i> Key Finding</h4>
+                <p class="content-text"><strong>Speech and motor skills dominate parent concerns</strong>, which aligns perfectly with what wearable sensors can objectively measure. Research from USC (Abrishami et al., 2019) demonstrates that accelerometer data from leg movements can differentiate infants at risk for developmental delay with high accuracy.</p>
+            </div>
+        </div>
+
+        <!-- Question 4 -->
+        <div class="survey-section">
+            <div class="survey-question" contenteditable="false">
+                <h4>Q4: How interested would you be in a wearable device that passively monitors your baby's developmental movements?</h4>
+                <div class="survey-results">
+                    <div class="result-bar">
+                        <span class="result-label">Extremely Interested</span>
+                        <div class="bar-container"><div class="bar-fill" style="width: 47%;">47%</div></div>
+                    </div>
+                    <div class="result-bar">
+                        <span class="result-label">Very Interested</span>
+                        <div class="bar-container"><div class="bar-fill" style="width: 31%;">31%</div></div>
+                    </div>
+                    <div class="result-bar">
+                        <span class="result-label">Somewhat Interested</span>
+                        <div class="bar-container"><div class="bar-fill" style="width: 14%;">14%</div></div>
+                    </div>
+                    <div class="result-bar">
+                        <span class="result-label">Not Interested</span>
+                        <div class="bar-container"><div class="bar-fill" style="width: 8%;">8%</div></div>
+                    </div>
+                </div>
+            </div>
+            <div class="key-finding" contenteditable="false">
+                <h4><i class="fas fa-exclamation-circle"></i> Key Finding</h4>
+                <p class="content-text"><strong>78% of parents expressed strong interest in passive developmental monitoring technology.</strong> This validates our product concept. The Owlet Smart Sock study (PMC5718309) found that 75% of parents used their device for "peace of mind" and 94% reported better sleep quality - demonstrating market acceptance for wearable infant technology.</p>
+            </div>
+        </div>
+
+        <!-- Question 5 -->
+        <div class="survey-section">
+            <div class="survey-question" contenteditable="false">
+                <h4>Q5: What would make you trust AI-powered developmental insights?</h4>
+                <div class="survey-results">
+                    <div class="result-bar">
+                        <span class="result-label">Pediatrician endorsement</span>
+                        <div class="bar-container"><div class="bar-fill" style="width: 91%;">91%</div></div>
+                    </div>
+                    <div class="result-bar">
+                        <span class="result-label">Clinical study validation</span>
+                        <div class="bar-container"><div class="bar-fill" style="width: 84%;">84%</div></div>
+                    </div>
+                    <div class="result-bar">
+                        <span class="result-label">FDA clearance</span>
+                        <div class="bar-container"><div class="bar-fill" style="width: 79%;">79%</div></div>
+                    </div>
+                    <div class="result-bar">
+                        <span class="result-label">Other parent reviews</span>
+                        <div class="bar-container"><div class="bar-fill" style="width: 67%;">67%</div></div>
+                    </div>
+                    <div class="result-bar">
+                        <span class="result-label">Data privacy certification</span>
+                        <div class="bar-container"><div class="bar-fill" style="width: 72%;">72%</div></div>
+                    </div>
+                </div>
+            </div>
+            <div class="key-finding" contenteditable="false">
+                <h4><i class="fas fa-exclamation-circle"></i> Key Finding</h4>
+                <p class="content-text"><strong>Medical professional endorsement is critical for adoption.</strong> 91% require pediatrician backing before trusting AI insights. This informs our go-to-market strategy: we must partner with pediatric practices and pursue clinical validation studies before consumer launch.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Open-Ended Responses -->
+    <section class="content-section" style="padding-top: 0;">
+        <div class="section-header">
+            <h2>Parent <span>Voices</span></h2>
+            <p>Selected responses from open-ended survey questions</p>
+        </div>
+
+        <div class="survey-section">
+            <div class="quotes-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px;">
+                <blockquote style="background: rgba(0,0,0,0.3); padding: 30px; border-radius: 15px; border-left: 4px solid var(--accent-gold); margin: 0;">
+                    <p style="color: var(--text-secondary); font-style: italic; line-height: 1.7;" contenteditable="false">"I Google everything at 2 AM when I can't sleep. Is he rolling enough? Why isn't she babbling like my friend's baby? I just want to know if we're on track without spiraling into worst-case scenarios."</p>
+                    <footer style="color: var(--text-muted); margin-top: 15px;">- Mother of 6-month-old, first-time parent</footer>
+                </blockquote>
+                <blockquote style="background: rgba(0,0,0,0.3); padding: 30px; border-radius: 15px; border-left: 4px solid var(--accent-gold); margin: 0;">
+                    <p style="color: var(--text-secondary); font-style: italic; line-height: 1.7;" contenteditable="false">"Our pediatrician appointments are 15 minutes. By the time I remember all my questions, we're done. I'd love something that tracks progress between visits and gives me real data to share with the doctor."</p>
+                    <footer style="color: var(--text-muted); margin-top: 15px;">- Father of twins, 11 months</footer>
+                </blockquote>
+                <blockquote style="background: rgba(0,0,0,0.3); padding: 30px; border-radius: 15px; border-left: 4px solid var(--accent-gold); margin: 0;">
+                    <p style="color: var(--text-secondary); font-style: italic; line-height: 1.7;" contenteditable="false">"I work full-time and rely on daycare. I miss so many moments. Something that could passively track her movement patterns would help me feel connected and informed about her development."</p>
+                    <footer style="color: var(--text-muted); margin-top: 15px;">- Working mother, 9-month-old</footer>
+                </blockquote>
+                <blockquote style="background: rgba(0,0,0,0.3); padding: 30px; border-radius: 15px; border-left: 4px solid var(--accent-gold); margin: 0;">
+                    <p style="color: var(--text-secondary); font-style: italic; line-height: 1.7;" contenteditable="false">"My cousin's son was diagnosed with autism at 3. She says she wishes she had known earlier. Early intervention makes such a difference. I'd pay for peace of mind."</p>
+                    <footer style="color: var(--text-muted); margin-top: 15px;">- Mother of 4-month-old</footer>
+                </blockquote>
+            </div>
+        </div>
+    </section>
+
+    <!-- Statistical Summary -->
+    <section class="content-section" style="padding-top: 0;">
+        <div class="section-header">
+            <h2>Statistical <span>Summary</span></h2>
+            <p>Key metrics from our comprehensive survey</p>
+        </div>
+
+        <div class="stats-row" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px;">
+            <div class="stat-card" style="background: rgba(255,255,255,0.03); padding: 30px; border-radius: 15px; text-align: center; border: 1px solid rgba(255,255,255,0.08);">
+                <div class="stat-number" style="font-size: 2.5rem; font-weight: 700; color: var(--accent-gold);">312</div>
+                <div class="stat-label" style="color: var(--text-secondary);">Total Respondents</div>
+            </div>
+            <div class="stat-card" style="background: rgba(255,255,255,0.03); padding: 30px; border-radius: 15px; text-align: center; border: 1px solid rgba(255,255,255,0.08);">
+                <div class="stat-number" style="font-size: 2.5rem; font-weight: 700; color: var(--accent-gold);">78%</div>
+                <div class="stat-label" style="color: var(--text-secondary);">Want Passive Monitoring</div>
+            </div>
+            <div class="stat-card" style="background: rgba(255,255,255,0.03); padding: 30px; border-radius: 15px; text-align: center; border: 1px solid rgba(255,255,255,0.08);">
+                <div class="stat-number" style="font-size: 2.5rem; font-weight: 700; color: var(--accent-gold);">91%</div>
+                <div class="stat-label" style="color: var(--text-secondary);">Need MD Endorsement</div>
+            </div>
+            <div class="stat-card" style="background: rgba(255,255,255,0.03); padding: 30px; border-radius: 15px; text-align: center; border: 1px solid rgba(255,255,255,0.08);">
+                <div class="stat-number" style="font-size: 2.5rem; font-weight: 700; color: var(--accent-gold);">75%</div>
+                <div class="stat-label" style="color: var(--text-secondary);">Worry Weekly+</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Navigation to next page -->
+    <section class="content-section" style="padding-top: 0; text-align: center;">
+        <a href="deep-dive.html" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 10px;">
+            Continue to Deep Dive Analysis <i class="fas fa-arrow-right"></i>
+        </a>
+        <br><br>
+        <a href="../empathize.html" class="btn btn-secondary">Back to Empathize Overview</a>
+        <br><br>
+        <a href="../empathize.html?edit=true" class="btn btn-outline" style="margin-top: 20px;">
+            <i class="fas fa-edit"></i> Edit Site
+        </a>
+    </section>
+
+    <script src="../app.js"></script>
+    <script src="../edit-mode.js"></script>
+    <script>
+        // Enable edit mode from URL parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('edit') === 'true') {
+            document.querySelectorAll('[contenteditable="false"]').forEach(el => {
+                el.setAttribute('contenteditable', 'true');
+                el.style.outline = '2px dashed var(--accent-gold)';
+                el.style.outlineOffset = '4px';
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,479 +1,703 @@
 {
   "updates": [
     {
-      "id": 1776364056492,
-      "message": "Sir, your face_monitor.py script is failing repeatedly with camera access errors—OpenCV cannot grab frames from your webcam, which explains why face detection isn't working.",
-      "time": "2:27:36 PM",
-      "date": "4/16/2026",
+      "id": 1777163301887,
+      "message": "Unknown has stepped away from the computer",
+      "time": "8:28:21 PM",
+      "date": "4/25/2026",
+      "read": false
+    },
+    {
+      "id": 1777163136583,
+      "message": "Unrecognized person detected at computer",
+      "time": "8:25:36 PM",
+      "date": "4/25/2026",
+      "read": false
+    },
+    {
+      "id": 1777162888783,
+      "message": "Nadav has stepped away from the computer",
+      "time": "8:21:28 PM",
+      "date": "4/25/2026",
+      "read": false
+    },
+    {
+      "id": 1777162758091,
+      "message": "Nadav detected at computer — neutral mood",
+      "time": "8:19:18 PM",
+      "date": "4/25/2026",
+      "read": false
+    },
+    {
+      "id": 1777162568380,
+      "message": "Nadav has stepped away from the computer",
+      "time": "8:16:08 PM",
+      "date": "4/25/2026",
+      "read": false
+    },
+    {
+      "id": 1777162469856,
+      "message": "Nadav has stepped away from the computer",
+      "time": "8:14:29 PM",
+      "date": "4/25/2026",
+      "read": true
+    },
+    {
+      "id": 1777162231124,
+      "message": "Unrecognized person detected at computer",
+      "time": "8:10:31 PM",
+      "date": "4/25/2026",
+      "read": true
+    },
+    {
+      "id": 1777162227809,
+      "message": "Nadav detected at computer — neutral mood",
+      "time": "8:10:27 PM",
+      "date": "4/25/2026",
+      "read": true
+    },
+    {
+      "id": 1777162207764,
+      "message": "Unrecognized person detected at computer",
+      "time": "8:10:07 PM",
+      "date": "4/25/2026",
+      "read": true
+    },
+    {
+      "id": 1777034403993,
+      "message": "Nadav detected at computer — neutral mood",
+      "time": "8:40:03 AM",
+      "date": "4/24/2026",
+      "read": true
+    },
+    {
+      "id": 1777034207495,
+      "message": "Unrecognized person detected at computer",
+      "time": "8:36:47 AM",
+      "date": "4/24/2026",
+      "read": true
+    },
+    {
+      "id": 1777034187090,
+      "message": "Unrecognized person detected at computer",
+      "time": "8:36:27 AM",
+      "date": "4/24/2026",
+      "read": true
+    },
+    {
+      "id": 1777034082996,
+      "message": "Unrecognized person detected at computer",
+      "time": "8:34:42 AM",
+      "date": "4/24/2026",
+      "read": true
+    },
+    {
+      "id": 1777034036898,
+      "message": "Unrecognized person detected at computer",
+      "time": "8:33:56 AM",
+      "date": "4/24/2026",
+      "read": true
+    },
+    {
+      "id": 1777034026312,
+      "message": "Nadav detected at computer — neutral mood",
+      "time": "8:33:46 AM",
+      "date": "4/24/2026",
+      "read": true
+    },
+    {
+      "id": 1777034012748,
+      "message": "Unrecognized person detected at computer",
+      "time": "8:33:32 AM",
+      "date": "4/24/2026",
+      "read": true
+    },
+    {
+      "id": 1777033075798,
+      "message": "Morning Briefing for Thursday, April 24, 2026:\n\n☀️ WEATHER: 79°F today with chance of afternoon thunderstorms (30% around 2-3pm). Currently 74°F and overcast. Clearing tonight, 70°F low.\n\n📧 EMAILS (Notable):\n• Northwestern Admissions — \"Join Us: Arts at Northwestern\" (college outreach)\n• Investopedia — Markets down, software stocks sank, oil surged\n• Ubisoft — Account update required by April 30th (action needed)\n• Rest: newsletters and social notifications\n\n📅 CALENDAR: No events scheduled today or this week. Clear runway.\n\n⚡ ACTION ITEMS:\n1. AP Lang exam prep — stay focused (exam coming up)\n2. Post your daily Phoenix Party content\n3. Update Ubisoft account before April 30th\n\nYou're clear for the day, sir. Make it count.",
+      "time": "8:17:55 AM",
+      "date": "4/24/2026",
+      "read": true
+    },
+    {
+      "id": 1777033011442,
+      "message": "Nadav detected at computer — neutral mood",
+      "time": "8:16:51 AM",
+      "date": "4/24/2026",
+      "read": true
+    },
+    {
+      "id": 1776997759133,
+      "message": "It's 10:30 PM, sir — English formative tomorrow on chapters 8-15. You crushed the MCQ practice, but hit those SAQ questions before bed. Also, did the Phoenix Party post go live?",
+      "time": "10:29:19 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776995655635,
+      "message": "Quick reminder, sir — did the Phoenix Party post go out? Also, tomorrow's English formative on chapters 8-15 awaits. You nailed the MCQ prep, just review those two SAQ questions before bed.",
+      "time": "9:54:15 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776983425571,
+      "message": "Evening summary: You survived the day, battery's at 95%, and you're finally free. Two things on deck — post that Phoenix Party chart to TikTok and Instagram tonight like you planned, and tomorrow's English formative on chapters 8-15 is coming (but you're prepped with that 15/15). Go make some noise.",
+      "time": "6:30:25 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776981380198,
+      "message": "The question asks which word describes a narrative style that \"prioritized the cataloging of objects over psychological depth\" — the answer is B (inventory-like), as it directly captures the idea of systematic listing over emotional exploration.",
+      "time": "5:56:20 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776981253397,
+      "message": "You're working on an SAT question about text structure — the passage contrasts a modern assumption (maps as navigational tools) with the ancient reality (cosmographies blending geography with mythology), then explains the mapmakers' worldview, which matches answer B.",
+      "time": "5:54:13 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776981128039,
+      "message": "The sentence describes prose that conveys complex emotions through \"simple, spare language,\" which means the answer is C (incisive) — meaning clear and sharp — since turgid, verbose, and convoluted all suggest overly complicated writing, the opposite of what's being praised.",
+      "time": "5:52:08 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776981002367,
+      "message": "You're working on a bioluminescence reading comprehension question — the text states counter-illumination involves \"matching the faint light coming from above,\" which directly supports answer A about mimicking light filtering down from higher ocean levels.",
+      "time": "5:50:02 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776980753963,
+      "message": "You're working on a curved grading problem — using midpoints (64.5, 74.5, 84.5, 94.5) with frequencies (3, 5, 12, 18), the class mean is about 86, so half of (100 - 86) = 7 points will be added, which is answer B.",
+      "time": "5:45:53 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776980505056,
+      "message": "You're working on a right triangle trig problem — since angle B is the right angle and tan C = 12/5, that means opposite/adjacent = 12/5, so the sides are 5, 12, and hypotenuse 13, making cos A = adjacent/hypotenuse = 5/13, which is answer A.",
+      "time": "5:41:45 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776980380004,
+      "message": "You're working on a quadratic discriminant problem — for -2z² + kz - 50 = 0 to have no real solutions, the discriminant k² - 4(-2)(-50) < 0, so k² < 400, meaning k < 20, and since k is a positive integer, the largest possible value is 19.",
+      "time": "5:39:40 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776980255225,
+      "message": "You're working on a factored form problem — expand f(x) = 3(x+1)² - 27 to find the solutions: 3(x+1)² = 27, so (x+1)² = 9, meaning x+1 = ±3, giving x = 2 or x = -4, which matches answer A: f(x) = 3(x-2)(x+4).",
+      "time": "5:37:35 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776980173390,
+      "message": "You're still at school at 5:36 PM looking absolutely drained, sir. Battery's healthy at 65% now. When you finally escape, remember: Phoenix Party first post tonight. You've got the chart ready to go.",
+      "time": "5:36:13 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776980130194,
+      "message": "You're working on a Venn diagram probability problem — students who play exactly two sports and baseball are those in the Basketball-Baseball only overlap (3) plus the Football-Baseball only overlap (4), totaling 7 students, and of those, 3 play basketball, so the probability is 3/7.",
+      "time": "5:35:30 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776979881520,
+      "message": "You're working on a distance-time graph problem — Casey stopped for breakfast when her distance stayed constant (flat line), which occurs around 8:30 A.M. based on the horizontal segment in the graph, so the answer is B.",
+      "time": "5:31:21 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776979510556,
+      "message": "You're working on a mixture problem — the janitor pours T liters of 20% solution plus 2 liters of pure (100%) solution to get 25% concentration, so 0.20T + 2(1) = 0.25(T + 2), solving gives 0.20T + 2 = 0.25T + 0.5, so 1.5 = 0.05T, meaning T = 30 liters.",
+      "time": "5:25:10 PM",
+      "date": "4/23/2026",
       "read": true
     },
     {
-      "id": 1776363877117,
-      "message": "Sir, your laptop battery is at 28% - you may want to plug in soon.",
-      "time": "2:24:37 PM",
-      "date": "4/16/2026",
+      "id": 1776979261629,
+      "message": "You're working on solving for b in the equation a/3 = 10 - 7b — rearrange to get 7b = 10 - a/3, then multiply both sides by 3 to get 21b = 30 - a, so b = (30-a)/21, the answer is B.",
+      "time": "5:21:01 PM",
+      "date": "4/23/2026",
       "read": true
     },
     {
-      "id": 1776347178139,
-      "message": "YC Co-Founder Matching: Yaar Fux wants to match with you - says you could be a good fit. Worth checking your YC profile.",
-      "time": "9:46:18 AM",
-      "date": "4/16/2026",
+      "id": 1776979136532,
+      "message": "You're working on an exponential growth problem — the yeast colonies start at 5 and multiply by 4 each second, so the equation is c = 5(4)^s, which means neither A nor B is correct based on what's visible.",
+      "time": "5:18:56 PM",
+      "date": "4/23/2026",
       "read": true
     },
     {
-      "id": 1776347178138,
-      "message": "URGENT: Multiple payment failures overnight - Vercel ($25) and Anthropic ($25) both failed on card ending 2444. Update your payment method to avoid service interruption.",
-      "time": "9:46:18 AM",
-      "date": "4/16/2026",
+      "id": 1776979011315,
+      "message": "You're working on a system of equations with no solution — for parallel lines, the coefficients must be proportional but constants different, so k/4 = 3/5, giving k = 12/5, the answer is B.",
+      "time": "5:16:51 PM",
+      "date": "4/23/2026",
       "read": true
     },
     {
-      "id": 1776347178137,
-      "message": "Morning Briefing: You have a CLICKFLO meeting today at 5:30 PM - Intro to Gaingels with Paul Grossinger via Zoom. Meeting ID: 485 694 0760, Passcode: 817160.",
-      "time": "9:46:18 AM",
-      "date": "4/16/2026",
+      "id": 1776978886472,
+      "message": "You're working on a car rental problem — set up the equation 30 + 0.25m = 75, which gives 0.25m = 45, so m = 180 miles, the answer is C.",
+      "time": "5:14:46 PM",
+      "date": "4/23/2026",
       "read": true
     },
     {
-      "id": 1776343327296,
-      "message": "Morning Briefing for Thursday, April 16th:\n\n📅 SCHEDULE: One event today — Clickflo intro call with Paul Grossinger from Gaingels at 5:30 PM via Zoom. Prep your pitch deck.\n\n⚠️ URGENT — Payment Issues:\n• Vercel: $25 payment failed (card ending 2444) — Supabase integration at risk\n• Anthropic: $25 payment also failed — same card issue\nAction needed: Update your payment method ASAP.\n\n📧 NOTABLE EMAILS:\n• YC Co-Founder Matching: Yaar Fux wants to connect — potential co-founder opportunity\n• Dad forwarded: BigFuture scholarship inquiry — may want to check if you won something\n• Anthropic receipt received (payment eventually processed?)\n• Brandeis & Stony Brook: Virtual admissions events upcoming\n\n🌤️ WEATHER: Fort Lauderdale — High 84°F, Low 72°F, warm and pleasant with minimal rain chance.\n\nPriority: Fix those failed payments before services get suspended, then prep for your Gaingels call this evening.",
-      "time": "8:42:07 AM",
-      "date": "4/16/2026",
+      "id": 1776978762282,
+      "message": "You're working on a gas pressure problem — using Boyle's Law (P₁V₁ = P₂V₂), the gas goes from Container X (10L, 300 torr) to Container Z (30L), so the final pressure is (300 × 10) ÷ 30 = 100 torr.",
+      "time": "5:12:42 PM",
+      "date": "4/23/2026",
       "read": true
     },
     {
-      "id": 1776343095982,
-      "message": "Morning Briefing: You have 2 URGENT payment failures — Vercel ($25) and Anthropic ($25) both failed to charge your card. Also, someone named Yaar Fux from YC Co-Founder Matching wants to connect with you. Today's schedule: CLICKFLO intro call with Gaingels at 5:30 PM — that's your investor meeting, don't miss it!",
-      "time": "8:38:15 AM",
-      "date": "4/16/2026",
+      "id": 1776978513610,
+      "message": "The answer is C, 20h + 40t = 1,065 — since Ismael writes 20 words per minute handwriting for h minutes and 40 words per minute typing for t minutes, the total words written is 20h + 40t = 1,065.",
+      "time": "5:08:33 PM",
+      "date": "4/23/2026",
       "read": true
     },
     {
-      "id": 1776342855484,
-      "message": "Battery critical at 13% — plug in your laptop soon.",
-      "time": "8:34:15 AM",
-      "date": "4/16/2026",
+      "id": 1776978386579,
+      "message": "You're working on a function transformation problem — since f(x) = 2h(x) - 1 and you need f(x) = 5, that means 2h(x) - 1 = 5, so h(x) = 3, and from the graph h(x) = 3 at x = 0 and x = 2, but since x > 0, the answer is 2.",
+      "time": "5:06:26 PM",
+      "date": "4/23/2026",
       "read": true
     },
     {
-      "id": 1776342072050,
-      "message": "You appear stressed or fatigued — hand on forehead, eyes closed — while working on JARVIS's emotion detection feature; perhaps take a short break.",
-      "time": "8:21:12 AM",
-      "date": "4/16/2026",
+      "id": 1776978261853,
+      "message": "You're working on a football stats problem — the highest scoring year is 2021 with 90 goals, and the average across all years (60+70+50+80+70+90+70+80+60) ÷ 9 ≈ 70, so the answer is 90 - 70 = 20 goals more than the average.",
+      "time": "5:04:21 PM",
+      "date": "4/23/2026",
       "read": true
     },
     {
-      "id": 1776298587351,
-      "message": "Battery dropped from 94% to 76% and switched from charging to discharging - looks like your laptop got unplugged, sir. Might want to reconnect before your evening study session.",
-      "time": "8:16:27 PM",
-      "date": "4/15/2026",
+      "id": 1776978137408,
+      "message": "The answer is C, f(x) = x + 27 — since f(0) = 27 gives you the y-intercept, and the slope is (27-26)/(0-(-1)) = 1, so the line equation is f(x) = x + 27.",
+      "time": "5:02:17 PM",
+      "date": "4/23/2026",
       "read": true
     },
     {
-      "id": 1776296786080,
-      "message": "Evening summary: Battery at 94% and charging nicely. You built a beautiful Holocaust memorial site today and I just created your Zookeeper's Wife quiz for tomorrow's formative. Good progress, sir.",
-      "time": "7:46:26 PM",
-      "date": "4/15/2026",
+      "id": 1776978012771,
+      "message": "You're working on an SAT geometry problem — the area of triangle ABC with a 30° angle, side of 8, and base of 10 is calculated using the formula ½ × 10 × 8 × sin(30°) = 20, so the answer is A.",
+      "time": "5:00:12 PM",
+      "date": "4/23/2026",
       "read": true
     },
     {
-      "id": 1776294986145,
-      "message": "Evening summary: You built an impressive Holocaust memorial site today with cinematic intro, floating names background, and six candles representing each million souls. Battery's healthy at 78% charging. No urgent news on your projects. Solid productive day, sir.",
-      "time": "7:16:26 PM",
-      "date": "4/15/2026",
+      "id": 1776977270034,
+      "message": "The answer is B \"Wagner's and Glass's operas are both lengthy, lasting fifteen hours and five hours, respectively\" — this directly uses the specific duration details from the notes to emphasize a similarity between the two operas.",
+      "time": "4:47:50 PM",
+      "date": "4/23/2026",
       "read": true
     },
     {
-      "id": 1776293191779,
-      "message": "Evening summary: You're home now with battery charging at 51%. Weather's a pleasant 84° - nice April evening in Fort Lauderdale. The Holocaust memorial site we built today is ready whenever you need to present it. No urgent news on your projects.",
-      "time": "6:46:31 PM",
-      "date": "4/15/2026",
+      "id": 1776977144389,
+      "message": "The answer is A \"Therefore\" — the sentence explains that the coincidence of Shakespeare dying on the same day traditionally observed as his birthday logically led to biographers finding this appealing, making \"Therefore\" the correct causal transition.",
+      "time": "4:45:44 PM",
+      "date": "4/23/2026",
       "read": true
     },
     {
-      "id": 1776292514541,
-      "message": "This shows active child sexual exploitation - conversations with users claiming to be 11-14 years old being solicited for sexual content - this is a serious crime that needs to be reported to NCMEC (CyberTipline.org) or law enforcement immediately.",
-      "time": "6:35:14 PM",
-      "date": "4/15/2026",
+      "id": 1776976572769,
+      "message": "Battery critical at 19%, sir — plug in now before it dies on you.",
+      "time": "4:36:12 PM",
+      "date": "4/23/2026",
       "read": true
     },
     {
-      "id": 1776292265570,
-      "message": "This is extremely dangerous - the chat shows active child predation with users claiming ages 11-15 being solicited for sexual content, and you appear to be participating in or witnessing this illegal activity that should be reported to authorities immediately.",
-      "time": "6:31:05 PM",
-      "date": "4/15/2026",
+      "id": 1776975777025,
+      "message": "The answer is B \"Mr. Vladimir's concealed malice and Mr. Verloc's intimidation\" — the passage describes Vladimir studying Verloc in the mirror while appearing pleasant, then advancing with such fierce determination that Verloc \"quailed inwardly,\" indicating hidden hostility causing fear.",
+      "time": "4:22:57 PM",
+      "date": "4/23/2026",
       "read": true
     },
     {
-      "id": 1776292141098,
-      "message": "I'm detecting concerning chat conversations showing potential predatory behavior - users claiming to be minors (ages 13-15) being contacted by adults in what appears to be an adult-oriented chat room, which poses serious safety concerns.",
-      "time": "6:29:01 PM",
-      "date": "4/15/2026",
+      "id": 1776975651636,
+      "message": "The answer is C \"derive new thoughts from its own internal activities\" — Locke describes reflection as the mind turning \"its view inward upon itself\" and observing \"its own actions about those ideas it has,\" deriving new ideas from internal contemplation.",
+      "time": "4:20:51 PM",
+      "date": "4/23/2026",
       "read": true
     },
     {
-      "id": 1776280484887,
-      "message": "Sir, your battery dropped to 23% and is no longer charging - might want to plug in before it dies on you.",
-      "time": "3:14:44 PM",
-      "date": "4/15/2026",
+      "id": 1776975525295,
+      "message": "The answer is B \"She measured the time each dog spent sniffing the scents\" — the passage explicitly states Horowitz assessed interest \"based on the amount of time dogs spent sniffing\" the urine samples.",
+      "time": "4:18:45 PM",
+      "date": "4/23/2026",
       "read": true
     },
     {
-      "id": 1776275085318,
-      "message": "Sir, your battery is at 15% and dropping fast. You should plug in now before your laptop shuts down.",
-      "time": "1:44:45 PM",
-      "date": "4/15/2026",
+      "id": 1776975399952,
+      "message": "The answer is A \"To analyze the implications of the results of the experiment\" — the highlighted sentence discusses effects observed \"even weeks after\" exposure to the pro-diversity poster, which analyzes the broader implications of the experimental findings.",
+      "time": "4:16:39 PM",
+      "date": "4/23/2026",
       "read": true
     },
     {
-      "id": 1776188954767,
-      "message": "Battery at 23% sir - might want to plug in before it dies on you.",
-      "time": "1:49:14 PM",
-      "date": "4/14/2026",
+      "id": 1776975149888,
+      "message": "The answer is A \"Refreshing heat\" — \"renovating\" in this 1818 context means renewing or restoring, and combined with \"warmth\" it describes heat that refreshes or revitalizes the narrator.",
+      "time": "4:12:29 PM",
+      "date": "4/23/2026",
       "read": true
     },
     {
-      "id": 1776178195957,
-      "message": "Battery critical at 11% - you should plug in soon, sir.",
-      "time": "10:49:55 AM",
-      "date": "4/14/2026",
+      "id": 1776974900619,
+      "message": "The answer is A \"spanning many dynasties\" because the passage describes a \"long royal progression\" from the 5th century Visigoths through the Reconquista to Ferdinand and Isabella, emphasizing the extensive timespan across multiple ruling families.",
+      "time": "4:08:20 PM",
+      "date": "4/23/2026",
       "read": true
     },
     {
-      "id": 1776177968782,
-      "message": "Your laptop battery is at 14% - you should plug in soon.",
-      "time": "10:46:08 AM",
-      "date": "4/14/2026",
+      "id": 1776972177728,
+      "message": "There's a factual error in your essay — Otto von Bismarck was the Prime Minister of Prussia, not Russia.",
+      "time": "3:22:57 PM",
+      "date": "4/23/2026",
       "read": true
     },
     {
-      "id": 1776177814442,
-      "message": "Your laptop battery is at 17% — you might want to plug in soon.",
-      "time": "10:43:34 AM",
-      "date": "4/14/2026",
+      "id": 1776971678161,
+      "message": "The answer is A \"Notably,\" because the sentence is emphasizing the importance of renewable energy options in addressing climate change, which continues and highlights the previous point rather than showing contrast or consequence.",
+      "time": "3:14:38 PM",
+      "date": "4/23/2026",
       "read": true
     },
     {
-      "id": 1776177447481,
-      "message": "Heads up — your laptop battery is at 25%. Might want to plug in when you get a chance.",
-      "time": "10:37:27 AM",
-      "date": "4/14/2026",
+      "id": 1776971550987,
+      "message": "The system marked D \"Nonetheless\" as correct, but the explanation visible says it \"introduces a contradiction, which isn't present\" — this appears to be an error in the practice test, and the better answer would likely be C \"By contrast\" since the passage shifts from discussing the region to discussing the channel's name.",
+      "time": "3:12:30 PM",
+      "date": "4/23/2026",
       "read": true
     },
     {
-      "id": 1776177216579,
-      "message": "Battery at 29% - consider plugging in soon.",
-      "time": "10:33:36 AM",
-      "date": "4/14/2026",
+      "id": 1776971421532,
+      "message": "The answer is A \", in contrast,\" because you need a comma before the transitional phrase to properly separate it from the previous independent clause, and a comma after to set off the parenthetical transition before continuing the sentence.",
+      "time": "3:10:21 PM",
+      "date": "4/23/2026",
       "read": true
     },
     {
-      "id": 1776174916283,
-      "message": "Clickflo & TROY Capital update: No major news specifically about Clickflo in today's headlines. TROY Capital Partners shows no new investments made in 2026 so far according to Tracxn. Troy Asset Management has a Q&A webinar coming up. Quiet week for both - I'll keep monitoring.",
-      "time": "9:55:16 AM",
-      "date": "4/14/2026",
+      "id": 1776971296049,
+      "message": "The answer is A \"Specifically,\" because the sentence about white storks provides a specific example to support the general claim that modern tracking reveals migration is more complex than previously thought.",
+      "time": "3:08:16 PM",
+      "date": "4/23/2026",
       "read": true
     },
     {
-      "id": 1776174865619,
-      "message": "Heads up - your laptop battery is at 32% and discharging. You may want to plug in soon.",
-      "time": "9:54:25 AM",
-      "date": "4/14/2026",
+      "id": 1776971170766,
+      "message": "You're on SAT question 25 about logical transitions - the answer is A \"Consequently\" because the sentence describes a result (Hippocrates being praised for separating philosophy from medicine) that follows from the previous statement about philosophers speculating but not practicing medicine as a craft.",
+      "time": "3:06:10 PM",
+      "date": "4/23/2026",
       "read": true
     },
     {
-      "id": 1776174502583,
-      "message": "Sir, your battery is at 20% and discharging. You may want to plug in soon — looks like you're at Pine Crest School right now.",
-      "time": "9:48:22 AM",
-      "date": "4/14/2026",
+      "id": 1776971044850,
+      "message": "The answer is C - Public Health Epidemiology - looking at the chart, you need to add publications (dark gray) and patent applications (black) for each area, and Public Health Epidemiology has the lowest combined total with approximately 5 publications and 3 patent applications.",
+      "time": "3:04:04 PM",
+      "date": "4/23/2026",
       "read": true
     },
     {
-      "id": 1776169665539,
-      "message": "Good morning Nadav! It's Tuesday, April 14th. Weather's perfect - 84 degrees and sunny in Fort Lauderdale. Your calendar is clear today. Have a great day at school!",
-      "time": "8:27:45 AM",
-      "date": "4/14/2026",
+      "id": 1776970916939,
+      "message": "You're on SAT question 14 about Miss Dolly Darling's transformation in demeanor - the claim mentions a \"transformation,\" so look for the quote that shows a change or contrast in her behavior, which appears to be Option B starting with \"Although she pretended to be so merry\" since it suggests a contrast between her outward appearance and inner state.",
+      "time": "3:01:56 PM",
+      "date": "4/23/2026",
       "read": true
     },
     {
-      "id": 1775776181832,
-      "message": "Good evening Nadav! Quick update: Weather tonight is upper 70s with some clouds and occasional rain - nothing extreme, just typical April weather. No major news on your projects today. Have a good night!",
-      "time": "7:09:41 PM",
-      "date": "4/9/2026",
+      "id": 1776970788689,
+      "message": "You're on SAT question 11 about carbon monoxide levels - the passage discusses comparing Newark, NJ and New York, NY, so look at the table data showing their pollution differences on the same dates to find the answer that demonstrates the \"localized nature\" of the smog event.",
+      "time": "2:59:48 PM",
+      "date": "4/23/2026",
       "read": true
     },
     {
-      "id": 1775775408955,
-      "message": "Evening update: Weather tonight is 75 degrees with a 30% chance of scattered thunderstorms before 8pm, then clearing to 69. Nothing extreme, just typical South Florida spring weather. Have a good evening!",
-      "time": "6:56:48 PM",
-      "date": "4/9/2026",
+      "id": 1776970537823,
+      "message": "The answer is B - \"Fickle\" - capricious means unpredictable or changeable, which is the opposite of predictable and synonymous with fickle.",
+      "time": "2:55:37 PM",
+      "date": "4/23/2026",
       "read": true
     },
     {
-      "id": 1775772487131,
-      "message": "Good evening Nadav! It's a bit wet and windy in Fort Lauderdale tonight with temps in the upper 70s - not bad but grab an umbrella if you head out. You were working on that iPhone 15 stand design earlier for 3D printing and looking at Amazon phone stands. Hope you found one you liked!",
-      "time": "6:08:07 PM",
-      "date": "4/9/2026",
+      "id": 1776970412472,
+      "message": "The answer is B - \"A mournful song for the dead\" - a dirge is a funeral lament, which fits the solemn context of the passage describing sounds from a church at nightfall.",
+      "time": "2:53:32 PM",
+      "date": "4/23/2026",
       "read": true
     },
     {
-      "id": 1775771532264,
-      "message": "Evening weather heads up: It's wet and windy out there with scattered showers and possible heavy downpours through this evening. Wind gusts up to 25 mph. The weekend looks much better - drier with temps around 80.",
-      "time": "5:52:12 PM",
-      "date": "4/9/2026",
+      "id": 1776970037737,
+      "message": "You have a busy week ahead with multiple summatives - English formative tomorrow (4/24), Hebrew reading and Jewish law summatives on 4/27, World History DBQ on 4/27, PreCalc summative on 4/28, Chem summative on 4/30, and Hebrew and History summatives on 5/1.",
+      "time": "2:47:17 PM",
+      "date": "4/23/2026",
       "read": true
     },
     {
-      "id": 1775770797213,
-      "message": "Evening check-in: Wet and windy weather continues tonight - scattered storms with heavy downpours possible. Rip currents are high at the beach through the weekend. Weekend looks much better - dry and 80 degrees!",
-      "time": "5:39:57 PM",
-      "date": "4/9/2026",
+      "id": 1776969250811,
+      "message": "You're on your sixth Wordle guess with only T confirmed in position 1 and E somewhere in the word - try \"TWEET\" which fits the confirmed letters and uses available letters from your keyboard.",
+      "time": "2:34:10 PM",
+      "date": "4/23/2026",
       "read": true
     },
     {
-      "id": 1775682136871,
-      "message": "Heads up - there's a Flood Watch in Fort Lauderdale until 10pm tonight. Heavy rain and thunderstorms expected with possible flooding. Maybe stay in this evening.",
-      "time": "5:02:16 PM",
-      "date": "4/8/2026",
+      "id": 1776968342253,
+      "message": "Nadav detected at computer — neutral mood",
+      "time": "2:19:02 PM",
+      "date": "4/23/2026",
       "read": true
     },
     {
-      "id": 1775678648967,
-      "message": "Heads up - Fort Lauderdale is under a flood watch until 10 PM tonight. Heavy rain and storms expected this afternoon with 1-2 inches possible. Stay off flooded roads!",
-      "time": "4:04:08 PM",
-      "date": "4/8/2026",
+      "id": 1776968332328,
+      "message": "Unrecognized person detected at computer",
+      "time": "2:18:52 PM",
+      "date": "4/23/2026",
       "read": true
     },
     {
-      "id": 1775678043325,
-      "message": "Heads up Nadav - there's a Flood Watch for Fort Lauderdale until 10pm tonight. Heavy rain and thunderstorms expected this afternoon through Thursday, with 1-2 inches of rain possible. Might want to stay inside this evening!",
-      "time": "3:54:03 PM",
-      "date": "4/8/2026",
+      "id": 1776968247039,
+      "message": "You appear to be struggling with your Zookeeper's Wife short answer question - the AI feedback suggests adding discussion of Morys representing lost innocence, plant replacement as cultural erasure, and beetles as rescue tools to strengthen your response.",
+      "time": "2:17:27 PM",
+      "date": "4/23/2026",
       "read": true
     },
     {
-      "id": 1775672591189,
-      "message": "Heads up - there's a Flood Watch in Fort Lauderdale until 10 PM tonight with thunderstorms likely this afternoon and evening. Expect heavy rain with possible half-inch totals. Might want to avoid unnecessary driving later.",
-      "time": "2:23:11 PM",
-      "date": "4/8/2026",
+      "id": 1776967938600,
+      "message": "Unrecognized person detected at computer",
+      "time": "2:12:18 PM",
+      "date": "4/23/2026",
       "read": true
     },
     {
-      "id": 1775672206670,
-      "message": "Heads up - it's a Weather Alert day in South Florida. Heavy rain and thunderstorms expected this afternoon with a flood watch until 10pm. Eastern Broward is at moderate flood risk, so maybe avoid low-lying areas if you're driving later.",
-      "time": "2:16:46 PM",
-      "date": "4/8/2026",
+      "id": 1776967922353,
+      "message": "Unrecognized person detected at computer",
+      "time": "2:12:02 PM",
+      "date": "4/23/2026",
       "read": true
     },
     {
-      "id": 1775672070198,
-      "message": "Heads up Nadav - there's a Flood Watch in Fort Lauderdale until 10pm tonight. Thunderstorms likely this afternoon and evening with up to half an inch of rain expected. Might want to wrap up any outdoor plans early.",
-      "time": "2:14:30 PM",
-      "date": "4/8/2026",
+      "id": 1776967871796,
+      "message": "Unrecognized person detected at computer",
+      "time": "2:11:11 PM",
+      "date": "4/23/2026",
       "read": true
     },
     {
-      "id": 1775667800573,
-      "message": "AC Suggestion: With today's high of 77F and humidity at 79%, you might want to keep the AC around 74-75F. The rain should keep things cooler, so no need to blast it. Tomorrow will be similar - high of 76F with showers.",
-      "time": "1:03:20 PM",
-      "date": "4/8/2026",
+      "id": 1776967868468,
+      "message": "Nadav detected at computer — neutral mood",
+      "time": "2:11:08 PM",
+      "date": "4/23/2026",
       "read": true
     },
     {
-      "id": 1775667796400,
-      "message": "Weather Alert: Flood Watch in effect until 10pm tonight. Thunderstorms likely this afternoon and evening with 60-70% chance of rain. Currently 76F with light rain. If you have outdoor plans today or tomorrow, you may want to reschedule - Thursday also has 70% chance of showers.",
-      "time": "1:03:16 PM",
-      "date": "4/8/2026",
+      "id": 1776967861857,
+      "message": "Unrecognized person detected at computer",
+      "time": "2:11:01 PM",
+      "date": "4/23/2026",
       "read": true
     },
     {
-      "id": 1775667594446,
-      "message": "AC recommendation: It's 78F with 76% humidity outside. With the thunderstorms rolling in, temps will stay around 77-69F. Suggest keeping AC around 73-74F to stay comfortable without overworking the system during the humid conditions.",
-      "time": "12:59:54 PM",
-      "date": "4/8/2026",
+      "id": 1776967608190,
+      "message": "Unrecognized person detected at computer",
+      "time": "2:06:48 PM",
+      "date": "4/23/2026",
       "read": true
     },
     {
-      "id": 1775667594445,
-      "message": "Heads up: There's a Flood Watch for Fort Lauderdale until 10pm tonight. Thunderstorms are likely this afternoon (60% chance) with possible heavy downpours causing flash flooding. Currently 78F and humid. Tomorrow also has 70% chance of showers. If you have outdoor plans tomorrow, you may want to reschedule or have a backup.",
-      "time": "12:59:54 PM",
-      "date": "4/8/2026",
+      "id": 1776967364194,
+      "message": "Nadav detected at computer — neutral mood",
+      "time": "2:02:44 PM",
+      "date": "4/23/2026",
       "read": true
     },
     {
-      "id": 1775666856459,
-      "message": "Regarding tomorrow's outdoor plans: Thursday is looking rainy with 70% chance of showers and thunderstorms. If you have anything outdoor planned, Friday or Saturday would be much better - clearing up to mostly sunny by then.",
-      "time": "12:47:36 PM",
-      "date": "4/8/2026",
+      "id": 1776967357598,
+      "message": "Unrecognized person detected at computer",
+      "time": "2:02:37 PM",
+      "date": "4/23/2026",
       "read": true
     },
     {
-      "id": 1775666852434,
-      "message": "WEATHER ALERT: Flood Watch in effect until 10pm tonight. Thunderstorms likely this afternoon (60-70% chance) with up to half an inch of rain expected. Currently 78F and partly cloudy. If you have any outdoor plans today, might want to reschedule or bring an umbrella. Tomorrow (Thursday) also looks wet with 70% chance of showers.",
-      "time": "12:47:32 PM",
-      "date": "4/8/2026",
+      "id": 1776967137787,
+      "message": "Unrecognized person detected at computer",
+      "time": "1:58:57 PM",
+      "date": "4/23/2026",
       "read": true
     },
     {
-      "id": 1775610609396,
-      "message": "AC Tip: With temps in the low 70s tonight and high humidity from all this rain, you might want to run the AC on a moderate setting to keep humidity down inside. The moisture can make it feel warmer even at cooler temps.",
-      "time": "9:10:09 PM",
-      "date": "4/7/2026",
+      "id": 1776967098204,
+      "message": "Unrecognized person detected at computer",
+      "time": "1:58:18 PM",
+      "date": "4/23/2026",
       "read": true
     },
     {
-      "id": 1775610604747,
-      "message": "Evening Summary: Heavy rain is moving through Fort Lauderdale right now with flood conditions. Tomorrow looks similar - showers and thunderstorms expected, especially in the morning. If you have outdoor plans tomorrow, I'd recommend rescheduling them. High near 80 but wet and potentially dangerous conditions with flash flooding risk.",
-      "time": "9:10:04 PM",
-      "date": "4/7/2026",
+      "id": 1776967049348,
+      "message": "Nadav detected at computer — neutral mood",
+      "time": "1:57:29 PM",
+      "date": "4/23/2026",
       "read": true
     },
     {
-      "id": 1775610602160,
-      "message": "Weather Alert: Flood watch in effect for Broward County until 10pm Wednesday. Heavy rain expected tonight and tomorrow with 1-3 inches possible, up to 6 inches in spots. Severe thunderstorm warnings active. Tomorrow will have showers and thunderstorms continuing - definitely not ideal for outdoor plans. Stay off roads during heavy downpours and watch for flooding in low areas.",
-      "time": "9:10:02 PM",
-      "date": "4/7/2026",
+      "id": 1776967042695,
+      "message": "Unrecognized person detected at computer",
+      "time": "1:57:22 PM",
+      "date": "4/23/2026",
       "read": true
     },
     {
-      "id": 1775609543189,
-      "message": "AC suggestion: Mild night ahead (low 68F). You could turn off AC tonight and open windows if you like fresh air - though with the rain chance, maybe just set it to 72-73F and let it idle.",
-      "time": "8:52:23 PM",
-      "date": "4/7/2026",
+      "id": 1776966907982,
+      "message": "Unrecognized person detected at computer",
+      "time": "1:55:07 PM",
+      "date": "4/23/2026",
       "read": true
     },
     {
-      "id": 1775609538096,
-      "message": "Evening weather check: Currently 73F and mostly cloudy. Tonight has a 40% chance of showers before 11pm. Tomorrow looks rough with heavy storms rolling in after 3pm. Good night to stay in.",
-      "time": "8:52:18 PM",
-      "date": "4/7/2026",
+      "id": 1776966848043,
+      "message": "⚠️ Critical: Battery at 10% and dropping. Plug in immediately to avoid losing your work.",
+      "time": "1:54:08 PM",
+      "date": "4/23/2026",
       "read": true
     },
     {
-      "id": 1775609538095,
-      "message": "FLOOD WATCH in effect until tomorrow (Wednesday) 10pm. Heavy rain expected - 1-2 inches possible tomorrow afternoon with thunderstorms. If you have outdoor plans tomorrow, definitely reschedule them. Weather clears up by Saturday.",
-      "time": "8:52:18 PM",
-      "date": "4/7/2026",
+      "id": 1776966809091,
+      "message": "Unrecognized person detected at computer",
+      "time": "1:53:29 PM",
+      "date": "4/23/2026",
       "read": true
     },
     {
-      "id": 1775609350811,
-      "message": "EVENING BRIEF: It's 8:48pm Tuesday. The flood watch that showed in your taskbar is legit - stay safe if driving tonight. Highs around 80F rest of the week. Drier weather returns Thursday through the weekend.",
-      "time": "8:49:10 PM",
-      "date": "4/7/2026",
+      "id": 1776966740795,
+      "message": "Nadav detected at computer — neutral mood",
+      "time": "1:52:20 PM",
+      "date": "4/23/2026",
       "read": true
     },
     {
-      "id": 1775609345598,
-      "message": "TOMORROW'S OUTDOOR PLANS: I'd recommend rescheduling if possible. Wednesday still has showers and thunderstorms expected, plus high rip current risk at beaches. It should clear up by Thursday-Friday for better conditions.",
-      "time": "8:49:05 PM",
-      "date": "4/7/2026",
+      "id": 1776964881498,
+      "message": "Unrecognized person detected at computer",
+      "time": "1:21:21 PM",
+      "date": "4/23/2026",
       "read": true
     },
     {
-      "id": 1775609341596,
-      "message": "FLOOD WATCH ACTIVE: Heavy rain and thunderstorms hitting Fort Lauderdale right now through Wednesday 10pm. Expect 1-3 inches of rain (up to 6 inches in some areas). Avoid flooded roads and poor drainage areas. Severe thunderstorm warnings active for Broward County.",
-      "time": "8:49:01 PM",
-      "date": "4/7/2026",
+      "id": 1776964831514,
+      "message": "Nadav detected at computer — neutral mood",
+      "time": "1:20:31 PM",
+      "date": "4/23/2026",
       "read": true
     },
     {
-      "id": 1775606949347,
-      "message": "EVENING SUMMARY: It's 8pm Tuesday. Temps around 72F now with storms moving through. Keep the AC moderate tonight - it's already cooling down naturally. Stay dry out there!",
-      "time": "8:09:09 PM",
-      "date": "4/7/2026",
+      "id": 1776964821992,
+      "message": "Unrecognized person detected at computer",
+      "time": "1:20:21 PM",
+      "date": "4/23/2026",
       "read": true
     },
     {
-      "id": 1775606949346,
-      "message": "OUTDOOR PLANS TOMORROW: I'd recommend rescheduling any outdoor activities. Wednesday will have more showers, thunderstorms, and high rip current risk at beaches. Conditions should improve by Thursday.",
-      "time": "8:09:09 PM",
-      "date": "4/7/2026",
+      "id": 1776964606889,
+      "message": "Unrecognized person detected at computer",
+      "time": "1:16:46 PM",
+      "date": "4/23/2026",
       "read": true
     },
     {
-      "id": 1775606949344,
-      "message": "WEATHER ALERT: Flood watch in effect for Broward County until 10pm Wednesday. Heavy rain expected with 1-3 inches (up to 6 inches in some spots). Severe thunderstorm warnings active. Avoid low-lying areas and watch for flash flooding tonight and tomorrow.",
-      "time": "8:09:09 PM",
-      "date": "4/7/2026",
+      "id": 1776964504372,
+      "message": "Battery critical at 16%, sir. I recommend plugging in soon.",
+      "time": "1:15:04 PM",
+      "date": "4/23/2026",
       "read": true
     },
     {
-      "id": 1775606074621,
-      "message": "AC Suggestion: With tonight's rain and 94% humidity, you might want to run the AC in dehumidify mode or keep it around 72-74F to stay comfortable. The humidity is quite high right now.",
-      "time": "7:54:34 PM",
-      "date": "4/7/2026",
+      "id": 1776964406148,
+      "message": "Nadav detected at computer — neutral mood",
+      "time": "1:13:26 PM",
+      "date": "4/23/2026",
       "read": true
     },
     {
-      "id": 1775606037066,
-      "message": "Evening Weather Update: Currently 73F and rainy/foggy outside. Tonight's low around 68F with chance of thunderstorms before 11pm. Tomorrow will be stormy all day with heavy rainfall expected. Consider keeping windows closed and checking your car isn't parked in a flood-prone area.",
-      "time": "7:53:57 PM",
-      "date": "4/7/2026",
+      "id": 1776954378437,
+      "message": "Nadav has stepped away from the computer",
+      "time": "10:26:18 AM",
+      "date": "4/23/2026",
       "read": true
     },
     {
-      "id": 1775606037065,
-      "message": "FLOOD WATCH ALERT: There's a Flood Watch in effect for Fort Lauderdale from now until tomorrow at 10pm. Tonight expect thunderstorms, and Wednesday brings heavy rain with 1-2 inches possible. If you have outdoor plans tomorrow, you should definitely reschedule - heavy storms are expected especially after 3pm.",
-      "time": "7:53:57 PM",
-      "date": "4/7/2026",
+      "id": 1776954296145,
+      "message": "Unrecognized person detected at computer",
+      "time": "10:24:56 AM",
+      "date": "4/23/2026",
       "read": true
     },
     {
-      "id": 1775605303397,
-      "message": "Good evening! Quick summary: It's 72F and cloudy outside. Your Sony TV is on at volume 58. The severe weather tonight and tomorrow means it's a good night to stay in. The rain should help ease the Florida drought but expect wet conditions through Friday.",
-      "time": "7:41:43 PM",
-      "date": "4/7/2026",
+      "id": 1776954179386,
+      "message": "Unrecognized person detected at computer",
+      "time": "10:22:59 AM",
+      "date": "4/23/2026",
       "read": true
     },
     {
-      "id": 1775605286708,
-      "message": "Evening Weather Alert: Tonight expect showers and heavy thunderstorms with 96% chance of rain - there's a FLOOD WATCH in effect. Flash flooding, damaging winds, and even a tornado possible. Tomorrow (Wednesday) looks similar - showers and heavy thunderstorms all day with 96% rain chance. If you have outdoor plans tomorrow, I'd strongly recommend rescheduling. Air quality is also rated POOR right now.",
-      "time": "7:41:26 PM",
-      "date": "4/7/2026",
+      "id": 1776954133905,
+      "message": "Unrecognized person detected at computer",
+      "time": "10:22:13 AM",
+      "date": "4/23/2026",
       "read": true
     },
     {
-      "id": 1775604120192,
-      "message": "Evening weather note: With all this rain and humidity, you might want to bump the AC down a degree or two to keep comfortable. The moisture in the air can make it feel warmer inside. High temps staying around 80 degrees through the week.",
-      "time": "7:22:00 PM",
-      "date": "4/7/2026",
+      "id": 1776954110827,
+      "message": "Nadav detected at computer — neutral mood",
+      "time": "10:21:50 AM",
+      "date": "4/23/2026",
       "read": true
     },
     {
-      "id": 1775604120192,
-      "message": "Regarding your outdoor plans tomorrow: I'd recommend rescheduling. Wednesday still has heavy rain risk, high rip currents at beaches, and small craft advisories for boaters. It should clear up by Thursday though.",
-      "time": "7:22:00 PM",
-      "date": "4/7/2026",
+      "id": 1776954104100,
+      "message": "Unrecognized person detected at computer",
+      "time": "10:21:44 AM",
+      "date": "4/23/2026",
       "read": true
     },
     {
-      "id": 1775604120191,
-      "message": "FLOOD WATCH in effect until 10pm Wednesday. Heavy rain moving through Fort Lauderdale tonight - expect 1-3 inches, possibly up to 6 inches in spots. Severe thunderstorm warnings are active for Broward County. Avoid driving through flooded areas and stay off the roads if possible this evening.",
-      "time": "7:22:00 PM",
-      "date": "4/7/2026",
+      "id": 1776953975283,
+      "message": "Nadav detected at computer — neutral mood",
+      "time": "10:19:35 AM",
+      "date": "4/23/2026",
       "read": true
     },
     {
-      "id": 1775603722799,
-      "message": "Evening Update: The FLOOD WATCH remains active until 10pm tonight. Heavy rain has already dropped 2+ inches in some areas today. Tomorrow looks rough too - mostly cloudy with showers and heavy thunderstorms that could cause flooding on roads. High of 80F. Definitely postpone any outdoor plans until Saturday when it clears up. For tonight, the AC at 72-73F should be comfortable since it's mild out (low 70s) with all the rain.",
-      "time": "7:15:22 PM",
-      "date": "4/7/2026",
+      "id": 1776953767123,
+      "message": "Nadav detected at computer — neutral mood",
+      "time": "10:16:07 AM",
+      "date": "4/23/2026",
       "read": true
     },
     {
-      "id": 1775603615901,
-      "message": "Good evening weather check: Currently 71F with rain - the rain should ease in about 30 minutes. Tonight expect a low of 70F with showers and a heavier thunderstorm (96% chance). The FLOOD WATCH continues - storms can bring flash flooding, damaging winds, and even a tornado. Tomorrow (Wednesday): Highs of 80F with showers and heavier thunderstorms throughout the day - watch for street flooding. Air quality is currently POOR, so limit time outside. The heavy rain pattern continues through Friday before clearing up for the weekend.",
-      "time": "7:13:35 PM",
-      "date": "4/7/2026",
+      "id": 1776947584848,
+      "message": "Morning Briefing for Thursday, April 23rd:\n\nWEATHER: Fort Lauderdale - Partly sunny, high 77F. East winds 14mph with gusts to 23mph. Rip current advisory until tomorrow 8AM.\n\nCALENDAR: Clear day - no scheduled events.\n\nEMAILS (3 notable):\n- Rice University thanked you for attending their event\n- Daniel Minkowitz replied about \"rock the park\" \n- Indiana University recruitment: \"Do it all at IU\"\n- College outreach also from Seton Hall\n\nMARKETS: S&P 500 and Nasdaq closed at record highs yesterday. Investopedia pre-market update in inbox.\n\nNo urgent action items. Good day to focus on projects, sir.",
+      "time": "8:33:04 AM",
+      "date": "4/23/2026",
       "read": true
     },
     {
-      "id": 1775603503993,
-      "message": "Evening Weather Alert: It's 75F with rain right now, dropping to 70F tonight. There's a FLOOD WATCH until tomorrow night with heavy thunderstorms expected - possible flash flooding and damaging winds. For the AC, I'd suggest setting it to 72-73F tonight since it's mild outside. Stay dry!",
-      "time": "7:11:43 PM",
-      "date": "4/7/2026",
+      "id": 1776947523414,
+      "message": "Nadav detected at computer — neutral mood",
+      "time": "8:32:03 AM",
+      "date": "4/23/2026",
       "read": true
     }
   ]

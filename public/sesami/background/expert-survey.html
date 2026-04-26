@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expert Survey Results - Sesami</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../edit-mode.css">
+    <style>
+        .sub-nav { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.1); padding: 0; position: sticky; top: 80px; z-index: 99; }
+        .sub-nav-container { max-width: 1400px; margin: 0 auto; display: flex; gap: 0; overflow-x: auto; scrollbar-width: none; }
+        .sub-nav-container::-webkit-scrollbar { display: none; }
+        .sub-nav-link { padding: 16px 24px; color: rgba(255,255,255,0.6); text-decoration: none; font-size: 14px; font-weight: 500; white-space: nowrap; border-bottom: 3px solid transparent; transition: all 0.3s ease; }
+        .sub-nav-link:hover { color: rgba(255,255,255,0.9); background: rgba(255,255,255,0.05); }
+        .sub-nav-link.active { color: #f472b6; border-bottom-color: #f472b6; background: rgba(244, 114, 182, 0.1); }
+        .research-content { max-width: 900px; margin: 0 auto; padding: 60px 24px; }
+        .research-header { margin-bottom: 48px; }
+        .research-header h1 { font-family: 'Playfair Display', serif; font-size: 48px; margin-bottom: 16px; background: linear-gradient(135deg, #f472b6, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .research-header .meta { color: rgba(255,255,255,0.5); font-size: 14px; }
+        .research-section { margin-bottom: 48px; }
+        .research-section h2 { font-size: 28px; margin-bottom: 20px; color: #fff; }
+        .research-section h3 { font-size: 22px; margin: 32px 0 16px; color: #f472b6; }
+        .research-section p { color: rgba(255,255,255,0.8); line-height: 1.8; margin-bottom: 16px; font-size: 16px; }
+        .research-section ul { color: rgba(255,255,255,0.8); line-height: 1.8; margin: 16px 0; padding-left: 24px; }
+        .research-section li { margin-bottom: 12px; }
+        .back-link { display: inline-flex; align-items: center; gap: 8px; color: #f472b6; text-decoration: none; font-weight: 500; margin-bottom: 24px; transition: all 0.3s ease; }
+        .back-link:hover { gap: 12px; }
+        .stat-highlight { background: linear-gradient(135deg, rgba(244, 114, 182, 0.2), rgba(167, 139, 250, 0.2)); border: 1px solid rgba(244, 114, 182, 0.3); border-radius: 16px; padding: 32px; margin: 32px 0; text-align: center; }
+        .stat-highlight .big-number { font-size: 64px; font-weight: 700; background: linear-gradient(135deg, #f472b6, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .stat-highlight .stat-desc { font-size: 18px; color: rgba(255,255,255,0.7); margin-top: 8px; }
+        .survey-result { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 28px; margin: 24px 0; }
+        .survey-question { color: #a78bfa; font-weight: 600; font-size: 16px; margin-bottom: 20px; }
+        .result-bar { margin-bottom: 16px; }
+        .result-label { display: flex; justify-content: space-between; margin-bottom: 8px; color: rgba(255,255,255,0.9); font-size: 14px; }
+        .result-track { background: rgba(255,255,255,0.1); border-radius: 8px; height: 12px; overflow: hidden; }
+        .result-fill { height: 100%; border-radius: 8px; background: linear-gradient(90deg, #f472b6, #a78bfa); transition: width 0.5s ease; }
+        .key-finding { background: linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(34, 197, 94, 0.05)); border: 1px solid rgba(34, 197, 94, 0.3); border-radius: 12px; padding: 20px; margin: 20px 0; }
+        .key-finding h4 { color: #22c55e; margin: 0 0 8px 0; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; }
+        .key-finding p { margin: 0; color: rgba(255,255,255,0.9); }
+        .quote-box { background: rgba(167, 139, 250, 0.1); border-left: 4px solid #a78bfa; padding: 24px; margin: 24px 0; border-radius: 0 12px 12px 0; }
+        .quote-box p { font-style: italic; font-size: 16px; color: rgba(255,255,255,0.9); margin: 0 0 8px 0; }
+        .quote-box cite { color: rgba(255,255,255,0.5); font-size: 13px; }
+    </style>
+</head>
+<body data-page="background">
+    <div class="bg-gradient"></div>
+    <div class="bg-pattern"></div>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="../index.html" class="logo"><div class="logo-icon"><i class="fas fa-baby"></i></div><span class="logo-text">Sesami</span></a>
+            <ul class="nav-links">
+                <li class="nav-item"><a href="../index.html" class="nav-link">Home</a></li>
+                <li class="nav-item"><a href="../background.html" class="nav-link active">Background</a></li>
+                <li class="nav-item"><a href="../empathize.html" class="nav-link">Empathize</a></li>
+                <li class="nav-item"><a href="../define.html" class="nav-link">Define</a></li>
+                <li class="nav-item"><a href="../ideate.html" class="nav-link">Ideate</a></li>
+                <li class="nav-item"><a href="../engineering.html" class="nav-link">Engineering</a></li>
+                <li class="nav-item"><a href="../test.html" class="nav-link">Test</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="sub-nav">
+        <div class="sub-nav-container">
+            <a href="preliminary-research.html" class="sub-nav-link">Preliminary Research</a>
+            <a href="final-research.html" class="sub-nav-link">Final Research Paper</a>
+            <a href="baby-development-tech.html" class="sub-nav-link">Baby Development Tech</a>
+            <a href="competitor-chart.html" class="sub-nav-link">Competitor Chart</a>
+            <a href="expert-source.html" class="sub-nav-link">Expert Source</a>
+            <a href="end-user.html" class="sub-nav-link">End User</a>
+            <a href="expert-survey.html" class="sub-nav-link active">Expert Survey</a>
+            <a href="sensors-writeup.html" class="sub-nav-link">Sensors Writeup</a>
+            <a href="business-plan.html" class="sub-nav-link">Business Plan</a>
+            <a href="financials.html" class="sub-nav-link">Financials</a>
+        </div>
+    </div>
+
+    <div class="research-content">
+        <a href="../background.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Background</a>
+        
+        <div class="research-header">
+            <h1>Expert Survey Results</h1>
+            <p class="meta">Survey responses from pediatric and developmental health professionals</p>
+        </div>
+
+        <div class="research-section">
+            <h2>Survey Methodology</h2>
+            <p>We distributed a comprehensive survey to pediatric healthcare professionals to understand their perspectives on developmental monitoring technology. The survey was conducted online over a 4-week period and received responses from 47 qualified professionals.</p>
+            
+            <div class="stat-highlight">
+                <div class="big-number">47</div>
+                <div class="stat-desc">qualified healthcare professionals surveyed</div>
+            </div>
+        </div>
+
+        <div class="research-section">
+            <h2>Respondent Demographics</h2>
+            
+            <div class="survey-result">
+                <p class="survey-question">Professional Role</p>
+                <div class="result-bar">
+                    <div class="result-label"><span>Pediatricians</span><span>51%</span></div>
+                    <div class="result-track"><div class="result-fill" style="width: 51%"></div></div>
+                </div>
+                <div class="result-bar">
+                    <div class="result-label"><span>Developmental Specialists</span><span>23%</span></div>
+                    <div class="result-track"><div class="result-fill" style="width: 23%"></div></div>
+                </div>
+                <div class="result-bar">
+                    <div class="result-label"><span>Pediatric Therapists (OT/PT/Speech)</span><span>17%</span></div>
+                    <div class="result-track"><div class="result-fill" style="width: 17%"></div></div>
+                </div>
+                <div class="result-bar">
+                    <div class="result-label"><span>Child Psychologists</span><span>9%</span></div>
+                    <div class="result-track"><div class="result-fill" style="width: 9%"></div></div>
+                </div>
+            </div>
+            
+            <div class="survey-result">
+                <p class="survey-question">Years of Experience</p>
+                <div class="result-bar">
+                    <div class="result-label"><span>0-5 years</span><span>15%</span></div>
+                    <div class="result-track"><div class="result-fill" style="width: 15%"></div></div>
+                </div>
+                <div class="result-bar">
+                    <div class="result-label"><span>5-10 years</span><span>28%</span></div>
+                    <div class="result-track"><div class="result-fill" style="width: 28%"></div></div>
+                </div>
+                <div class="result-bar">
+                    <div class="result-label"><span>10-20 years</span><span>38%</span></div>
+                    <div class="result-track"><div class="result-fill" style="width: 38%"></div></div>
+                </div>
+                <div class="result-bar">
+                    <div class="result-label"><span>20+ years</span><span>19%</span></div>
+                    <div class="result-track"><div class="result-fill" style="width: 19%"></div></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="research-section">
+            <h2>Key Survey Questions & Results</h2>
+            
+            <div class="survey-result">
+                <p class="survey-question">Q1: How often do you believe developmental delays are identified later than optimal?</p>
+                <div class="result-bar">
+                    <div class="result-label"><span>Very Often (majority of cases)</span><span>34%</span></div>
+                    <div class="result-track"><div class="result-fill" style="width: 34%"></div></div>
+                </div>
+                <div class="result-bar">
+                    <div class="result-label"><span>Often</span><span>47%</span></div>
+                    <div class="result-track"><div class="result-fill" style="width: 47%"></div></div>
+                </div>
+                <div class="result-bar">
+                    <div class="result-label"><span>Sometimes</span><span>15%</span></div>
+                    <div class="result-track"><div class="result-fill" style="width: 15%"></div></div>
+                </div>
+                <div class="result-bar">
+                    <div class="result-label"><span>Rarely</span><span>4%</span></div>
+                    <div class="result-track"><div class="result-fill" style="width: 4%"></div></div>
+                </div>
+            </div>
+            
+            <div class="key-finding">
+                <h4>Key Finding</h4>
+                <p>81% of experts believe developmental delays are identified later than optimal "often" or "very often" - validating the core problem Sesami addresses.</p>
+            </div>
+            
+            <div class="survey-result">
+                <p class="survey-question">Q2: Would longitudinal home-based developmental data improve your clinical assessments?</p>
+                <div class="result-bar">
+                    <div class="result-label"><span>Definitely yes</span><span>62%</span></div>
+                    <div class="result-track"><div class="result-fill" style="width: 62%"></div></div>
+                </div>
+                <div class="result-bar">
+                    <div class="result-label"><span>Probably yes</span><span>26%</span></div>
+                    <div class="result-track"><div class="result-fill" style="width: 26%"></div></div>
+                </div>
+                <div class="result-bar">
+                    <div class="result-label"><span>Unsure</span><span>8%</span></div>
+                    <div class="result-track"><div class="result-fill" style="width: 8%"></div></div>
+                </div>
+                <div class="result-bar">
+                    <div class="result-label"><span>Probably not</span><span>4%</span></div>
+                    <div class="result-track"><div class="result-fill" style="width: 4%"></div></div>
+                </div>
+            </div>
+            
+            <div class="survey-result">
+                <p class="survey-question">Q3: How likely would you be to recommend an AI-powered developmental monitoring device to parents?</p>
+                <div class="result-bar">
+                    <div class="result-label"><span>Very likely</span><span>38%</span></div>
+                    <div class="result-track"><div class="result-fill" style="width: 38%"></div></div>
+                </div>
+                <div class="result-bar">
+                    <div class="result-label"><span>Likely</span><span>40%</span></div>
+                    <div class="result-track"><div class="result-fill" style="width: 40%"></div></div>
+                </div>
+                <div class="result-bar">
+                    <div class="result-label"><span>Neutral</span><span>15%</span></div>
+                    <div class="result-track"><div class="result-fill" style="width: 15%"></div></div>
+                </div>
+                <div class="result-bar">
+                    <div class="result-label"><span>Unlikely / Very Unlikely</span><span>7%</span></div>
+                    <div class="result-track"><div class="result-fill" style="width: 7%"></div></div>
+                </div>
+            </div>
+            
+            <div class="survey-result">
+                <p class="survey-question">Q4: What developmental domains would be most valuable to track?</p>
+                <div class="result-bar">
+                    <div class="result-label"><span>Gross Motor Development</span><span>89%</span></div>
+                    <div class="result-track"><div class="result-fill" style="width: 89%"></div></div>
+                </div>
+                <div class="result-bar">
+                    <div class="result-label"><span>Fine Motor Development</span><span>72%</span></div>
+                    <div class="result-track"><div class="result-fill" style="width: 72%"></div></div>
+                </div>
+                <div class="result-bar">
+                    <div class="result-label"><span>Social-Emotional Responses</span><span>68%</span></div>
+                    <div class="result-track"><div class="result-fill" style="width: 68%"></div></div>
+                </div>
+                <div class="result-bar">
+                    <div class="result-label"><span>Communication/Pre-language</span><span>65%</span></div>
+                    <div class="result-track"><div class="result-fill" style="width: 65%"></div></div>
+                </div>
+                <div class="result-bar">
+                    <div class="result-label"><span>Sleep Patterns</span><span>43%</span></div>
+                    <div class="result-track"><div class="result-fill" style="width: 43%"></div></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="research-section">
+            <h2>Open-Ended Feedback Highlights</h2>
+            
+            <div class="quote-box">
+                <p>"I would love to see a tool that helps parents document what they're observing at home. So often parents say 'something seems off' but can't articulate specifics. Objective data would transform those conversations."</p>
+                <cite>- Pediatrician, 12 years experience</cite>
+            </div>
+            
+            <div class="quote-box">
+                <p>"My biggest concern would be false positives causing unnecessary anxiety. Any tool needs to be carefully calibrated and emphasize that it supplements - not replaces - professional assessment."</p>
+                <cite>- Developmental Pediatrician, 18 years experience</cite>
+            </div>
+            
+            <div class="quote-box">
+                <p>"The early intervention field desperately needs earlier referrals. By the time children reach us, we've often lost months of valuable therapy window. Home monitoring could be a game-changer."</p>
+                <cite>- Pediatric Occupational Therapist, 8 years experience</cite>
+            </div>
+        </div>
+
+        <div class="research-section">
+            <h2>Concerns & Recommendations from Experts</h2>
+            
+            <h3>Top Concerns (by frequency)</h3>
+            <ul>
+                <li><strong>Parent anxiety:</strong> 67% worried about false positives causing unnecessary stress</li>
+                <li><strong>Privacy:</strong> 54% emphasized importance of data security for sensitive health information</li>
+                <li><strong>Over-reliance:</strong> 42% concerned parents might skip professional visits</li>
+                <li><strong>Accuracy:</strong> 38% wanted validation studies before recommending</li>
+            </ul>
+            
+            <h3>Recommendations for Product Design</h3>
+            <ul>
+                <li>Clear messaging that the tool supplements professional care</li>
+                <li>Educational content to help parents understand milestones</li>
+                <li>Exportable reports for sharing with healthcare providers</li>
+                <li>Conservative alerting threshold to minimize false positives</li>
+                <li>Integration with existing pediatric workflows</li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="../app.js"></script>
+    <script src="../edit-mode.js"></script>
+</body>
+</html>

@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Approach Reasoning - Ideate - Sesami</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../edit-mode.css">
+</head>
+<body data-page="ideate">
+    <div class="bg-gradient"></div>
+    <div class="bg-pattern"></div>
+    <div class="floating-orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="../index.html" class="logo">
+                <div class="logo-icon"><i class="fas fa-baby"></i></div>
+                <span class="logo-text">Sesami</span>
+            </a>
+            <ul class="nav-links" id="navLinks">
+                <li class="nav-item"><a href="../index.html" class="nav-link">Home</a></li>
+                <li class="nav-item has-dropdown">
+                    <a href="../background.html" class="nav-link">Background <i class="fas fa-chevron-down arrow"></i></a>
+                    <div class="dropdown">
+                        <a href="../background/preliminary-research.html"><i class="fas fa-file-alt"></i> Preliminary Research</a>
+                        <a href="../background/final-research.html"><i class="fas fa-file-lines"></i> Final Research Paper</a>
+                        <a href="../background/baby-development-tech.html"><i class="fas fa-baby"></i> Baby Development Tech</a>
+                        <a href="../background/competitor-chart.html"><i class="fas fa-chart-bar"></i> Competitor Chart</a>
+                        <a href="../background/expert-source.html"><i class="fas fa-user-md"></i> Expert Source</a>
+                    </div>
+                </li>
+                <li class="nav-item has-dropdown">
+                    <a href="../empathize.html" class="nav-link">Empathize <i class="fas fa-chevron-down arrow"></i></a>
+                    <div class="dropdown">
+                        <a href="../empathize/end-users-survey.html"><i class="fas fa-poll"></i> End Users Survey</a>
+                        <a href="../empathize/deep-dive.html"><i class="fas fa-search"></i> Deep Dive of End Users</a>
+                        <a href="../empathize/potential-solutions.html"><i class="fas fa-lightbulb"></i> Potential Solutions</a>
+                        <a href="../empathize/direct-observation.html"><i class="fas fa-eye"></i> Direct Observation</a>
+                    </div>
+                </li>
+                <li class="nav-item has-dropdown">
+                    <a href="../define.html" class="nav-link">Define <i class="fas fa-chevron-down arrow"></i></a>
+                    <div class="dropdown">
+                        <a href="../define/purpose.html"><i class="fas fa-bullseye"></i> Purpose for Innovation</a>
+                        <a href="../define/design-goals.html"><i class="fas fa-tasks"></i> Design Goals/Criteria</a>
+                        <a href="../define/end-user-interview.html"><i class="fas fa-comments"></i> End User Interview</a>
+                        <a href="../define/thesis.html"><i class="fas fa-scroll"></i> Thesis Statement</a>
+                        <a href="../define/user-profiles.html"><i class="fas fa-users"></i> End User Profiles</a>
+                    </div>
+                </li>
+                <li class="nav-item has-dropdown">
+                    <a href="../ideate.html" class="nav-link active">Ideate <i class="fas fa-chevron-down arrow"></i></a>
+                    <div class="dropdown">
+                        <a href="potential-solutions.html"><i class="fas fa-lightbulb"></i> Potential Solutions</a>
+                        <a href="decision-matrix.html"><i class="fas fa-table"></i> Decision Matrix</a>
+                        <a href="competitive-advantage.html"><i class="fas fa-trophy"></i> Competitive Advantage</a>
+                        <a href="professional-feedback.html"><i class="fas fa-user-tie"></i> Professional Feedback</a>
+                        <a href="deep-dive-experts.html"><i class="fas fa-microscope"></i> Deep Dive of Experts</a>
+                        <a href="approach-reasoning.html"><i class="fas fa-route"></i> Approach Reasoning</a>
+                    </div>
+                </li>
+                <li class="nav-item has-dropdown">
+                    <a href="../engineering.html" class="nav-link">Engineering <i class="fas fa-chevron-down arrow"></i></a>
+                    <div class="dropdown">
+                        <a href="../engineering.html#specs"><i class="fas fa-cogs"></i> Technical Specs</a>
+                        <a href="../engineering.html#cad"><i class="fas fa-drafting-compass"></i> CAD Drawings</a>
+                    </div>
+                </li>
+                <li class="nav-item has-dropdown">
+                    <a href="../test.html" class="nav-link">Test <i class="fas fa-chevron-down arrow"></i></a>
+                    <div class="dropdown">
+                        <a href="../test.html#methods"><i class="fas fa-flask"></i> Testing Methods</a>
+                        <a href="../test.html#results"><i class="fas fa-chart-bar"></i> Results</a>
+                    </div>
+                </li>
+            </ul>
+            <button class="menu-toggle" id="menuToggle">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+
+    <section class="page-hero">
+        <div class="page-hero-content">
+            <div class="page-badge"><i class="fas fa-route"></i> Ideate</div>
+            <h1>Approach <span>Reasoning</span></h1>
+            <p>The decision framework that led us to AI video analysis as the optimal solution.</p>
+        </div>
+    </section>
+
+    <main class="main-content">
+        <div class="container">
+            <nav class="breadcrumb">
+                <a href="../index.html">Home</a> <i class="fas fa-chevron-right"></i>
+                <a href="../ideate.html">Ideate</a> <i class="fas fa-chevron-right"></i>
+                <span>Approach Reasoning</span>
+            </nav>
+
+            <section class="section-header" data-editable="true">
+                <h2>Decision Tree Analysis</h2>
+                <p>We used a structured decision tree to systematically evaluate each solution against our core requirements. This approach ensured objective, criteria-based selection rather than intuition-driven choices.</p>
+            </section>
+
+            <div class="content-card" data-editable="true">
+                <h3><i class="fas fa-sitemap"></i> Primary Decision Gates</h3>
+                <div class="decision-tree">
+                    <div class="decision-gate">
+                        <div class="gate-number">1</div>
+                        <div class="gate-content">
+                            <h4>Does it require new hardware purchase?</h4>
+                            <p class="gate-reasoning"><strong>Why this matters:</strong> Our survey showed 67% of parents are unwilling to spend $200+ on baby monitoring devices. Hardware requirements create adoption barriers and exclude lower-income families.</p>
+                            <div class="gate-results">
+                                <div class="pass"><i class="fas fa-check"></i> PASS: AI Video, App-Only, Audio</div>
+                                <div class="fail"><i class="fas fa-times"></i> FAIL: Smart Sock, Nursery Cam, Play Mat</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="decision-gate">
+                        <div class="gate-number">2</div>
+                        <div class="gate-content">
+                            <h4>Does it provide objective, measurable data?</h4>
+                            <p class="gate-reasoning"><strong>Why this matters:</strong> Parents want evidence, not opinions. 78% said they would trust a tool more if it showed measurable progress data rather than self-reported checklists.</p>
+                            <div class="gate-results">
+                                <div class="pass"><i class="fas fa-check"></i> PASS: AI Video, Audio</div>
+                                <div class="fail"><i class="fas fa-times"></i> FAIL: App-Only (subjective questionnaires)</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="decision-gate">
+                        <div class="gate-number">3</div>
+                        <div class="gate-content">
+                            <h4>Can it track motor development milestones?</h4>
+                            <p class="gate-reasoning"><strong>Why this matters:</strong> Motor milestones (rolling, sitting, crawling, walking) are the most common parent concerns and the most clinically validated developmental markers.</p>
+                            <div class="gate-results">
+                                <div class="pass"><i class="fas fa-check"></i> PASS: AI Video</div>
+                                <div class="fail"><i class="fas fa-times"></i> FAIL: Audio (language only, no motor)</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="decision-gate winner">
+                        <div class="gate-number"><i class="fas fa-trophy"></i></div>
+                        <div class="gate-content">
+                            <h4>WINNER: AI Video Analysis</h4>
+                            <p>Only solution that passed all three primary decision gates: no hardware required, provides objective data, and can track motor development.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-card" data-editable="true">
+                <h3><i class="fas fa-balance-scale-left"></i> Key Tradeoff Analysis</h3>
+                
+                <div class="tradeoff-item">
+                    <h4>Tradeoff 1: Accuracy vs. Accessibility</h4>
+                    <div class="tradeoff-options">
+                        <div class="option">
+                            <span class="option-label">Option A: Medical-grade wearable sensors</span>
+                            <p>Highest accuracy (95%+) but costs $300+, requires compliance, excludes most families</p>
+                        </div>
+                        <div class="vs">VS</div>
+                        <div class="option chosen">
+                            <span class="option-label">Option B: Smartphone video analysis</span>
+                            <p>Good accuracy (85-90%) but zero cost, universal access, no compliance issues</p>
+                        </div>
+                    </div>
+                    <div class="tradeoff-decision">
+                        <strong>Decision:</strong> We chose accessibility. A tool that reaches 10 million families at 85% accuracy helps more children than a perfect tool only 100,000 families can afford.
+                    </div>
+                </div>
+
+                <div class="tradeoff-item">
+                    <h4>Tradeoff 2: Continuous vs. Episodic Monitoring</h4>
+                    <div class="tradeoff-options">
+                        <div class="option">
+                            <span class="option-label">Option A: Always-on nursery camera</span>
+                            <p>24/7 monitoring but major privacy concerns, fixed location, creepy factor</p>
+                        </div>
+                        <div class="vs">VS</div>
+                        <div class="option chosen">
+                            <span class="option-label">Option B: Parent-initiated video clips</span>
+                            <p>2-3 minute recordings but privacy-preserving, any location, parent in control</p>
+                        </div>
+                    </div>
+                    <div class="tradeoff-decision">
+                        <strong>Decision:</strong> We chose parent control. Weekly 3-minute clips provide enough data for milestone tracking without the privacy concerns of always-on surveillance.
+                    </div>
+                </div>
+
+                <div class="tradeoff-item">
+                    <h4>Tradeoff 3: Cloud vs. On-Device Processing</h4>
+                    <div class="tradeoff-options">
+                        <div class="option">
+                            <span class="option-label">Option A: Full cloud processing</span>
+                            <p>Most powerful AI but videos uploaded to servers, privacy concerns, bandwidth heavy</p>
+                        </div>
+                        <div class="vs">VS</div>
+                        <div class="option chosen">
+                            <span class="option-label">Option B: Hybrid approach</span>
+                            <p>Pose estimation on-device, only skeleton data sent to cloud, best of both worlds</p>
+                        </div>
+                    </div>
+                    <div class="tradeoff-decision">
+                        <strong>Decision:</strong> Hybrid approach. Parents feel safer knowing raw video never leaves their phone. Skeleton data is anonymous and low-bandwidth.
+                    </div>
+                </div>
+
+                <div class="tradeoff-item">
+                    <h4>Tradeoff 4: Comprehensive vs. Focused Scope</h4>
+                    <div class="tradeoff-options">
+                        <div class="option">
+                            <span class="option-label">Option A: Track everything (motor, language, social, cognitive)</span>
+                            <p>Complete picture but requires multiple input methods, complex UX, longer time to market</p>
+                        </div>
+                        <div class="vs">VS</div>
+                        <div class="option chosen">
+                            <span class="option-label">Option B: Start with motor + social-emotional via video</span>
+                            <p>Focused scope but single input method, simple UX, faster launch, can expand later</p>
+                        </div>
+                    </div>
+                    <div class="tradeoff-decision">
+                        <strong>Decision:</strong> Start focused. Motor and social-emotional milestones are the most impactful for early intervention. We can add language analysis later via separate audio feature.
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-card highlight" data-editable="true">
+                <h3><i class="fas fa-check-double"></i> Final Approach Validation</h3>
+                <p>We validated our AI Video Analysis approach against our core user needs:</p>
+                
+                <div class="validation-grid">
+                    <div class="validation-item">
+                        <div class="validation-need">"I want to know if my baby is developing normally"</div>
+                        <div class="validation-solution"><i class="fas fa-check"></i> AI compares movements to age-appropriate norms</div>
+                    </div>
+                    <div class="validation-item">
+                        <div class="validation-need">"I don't want to buy expensive devices"</div>
+                        <div class="validation-solution"><i class="fas fa-check"></i> Uses existing smartphone camera</div>
+                    </div>
+                    <div class="validation-item">
+                        <div class="validation-need">"I want objective data, not just my opinion"</div>
+                        <div class="validation-solution"><i class="fas fa-check"></i> AI provides quantified milestone scores</div>
+                    </div>
+                    <div class="validation-item">
+                        <div class="validation-need">"I want something to show my pediatrician"</div>
+                        <div class="validation-solution"><i class="fas fa-check"></i> Exportable reports in clinical format</div>
+                    </div>
+                    <div class="validation-item">
+                        <div class="validation-need">"I don't want more anxiety"</div>
+                        <div class="validation-solution"><i class="fas fa-check"></i> Celebration-first design with contextual concerns</div>
+                    </div>
+                    <div class="validation-item">
+                        <div class="validation-need">"I want to track progress over time"</div>
+                        <div class="validation-solution"><i class="fas fa-check"></i> Historical video analysis and trend visualization</div>
+                    </div>
+                </div>
+            </div>
+
+            <section class="highlight-section" data-editable="true">
+                <h3><i class="fas fa-forward"></i> Next Steps: Engineering Phase</h3>
+                <p>With our approach validated, we move to the Engineering phase to define:</p>
+                <ul class="next-steps-list">
+                    <li><strong>Technical Architecture</strong> - Hybrid on-device/cloud AI pipeline</li>
+                    <li><strong>ML Model Design</strong> - Training data, milestone detection algorithms</li>
+                    <li><strong>Privacy Implementation</strong> - On-device pose extraction, data anonymization</li>
+                    <li><strong>UI/UX Specifications</strong> - Recording flow, dashboard, reports</li>
+                    <li><strong>API Design</strong> - Pediatrician integration, data export</li>
+                </ul>
+            </section>
+
+            <div class="nav-buttons">
+                <a href="deep-dive-experts.html" class="nav-btn prev"><i class="fas fa-arrow-left"></i> Deep Dive of Experts</a>
+                <a href="../engineering.html" class="nav-btn primary">Continue to Engineering <i class="fas fa-arrow-right"></i></a>
+            </div>
+        </div>
+    </main>
+
+    <a href="?edit=true" class="edit-float-btn" id="editFloatBtn">
+        <i class="fas fa-edit"></i> Edit Site
+    </a>
+
+    <script src="../edit-mode.js"></script>
+    <script>
+        document.getElementById('menuToggle').addEventListener('click', function() {
+            document.getElementById('navLinks').classList.toggle('active');
+            this.classList.toggle('active');
+        });
+    </script>
+</body>
+</html>

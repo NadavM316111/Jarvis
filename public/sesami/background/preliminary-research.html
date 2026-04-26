@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preliminary Research Paper - Sesami</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../edit-mode.css">
+    <style>
+        .sub-nav {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding: 0;
+            position: sticky;
+            top: 80px;
+            z-index: 99;
+        }
+        .sub-nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            gap: 0;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+        .sub-nav-container::-webkit-scrollbar { display: none; }
+        .sub-nav-link {
+            padding: 16px 24px;
+            color: rgba(255,255,255,0.6);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            white-space: nowrap;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+        .sub-nav-link:hover {
+            color: rgba(255,255,255,0.9);
+            background: rgba(255,255,255,0.05);
+        }
+        .sub-nav-link.active {
+            color: #f472b6;
+            border-bottom-color: #f472b6;
+            background: rgba(244, 114, 182, 0.1);
+        }
+        .research-content {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 60px 24px;
+        }
+        .research-header {
+            margin-bottom: 48px;
+        }
+        .research-header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 48px;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, #f472b6, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .research-header .meta {
+            color: rgba(255,255,255,0.5);
+            font-size: 14px;
+        }
+        .research-section {
+            margin-bottom: 48px;
+        }
+        .research-section h2 {
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: #fff;
+        }
+        .research-section h3 {
+            font-size: 22px;
+            margin: 32px 0 16px;
+            color: #f472b6;
+        }
+        .research-section p {
+            color: rgba(255,255,255,0.8);
+            line-height: 1.8;
+            margin-bottom: 16px;
+            font-size: 16px;
+        }
+        .research-section ul, .research-section ol {
+            color: rgba(255,255,255,0.8);
+            line-height: 1.8;
+            margin: 16px 0;
+            padding-left: 24px;
+        }
+        .research-section li {
+            margin-bottom: 12px;
+        }
+        .stat-highlight {
+            background: linear-gradient(135deg, rgba(244, 114, 182, 0.2), rgba(167, 139, 250, 0.2));
+            border: 1px solid rgba(244, 114, 182, 0.3);
+            border-radius: 16px;
+            padding: 32px;
+            margin: 32px 0;
+            text-align: center;
+        }
+        .stat-highlight .big-number {
+            font-size: 64px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #f472b6, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .stat-highlight .stat-desc {
+            font-size: 18px;
+            color: rgba(255,255,255,0.7);
+            margin-top: 8px;
+        }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 24px 0;
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .data-table th, .data-table td {
+            padding: 16px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .data-table th {
+            background: rgba(244, 114, 182, 0.2);
+            color: #f472b6;
+            font-weight: 600;
+        }
+        .data-table td {
+            color: rgba(255,255,255,0.8);
+        }
+        .data-table tr:hover {
+            background: rgba(255,255,255,0.05);
+        }
+        .citation {
+            font-size: 13px;
+            color: rgba(255,255,255,0.4);
+            font-style: italic;
+            margin-top: 8px;
+        }
+        .quote-box {
+            background: rgba(167, 139, 250, 0.1);
+            border-left: 4px solid #a78bfa;
+            padding: 24px;
+            margin: 24px 0;
+            border-radius: 0 12px 12px 0;
+        }
+        .quote-box p {
+            font-style: italic;
+            font-size: 18px;
+            color: rgba(255,255,255,0.9);
+            margin: 0;
+        }
+        .quote-box cite {
+            display: block;
+            margin-top: 12px;
+            color: rgba(255,255,255,0.5);
+            font-size: 14px;
+        }
+        .key-finding {
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(34, 197, 94, 0.05));
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .key-finding h4 {
+            color: #22c55e;
+            margin: 0 0 8px 0;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .key-finding p {
+            margin: 0;
+            color: rgba(255,255,255,0.9);
+        }
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #f472b6;
+            text-decoration: none;
+            font-weight: 500;
+            margin-bottom: 24px;
+            transition: all 0.3s ease;
+        }
+        .back-link:hover {
+            gap: 12px;
+        }
+    </style>
+</head>
+<body data-page="background">
+    <div class="bg-gradient"></div>
+    <div class="bg-pattern"></div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="../index.html" class="logo">
+                <div class="logo-icon"><i class="fas fa-baby"></i></div>
+                <span class="logo-text">Sesami</span>
+            </a>
+            <ul class="nav-links">
+                <li class="nav-item"><a href="../index.html" class="nav-link">Home</a></li>
+                <li class="nav-item"><a href="../background.html" class="nav-link active">Background</a></li>
+                <li class="nav-item"><a href="../empathize.html" class="nav-link">Empathize</a></li>
+                <li class="nav-item"><a href="../define.html" class="nav-link">Define</a></li>
+                <li class="nav-item"><a href="../ideate.html" class="nav-link">Ideate</a></li>
+                <li class="nav-item"><a href="../engineering.html" class="nav-link">Engineering</a></li>
+                <li class="nav-item"><a href="../test.html" class="nav-link">Test</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Sub Navigation -->
+    <div class="sub-nav">
+        <div class="sub-nav-container">
+            <a href="preliminary-research.html" class="sub-nav-link active">Preliminary Research</a>
+            <a href="final-research.html" class="sub-nav-link">Final Research Paper</a>
+            <a href="baby-development-tech.html" class="sub-nav-link">Baby Development Tech</a>
+            <a href="competitor-chart.html" class="sub-nav-link">Competitor Chart</a>
+            <a href="expert-source.html" class="sub-nav-link">Expert Source</a>
+            <a href="end-user.html" class="sub-nav-link">End User</a>
+            <a href="expert-survey.html" class="sub-nav-link">Expert Survey</a>
+            <a href="sensors-writeup.html" class="sub-nav-link">Sensors Writeup</a>
+            <a href="business-plan.html" class="sub-nav-link">Business Plan</a>
+            <a href="financials.html" class="sub-nav-link">Financials</a>
+        </div>
+    </div>
+
+    <div class="research-content">
+        <a href="../background.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Background</a>
+        
+        <div class="research-header">
+            <h1>Preliminary Research Paper</h1>
+            <p class="meta">Initial exploration into infant developmental monitoring technology</p>
+        </div>
+
+        <div class="research-section">
+            <h2>Abstract</h2>
+            <p>This preliminary research paper explores the intersection of wearable sensor technology and infant developmental monitoring. Our investigation focuses on identifying gaps in current baby monitoring solutions and establishing the foundation for an AI-powered developmental tracking system. Through literature review, market analysis, and initial stakeholder interviews, we establish the critical need for early detection of developmental delays in infants aged 0-24 months.</p>
+        </div>
+
+        <div class="research-section">
+            <h2>Introduction</h2>
+            <p>Developmental delays affect approximately 13% of children, yet the average time between parental concern and professional diagnosis spans 13 months. This critical gap represents a missed opportunity for early intervention, which research consistently shows produces significantly better outcomes for children with developmental challenges.</p>
+            
+            <div class="stat-highlight">
+                <div class="big-number">13%</div>
+                <div class="stat-desc">of children have developmental delays eligible for early intervention</div>
+            </div>
+            
+            <p>The American Academy of Pediatrics (AAP) recommends developmental surveillance at every health supervision visit, with standardized screenings at 9, 18, and 30 months. However, the time between pediatric visits leaves parents without continuous monitoring tools, and many subtle developmental indicators go unnoticed.</p>
+        </div>
+
+        <div class="research-section">
+            <h2>Research Objectives</h2>
+            <ul>
+                <li>Evaluate current baby monitoring technologies and identify feature gaps</li>
+                <li>Analyze the feasibility of computer vision and sensor-based milestone detection</li>
+                <li>Understand parent needs and concerns regarding developmental tracking</li>
+                <li>Establish technical requirements for an AI-powered monitoring system</li>
+                <li>Review existing research on wearable sensors for infant movement analysis</li>
+            </ul>
+        </div>
+
+        <div class="research-section">
+            <h2>Literature Review</h2>
+            
+            <h3>Wearable Sensor Technology in Infant Research</h3>
+            <p>Recent advances in miniaturized inertial measurement units (IMUs) have enabled breakthrough research in infant movement analysis. Studies published in Scientific Reports demonstrate that accelerometer and gyroscope sensors can successfully track infant postures and movements with clinical-grade accuracy.</p>
+            
+            <div class="quote-box">
+                <p>"Wearable sensors were used to record leg movements over a full day from infants broadly at risk of neuromotor developmental delay. Features extracted from raw sensor data showed significant correlation with clinical assessments."</p>
+                <cite>- PMC Research Study, 2019</cite>
+            </div>
+            
+            <p>The smart jumpsuit system developed by researchers uses Support Vector Machine (SVM) classifiers to identify postures and detect movement patterns. While SVM struggles with certain key movements like crawling and pivoting, the system demonstrates proof-of-concept for out-of-hospital developmental monitoring.</p>
+            
+            <h3>Computer Vision Applications</h3>
+            <p>Deep learning approaches for markerless tracking of infant general movements show promise for automated developmental assessment. Research from institutions including IIT demonstrates that pose estimation algorithms can achieve human-level accuracy in detecting infant motor milestones.</p>
+            
+            <div class="key-finding">
+                <h4>Key Finding</h4>
+                <p>Lightweight CNN models can efficiently identify movement patterns in infants, making real-time processing on embedded devices (Raspberry Pi, Jetson Nano) feasible for consumer applications.</p>
+            </div>
+        </div>
+
+        <div class="research-section">
+            <h2>Market Landscape</h2>
+            <p>The smart baby monitor market reached USD 1.6 billion in 2024, projected to grow at 8.2% CAGR to USD 3.5 billion by 2034. The US market alone is expected to double from $370 million to $740 million by 2033.</p>
+            
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Market Segment</th>
+                        <th>2024 Value</th>
+                        <th>2033 Projection</th>
+                        <th>CAGR</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Global Smart Baby Monitor</td>
+                        <td>$1.6 billion</td>
+                        <td>$3.5 billion</td>
+                        <td>8.2%</td>
+                    </tr>
+                    <tr>
+                        <td>US Baby Monitor Market</td>
+                        <td>$370 million</td>
+                        <td>$740 million</td>
+                        <td>8.1%</td>
+                    </tr>
+                    <tr>
+                        <td>Total Baby Monitoring (incl. traditional)</td>
+                        <td>$1.95 billion</td>
+                        <td>$2.72 billion</td>
+                        <td>6.95%</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="research-section">
+            <h2>Preliminary Conclusions</h2>
+            <p>Our initial research supports the feasibility and market need for an AI-powered developmental monitoring system. Key conclusions include:</p>
+            <ol>
+                <li>Technology exists to accurately track infant movements using wearable sensors and computer vision</li>
+                <li>Significant market gap exists between safety monitoring (current focus) and developmental tracking</li>
+                <li>Parents actively seek technology-driven solutions and are willing to pay premium prices</li>
+                <li>Early intervention provides measurable benefits, creating strong value proposition</li>
+                <li>AAP guidelines support the need for continuous developmental surveillance</li>
+            </ol>
+        </div>
+
+        <div class="research-section">
+            <h2>Next Steps</h2>
+            <p>This preliminary research establishes the foundation for our final research paper, which will include primary research through parent surveys, expert interviews, and prototype development. We will conduct deeper competitive analysis and develop technical specifications for the Sesami system.</p>
+        </div>
+    </div>
+
+    <script src="../app.js"></script>
+    <script src="../edit-mode.js"></script>
+</body>
+</html>

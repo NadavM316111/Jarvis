@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Feedback - Ideate - Sesami</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../edit-mode.css">
+</head>
+<body data-page="ideate">
+    <div class="bg-gradient"></div>
+    <div class="bg-pattern"></div>
+    <div class="floating-orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="../index.html" class="logo">
+                <div class="logo-icon"><i class="fas fa-baby"></i></div>
+                <span class="logo-text">Sesami</span>
+            </a>
+            <ul class="nav-links" id="navLinks">
+                <li class="nav-item"><a href="../index.html" class="nav-link">Home</a></li>
+                <li class="nav-item has-dropdown">
+                    <a href="../background.html" class="nav-link">Background <i class="fas fa-chevron-down arrow"></i></a>
+                    <div class="dropdown">
+                        <a href="../background/preliminary-research.html"><i class="fas fa-file-alt"></i> Preliminary Research</a>
+                        <a href="../background/final-research.html"><i class="fas fa-file-lines"></i> Final Research Paper</a>
+                        <a href="../background/baby-development-tech.html"><i class="fas fa-baby"></i> Baby Development Tech</a>
+                        <a href="../background/competitor-chart.html"><i class="fas fa-chart-bar"></i> Competitor Chart</a>
+                        <a href="../background/expert-source.html"><i class="fas fa-user-md"></i> Expert Source</a>
+                    </div>
+                </li>
+                <li class="nav-item has-dropdown">
+                    <a href="../empathize.html" class="nav-link">Empathize <i class="fas fa-chevron-down arrow"></i></a>
+                    <div class="dropdown">
+                        <a href="../empathize/end-users-survey.html"><i class="fas fa-poll"></i> End Users Survey</a>
+                        <a href="../empathize/deep-dive.html"><i class="fas fa-search"></i> Deep Dive of End Users</a>
+                        <a href="../empathize/potential-solutions.html"><i class="fas fa-lightbulb"></i> Potential Solutions</a>
+                        <a href="../empathize/direct-observation.html"><i class="fas fa-eye"></i> Direct Observation</a>
+                    </div>
+                </li>
+                <li class="nav-item has-dropdown">
+                    <a href="../define.html" class="nav-link">Define <i class="fas fa-chevron-down arrow"></i></a>
+                    <div class="dropdown">
+                        <a href="../define/purpose.html"><i class="fas fa-bullseye"></i> Purpose for Innovation</a>
+                        <a href="../define/design-goals.html"><i class="fas fa-tasks"></i> Design Goals/Criteria</a>
+                        <a href="../define/end-user-interview.html"><i class="fas fa-comments"></i> End User Interview</a>
+                        <a href="../define/thesis.html"><i class="fas fa-scroll"></i> Thesis Statement</a>
+                        <a href="../define/user-profiles.html"><i class="fas fa-users"></i> End User Profiles</a>
+                    </div>
+                </li>
+                <li class="nav-item has-dropdown">
+                    <a href="../ideate.html" class="nav-link active">Ideate <i class="fas fa-chevron-down arrow"></i></a>
+                    <div class="dropdown">
+                        <a href="potential-solutions.html"><i class="fas fa-lightbulb"></i> Potential Solutions</a>
+                        <a href="decision-matrix.html"><i class="fas fa-table"></i> Decision Matrix</a>
+                        <a href="competitive-advantage.html"><i class="fas fa-trophy"></i> Competitive Advantage</a>
+                        <a href="professional-feedback.html"><i class="fas fa-user-tie"></i> Professional Feedback</a>
+                        <a href="deep-dive-experts.html"><i class="fas fa-microscope"></i> Deep Dive of Experts</a>
+                        <a href="approach-reasoning.html"><i class="fas fa-route"></i> Approach Reasoning</a>
+                    </div>
+                </li>
+                <li class="nav-item has-dropdown">
+                    <a href="../engineering.html" class="nav-link">Engineering <i class="fas fa-chevron-down arrow"></i></a>
+                    <div class="dropdown">
+                        <a href="../engineering.html#specs"><i class="fas fa-cogs"></i> Technical Specs</a>
+                        <a href="../engineering.html#cad"><i class="fas fa-drafting-compass"></i> CAD Drawings</a>
+                    </div>
+                </li>
+                <li class="nav-item has-dropdown">
+                    <a href="../test.html" class="nav-link">Test <i class="fas fa-chevron-down arrow"></i></a>
+                    <div class="dropdown">
+                        <a href="../test.html#methods"><i class="fas fa-flask"></i> Testing Methods</a>
+                        <a href="../test.html#results"><i class="fas fa-chart-bar"></i> Results</a>
+                    </div>
+                </li>
+            </ul>
+            <button class="menu-toggle" id="menuToggle">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+
+    <section class="page-hero">
+        <div class="page-hero-content">
+            <div class="page-badge"><i class="fas fa-user-tie"></i> Ideate</div>
+            <h1>Professional <span>Feedback</span></h1>
+            <p>Iterating our design based on expert consultations and professional guidance.</p>
+        </div>
+    </section>
+
+    <main class="main-content">
+        <div class="container">
+            <nav class="breadcrumb">
+                <a href="../index.html">Home</a> <i class="fas fa-chevron-right"></i>
+                <a href="../ideate.html">Ideate</a> <i class="fas fa-chevron-right"></i>
+                <span>Professional Feedback</span>
+            </nav>
+
+            <section class="section-header" data-editable="true">
+                <h2>Expert Consultation Process</h2>
+                <p>We consulted with 5 domain experts across pediatrics, AI/ML, child development, product design, and regulatory affairs. Their feedback drove 8 major iterations to our design.</p>
+            </section>
+
+            <div class="content-card" data-editable="true">
+                <h3><i class="fas fa-user-md"></i> Expert 1: Dr. Rachel Martinez - Developmental Pediatrician</h3>
+                <div class="feedback-session">
+                    <div class="expert-context">
+                        <p><strong>Background:</strong> 15 years practicing developmental pediatrics at Children's Hospital. Specializes in early intervention referrals.</p>
+                        <p><strong>Consultation Date:</strong> January 15, 2026 (45 minutes)</p>
+                    </div>
+                    
+                    <div class="feedback-item">
+                        <div class="feedback-before">
+                            <h4><i class="fas fa-times-circle"></i> Before Feedback</h4>
+                            <p>Our initial design flagged any deviation from CDC milestone averages as "concerning"</p>
+                        </div>
+                        <div class="feedback-arrow"><i class="fas fa-arrow-right"></i></div>
+                        <div class="feedback-after">
+                            <h4><i class="fas fa-check-circle"></i> After Iteration</h4>
+                            <p>Added age-adjusted ranges with clear "normal variation" vs "consult recommended" thresholds based on clinical standards</p>
+                        </div>
+                    </div>
+
+                    <div class="quote-box">
+                        <i class="fas fa-quote-left"></i>
+                        <p>"The worst thing you can do is create anxious parents who flood pediatric offices with normal babies. Show them what's actually concerning vs what's just individual variation."</p>
+                        <span class="quote-author">- Dr. Rachel Martinez</span>
+                    </div>
+
+                    <div class="feedback-item">
+                        <div class="feedback-before">
+                            <h4><i class="fas fa-times-circle"></i> Before Feedback</h4>
+                            <p>App generated generic "milestone reports" without clinical context</p>
+                        </div>
+                        <div class="feedback-arrow"><i class="fas fa-arrow-right"></i></div>
+                        <div class="feedback-after">
+                            <h4><i class="fas fa-check-circle"></i> After Iteration</h4>
+                            <p>Created pediatrician-specific export format aligned with ASQ-3 screening tool language that doctors recognize</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-card" data-editable="true">
+                <h3><i class="fas fa-brain"></i> Expert 2: Dr. James Chen - AI/ML Research Scientist</h3>
+                <div class="feedback-session">
+                    <div class="expert-context">
+                        <p><strong>Background:</strong> Computer vision researcher at Stanford AI Lab. Published work on pose estimation and infant movement analysis.</p>
+                        <p><strong>Consultation Date:</strong> January 22, 2026 (60 minutes)</p>
+                    </div>
+                    
+                    <div class="feedback-item">
+                        <div class="feedback-before">
+                            <h4><i class="fas fa-times-circle"></i> Before Feedback</h4>
+                            <p>Planned to require parents to record specific poses/activities on demand</p>
+                        </div>
+                        <div class="feedback-arrow"><i class="fas fa-arrow-right"></i></div>
+                        <div class="feedback-after">
+                            <h4><i class="fas fa-check-circle"></i> After Iteration</h4>
+                            <p>Switched to passive analysis of natural play videos - AI identifies relevant movements automatically</p>
+                        </div>
+                    </div>
+
+                    <div class="feedback-item">
+                        <div class="feedback-before">
+                            <h4><i class="fas fa-times-circle"></i> Before Feedback</h4>
+                            <p>Cloud-only processing for all video analysis</p>
+                        </div>
+                        <div class="feedback-arrow"><i class="fas fa-arrow-right"></i></div>
+                        <div class="feedback-after">
+                            <h4><i class="fas fa-check-circle"></i> After Iteration</h4>
+                            <p>Hybrid approach: pose estimation on-device, milestone analysis in cloud. Reduces privacy concerns and bandwidth.</p>
+                        </div>
+                    </div>
+
+                    <div class="quote-box">
+                        <i class="fas fa-quote-left"></i>
+                        <p>"MediaPipe pose estimation is good enough for infant tracking now. Run it locally, send only the skeleton data to your servers. Parents will trust you more."</p>
+                        <span class="quote-author">- Dr. James Chen</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-card" data-editable="true">
+                <h3><i class="fas fa-child"></i> Expert 3: Dr. Lisa Thompson - Child Development Specialist</h3>
+                <div class="feedback-session">
+                    <div class="expert-context">
+                        <p><strong>Background:</strong> Child psychologist specializing in early childhood development. Author of "The First Two Years" parenting guide.</p>
+                        <p><strong>Consultation Date:</strong> February 3, 2026 (40 minutes)</p>
+                    </div>
+                    
+                    <div class="feedback-item">
+                        <div class="feedback-before">
+                            <h4><i class="fas fa-times-circle"></i> Before Feedback</h4>
+                            <p>Focus only on motor milestones (rolling, sitting, walking)</p>
+                        </div>
+                        <div class="feedback-arrow"><i class="fas fa-arrow-right"></i></div>
+                        <div class="feedback-after">
+                            <h4><i class="fas fa-check-circle"></i> After Iteration</h4>
+                            <p>Added social-emotional indicators: eye contact, social smiling, response to name - detectable via video</p>
+                        </div>
+                    </div>
+
+                    <div class="quote-box">
+                        <i class="fas fa-quote-left"></i>
+                        <p>"Motor delays are important, but autism spectrum indicators show up in social behaviors first. If you can detect reduced eye contact or lack of social smiling, that's incredibly valuable for early intervention."</p>
+                        <span class="quote-author">- Dr. Lisa Thompson</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-card" data-editable="true">
+                <h3><i class="fas fa-pencil-ruler"></i> Expert 4: Sarah Kim - UX Design Lead (Health Apps)</h3>
+                <div class="feedback-session">
+                    <div class="expert-context">
+                        <p><strong>Background:</strong> Former design lead at Calm and Headspace. Specializes in anxiety-aware health app design.</p>
+                        <p><strong>Consultation Date:</strong> February 10, 2026 (50 minutes)</p>
+                    </div>
+                    
+                    <div class="feedback-item">
+                        <div class="feedback-before">
+                            <h4><i class="fas fa-times-circle"></i> Before Feedback</h4>
+                            <p>Dashboard showed "risk scores" and "delay indicators" prominently</p>
+                        </div>
+                        <div class="feedback-arrow"><i class="fas fa-arrow-right"></i></div>
+                        <div class="feedback-after">
+                            <h4><i class="fas fa-check-circle"></i> After Iteration</h4>
+                            <p>Redesigned to celebrate achievements first. "Concerns" only shown when actionable, with clear next steps.</p>
+                        </div>
+                    </div>
+
+                    <div class="feedback-item">
+                        <div class="feedback-before">
+                            <h4><i class="fas fa-times-circle"></i> Before Feedback</h4>
+                            <p>Push notifications for every analysis result</p>
+                        </div>
+                        <div class="feedback-arrow"><i class="fas fa-arrow-right"></i></div>
+                        <div class="feedback-after">
+                            <h4><i class="fas fa-check-circle"></i> After Iteration</h4>
+                            <p>Weekly summary digests with celebration-first framing. Urgent alerts only for significant findings.</p>
+                        </div>
+                    </div>
+
+                    <div class="quote-box">
+                        <i class="fas fa-quote-left"></i>
+                        <p>"New parents are already anxious enough. Your app needs to be a source of confidence, not another thing to worry about. Lead with what's going well."</p>
+                        <span class="quote-author">- Sarah Kim</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-card" data-editable="true">
+                <h3><i class="fas fa-gavel"></i> Expert 5: Michael Roberts - Healthcare Regulatory Consultant</h3>
+                <div class="feedback-session">
+                    <div class="expert-context">
+                        <p><strong>Background:</strong> Former FDA reviewer, now consults on digital health product compliance. Expert in SaMD (Software as Medical Device) regulations.</p>
+                        <p><strong>Consultation Date:</strong> February 18, 2026 (55 minutes)</p>
+                    </div>
+                    
+                    <div class="feedback-item">
+                        <div class="feedback-before">
+                            <h4><i class="fas fa-times-circle"></i> Before Feedback</h4>
+                            <p>Marketing positioned app as "diagnostic tool" for developmental delays</p>
+                        </div>
+                        <div class="feedback-arrow"><i class="fas fa-arrow-right"></i></div>
+                        <div class="feedback-after">
+                            <h4><i class="fas fa-check-circle"></i> After Iteration</h4>
+                            <p>Repositioned as "developmental tracking and awareness tool" - not diagnostic. Avoids FDA Class II medical device requirements.</p>
+                        </div>
+                    </div>
+
+                    <div class="quote-box">
+                        <i class="fas fa-quote-left"></i>
+                        <p>"Stay in the wellness category. The moment you claim to diagnose anything, you're a medical device and looking at 2+ years and $500K+ for FDA clearance. You can still provide immense value without crossing that line."</p>
+                        <span class="quote-author">- Michael Roberts</span>
+                    </div>
+                </div>
+            </div>
+
+            <section class="highlight-section" data-editable="true">
+                <h3><i class="fas fa-sync"></i> Summary of Design Iterations</h3>
+                <div class="iterations-summary">
+                    <div class="iteration-item">
+                        <span class="iteration-number">1</span>
+                        <p><strong>Anxiety-aware messaging</strong> - Lead with positives, contextualize concerns</p>
+                    </div>
+                    <div class="iteration-item">
+                        <span class="iteration-number">2</span>
+                        <p><strong>Clinical threshold calibration</strong> - Use validated age-adjusted ranges</p>
+                    </div>
+                    <div class="iteration-item">
+                        <span class="iteration-number">3</span>
+                        <p><strong>Hybrid processing model</strong> - On-device pose estimation for privacy</p>
+                    </div>
+                    <div class="iteration-item">
+                        <span class="iteration-number">4</span>
+                        <p><strong>Natural play analysis</strong> - No structured recording requirements</p>
+                    </div>
+                    <div class="iteration-item">
+                        <span class="iteration-number">5</span>
+                        <p><strong>Social-emotional indicators</strong> - Beyond just motor milestones</p>
+                    </div>
+                    <div class="iteration-item">
+                        <span class="iteration-number">6</span>
+                        <p><strong>Pediatrician export format</strong> - ASQ-3 compatible reports</p>
+                    </div>
+                    <div class="iteration-item">
+                        <span class="iteration-number">7</span>
+                        <p><strong>Wellness positioning</strong> - Avoid medical device classification</p>
+                    </div>
+                    <div class="iteration-item">
+                        <span class="iteration-number">8</span>
+                        <p><strong>Weekly digest notifications</strong> - Reduce alert fatigue</p>
+                    </div>
+                </div>
+            </section>
+
+            <div class="nav-buttons">
+                <a href="competitive-advantage.html" class="nav-btn prev"><i class="fas fa-arrow-left"></i> Competitive Advantage</a>
+                <a href="deep-dive-experts.html" class="nav-btn primary">Deep Dive of Experts <i class="fas fa-arrow-right"></i></a>
+            </div>
+        </div>
+    </main>
+
+    <a href="?edit=true" class="edit-float-btn" id="editFloatBtn">
+        <i class="fas fa-edit"></i> Edit Site
+    </a>
+
+    <script src="../edit-mode.js"></script>
+    <script>
+        document.getElementById('menuToggle').addEventListener('click', function() {
+            document.getElementById('navLinks').classList.toggle('active');
+            this.classList.toggle('active');
+        });
+    </script>
+</body>
+</html>

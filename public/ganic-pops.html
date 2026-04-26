@@ -1,0 +1,1375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ganic Pops - A Cake Pop Revolution</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --pink: #E91E63;
+            --orange: #FF9800;
+            --green: #8BC34A;
+            --purple: #9C27B0;
+            --blue: #2196F3;
+            --yellow: #FFEB3B;
+            --brown: #795548;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #fff5f8 0%, #fff9e6 100%);
+            overflow-x: hidden;
+        }
+
+        /* Sprinkles Animation */
+        .sprinkle {
+            position: fixed;
+            width: 8px;
+            height: 20px;
+            border-radius: 4px;
+            pointer-events: none;
+            z-index: 9999;
+            animation: fall linear forwards;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(100vh) rotate(720deg);
+            }
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            padding: 15px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            height: 50px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--pink);
+        }
+
+        .cart-btn {
+            position: relative;
+            background: linear-gradient(135deg, var(--pink), var(--orange));
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .cart-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(233,30,99,0.4);
+        }
+
+        .cart-count {
+            background: white;
+            color: var(--pink);
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 100px 50px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            text-align: center;
+            z-index: 2;
+            max-width: 800px;
+        }
+
+        .hero-logo {
+            max-width: 400px;
+            margin-bottom: 20px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .hero h1 {
+            font-family: 'Fredoka One', cursive;
+            font-size: 3.5rem;
+            background: linear-gradient(135deg, var(--pink), var(--purple), var(--blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .hero-btn {
+            background: linear-gradient(135deg, var(--pink), var(--orange));
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 10px 30px rgba(233,30,99,0.3);
+        }
+
+        .hero-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(233,30,99,0.4);
+        }
+
+        .hero-image {
+            position: absolute;
+            right: -100px;
+            top: 50%;
+            transform: translateY(-50%);
+            max-width: 600px;
+            opacity: 0.9;
+            animation: floatSlow 4s ease-in-out infinite;
+        }
+
+        @keyframes floatSlow {
+            0%, 100% { transform: translateY(-50%) rotate(-5deg); }
+            50% { transform: translateY(-55%) rotate(5deg); }
+        }
+
+        /* Our Story Section */
+        .story {
+            padding: 100px 50px;
+            background: white;
+        }
+
+        .story-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .story-image {
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        }
+
+        .story-image img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .story-content h2 {
+            font-family: 'Fredoka One', cursive;
+            font-size: 2.5rem;
+            color: var(--purple);
+            margin-bottom: 20px;
+        }
+
+        .story-content p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #555;
+            margin-bottom: 15px;
+        }
+
+        .story-content .signature {
+            font-style: italic;
+            color: var(--pink);
+            font-weight: 600;
+            margin-top: 20px;
+        }
+
+        /* Products Section */
+        .products {
+            padding: 100px 50px;
+            background: linear-gradient(180deg, #fff9e6 0%, #fff5f8 100%);
+        }
+
+        .section-title {
+            text-align: center;
+            font-family: 'Fredoka One', cursive;
+            font-size: 2.5rem;
+            margin-bottom: 60px;
+            background: linear-gradient(135deg, var(--pink), var(--purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .products-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 25px;
+            overflow: hidden;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 60px rgba(0,0,0,0.15);
+        }
+
+        .product-image {
+            height: 250px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+
+        .product-card:hover .product-image img {
+            transform: scale(1.1);
+        }
+
+        .product-badge {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: var(--green);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .product-info {
+            padding: 25px;
+        }
+
+        .product-info h3 {
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .product-info p {
+            color: #666;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .product-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .price {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--pink);
+        }
+
+        .add-to-cart {
+            background: linear-gradient(135deg, var(--pink), var(--orange));
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .add-to-cart:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(233,30,99,0.4);
+        }
+
+        /* Gallery Section */
+        .gallery {
+            padding: 100px 50px;
+            background: white;
+        }
+
+        .gallery-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        .gallery-item {
+            border-radius: 15px;
+            overflow: hidden;
+            aspect-ratio: 1;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .gallery-item:hover {
+            transform: scale(1.05);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .gallery-item.large {
+            grid-column: span 2;
+            grid-row: span 2;
+        }
+
+        /* Cool Facts Section */
+        .facts {
+            padding: 100px 50px;
+            background: linear-gradient(135deg, var(--purple), var(--pink));
+            color: white;
+        }
+
+        .facts .section-title {
+            -webkit-text-fill-color: white;
+        }
+
+        .facts-grid {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+            text-align: center;
+        }
+
+        .fact-item {
+            padding: 30px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .fact-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        .fact-item h3 {
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+        }
+
+        .fact-item p {
+            font-size: 0.95rem;
+            opacity: 0.9;
+        }
+
+        /* Contact Section */
+        .contact {
+            padding: 100px 50px;
+            background: #333;
+            color: white;
+            text-align: center;
+        }
+
+        .contact h2 {
+            font-family: 'Fredoka One', cursive;
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+        }
+
+        .contact a {
+            color: var(--pink);
+            font-size: 1.5rem;
+            text-decoration: none;
+        }
+
+        .contact a:hover {
+            text-decoration: underline;
+        }
+
+        /* Cart Sidebar */
+        .cart-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+
+        .cart-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .cart-sidebar {
+            position: fixed;
+            top: 0;
+            right: -450px;
+            width: 450px;
+            height: 100%;
+            background: white;
+            z-index: 2001;
+            transition: right 0.3s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .cart-sidebar.active {
+            right: 0;
+        }
+
+        .cart-header {
+            padding: 20px;
+            background: linear-gradient(135deg, var(--pink), var(--orange));
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cart-header h3 {
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.5rem;
+        }
+
+        .close-cart {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .cart-items {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .cart-item {
+            display: flex;
+            gap: 15px;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .cart-item img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        .cart-item-info {
+            flex: 1;
+        }
+
+        .cart-item-info h4 {
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .cart-item-info .item-price {
+            color: var(--pink);
+            font-weight: 600;
+        }
+
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .quantity-controls button {
+            width: 30px;
+            height: 30px;
+            border: none;
+            background: #eee;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .remove-item {
+            background: none;
+            border: none;
+            color: #999;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        .remove-item:hover {
+            color: var(--pink);
+        }
+
+        .cart-footer {
+            padding: 20px;
+            border-top: 2px solid #eee;
+        }
+
+        .cart-total {
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .checkout-btn {
+            width: 100%;
+            background: linear-gradient(135deg, var(--pink), var(--orange));
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .checkout-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 5px 20px rgba(233,30,99,0.4);
+        }
+
+        .empty-cart {
+            text-align: center;
+            padding: 50px 20px;
+            color: #999;
+        }
+
+        .empty-cart svg {
+            width: 80px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        /* Checkout Modal */
+        .checkout-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 3000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .checkout-modal.active {
+            display: flex;
+        }
+
+        .checkout-container {
+            background: white;
+            border-radius: 20px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .checkout-header {
+            padding: 25px;
+            background: linear-gradient(135deg, var(--pink), var(--orange));
+            color: white;
+            border-radius: 20px 20px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .checkout-header h2 {
+            font-family: 'Fredoka One', cursive;
+        }
+
+        .close-checkout {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .checkout-body {
+            padding: 30px;
+        }
+
+        .checkout-steps {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .step {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #eee;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: #999;
+        }
+
+        .step.active {
+            background: linear-gradient(135deg, var(--pink), var(--orange));
+            color: white;
+        }
+
+        .step.completed {
+            background: var(--green);
+            color: white;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #eee;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--pink);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .card-input {
+            position: relative;
+        }
+
+        .card-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.5rem;
+        }
+
+        .promo-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .promo-row input {
+            flex: 1;
+        }
+
+        .promo-row button {
+            padding: 12px 20px;
+            background: var(--purple);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .order-summary {
+            background: #f9f9f9;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .order-summary h4 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            color: #666;
+        }
+
+        .summary-total {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 700;
+            font-size: 1.2rem;
+            padding-top: 15px;
+            border-top: 2px solid #ddd;
+            margin-top: 15px;
+        }
+
+        .discount-line {
+            color: var(--green);
+        }
+
+        .checkout-nav {
+            display: flex;
+            gap: 15px;
+        }
+
+        .checkout-nav button {
+            flex: 1;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .back-btn {
+            background: #eee;
+            border: none;
+            color: #666;
+        }
+
+        .next-btn {
+            background: linear-gradient(135deg, var(--pink), var(--orange));
+            border: none;
+            color: white;
+        }
+
+        .next-btn:hover {
+            transform: scale(1.02);
+        }
+
+        /* Success Animation */
+        .success-container {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .success-icon {
+            width: 100px;
+            height: 100px;
+            background: var(--green);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 30px;
+            animation: popIn 0.5s ease-out;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .success-icon svg {
+            width: 50px;
+            height: 50px;
+            fill: white;
+        }
+
+        .success-container h2 {
+            color: var(--green);
+            margin-bottom: 15px;
+        }
+
+        .success-container p {
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2rem; }
+            .hero-image { display: none; }
+            .story-container { grid-template-columns: 1fr; }
+            .facts-grid { grid-template-columns: 1fr; }
+            .gallery-grid { grid-template-columns: 1fr 1fr; }
+            .cart-sidebar { width: 100%; right: -100%; }
+            .form-row { grid-template-columns: 1fr; }
+            nav { padding: 15px 20px; }
+            .nav-links { gap: 15px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <img src="./ganic-logo.png" alt="Ganic Pops" class="logo">
+        <div class="nav-links">
+            <a href="#story">Our Story</a>
+            <a href="#products">Products</a>
+            <a href="#gallery">Gallery</a>
+            <a href="#contact">Contact</a>
+            <button class="cart-btn" onclick="toggleCart()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
+                </svg>
+                Cart
+                <span class="cart-count" id="cartCount">0</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <img src="./ganic-logo.png" alt="Ganic Pops" class="hero-logo">
+            <h1>A Cake Pop Revolution</h1>
+            <p>Healthy superfoods disguised as delicious treats. Made with kale, chickpeas, black beans, and love - your kids will beg for more!</p>
+            <button class="hero-btn" onclick="document.getElementById('products').scrollIntoView({behavior: 'smooth'})">Shop Now</button>
+        </div>
+        <img src="./pops-yellow-bg.png" alt="Delicious Cake Pops" class="hero-image">
+    </section>
+
+    <!-- Our Story Section -->
+    <section class="story" id="story">
+        <div class="story-container">
+            <div class="story-image">
+                <img src="./family-photo.png" alt="Lior Mink and Family">
+            </div>
+            <div class="story-content">
+                <h2>Our Story</h2>
+                <p>The birth of Ganicpops began with my four kids. My then 4 year old was obsessed with sweets and baked goods. What's a mother to do?</p>
+                <p>I was tired of the sugar rushes and bad food choices: white flour, canola oil, corn syrup, dyes, and sugar. I took it upon myself to learn how to bake healthy cakes made with real super foods.</p>
+                <p>I took my favorite foods: kale, chickpeas, medjool dates, black beans, spinach, pumpkin, zucchini, beets, goji berries, quinoa, Greek yogurt, nuts, coconut oil, wheat grass, and dark chocolate - and whipped up a creative concoction that tastes very much like an unhealthy cake.</p>
+                <p>Kids be fooled. A protein packed healthy super snack made with real food and without the guilt!</p>
+                <p class="signature">Cheers and to your health!<br>Lior "Mama" Mink<br>Founder & Foodie</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Products Section -->
+    <section class="products" id="products">
+        <h2 class="section-title">Our Super Pops</h2>
+        <div class="products-grid">
+            <div class="product-card">
+                <div class="product-image">
+                    <img src="./pop-bite-green.png" alt="Kale Chick Pop">
+                    <span class="product-badge">Gluten Free</span>
+                </div>
+                <div class="product-info">
+                    <h3>Kale Chick</h3>
+                    <p>Decadent flavors of chickpea, kale and chocolate. Flour-less, sugar-free, and absolutely delicious!</p>
+                    <div class="product-footer">
+                        <span class="price">$4.50</span>
+                        <button class="add-to-cart" onclick="addToCart('Kale Chick', 4.50, './pop-bite-green.png')">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                            </svg>
+                            Add
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <div class="product-image">
+                    <img src="./pop-bite-sprinkles.png" alt="Popeye Pop">
+                    <span class="product-badge">Protein Packed</span>
+                </div>
+                <div class="product-info">
+                    <h3>Popeye</h3>
+                    <p>Spinach, black beans, and chocolate for the ultimate power pop. This protein packed sugar-free brownie will blow your mind!</p>
+                    <div class="product-footer">
+                        <span class="price">$4.50</span>
+                        <button class="add-to-cart" onclick="addToCart('Popeye', 4.50, './pop-bite-sprinkles.png')">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                            </svg>
+                            Add
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <div class="product-image">
+                    <img src="./pop-bite-coconut.png" alt="Pump Spice Pop">
+                    <span class="product-badge">Sugar Free</span>
+                </div>
+                <div class="product-info">
+                    <h3>Pump Spice</h3>
+                    <p>Why only eat pumpkin seasonally when you can enjoy it all year round? Made with organic pumpkin and honeycrisp apples!</p>
+                    <div class="product-footer">
+                        <span class="price">$4.50</span>
+                        <button class="add-to-cart" onclick="addToCart('Pump Spice', 4.50, './pop-bite-coconut.png')">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                            </svg>
+                            Add
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <div class="product-image">
+                    <img src="./packaging-box.png" alt="Gift Box">
+                    <span class="product-badge">Best Gift</span>
+                </div>
+                <div class="product-info">
+                    <h3>Gift Box (6 Pops)</h3>
+                    <p>Beautiful gift box with 6 assorted pops. Perfect for birthdays, holidays, or just because. Comes with ribbon!</p>
+                    <div class="product-footer">
+                        <span class="price">$24.00</span>
+                        <button class="add-to-cart" onclick="addToCart('Gift Box (6 Pops)', 24.00, './packaging-box.png')">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                            </svg>
+                            Add
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <div class="product-image">
+                    <img src="./pops-purple-bg.png" alt="Party Pack">
+                    <span class="product-badge">Party Size</span>
+                </div>
+                <div class="product-info">
+                    <h3>Party Pack (12 Pops)</h3>
+                    <p>Mix of all flavors for your next celebration. Perfect for birthdays, school events, or healthy treats any time!</p>
+                    <div class="product-footer">
+                        <span class="price">$45.00</span>
+                        <button class="add-to-cart" onclick="addToCart('Party Pack (12 Pops)', 45.00, './pops-purple-bg.png')">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                            </svg>
+                            Add
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <div class="product-image">
+                    <img src="./pops-assorted.png" alt="Build Your Own">
+                    <span class="product-badge">Customize</span>
+                </div>
+                <div class="product-info">
+                    <h3>Build Your Own Box</h3>
+                    <p>Choose your favorite flavors and toppings! Coconut, sprinkles, chocolate drizzle, goji berries, and more.</p>
+                    <div class="product-footer">
+                        <span class="price">$30.00</span>
+                        <button class="add-to-cart" onclick="addToCart('Build Your Own Box', 30.00, './pops-assorted.png')">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                            </svg>
+                            Add
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Section -->
+    <section class="gallery" id="gallery">
+        <h2 class="section-title">Pop Gallery</h2>
+        <div class="gallery-grid">
+            <div class="gallery-item large">
+                <img src="./pops-yellow-bg.png" alt="Assorted Pops">
+            </div>
+            <div class="gallery-item">
+                <img src="./pops-row-white.png" alt="White Chocolate Pops">
+            </div>
+            <div class="gallery-item">
+                <img src="./pops-row-pink.png" alt="Pink Pops">
+            </div>
+            <div class="gallery-item">
+                <img src="./pops-green-row.png" alt="Green Pops">
+            </div>
+            <div class="gallery-item">
+                <img src="./pops-chocolate-row.png" alt="Chocolate Pops">
+            </div>
+            <div class="gallery-item">
+                <img src="./pops-white-row.png" alt="White Pops">
+            </div>
+            <div class="gallery-item">
+                <img src="./pop-bite-green.png" alt="Bitten Pop">
+            </div>
+        </div>
+    </section>
+
+    <!-- Cool Facts Section -->
+    <section class="facts">
+        <h2 class="section-title">Cool Facts</h2>
+        <div class="facts-grid">
+            <div class="fact-item">
+                <div class="fact-icon">&#127807;</div>
+                <h3>Natural Colors</h3>
+                <p>Our white chocolate pops are colored using real food - wheat grass for green, beets for pink, turmeric for yellow. No dyes!</p>
+            </div>
+            <div class="fact-item">
+                <div class="fact-icon">&#127881;</div>
+                <h3>Fun Toppings</h3>
+                <p>Shredded coconut, goji berries, carob chips, nuts, sprinkles, and everyone's favorite - chocolate drizzle!</p>
+            </div>
+            <div class="fact-item">
+                <div class="fact-icon">&#10003;</div>
+                <h3>Certified Clean</h3>
+                <p>Gluten-free, kosher, non-GMO, sugar-free super pops made with organic ingredients. Feel good about every bite!</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact" id="contact">
+        <h2>Any Questions?</h2>
+        <p style="margin-bottom: 20px; opacity: 0.8;">We'd love to hear from you!</p>
+        <a href="mailto:lior@ganicpops.com">lior@ganicpops.com</a>
+        <p style="margin-top: 30px; opacity: 0.6;">www.ganicpops.com</p>
+    </section>
+
+    <!-- Cart Overlay -->
+    <div class="cart-overlay" id="cartOverlay" onclick="toggleCart()"></div>
+
+    <!-- Cart Sidebar -->
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-header">
+            <h3>Your Cart</h3>
+            <button class="close-cart" onclick="toggleCart()">x</button>
+        </div>
+        <div class="cart-items" id="cartItems">
+            <!-- Cart items will be inserted here -->
+        </div>
+        <div class="cart-footer" id="cartFooter" style="display: none;">
+            <div class="cart-total">
+                <span>Total:</span>
+                <span id="cartTotal">$0.00</span>
+            </div>
+            <button class="checkout-btn" onclick="openCheckout()">Proceed to Checkout</button>
+        </div>
+    </div>
+
+    <!-- Checkout Modal -->
+    <div class="checkout-modal" id="checkoutModal">
+        <div class="checkout-container">
+            <div class="checkout-header">
+                <h2>Checkout</h2>
+                <button class="close-checkout" onclick="closeCheckout()">x</button>
+            </div>
+            <div class="checkout-body" id="checkoutBody">
+                <!-- Checkout steps will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Cart State
+        let cart = JSON.parse(localStorage.getItem('ganicCart')) || [];
+        let checkoutStep = 1;
+        let promoApplied = false;
+        let discount = 0;
+
+        // Initialize
+        updateCartUI();
+        createSprinkles();
+
+        // Sprinkles Animation
+        function createSprinkles() {
+            const colors = ['#E91E63', '#FF9800', '#8BC34A', '#9C27B0', '#2196F3', '#FFEB3B'];
+            setInterval(() => {
+                if (Math.random() > 0.7) {
+                    const sprinkle = document.createElement('div');
+                    sprinkle.className = 'sprinkle';
+                    sprinkle.style.left = Math.random() * 100 + 'vw';
+                    sprinkle.style.top = '-20px';
+                    sprinkle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    sprinkle.style.transform = 'rotate(' + Math.random() * 360 + 'deg)';
+                    sprinkle.style.animationDuration = (3 + Math.random() * 2) + 's';
+                    document.body.appendChild(sprinkle);
+                    setTimeout(() => sprinkle.remove(), 5000);
+                }
+            }, 300);
+        }
+
+        // Cart Functions
+        function addToCart(name, price, image) {
+            const existing = cart.find(item => item.name === name);
+            if (existing) {
+                existing.quantity++;
+            } else {
+                cart.push({ name, price, image, quantity: 1 });
+            }
+            saveCart();
+            updateCartUI();
+            showAddedFeedback();
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            saveCart();
+            updateCartUI();
+        }
+
+        function updateQuantity(index, delta) {
+            cart[index].quantity += delta;
+            if (cart[index].quantity <= 0) {
+                removeFromCart(index);
+            } else {
+                saveCart();
+                updateCartUI();
+            }
+        }
+
+        function saveCart() {
+            localStorage.setItem('ganicCart', JSON.stringify(cart));
+        }
+
+        function updateCartUI() {
+            const cartCount = document.getElementById('cartCount');
+            const cartItems = document.getElementById('cartItems');
+            const cartFooter = document.getElementById('cartFooter');
+            const cartTotal = document.getElementById('cartTotal');
+
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            cartCount.textContent = totalItems;
+
+            if (cart.length === 0) {
+                cartItems.innerHTML = '<div class="empty-cart"><svg viewBox="0 0 24 24" fill="#ccc"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg><p>Your cart is empty</p><p style="font-size:0.9rem">Add some delicious pops!</p></div>';
+                cartFooter.style.display = 'none';
+            } else {
+                cartItems.innerHTML = cart.map((item, i) => 
+                    '<div class="cart-item"><img src="' + item.image + '" alt="' + item.name + '"><div class="cart-item-info"><h4>' + item.name + '</h4><span class="item-price">$' + item.price.toFixed(2) + '</span><div class="quantity-controls"><button onclick="updateQuantity(' + i + ', -1)">-</button><span>' + item.quantity + '</span><button onclick="updateQuantity(' + i + ', 1)">+</button></div></div><button class="remove-item" onclick="removeFromCart(' + i + ')">x</button></div>'
+                ).join('');
+                cartFooter.style.display = 'block';
+                const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                cartTotal.textContent = '$' + total.toFixed(2);
+            }
+        }
+
+        function toggleCart() {
+            document.getElementById('cartOverlay').classList.toggle('active');
+            document.getElementById('cartSidebar').classList.toggle('active');
+        }
+
+        function showAddedFeedback() {
+            const btn = event.target.closest('.add-to-cart');
+            const original = btn.innerHTML;
+            btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> Added!';
+            btn.style.background = 'var(--green)';
+            setTimeout(() => {
+                btn.innerHTML = original;
+                btn.style.background = '';
+            }, 1000);
+        }
+
+        // Checkout Functions
+        function openCheckout() {
+            toggleCart();
+            document.getElementById('checkoutModal').classList.add('active');
+            checkoutStep = 1;
+            renderCheckoutStep();
+        }
+
+        function closeCheckout() {
+            document.getElementById('checkoutModal').classList.remove('active');
+        }
+
+        function renderCheckoutStep() {
+            const body = document.getElementById('checkoutBody');
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const shipping = subtotal > 50 ? 0 : 5.99;
+            discount = promoApplied ? subtotal * 0.2 : 0;
+            const total = subtotal + shipping - discount;
+
+            let html = '<div class="checkout-steps"><div class="step ' + (checkoutStep >= 1 ? (checkoutStep > 1 ? 'completed' : 'active') : '') + '">1</div><div class="step ' + (checkoutStep >= 2 ? (checkoutStep > 2 ? 'completed' : 'active') : '') + '">2</div><div class="step ' + (checkoutStep >= 3 ? (checkoutStep > 3 ? 'completed' : 'active') : '') + '">3</div></div>';
+
+            if (checkoutStep === 1) {
+                html += '<h3 style="margin-bottom:20px">Contact Information</h3><div class="form-group"><label>Email</label><input type="email" id="email" placeholder="your@email.com"></div><div class="form-group"><label>Phone</label><input type="tel" id="phone" placeholder="(555) 123-4567"></div><h3 style="margin:30px 0 20px">Shipping Address</h3><div class="form-row"><div class="form-group"><label>First Name</label><input type="text" id="firstName" placeholder="John"></div><div class="form-group"><label>Last Name</label><input type="text" id="lastName" placeholder="Doe"></div></div><div class="form-group"><label>Address</label><input type="text" id="address" placeholder="123 Main St"></div><div class="form-row"><div class="form-group"><label>City</label><input type="text" id="city" placeholder="Fort Lauderdale"></div><div class="form-group"><label>State</label><input type="text" id="state" placeholder="FL"></div></div><div class="form-group"><label>ZIP Code</label><input type="text" id="zip" placeholder="33301"></div>';
+            } else if (checkoutStep === 2) {
+                html += '<h3 style="margin-bottom:20px">Payment Details</h3><div class="form-group"><label>Card Number</label><div class="card-input"><input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" oninput="detectCardType()"><span class="card-icon" id="cardIcon"></span></div></div><div class="form-row"><div class="form-group"><label>Expiry</label><input type="text" id="expiry" placeholder="MM/YY"></div><div class="form-group"><label>CVV</label><input type="text" id="cvv" placeholder="123"></div></div><div class="form-group"><label>Name on Card</label><input type="text" id="cardName" placeholder="JOHN DOE"></div><h3 style="margin:30px 0 20px">Promo Code</h3><div class="promo-row"><input type="text" id="promoCode" placeholder="Enter code"><button onclick="applyPromo()">Apply</button></div><p id="promoMessage" style="margin-top:10px;font-size:0.9rem"></p>';
+            } else if (checkoutStep === 3) {
+                html += '<h3 style="margin-bottom:20px">Order Summary</h3><div class="order-summary"><h4>Items</h4>';
+                cart.forEach(item => {
+                    html += '<div class="summary-item"><span>' + item.name + ' x' + item.quantity + '</span><span>$' + (item.price * item.quantity).toFixed(2) + '</span></div>';
+                });
+                html += '<div class="summary-item"><span>Subtotal</span><span>$' + subtotal.toFixed(2) + '</span></div>';
+                if (promoApplied) {
+                    html += '<div class="summary-item discount-line"><span>Discount (20%)</span><span>-$' + discount.toFixed(2) + '</span></div>';
+                }
+                html += '<div class="summary-item"><span>Shipping</span><span>' + (shipping === 0 ? 'FREE' : '$' + shipping.toFixed(2)) + '</span></div><div class="summary-total"><span>Total</span><span>$' + total.toFixed(2) + '</span></div></div>';
+            } else if (checkoutStep === 4) {
+                html = '<div class="success-container"><div class="success-icon"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div><h2>Order Confirmed!</h2><p>Thank you for your order! Your delicious Ganic Pops are on their way.</p><p style="color:#999">Order #GP' + Date.now().toString().slice(-6) + '</p><button class="next-btn" style="max-width:200px;margin:20px auto" onclick="finishOrder()">Continue Shopping</button></div>';
+                body.innerHTML = html;
+                celebrateOrder();
+                return;
+            }
+
+            html += '<div class="checkout-nav" style="margin-top:30px">';
+            if (checkoutStep > 1) {
+                html += '<button class="back-btn" onclick="prevStep()">Back</button>';
+            }
+            html += '<button class="next-btn" onclick="nextStep()">' + (checkoutStep === 3 ? 'Place Order' : 'Continue') + '</button></div>';
+
+            body.innerHTML = html;
+        }
+
+        function nextStep() {
+            if (checkoutStep < 4) {
+                checkoutStep++;
+                renderCheckoutStep();
+            }
+        }
+
+        function prevStep() {
+            if (checkoutStep > 1) {
+                checkoutStep--;
+                renderCheckoutStep();
+            }
+        }
+
+        function detectCardType() {
+            const num = document.getElementById('cardNumber').value.replace(/s/g, '');
+            const icon = document.getElementById('cardIcon');
+            if (num.startsWith('4')) icon.textContent = '(VISA)';
+            else if (num.startsWith('5')) icon.textContent = '(MC)';
+            else if (num.startsWith('3')) icon.textContent = '(AMEX)';
+            else icon.textContent = '';
+        }
+
+        function applyPromo() {
+            const code = document.getElementById('promoCode').value.toUpperCase();
+            const msg = document.getElementById('promoMessage');
+            if (code === 'SWEET20' || code === 'HEALTHY20') {
+                promoApplied = true;
+                msg.textContent = 'Promo code applied! 20% off your order.';
+                msg.style.color = 'var(--green)';
+            } else {
+                msg.textContent = 'Invalid promo code. Try SWEET20!';
+                msg.style.color = 'var(--pink)';
+            }
+        }
+
+        function celebrateOrder() {
+            const colors = ['#E91E63', '#FF9800', '#8BC34A', '#9C27B0', '#2196F3', '#FFEB3B'];
+            for (let i = 0; i < 100; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + 'vw';
+                    confetti.style.top = '-10px';
+                    confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+                    confetti.style.animation = 'fall ' + (2 + Math.random() * 2) + 's linear forwards';
+                    document.body.appendChild(confetti);
+                    setTimeout(() => confetti.remove(), 4000);
+                }, i * 30);
+            }
+        }
+
+        function finishOrder() {
+            cart = [];
+            saveCart();
+            updateCartUI();
+            closeCheckout();
+            promoApplied = false;
+        }
+    </script>
+</body>
+</html>

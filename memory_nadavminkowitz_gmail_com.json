@@ -13,7 +13,11 @@
   "contacts": {
     "nadavPhone": "9546631538"
   },
-  "projects": {},
+  "projects": {
+    "modelUN": "Running for Director of Simulations 26-27 at Posnack School Model UN. Letter of Intent submitted to Secretary-General Avi and Mrs. Kibler. Has 2 years committee experience. Emphasizes accessibility, dedication, and bringing NHSMUN-style simulations to Posnack.",
+    "thirdParty": "Planning to start a third major political party in the US called \"The Phoenix Party\" - purple with gold accents, focused on common ground issues where 60%+ of both parties agree. Strategy: build from bottom up starting with local races. Key platform: term limits, anti-corruption, economic pragmatism, healthcare choice, tech regulation, climate pragmatism.",
+    "phoenixParty": "Third major political party project. Name: The Phoenix Party. Colors: Red, white, and blue (American flag colors). Symbol: Rising phoenix. Strategy: Build from bottom up (local races first), focus on 60%+ consensus issues (term limits 87%, money out of politics 83%, Medicare negotiation 77%, border+DREAMER path 72%, balanced budget 68%, ranked choice voting 62%). 10-year roadmap to Congressional presence. FEC registration required. Florida needs ~132,000 signatures for ballot access. Logo saved at phoenix-party-logo.png"
+  },
   "devices": {
     "guestBedroomTV": "{\"name\": \"Guest Bedroom TV\", \"ip\": \"192.168.4.25\", \"type\": \"Fision TV Plus\", \"manufacturer\": \"Technicolor\", \"protocol\": \"DIAL\", \"port\": 8008}"
   },
@@ -28,6 +32,17 @@
   "credentials": {
     "amazon": "danielmink@gmail.com",
     "canvasToken": "8256~DUzQ63z2Y4JnzVUHQ8KJzAhWL8xF28MJH4NHh96eTtVeCh6ZLf2z4nutGMCMA8KJ",
-    "canvasUrl": "posnackschool.instructure.com"
+    "canvasUrl": "posnackschool.instructure.com",
+    "lumaApiKey": "luma-e415f15b-3adf-4b30-8d69-80005af86f48-831ae465-bdc7-4aba-9a82-774c14a5ce7a"
+  },
+  "school": {
+    "englishPractice": "Need to practice chapters 1-7 for English class",
+    "currentClass": "Precalc with Dr. P - classroom has whiteboard with AP Lang exam prep notes visible but class is actually Precalculus"
+  },
+  "schedule": {
+    "upcomingExams": "SAT: May 3rd | Rockville: May 6th | AP Exam Seminar: May 11 | AP Comp Sci A Exam: May 15 | CIJE Competition: May 18 | School Field Trip: May 20 | Sunness Supper Club: April 30th"
+  },
+  "classes": {
+    "precalc": "Precalc class with Dr. P (Prefontaines)"
   }
 }

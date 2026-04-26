@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deep Dive of Experts - Ideate - Sesami</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../edit-mode.css">
+</head>
+<body data-page="ideate">
+    <div class="bg-gradient"></div>
+    <div class="bg-pattern"></div>
+    <div class="floating-orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="../index.html" class="logo">
+                <div class="logo-icon"><i class="fas fa-baby"></i></div>
+                <span class="logo-text">Sesami</span>
+            </a>
+            <ul class="nav-links" id="navLinks">
+                <li class="nav-item"><a href="../index.html" class="nav-link">Home</a></li>
+                <li class="nav-item has-dropdown">
+                    <a href="../background.html" class="nav-link">Background <i class="fas fa-chevron-down arrow"></i></a>
+                    <div class="dropdown">
+                        <a href="../background/preliminary-research.html"><i class="fas fa-file-alt"></i> Preliminary Research</a>
+                        <a href="../background/final-research.html"><i class="fas fa-file-lines"></i> Final Research Paper</a>
+                        <a href="../background/baby-development-tech.html"><i class="fas fa-baby"></i> Baby Development Tech</a>
+                        <a href="../background/competitor-chart.html"><i class="fas fa-chart-bar"></i> Competitor Chart</a>
+                        <a href="../background/expert-source.html"><i class="fas fa-user-md"></i> Expert Source</a>
+                    </div>
+                </li>
+                <li class="nav-item has-dropdown">
+                    <a href="../empathize.html" class="nav-link">Empathize <i class="fas fa-chevron-down arrow"></i></a>
+                    <div class="dropdown">
+                        <a href="../empathize/end-users-survey.html"><i class="fas fa-poll"></i> End Users Survey</a>
+                        <a href="../empathize/deep-dive.html"><i class="fas fa-search"></i> Deep Dive of End Users</a>
+                        <a href="../empathize/potential-solutions.html"><i class="fas fa-lightbulb"></i> Potential Solutions</a>
+                        <a href="../empathize/direct-observation.html"><i class="fas fa-eye"></i> Direct Observation</a>
+                    </div>
+                </li>
+                <li class="nav-item has-dropdown">
+                    <a href="../define.html" class="nav-link">Define <i class="fas fa-chevron-down arrow"></i></a>
+                    <div class="dropdown">
+                        <a href="../define/purpose.html"><i class="fas fa-bullseye"></i> Purpose for Innovation</a>
+                        <a href="../define/design-goals.html"><i class="fas fa-tasks"></i> Design Goals/Criteria</a>
+                        <a href="../define/end-user-interview.html"><i class="fas fa-comments"></i> End User Interview</a>
+                        <a href="../define/thesis.html"><i class="fas fa-scroll"></i> Thesis Statement</a>
+                        <a href="../define/user-profiles.html"><i class="fas fa-users"></i> End User Profiles</a>
+                    </div>
+                </li>
+                <li class="nav-item has-dropdown">
+                    <a href="../ideate.html" class="nav-link active">Ideate <i class="fas fa-chevron-down arrow"></i></a>
+                    <div class="dropdown">
+                        <a href="potential-solutions.html"><i class="fas fa-lightbulb"></i> Potential Solutions</a>
+                        <a href="decision-matrix.html"><i class="fas fa-table"></i> Decision Matrix</a>
+                        <a href="competitive-advantage.html"><i class="fas fa-trophy"></i> Competitive Advantage</a>
+                        <a href="professional-feedback.html"><i class="fas fa-user-tie"></i> Professional Feedback</a>
+                        <a href="deep-dive-experts.html"><i class="fas fa-microscope"></i> Deep Dive of Experts</a>
+                        <a href="approach-reasoning.html"><i class="fas fa-route"></i> Approach Reasoning</a>
+                    </div>
+                </li>
+                <li class="nav-item has-dropdown">
+                    <a href="../engineering.html" class="nav-link">Engineering <i class="fas fa-chevron-down arrow"></i></a>
+                    <div class="dropdown">
+                        <a href="../engineering.html#specs"><i class="fas fa-cogs"></i> Technical Specs</a>
+                        <a href="../engineering.html#cad"><i class="fas fa-drafting-compass"></i> CAD Drawings</a>
+                    </div>
+                </li>
+                <li class="nav-item has-dropdown">
+                    <a href="../test.html" class="nav-link">Test <i class="fas fa-chevron-down arrow"></i></a>
+                    <div class="dropdown">
+                        <a href="../test.html#methods"><i class="fas fa-flask"></i> Testing Methods</a>
+                        <a href="../test.html#results"><i class="fas fa-chart-bar"></i> Results</a>
+                    </div>
+                </li>
+            </ul>
+            <button class="menu-toggle" id="menuToggle">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+
+    <section class="page-hero">
+        <div class="page-hero-content">
+            <div class="page-badge"><i class="fas fa-microscope"></i> Ideate</div>
+            <h1>Deep Dive <span>of Experts</span></h1>
+            <p>Comprehensive profiles of the domain experts who shaped Sesami's design.</p>
+        </div>
+    </section>
+
+    <main class="main-content">
+        <div class="container">
+            <nav class="breadcrumb">
+                <a href="../index.html">Home</a> <i class="fas fa-chevron-right"></i>
+                <a href="../ideate.html">Ideate</a> <i class="fas fa-chevron-right"></i>
+                <span>Deep Dive of Experts</span>
+            </nav>
+
+            <section class="section-header" data-editable="true">
+                <h2>Our Expert Advisory Panel</h2>
+                <p>We assembled a diverse panel of experts spanning pediatric medicine, artificial intelligence, child development psychology, UX design, and healthcare regulations. Their collective expertise shaped every aspect of Sesami.</p>
+            </section>
+
+            <div class="expert-profile-card" data-editable="true">
+                <div class="expert-header">
+                    <div class="expert-avatar"><i class="fas fa-user-md"></i></div>
+                    <div class="expert-info">
+                        <h3>Dr. Rachel Martinez, MD, FAAP</h3>
+                        <span class="expert-title">Developmental Pediatrician</span>
+                        <span class="expert-org">Children's Hospital of Philadelphia</span>
+                    </div>
+                </div>
+                
+                <div class="expert-details">
+                    <div class="detail-section">
+                        <h4><i class="fas fa-graduation-cap"></i> Background & Credentials</h4>
+                        <ul>
+                            <li>MD from Johns Hopkins School of Medicine</li>
+                            <li>Pediatric residency at Boston Children's Hospital</li>
+                            <li>Fellowship in Developmental-Behavioral Pediatrics at CHOP</li>
+                            <li>Board certified in Pediatrics and Developmental-Behavioral Pediatrics</li>
+                            <li>15 years clinical experience with 8,000+ developmental assessments</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <h4><i class="fas fa-search"></i> Research Focus</h4>
+                        <p>Dr. Martinez's research focuses on early identification of developmental delays, particularly autism spectrum disorder. She has published 23 peer-reviewed papers on screening tools and early intervention outcomes.</p>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <h4><i class="fas fa-lightbulb"></i> Key Contributions to Sesami</h4>
+                        <ul>
+                            <li>Defined clinical thresholds for milestone tracking alerts</li>
+                            <li>Validated our assessment criteria against ASQ-3 standards</li>
+                            <li>Designed the pediatrician report export format</li>
+                            <li>Advised on anxiety-aware messaging for parents</li>
+                        </ul>
+                    </div>
+
+                    <div class="expert-quote">
+                        <i class="fas fa-quote-left"></i>
+                        <p>"I see 20 babies a day for well-visits. If parents could come in with objective tracking data showing their child's progress over weeks, it would transform those 15-minute visits. We could focus on real concerns instead of vague worries."</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="expert-profile-card" data-editable="true">
+                <div class="expert-header">
+                    <div class="expert-avatar"><i class="fas fa-brain"></i></div>
+                    <div class="expert-info">
+                        <h3>Dr. James Chen, PhD</h3>
+                        <span class="expert-title">AI/Computer Vision Researcher</span>
+                        <span class="expert-org">Stanford Artificial Intelligence Laboratory</span>
+                    </div>
+                </div>
+                
+                <div class="expert-details">
+                    <div class="detail-section">
+                        <h4><i class="fas fa-graduation-cap"></i> Background & Credentials</h4>
+                        <ul>
+                            <li>PhD in Computer Science from MIT, specializing in computer vision</li>
+                            <li>Postdoctoral research at Google DeepMind</li>
+                            <li>Currently Assistant Professor at Stanford</li>
+                            <li>Author of 45+ papers with 12,000+ citations</li>
+                            <li>Core contributor to OpenPose and MediaPipe frameworks</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <h4><i class="fas fa-search"></i> Research Focus</h4>
+                        <p>Dr. Chen specializes in human pose estimation, motion analysis, and applying computer vision to healthcare. His lab developed the first real-time infant pose estimation model for developmental assessment research.</p>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <h4><i class="fas fa-lightbulb"></i> Key Contributions to Sesami</h4>
+                        <ul>
+                            <li>Designed the hybrid on-device/cloud AI architecture</li>
+                            <li>Recommended MediaPipe for privacy-preserving pose extraction</li>
+                            <li>Defined training data requirements for milestone detection models</li>
+                            <li>Advised on model accuracy validation methodology</li>
+                        </ul>
+                    </div>
+
+                    <div class="expert-quote">
+                        <i class="fas fa-quote-left"></i>
+                        <p>"The beautiful thing about video analysis is you can do it retroactively. Parents already have hundreds of videos of their babies. Train a model right, and you can analyze months of development in minutes."</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="expert-profile-card" data-editable="true">
+                <div class="expert-header">
+                    <div class="expert-avatar"><i class="fas fa-child"></i></div>
+                    <div class="expert-info">
+                        <h3>Dr. Lisa Thompson, PhD</h3>
+                        <span class="expert-title">Child Development Psychologist</span>
+                        <span class="expert-org">Yale Child Study Center</span>
+                    </div>
+                </div>
+                
+                <div class="expert-details">
+                    <div class="detail-section">
+                        <h4><i class="fas fa-graduation-cap"></i> Background & Credentials</h4>
+                        <ul>
+                            <li>PhD in Developmental Psychology from UCLA</li>
+                            <li>Clinical fellowship at Yale Child Study Center</li>
+                            <li>Author of bestselling book "The First Two Years"</li>
+                            <li>20 years studying infant cognitive and social development</li>
+                            <li>Consultant for Sesame Workshop and PBS Kids</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <h4><i class="fas fa-search"></i> Research Focus</h4>
+                        <p>Dr. Thompson's research focuses on the interplay between motor development and cognitive growth, particularly how early movement patterns predict later learning outcomes. She pioneered research on video-based autism screening.</p>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <h4><i class="fas fa-lightbulb"></i> Key Contributions to Sesami</h4>
+                        <ul>
+                            <li>Expanded scope beyond motor milestones to social-emotional indicators</li>
+                            <li>Defined video cues for eye contact, social smiling, and joint attention</li>
+                            <li>Created developmental context for each milestone alert</li>
+                            <li>Advised on parent education content</li>
+                        </ul>
+                    </div>
+
+                    <div class="expert-quote">
+                        <i class="fas fa-quote-left"></i>
+                        <p>"Motor milestones get all the attention - when did they roll over, when did they walk. But social development is equally important and much harder to track. That's where early intervention makes the biggest difference."</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="expert-profile-card" data-editable="true">
+                <div class="expert-header">
+                    <div class="expert-avatar"><i class="fas fa-pencil-ruler"></i></div>
+                    <div class="expert-info">
+                        <h3>Sarah Kim</h3>
+                        <span class="expert-title">UX Design Lead - Health & Wellness</span>
+                        <span class="expert-org">Former Calm & Headspace</span>
+                    </div>
+                </div>
+                
+                <div class="expert-details">
+                    <div class="detail-section">
+                        <h4><i class="fas fa-graduation-cap"></i> Background & Credentials</h4>
+                        <ul>
+                            <li>MFA in Interaction Design from SVA</li>
+                            <li>7 years designing mental health and wellness apps</li>
+                            <li>Led design for Calm's sleep stories feature (100M+ users)</li>
+                            <li>Previously at IDEO Health practice</li>
+                            <li>Speaker at SXSW, Health 2.0, and UX conferences</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <h4><i class="fas fa-search"></i> Design Philosophy</h4>
+                        <p>Sarah specializes in "anxiety-aware design" - creating health apps that inform without alarming. Her framework for calm notifications and positive-first feedback has been adopted by major health tech companies.</p>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <h4><i class="fas fa-lightbulb"></i> Key Contributions to Sesami</h4>
+                        <ul>
+                            <li>Redesigned dashboard to celebrate achievements first</li>
+                            <li>Created weekly digest notification strategy</li>
+                            <li>Developed "Calm Parent Mode" for anxiety-prone users</li>
+                            <li>Designed milestone celebration animations</li>
+                        </ul>
+                    </div>
+
+                    <div class="expert-quote">
+                        <i class="fas fa-quote-left"></i>
+                        <p>"Every health app thinks they need to alert users constantly. The best apps know when NOT to notify. New parents are already sleep-deprived and anxious - respect that."</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="expert-profile-card" data-editable="true">
+                <div class="expert-header">
+                    <div class="expert-avatar"><i class="fas fa-gavel"></i></div>
+                    <div class="expert-info">
+                        <h3>Michael Roberts, JD, RAC</h3>
+                        <span class="expert-title">Healthcare Regulatory Consultant</span>
+                        <span class="expert-org">Former FDA Digital Health Reviewer</span>
+                    </div>
+                </div>
+                
+                <div class="expert-details">
+                    <div class="detail-section">
+                        <h4><i class="fas fa-graduation-cap"></i> Background & Credentials</h4>
+                        <ul>
+                            <li>JD from Georgetown Law, focus on FDA regulations</li>
+                            <li>10 years at FDA reviewing digital health submissions</li>
+                            <li>Regulatory Affairs Certified (RAC)</li>
+                            <li>Now advises 30+ digital health startups</li>
+                            <li>Author of "Digital Health Regulatory Playbook"</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <h4><i class="fas fa-search"></i> Expertise Area</h4>
+                        <p>Michael specializes in Software as a Medical Device (SaMD) classifications and helping digital health companies navigate FDA requirements. He's particularly known for helping companies find regulatory pathways that enable innovation while ensuring safety.</p>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <h4><i class="fas fa-lightbulb"></i> Key Contributions to Sesami</h4>
+                        <ul>
+                            <li>Classified Sesami as wellness device (not medical device)</li>
+                            <li>Defined compliant marketing language</li>
+                            <li>Created regulatory roadmap for future clinical features</li>
+                            <li>Advised on data privacy (HIPAA, COPPA) requirements</li>
+                        </ul>
+                    </div>
+
+                    <div class="expert-quote">
+                        <i class="fas fa-quote-left"></i>
+                        <p>"You can build an incredibly valuable developmental tracking tool without claiming to diagnose anything. Wellness category lets you move fast, help parents now, and build the evidence base for clinical features later."</p>
+                    </div>
+                </div>
+            </div>
+
+            <section class="highlight-section" data-editable="true">
+                <h3><i class="fas fa-users"></i> Advisory Panel Impact</h3>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number">5</div>
+                        <div class="stat-label">Domain Experts</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">65+</div>
+                        <div class="stat-label">Years Combined Experience</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">250</div>
+                        <div class="stat-label">Minutes of Consultations</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">8</div>
+                        <div class="stat-label">Major Design Pivots</div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="nav-buttons">
+                <a href="professional-feedback.html" class="nav-btn prev"><i class="fas fa-arrow-left"></i> Professional Feedback</a>
+                <a href="approach-reasoning.html" class="nav-btn primary">Approach Reasoning <i class="fas fa-arrow-right"></i></a>
+            </div>
+        </div>
+    </main>
+
+    <a href="?edit=true" class="edit-float-btn" id="editFloatBtn">
+        <i class="fas fa-edit"></i> Edit Site
+    </a>
+
+    <script src="../edit-mode.js"></script>
+    <script>
+        document.getElementById('menuToggle').addEventListener('click', function() {
+            document.getElementById('navLinks').classList.toggle('active');
+            this.classList.toggle('active');
+        });
+    </script>
+</body>
+</html>

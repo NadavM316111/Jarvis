@@ -1,0 +1,756 @@
+[
+  {
+    "id": 9787,
+    "name": "AP Computer Science A - Rivera-1262-ALL-Rivera",
+    "currentScore": "N/A",
+    "currentLetter": "N/A",
+    "gradedAssignments": [],
+    "upcomingAssignments": []
+  },
+  {
+    "id": 9948,
+    "name": "AP Seminar - Period B & C",
+    "currentScore": 92,
+    "currentLetter": "N/A",
+    "gradedAssignments": [
+      {
+        "name": "IRR Outline : thesis and line of reasoning",
+        "points_possible": 50,
+        "due_at": "2025-10-01T03:30:00Z",
+        "score": 45,
+        "graded": true,
+        "submitted": true
+      },
+      {
+        "name": "Stimulus Material Breakdown",
+        "points_possible": 30,
+        "due_at": "2025-11-07T13:00:00Z",
+        "score": 27,
+        "graded": true,
+        "submitted": true
+      },
+      {
+        "name": "Topic Task 1 for approval",
+        "points_possible": 5,
+        "due_at": "2025-12-05T18:00:00Z",
+        "score": 5,
+        "graded": true,
+        "submitted": true
+      },
+      {
+        "name": "Midterm practice thesis",
+        "points_possible": 15,
+        "due_at": "2025-12-11T01:00:00Z",
+        "score": 15,
+        "graded": true,
+        "submitted": true
+      }
+    ],
+    "upcomingAssignments": [
+      {
+        "name": "Assignments for April 13- 21",
+        "points_possible": 50,
+        "due_at": "2026-04-21T12:00:00Z",
+        "score": null,
+        "graded": false,
+        "submitted": false
+      },
+      {
+        "name": "AP Research outline requirements",
+        "points_possible": 100,
+        "due_at": "2026-05-27T12:00:00Z",
+        "score": null,
+        "graded": false,
+        "submitted": false
+      }
+    ]
+  },
+  {
+    "id": 9541,
+    "name": "Chemistry I H - Per. A, B, G & I",
+    "currentScore": "N/A",
+    "currentLetter": "N/A",
+    "gradedAssignments": [],
+    "upcomingAssignments": [
+      {
+        "name": "Chapter 9 Formative 2 Monday 4/20/26",
+        "points_possible": 40,
+        "due_at": "2026-04-20T12:00:00Z",
+        "score": null,
+        "graded": false,
+        "submitted": false
+      },
+      {
+        "name": "Chapter 9 Summative Thursday 4/30/26",
+        "points_possible": 100,
+        "due_at": "2026-04-30T12:00:00Z",
+        "score": null,
+        "graded": false,
+        "submitted": false
+      }
+    ]
+  },
+  {
+    "id": 9912,
+    "name": "English II H Per. A, D, F & G",
+    "currentScore": 97.84,
+    "currentLetter": "N/A",
+    "gradedAssignments": [
+      {
+        "name": "EXTRA TIME - THINGS FALL APART PART 1 ESSAY: SUMMATIVE - Requires Respondus LockDown Browser",
+        "points_possible": 100,
+        "due_at": "2026-02-23T18:00:00Z",
+        "score": 0,
+        "graded": false,
+        "submitted": true
+      },
+      {
+        "name": "FORMATIVE 1 UNIT 2: The Alchemist ",
+        "points_possible": 40,
+        "due_at": "2025-11-10T13:50:00Z",
+        "score": 28,
+        "graded": false,
+        "submitted": true
+      },
+      {
+        "name": "The Alchemist: Pages 53-74 Reading Check",
+        "points_possible": 40,
+        "due_at": null,
+        "score": 40,
+        "graded": true,
+        "submitted": true
+      },
+      {
+        "name": "D PERIOD: Reading Check - The Alchemist Pages 75 to 138- Requires Respondus LockDown Browser",
+        "points_possible": 40,
+        "due_at": null,
+        "score": 40,
+        "graded": true,
+        "submitted": true
+      },
+      {
+        "name": "THINGS FALL APART PART 1 ESSAY: SUMMATIVE - Requires Respondus LockDown Browser",
+        "points_possible": 100,
+        "due_at": "2026-02-11T17:05:00Z",
+        "score": 0,
+        "graded": false,
+        "submitted": true
+      },
+      {
+        "name": "PERIOD D: THINGS FALL APART: FINAL ASSESSMENT- Requires Respondus LockDown Browser",
+        "points_possible": 80,
+        "due_at": "2026-03-10T16:05:00Z",
+        "score": 78,
+        "graded": true,
+        "submitted": true
+      }
+    ],
+    "upcomingAssignments": [
+      {
+        "name": "2ND SEMESTER NOTES",
+        "points_possible": 40,
+        "due_at": "2026-05-18T12:00:00Z",
+        "score": null,
+        "graded": false,
+        "submitted": false
+      }
+    ]
+  },
+  {
+    "id": 10022,
+    "name": "Hebrew AL AT  C Period Levy",
+    "currentScore": "N/A",
+    "currentLetter": "N/A",
+    "gradedAssignments": [],
+    "upcomingAssignments": [
+      {
+        "name": "Grammar Formative בניין פיעל Friday 4/24/2026",
+        "points_possible": 40,
+        "due_at": "2026-04-24T20:00:00Z",
+        "score": null,
+        "graded": false,
+        "submitted": false
+      },
+      {
+        "name": "Vocab Formative Monday 4/20/2026",
+        "points_possible": 40,
+        "due_at": "2026-04-20T20:00:00Z",
+        "score": null,
+        "graded": false,
+        "submitted": false
+      },
+      {
+        "name": "Hebrew Summative Friday 5/1/2026",
+        "points_possible": 100,
+        "due_at": "2026-05-01T20:30:00Z",
+        "score": null,
+        "graded": false,
+        "submitted": false
+      },
+      {
+        "name": "בניין פיעל יוצאי דופן",
+        "points_possible": 10,
+        "due_at": "2026-04-21T03:59:59Z",
+        "score": null,
+        "graded": false,
+        "submitted": false
+      },
+      {
+        "name": "Reading Summative Instructions",
+        "points_possible": 100,
+        "due_at": "2026-04-28T03:59:59Z",
+        "score": null,
+        "graded": false,
+        "submitted": false
+      }
+    ]
+  },
+  {
+    "id": 10074,
+    "name": "Master Jewish Law and Ethics H - Ovadia-1343-ALL-Ovadia Per A, F, G",
+    "currentScore": 95.12,
+    "currentLetter": "N/A",
+    "gradedAssignments": [
+      {
+        "name": "Covenant & Exodus 19 Summative- Requires Respondus LockDown Browser",
+        "points_possible": 100,
+        "due_at": "2025-10-22T17:00:00Z",
+        "score": 100,
+        "graded": true,
+        "submitted": true
+      },
+      {
+        "name": "Shema 2 & 3- Formative- Requires Respondus LockDown Browser",
+        "points_possible": 32,
+        "due_at": "2025-11-03T18:15:00Z",
+        "score": 32,
+        "graded": true,
+        "submitted": true
+      },
+      {
+        "name": "'Amida Formative- Requires Respondus LockDown Browser",
+        "points_possible": 30,
+        "due_at": "2025-12-04T18:20:00Z",
+        "score": 26,
+        "graded": true,
+        "submitted": true
+      },
+      {
+        "name": "Introduction to Halakha- Requires Respondus LockDown Browser",
+        "points_possible": 36,
+        "due_at": "2025-09-02T18:20:00Z",
+        "score": 31,
+        "graded": true,
+        "submitted": true
+      },
+      {
+        "name": "Shema Formative- Requires Respondus LockDown Browser",
+        "points_possible": 40,
+        "due_at": "2025-10-28T17:20:00Z",
+        "score": 38,
+        "graded": true,
+        "submitted": true
+      },
+      {
+        "name": "Shema Summative- Requires Respondus LockDown Browser",
+        "points_possible": 100,
+        "due_at": "2025-11-06T18:45:00Z",
+        "score": 97,
+        "graded": true,
+        "submitted": true
+      },
+      {
+        "name": "'Amida Summative- Requires Respondus LockDown Browser",
+        "points_possible": 103,
+        "due_at": "2025-12-09T19:35:00Z",
+        "score": 100,
+        "graded": true,
+        "submitted": true
+      },
+      {
+        "name": "Laws of Purim Formative - Requires Respondus LockDown Browser",
+        "points_possible": 30,
+        "due_at": "2026-02-27T18:45:00Z",
+        "score": 24,
+        "graded": true,
+        "submitted": true
+      }
+    ],
+    "upcomingAssignments": []
+  },
+  {
+    "id": 9460,
+    "name": "Mock Trial",
+    "currentScore": "N/A",
+    "currentLetter": "N/A",
+    "gradedAssignments": [],
+    "upcomingAssignments": []
+  },
+  {
+    "id": 9708,
+    "name": "Precalculus Honors",
+    "currentScore": "N/A",
+    "currentLetter": "N/A",
+    "gradedAssignments": [],
+    "upcomingAssignments": []
+  },
+  {
+    "id": 9815,
+    "name": "World History Honors (Per. B)",
+    "currentScore": 98.05,
+    "currentLetter": "N/A",
+    "gradedAssignments": [
+      {
+        "name": "Syllabus Check",
+        "points_possible": 10,
+        "due_at": "2025-08-22T12:00:00Z",
+        "score": 10,
+        "graded": true,
+        "submitted": true
+      },
+      {
+        "name": "Chapter 1, Section 2 Outlined Notes",
+        "points_possible": 10,
+        "due_at": "2025-08-28T12:00:00Z",
+        "score": 10,
+        "graded": true,
+        "submitted": true
+      },
+      {
+        "name": "Chapter 1, Section 3 Outlined Notes",
+        "points_possible": 10,
+        "due_at": "2025-09-04T12:00:00Z",
+        "score": 10,
+        "graded": true,
+        "submitted": true
+      },
+      {
+        "name": "Formative Assessment 1 - Requires Respondus LockDown Browser",
+        "points_possible": 40,
+        "due_at": "2025-09-08T20:00:00Z",
+        "score": 40,
+        "graded": true,
+        "submitted": true
+      },
+      {
+        "name": "PART 2: Summative Assessment 1- Requires Respondus LockDown Browser",
+        "points_possible": 50,
+        "due_at": null,
+        "score": 48,
+        "graded": true,
+        "submitted": true
+      },
+      {
+        "name": "PART 1: Summative Assessment 1 - Requires Respondus LockDown Browser",
+        "points_possible": 50,
+        "due_at": null,
+        "score": 48,
+        "graded": true,
+        "submitted": true
+      },
+      {
+        "name": "Chapter 2, Sections 1, 2, and 4 Outlined Notes",
+        "points_possible": 10,
+        "due_at": "2025-09-18T12:00:00Z",
+        "score": 10,
+        "graded": true,
+        "submitted": true
+      },
+      {
+        "name": "SUM 1 Study Guide",
+        "points_possible": 10,
+        "due_at": "2025-09-17T12:00:00Z",
+        "score": 10,
+        "graded": true,
+        "submitted": true
+      },
+      {
+        "name": "5.1 and 5.4 Outlined Notes",
+        "points_possible": 10,
+        "due_at": "2025-10-20T12:00:00Z",
+        "score": 10,
+        "graded": true,
+        "submitted": true
+      },
+      {
+        "name": "Formative Assessment 2.1 (Ancient Greece)- Requires Respondus LockDown Browser",
+        "points_possible": 40,
+        "due_at": "2025-10-17T12:00:00Z",
+        "score": 40,
+        "graded": true,
+        "submitted": true
+      },
+      {
+        "name": "6.2 - 6.4 Outlined Notes",
+        "points_possible": 10,
+        "due_at": "2025-10-27T12:00:00Z",
+        "score": 10,
+        "graded": true,
+        "submitted": true
+      },
+      {
+        "name": "SUM 2 Study Guide",
+        "points_possible": 10,
+        "due_at": null,
+        "score": 10,
+        "graded": true,
+        "submitted": true
+      },
+      {
+        "name": "Bell Ringer: Reimagining Ancient Societies (10/03)",
+        "points_possible": 5,
+        "due_at": "2025-10-03T19:00:00Z",
+        "score": 5,
+        "graded": true,
+        "submitted": true
+      },
+      {
+        "name": "Vocabulary Chapter 5 Assignment",
+        "points_possible": 10,
+        "due_at": "2025-10-17T12:00:00Z",
+        "score": 10,
+        "graded": true,
+        "submitted": true
+      },
+      {
+        "name": "Part One: Summative Assessment #2 - Requires Respondus LockDown Browser",
+        "points_possible": 50,
+        "due_at": "2025-10-30T12:00:00Z",
+        "score": 50,
+        "graded": true,
+        "submitted": true
+      },
+      {
+        "name": "Chapter 7 Notes (In-Class) ",
+        "points_possible": 10,
+        "due_at": "2025-11-21T13:00:00Z",
+        "score": 10,
+        "graded": true,
+        "submitted": true
+      },
+      {
+        "name": "Chapter 8 Notes (In-Class)",
+        "points_possible": 10,
+        "due_at": "2025-11-25T20:30:00Z",
+        "score": 10,
+        "graded": true,
+        "submitted": true
+      },
+      {
+        "name": "Bell Ringer (11/07)",
+        "points_possible": 5,
+        "due_at": "2025-11-07T20:00:00Z",
+        "score": 5,
+        "graded": true,
+        "submitted": true
+      },
+      {
+        "name": "SUM 3 Study Guide",
+        "points_possible": 10,
+        "due_at": "2025-12-10T13:00:00Z",
+        "score": 10,
+        "graded": true,
+        "submitted": true
+      },
+      {
+        "name": "Learning About the Quran ",
+        "points_possible": 10,
+        "due_at": "2025-11-21T20:00:00Z",
+        "score": 10,
+        "graded": true,
+        "submitted": true
+      },
+      {
+        "name": "Summative Assessment 3",
+        "points_possible": 100,
+        "due_at": "2025-12-08T13:00:00Z",
+        "score": 96.5,
+        "graded": true,
+        "submitted": false
+      },
+      {
+        "name": "Midterm Study Guide",
+        "points_possible": 10,
+        "due_at": "2025-12-10T13:00:00Z",
+        "score": 10,
+        "graded": true,
+        "submitted": true
+      },
+      {
+        "name": "Bell Ringer (01/05 or 01/06)",
+        "points_possible": 5,
+        "due_at": "2026-01-06T21:00:00Z",
+        "score": 5,
+        "graded": true,
+        "submitted": true
+      },
+      {
+        "name": "Bell Ringer (01/06 or 01/07)",
+        "points_possible": 5,
+        "due_at": "2026-01-07T21:00:00Z",
+        "score": 5,
+        "graded": true,
+        "submitted": true
+      },
+      {
+        "name": "Formative Assessment 4.1 Notes",
+        "points_possible": 20,
+        "due_at": "2026-01-12T13:00:00Z",
+        "score": 20,
+        "graded": true,
+        "submitted": true
+      },
+      {
+        "name": "Chapter 10 Notes",
+        "points_possible": 10,
+        "due_at": "2026-01-29T13:00:00Z",
+        "score": 10,
+        "graded": true,
+        "submitted": true
+      },
+      {
+        "name": "Study Guide - SUM 4",
+        "points_possible": 10,
+        "due_at": "2026-02-02T13:00:00Z",
+        "score": 10,
+        "graded": true,
+        "submitted": true
+      },
+      {
+        "name": "Summative Assessment 4",
+        "points_possible": 100,
+        "due_at": "2026-02-02T13:00:00Z",
+        "score": 96.5,
+        "graded": true,
+        "submitted": true
+      },
+      {
+        "name": "In-Class Notes on European Renaissance",
+        "points_possible": 10,
+        "due_at": "2026-02-06T13:00:00Z",
+        "score": 10,
+        "graded": true,
+        "submitted": true
+      },
+      {
+        "name": "Notes for Chapter 12, Sections 1 - 4",
+        "points_possible": 10,
+        "due_at": "2026-02-12T13:00:00Z",
+        "score": 10,
+        "graded": true,
+        "submitted": true
+      },
+      {
+        "name": "Bell Ringer (02/03)",
+        "points_possible": 5,
+        "due_at": "2026-02-04T21:00:00Z",
+        "score": 5,
+        "graded": true,
+        "submitted": true
+      },
+      {
+        "name": "Chapter 12, Sections 5 - 8 In-Class Notes",
+        "points_possible": 10,
+        "due_at": "2026-03-23T12:00:00Z",
+        "score": 10,
+        "graded": true,
+        "submitted": true
+      },
+      {
+        "name": "Formative Assessment #5",
+        "points_possible": 40,
+        "due_at": "2026-02-18T13:00:00Z",
+        "score": 36,
+        "graded": true,
+        "submitted": true
+      },
+      {
+        "name": "Chapter 11 and 12 In-Class Notes",
+        "points_possible": 10,
+        "due_at": "2026-02-26T13:00:00Z",
+        "score": 10,
+        "graded": true,
+        "submitted": true
+      },
+      {
+        "name": "Part I: Summative Assessment #5- Requires Respondus LockDown Browser",
+        "points_possible": 50,
+        "due_at": null,
+        "score": 48,
+        "graded": true,
+        "submitted": true
+      },
+      {
+        "name": "Study Guide - SUM 5",
+        "points_possible": 10,
+        "due_at": "2026-02-26T13:00:00Z",
+        "score": 10,
+        "graded": true,
+        "submitted": true
+      },
+      {
+        "name": "Formative Assessment #5.1 RETAKE",
+        "points_possible": 40,
+        "due_at": null,
+        "score": 28,
+        "graded": false,
+        "submitted": true
+      },
+      {
+        "name": "Full Summative Assessment 5",
+        "points_possible": 100,
+        "due_at": "2026-02-27T13:00:00Z",
+        "score": 98,
+        "graded": true,
+        "submitted": false
+      },
+      {
+        "name": "Chapter 12, Sections 5-8 Textbook Notes",
+        "points_possible": 10,
+        "due_at": "2026-03-13T12:00:00Z",
+        "score": 10,
+        "graded": true,
+        "submitted": true
+      },
+      {
+        "name": "Formative Assessment 6.1 Vocabulary List",
+        "points_possible": 10,
+        "due_at": "2026-03-12T12:00:00Z",
+        "score": 10,
+        "graded": true,
+        "submitted": true
+      },
+      {
+        "name": "Study Guide - SUM 6",
+        "points_possible": 10,
+        "due_at": "2026-03-24T12:00:00Z",
+        "score": 10,
+        "graded": true,
+        "submitted": true
+      },
+      {
+        "name": "Part I: Summative Assessment #6- Requires Respondus LockDown Browser",
+        "points_possible": 50,
+        "due_at": "2026-03-26T12:00:00Z",
+        "score": 48,
+        "graded": true,
+        "submitted": true
+      },
+      {
+        "name": "Part II: Summative Assessment #6- Requires Respondus LockDown Browser",
+        "points_possible": 50,
+        "due_at": "2026-03-26T12:00:00Z",
+        "score": 48,
+        "graded": true,
+        "submitted": true
+      },
+      {
+        "name": "Chapter 1, Section 1 Outlined Notes",
+        "points_possible": 10,
+        "due_at": "2025-08-22T20:00:00Z",
+        "score": 10,
+        "graded": true,
+        "submitted": true
+      },
+      {
+        "name": "Bell Ringer (08/21 or 08/22)",
+        "points_possible": 5,
+        "due_at": "2025-08-22T20:00:00Z",
+        "score": 5,
+        "graded": true,
+        "submitted": true
+      },
+      {
+        "name": "In-Class Notes for Unit 1",
+        "points_possible": 10,
+        "due_at": "2025-09-18T12:00:00Z",
+        "score": 10,
+        "graded": true,
+        "submitted": true
+      },
+      {
+        "name": "In-Class Notes for Unit 2",
+        "points_possible": 10,
+        "due_at": "2025-10-29T12:00:00Z",
+        "score": 10,
+        "graded": true,
+        "submitted": true
+      },
+      {
+        "name": "FULL SUM 2 Grade",
+        "points_possible": 100,
+        "due_at": "2025-10-30T12:00:00Z",
+        "score": 100,
+        "graded": true,
+        "submitted": false
+      },
+      {
+        "name": "Part Two: Summative Assessment 2 (DBQ)- Requires Respondus LockDown Browser",
+        "points_possible": 50,
+        "due_at": "2025-11-03T13:00:00Z",
+        "score": 50,
+        "graded": true,
+        "submitted": true
+      },
+      {
+        "name": "Formative Assessment 3 (Timed DBQ In-Class)",
+        "points_possible": 40,
+        "due_at": "2025-11-14T13:00:00Z",
+        "score": 38,
+        "graded": true,
+        "submitted": true
+      }
+    ],
+    "upcomingAssignments": [
+      {
+        "name": "In-Class Notes on Nationalism and WWI",
+        "points_possible": 10,
+        "due_at": "2026-04-30T12:00:00Z",
+        "graded": false,
+        "submitted": false
+      },
+      {
+        "name": "Chapter 16, Sections 1-3 Textbook Notes",
+        "points_possible": 10,
+        "due_at": "2026-04-28T12:00:00Z",
+        "graded": false,
+        "submitted": false
+      },
+      {
+        "name": "Study Guide - SUM 7",
+        "points_possible": 10,
+        "due_at": "2026-04-30T12:00:00Z",
+        "graded": false,
+        "submitted": false
+      },
+      {
+        "name": "In-Class DBQ Peer Review Sheet",
+        "points_possible": 10,
+        "due_at": "2026-04-21T12:00:00Z",
+        "graded": false,
+        "submitted": false
+      },
+      {
+        "name": "Full Summative Assessment 7",
+        "points_possible": 100,
+        "due_at": "2026-05-01T12:00:00Z",
+        "graded": false,
+        "submitted": false
+      },
+      {
+        "name": "Exit Ticket (04/20)",
+        "points_possible": 5,
+        "due_at": "2026-04-20T12:00:00Z",
+        "graded": false,
+        "submitted": false
+      },
+      {
+        "name": "Formative Assessment #7 DBQ -- Non-Retakeable",
+        "points_possible": 40,
+        "due_at": "2026-04-27T12:00:00Z",
+        "graded": false,
+        "submitted": false
+      }
+    ]
+  }
+]

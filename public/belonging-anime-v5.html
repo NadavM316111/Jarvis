@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BELONGING - An Anime Short Film</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap');
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            background: #000;
+            overflow: hidden;
+            font-family: 'Noto Sans JP', sans-serif;
+        }
+        
+        #loading-screen {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        #loading-screen h1 {
+            color: #fff;
+            font-size: 4rem;
+            letter-spacing: 20px;
+            margin-bottom: 20px;
+            text-shadow: 0 0 50px rgba(255,100,100,0.5);
+        }
+        
+        #loading-screen p {
+            color: #888;
+            font-size: 1rem;
+            margin-bottom: 40px;
+        }
+        
+        #progress-container {
+            width: 300px;
+            height: 4px;
+            background: #333;
+            border-radius: 2px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        
+        #progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b6b, #fff);
+            width: 0%;
+            transition: width 0.3s;
+        }
+        
+        #loading-text {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        #begin-btn {
+            display: none;
+            padding: 20px 60px;
+            font-size: 1.5rem;
+            background: transparent;
+            border: 2px solid #fff;
+            color: #fff;
+            cursor: pointer;
+            letter-spacing: 10px;
+            transition: all 0.3s;
+            margin-top: 30px;
+        }
+        
+        #begin-btn:hover {
+            background: #fff;
+            color: #000;
+        }
+        
+        #cinema {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: #000;
+        }
+        
+        #scene-container {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .scene-image {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+            filter: saturate(1.1) contrast(1.05);
+        }
+        
+        .scene-image.active {
+            opacity: 1;
+            animation: kenBurns 8s ease-in-out forwards;
+        }
+        
+        @keyframes kenBurns {
+            0% { transform: scale(1) translateX(0); }
+            100% { transform: scale(1.1) translateX(-2%); }
+        }
+        
+        /* Letterbox */
+        .letterbox {
+            position: fixed;
+            left: 0;
+            right: 0;
+            height: 12%;
+            background: #000;
+            z-index: 10;
+        }
+        .letterbox.top { top: 0; }
+        .letterbox.bottom { bottom: 0; }
+        
+        /* Subtitles */
+        #subtitles {
+            position: fixed;
+            bottom: 15%;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 20;
+            text-align: center;
+            max-width: 80%;
+        }
+        
+        #subtitle-text {
+            color: #fff;
+            font-size: 1.8rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.9), 0 0 20px rgba(0,0,0,0.8);
+            line-height: 1.5;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+        
+        #subtitle-text.visible {
+            opacity: 1;
+        }
+        
+        /* Film grain overlay */
+        #grain {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 5;
+            opacity: 0.05;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%' height='100%' filter='url(%23noise)'/%3E%3C/svg%3E");
+            animation: grain 0.5s steps(10) infinite;
+        }
+        
+        @keyframes grain {
+            0%, 100% { transform: translate(0, 0); }
+            10% { transform: translate(-5%, -10%); }
+            30% { transform: translate(3%, -15%); }
+            50% { transform: translate(12%, 9%); }
+            70% { transform: translate(9%, 4%); }
+            90% { transform: translate(-1%, 7%); }
+        }
+        
+        /* Vignette */
+        #vignette {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 4;
+            background: radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.7) 100%);
+        }
+        
+        /* YouTube embed hidden */
+        #youtube-container {
+            position: fixed;
+            bottom: -1000px;
+            left: -1000px;
+            width: 1px;
+            height: 1px;
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        /* Scene indicator */
+        #scene-number {
+            position: fixed;
+            top: 14%;
+            left: 3%;
+            color: rgba(255,255,255,0.3);
+            font-size: 0.8rem;
+            letter-spacing: 3px;
+            z-index: 20;
+        }
+    </style>
+</head>
+<body>
+    <div id="loading-screen">
+        <h1>BELONGING</h1>
+        <p>An Anime Short Film</p>
+        <div id="progress-container">
+            <div id="progress-bar"></div>
+        </div>
+        <p id="loading-text">Generating anime scenes...</p>
+        <button id="begin-btn" onclick="startFilm()">BEGIN</button>
+    </div>
+    
+    <div id="cinema">
+        <div class="letterbox top"></div>
+        <div class="letterbox bottom"></div>
+        
+        <div id="scene-container"></div>
+        
+        <div id="vignette"></div>
+        <div id="grain"></div>
+        
+        <div id="subtitles">
+            <div id="subtitle-text"></div>
+        </div>
+        
+        <div id="scene-number"></div>
+    </div>
+    
+    <div id="youtube-container">
+        <iframe id="youtube-player" width="1" height="1" 
+            src="https://www.youtube.com/embed/XFkzRNyygfk?enablejsapi=1&autoplay=0&controls=0" 
+            frameborder="0" allow="autoplay"></iframe>
+    </div>
+
+    <script>
+        // High quality anime images from reliable sources
+        const scenes = [
+            {
+                // Scene 1: Rooftop loneliness
+                image: "https://images.unsplash.com/photo-1578632767115-351597cf2477?w=1920&q=90",
+                fallback: "https://cdn.pixabay.com/photo/2020/05/24/09/26/anime-5213543_1280.jpg",
+                text: "Every day feels the same...",
+                duration: 6000
+            },
+            {
+                // Scene 2: Group of friends
+                image: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=1920&q=90",
+                fallback: "https://cdn.pixabay.com/photo/2017/08/07/14/02/people-2604149_1280.jpg",
+                text: "Surrounded by people who call me friend...",
+                duration: 6000
+            },
+            {
+                // Scene 3: Looking away
+                image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1920&q=90",
+                fallback: "https://cdn.pixabay.com/photo/2016/11/29/09/32/man-1868632_1280.jpg",
+                text: "But when they laugh... I feel nothing.",
+                duration: 5500
+            },
+            {
+                // Scene 4: Walking alone in crowd
+                image: "https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?w=1920&q=90",
+                fallback: "https://cdn.pixabay.com/photo/2015/07/17/22/43/student-849825_1280.jpg",
+                text: "I'm just... going through the motions.",
+                duration: 5500
+            },
+            {
+                // Scene 5: Rain/melancholy
+                image: "https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?w=1920&q=90",
+                fallback: "https://cdn.pixabay.com/photo/2016/11/14/04/45/rain-1822485_1280.jpg",
+                text: "What the hell am I doing here?",
+                duration: 5000
+            },
+            {
+                // Scene 6: Emotional
+                image: "https://images.unsplash.com/photo-1541746972996-4e0b0f43e02a?w=1920&q=90",
+                fallback: "https://cdn.pixabay.com/photo/2015/06/02/12/59/guy-794518_1280.jpg",
+                text: "I don't belong here...",
+                duration: 5500
+            },
+            {
+                // Scene 7: Despair
+                image: "https://images.unsplash.com/photo-1516585427167-9f4af9627e6c?w=1920&q=90",
+                fallback: "https://cdn.pixabay.com/photo/2017/02/16/23/10/silhouette-2072715_1280.jpg",
+                text: "I wish I was special... but I'm a creep.",
+                duration: 6000
+            },
+            {
+                // Scene 8: Final
+                image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1920&q=90",
+                fallback: "https://cdn.pixabay.com/photo/2015/01/08/18/29/entrepreneur-593358_1280.jpg",
+                text: "I don't belong here.",
+                duration: 8000
+            }
+        ];
+        
+        let loadedImages = [];
+        let currentScene = 0;
+        let speechSynth = window.speechSynthesis;
+        
+        // Preload images
+        async function preloadImages() {
+            const progressBar = document.getElementById('progress-bar');
+            const loadingText = document.getElementById('loading-text');
+            const beginBtn = document.getElementById('begin-btn');
+            
+            for (let i = 0; i < scenes.length; i++) {
+                loadingText.textContent = `Loading scene ${i + 1} of ${scenes.length}...`;
+                
+                const img = new Image();
+                img.crossOrigin = "anonymous";
+                
+                await new Promise((resolve) => {
+                    img.onload = () => {
+                        loadedImages.push(img.src);
+                        resolve();
+                    };
+                    img.onerror = () => {
+                        // Try fallback
+                        const fallbackImg = new Image();
+                        fallbackImg.onload = () => {
+                            loadedImages.push(fallbackImg.src);
+                            resolve();
+                        };
+                        fallbackImg.onerror = () => {
+                            // Use a gradient placeholder
+                            loadedImages.push('');
+                            resolve();
+                        };
+                        fallbackImg.src = scenes[i].fallback;
+                    };
+                    img.src = scenes[i].image;
+                });
+                
+                progressBar.style.width = `${((i + 1) / scenes.length) * 100}%`;
+            }
+            
+            loadingText.textContent = 'Ready to play';
+            beginBtn.style.display = 'block';
+        }
+        
+        function speak(text) {
+            speechSynth.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = 0.85;
+            utterance.pitch = 0.9;
+            utterance.volume = 0.9;
+            
+            // Try to get a male voice
+            const voices = speechSynth.getVoices();
+            const maleVoice = voices.find(v => v.name.includes('Male') || v.name.includes('David') || v.name.includes('James'));
+            if (maleVoice) utterance.voice = maleVoice;
+            
+            speechSynth.speak(utterance);
+        }
+        
+        function startFilm() {
+            document.getElementById('loading-screen').style.display = 'none';
+            document.getElementById('cinema').style.display = 'block';
+            
+            // Start YouTube
+            const player = document.getElementById('youtube-player');
+            player.src = "https://www.youtube.com/embed/XFkzRNyygfk?autoplay=1&controls=0&start=0";
+            
+            // Create all scene images
+            const container = document.getElementById('scene-container');
+            scenes.forEach((scene, i) => {
+                const img = document.createElement('img');
+                img.className = 'scene-image';
+                img.id = `scene-${i}`;
+                if (loadedImages[i]) {
+                    img.src = loadedImages[i];
+                } else {
+                    img.style.background = 'linear-gradient(135deg, #1a1a2e, #16213e)';
+                }
+                container.appendChild(img);
+            });
+            
+            // Start first scene after brief delay
+            setTimeout(() => playScene(0), 1000);
+        }
+        
+        function playScene(index) {
+            if (index >= scenes.length) {
+                // End of film
+                document.getElementById('subtitle-text').textContent = '';
+                document.getElementById('scene-number').textContent = 'THE END';
+                return;
+            }
+            
+            currentScene = index;
+            const scene = scenes[index];
+            
+            // Update scene number
+            document.getElementById('scene-number').textContent = `SCENE ${index + 1}`;
+            
+            // Hide all scenes, show current
+            document.querySelectorAll('.scene-image').forEach((img, i) => {
+                img.classList.remove('active');
+                if (i === index) {
+                    setTimeout(() => img.classList.add('active'), 100);
+                }
+            });
+            
+            // Show subtitle
+            const subtitleEl = document.getElementById('subtitle-text');
+            subtitleEl.textContent = scene.text;
+            subtitleEl.classList.add('visible');
+            
+            // Speak the line
+            setTimeout(() => speak(scene.text), 500);
+            
+            // Next scene
+            setTimeout(() => {
+                subtitleEl.classList.remove('visible');
+                setTimeout(() => playScene(index + 1), 500);
+            }, scene.duration);
+        }
+        
+        // Load voices
+        speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices();
+        
+        // Start loading
+        preloadImages();
+    </script>
+</body>
+</html>

@@ -74,6 +74,7 @@ export default function Home() {
   const [dailyChecks, setDailyChecks] = useState<DailyCheck[]>([]);
   const [newCheckInput, setNewCheckInput] = useState("");
   const [voiceRunning, setVoiceRunning] = useState(false);
+  const [spokenUpdates, setSpokenUpdates] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [cameraActive, setCameraActive] = useState(false);
   const [attachedFile, setAttachedFile] = useState<{data: string, type: string, name: string} | null>(null);
@@ -204,12 +205,12 @@ export default function Home() {
           addMessageToConv(convId, { role: "user", content: data.transcript, source: "voice", timestamp: Date.now() });
         }
 
-        if (data.response && data.response !== lastResponseRef.current && data.response !== '') {
-          lastResponseRef.current = data.response;
-          const convId = activeIdRef.current;
-          if (convId) addMessageToConv(convId, { role: "assistant", content: data.response, source: "voice", timestamp: Date.now() });
-          setTimeout(() => { if (lastResponseRef.current === data.response) lastResponseRef.current = ''; }, 5000);
-        }
+        if (data.response && data.response !== lastResponseRef.current && data.response !== '' && data.speaking) {
+  lastResponseRef.current = data.response;
+  const convId = activeIdRef.current;
+  if (convId) addMessageToConv(convId, { role: "assistant", content: data.response, source: "voice", timestamp: Date.now() });
+  setTimeout(() => { if (lastResponseRef.current === data.response) lastResponseRef.current = ''; }, 5000);
+}
       } catch {}
     }, 400);
 
@@ -316,15 +317,19 @@ export default function Home() {
     });
   }
 
-  const toggleVoice = async () => {
-    if (voiceRunning) {
-      await fetch(`${API}/voice/stop`, { method: "POST" });
-      setVoiceRunning(false);
-    } else {
-      await fetch(`${API}/voice/start`, { method: "POST" });
-      setVoiceRunning(true);
-    }
-  };
+  const [voiceBubbleVisible, setVoiceBubbleVisible] = useState(false);
+
+const toggleVoice = async () => {
+  if (voiceRunning) {
+    await fetch(`${API}/voice/stop`, { method: "POST" });
+    setVoiceRunning(false);
+    setVoiceBubbleVisible(false);
+  } else {
+    await fetch(`${API}/voice/start`, { method: "POST" });
+    setVoiceRunning(true);
+    setVoiceBubbleVisible(true);
+  }
+};
 
   const handleAuth = async () => {
     setAuthError('');
@@ -494,11 +499,10 @@ export default function Home() {
       <div className={`
         fixed md:relative inset-y-0 left-0 z-40 md:z-auto
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
-        ${sidebarOpen ? 'md:w-64' : 'md:w-0'}
-        w-72 md:transition-all md:duration-300
-        bg-[#060608] md:bg-transparent
+        w-64
+        bg-[#060608]
         border-r border-white/5 flex flex-col h-screen
-        transition-transform md:transition-all duration-300
+        transition-transform duration-300
       `}>
         <div className="p-4 flex-shrink-0">
           <div className="flex items-center justify-between mb-6 px-1">
@@ -524,6 +528,17 @@ export default function Home() {
             <div className={`w-2 h-2 rounded-full ${voiceRunning ? 'bg-green-400 animate-pulse' : 'bg-white/20'}`} />
             {voiceRunning ? 'Voice active — stop' : 'Start voice'}
           </button>
+          <button
+  onClick={async () => {
+    const res = await fetch(`${API}/voice/spoken-updates`, { method: 'POST', headers: { 'Content-Type': 'application/json' } });
+    const data = await res.json();
+    setSpokenUpdates(data.enabled);
+  }}
+  className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl border text-xs font-medium transition-all ${spokenUpdates ? 'bg-purple-500/15 border-purple-500/30 text-purple-400' : 'bg-white/5 border-white/10 text-white/50 hover:text-white/70'}`}
+>
+  <div className={`w-2 h-2 rounded-full ${spokenUpdates ? 'bg-purple-400 animate-pulse' : 'bg-white/20'}`} />
+  {spokenUpdates ? 'Spoken updates — on' : 'Spoken updates — off'}
+</button>
         </div>
 
         <div className="flex-1 overflow-y-auto px-4 pb-4 min-h-0">
@@ -674,66 +689,128 @@ export default function Home() {
           </div>
         )}
 
-        <div className="flex-1 overflow-y-auto px-4 py-5 flex flex-col gap-4 min-h-0">
-          {messages.length === 0 ? (
-            <div className="flex-1 flex flex-col items-center justify-center text-center h-full px-4">
-              <div className="w-16 h-16 rounded-full mb-5 flex-shrink-0" style={{ background: orbBg, boxShadow: orbGlow }} />
-              <div className="text-white/60 text-xl font-medium mb-1">Good to see you, {userName}.</div>
-              <div className="text-white/25 text-sm mb-8">
-                {cameraActive ? "I can see your screen and your camera." : "I can see your screen and I'm always ready."}
-              </div>
-              {!voiceRunning ? (
-                <button onClick={toggleVoice} className="px-6 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl text-white/50 hover:text-white/70 text-sm transition-all flex items-center gap-2.5">
-                  <div className="w-2 h-2 rounded-full bg-white/30" />
-                  Start voice
-                </button>
-              ) : (
-                <div className="px-6 py-3 bg-green-500/10 border border-green-500/20 rounded-2xl text-green-400 text-sm flex items-center gap-2.5">
-                  <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-                  Listening for your voice
-                </div>
-              )}
-            </div>
-          ) : (
-            messages.map((msg, i) => (
-              <div key={i} className={`flex gap-2.5 ${msg.role === "user" ? "flex-row-reverse" : ""}`}>
-                {msg.role === "assistant" && (
-                  <div className="w-6 h-6 rounded-full flex-shrink-0 mt-1" style={{ background: orbBg, boxShadow: orbGlow }} />
-                )}
-                <div className={`max-w-[80%] md:max-w-[70%] px-4 py-3 rounded-2xl text-sm leading-relaxed ${
-                  msg.role === "assistant" ? "bg-white/5 border border-white/7 text-white/85 rounded-tl-sm" : "bg-blue-600 text-white rounded-tr-sm"
-                }`}>
-                  {msg.source === "voice" && <div className="text-xs opacity-40 mb-1">{msg.role === "user" ? "voice" : "spoken"}</div>}
-                  {msg.fileName && !msg.imageUrl && (
-                    <div className="flex items-center gap-1.5 mb-2 opacity-70">
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
-                      </svg>
-                      <span className="text-xs">{msg.fileName}</span>
-                    </div>
-                  )}
-                  <span dangerouslySetInnerHTML={{ __html: formatMessage(msg.content) }} />
-                  {msg.imageUrl && (
-                    <img src={msg.imageUrl} alt={msg.fileName || 'attachment'} className="mt-2 rounded-xl max-w-full" style={{ maxHeight: '300px', objectFit: 'contain' }} />
-                  )}
-                </div>
-              </div>
-            ))
-          )}
-          {loading && (
-            <div className="flex gap-2.5">
-              <div className="w-6 h-6 rounded-full flex-shrink-0 mt-1" style={{ background: orbBg }} />
-              <div className="bg-white/5 border border-white/7 rounded-2xl rounded-tl-sm px-4 py-3">
-                <div className="flex gap-1">
-                  {[0, 150, 300].map(delay => <span key={delay} className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: `${delay}ms` }} />)}
-                </div>
-              </div>
-            </div>
-          )}
-          <div ref={bottomRef} />
-        </div>
+        <div className="flex-1 overflow-y-auto px-4 py-5 flex flex-col gap-4 min-h-0 relative">
+  {/* VOICE BUBBLE — shown when voice is running */}
+  {voiceRunning && (
+    <div className="absolute inset-0 flex flex-col items-center justify-center z-10 bg-[#060608]">
+      {/* Outer glow rings */}
+      <div className="relative flex items-center justify-center mb-8">
+        {isListening && (
+          <>
+            <div className="absolute w-48 h-48 rounded-full animate-ping" style={{ background: 'rgba(52,211,153,0.08)', animationDuration: '2s' }} />
+            <div className="absolute w-36 h-36 rounded-full animate-ping" style={{ background: 'rgba(52,211,153,0.12)', animationDuration: '1.5s' }} />
+          </>
+        )}
+        {isSpeaking && (
+          <>
+            <div className="absolute w-48 h-48 rounded-full animate-ping" style={{ background: 'rgba(167,139,250,0.08)', animationDuration: '1.8s' }} />
+            <div className="absolute w-36 h-36 rounded-full animate-ping" style={{ background: 'rgba(167,139,250,0.12)', animationDuration: '1.2s' }} />
+          </>
+        )}
+        {/* Main orb */}
+        <div
+          className="w-28 h-28 rounded-full transition-all duration-100 cursor-pointer"
+          style={{
+            background: orbBg,
+            boxShadow: `${orbGlow}, inset 0 0 40px rgba(255,255,255,0.05)`,
+            transform: `scale(${1 + (audioLevel / 255) * 0.3})`
+          }}
+        />
+      </div>
 
-        {attachedFile && (
+      {/* Status */}
+      <div className="text-white/60 text-lg font-medium mb-1">{statusText}</div>
+      {isListening && <div className="text-white/25 text-sm">Listening for your voice</div>}
+      {isSpeaking && <div className="text-white/25 text-sm">Speaking...</div>}
+      {!isListening && !isSpeaking && !loading && <div className="text-white/25 text-sm">Say anything</div>}
+
+      {/* Audio waveform */}
+      <div className="flex items-center gap-1 h-8 mt-4">
+        {[...Array(12)].map((_, i) => {
+          const h = isListening || audioLevel > 10
+            ? Math.max(3, (audioLevel / 255) * 32 * (0.3 + Math.sin(i * 0.8) * 0.7))
+            : isSpeaking
+            ? 4 + Math.abs(Math.sin(Date.now() / 150 + i * 0.6)) * 20
+            : 3;
+          return (
+            <div key={i} className="w-1 rounded-full transition-all duration-75"
+              style={{ height: `${h}px`, background: isListening ? '#34d399' : isSpeaking ? '#a78bfa' : 'rgba(255,255,255,0.1)' }} />
+          );
+        })}
+      </div>
+
+      {/* Show transcript if speaking */}
+      {messages.length > 0 && (
+        <div className="mt-6 max-w-sm text-center">
+          <div className="text-white/20 text-xs mb-2">Last message</div>
+          <div className="text-white/50 text-sm leading-relaxed line-clamp-3">
+            {messages[messages.length - 1]?.content}
+          </div>
+        </div>
+      )}
+
+      {/* View full chat button */}
+      <button
+        onClick={() => setVoiceRunning(false) /* just hides bubble, doesn't stop voice */}
+        className="mt-8 px-5 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl text-white/40 hover:text-white/60 text-xs transition-all"
+      >
+        View chat
+      </button>
+    </div>
+  )}
+
+  {messages.length === 0 && !voiceRunning ? (
+    <div className="flex-1 flex flex-col items-center justify-center text-center h-full px-4">
+      <div className="w-16 h-16 rounded-full mb-5 flex-shrink-0" style={{ background: orbBg, boxShadow: orbGlow }} />
+      <div className="text-white/60 text-xl font-medium mb-1">Good to see you, {userName}.</div>
+      <div className="text-white/25 text-sm mb-8">
+        {cameraActive ? "I can see your screen and your camera." : "I can see your screen and I'm always ready."}
+      </div>
+      <button onClick={toggleVoice} className="px-6 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl text-white/50 hover:text-white/70 text-sm transition-all flex items-center gap-2.5">
+        <div className="w-2 h-2 rounded-full bg-white/30" />
+        Start voice
+      </button>
+    </div>
+  ) : !voiceRunning ? (
+    messages.map((msg, i) => (
+      <div key={i} className={`flex gap-2.5 ${msg.role === "user" ? "flex-row-reverse" : ""}`}>
+        {msg.role === "assistant" && (
+          <div className="w-6 h-6 rounded-full flex-shrink-0 mt-1" style={{ background: orbBg, boxShadow: orbGlow }} />
+        )}
+        <div className={`max-w-[80%] md:max-w-[70%] px-4 py-3 rounded-2xl text-sm leading-relaxed ${
+          msg.role === "assistant" ? "bg-white/5 border border-white/7 text-white/85 rounded-tl-sm" : "bg-blue-600 text-white rounded-tr-sm"
+        }`}>
+          {msg.source === "voice" && <div className="text-xs opacity-40 mb-1">{msg.role === "user" ? "voice" : "spoken"}</div>}
+          {msg.fileName && !msg.imageUrl && (
+            <div className="flex items-center gap-1.5 mb-2 opacity-70">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
+              </svg>
+              <span className="text-xs">{msg.fileName}</span>
+            </div>
+          )}
+          <span dangerouslySetInnerHTML={{ __html: formatMessage(msg.content) }} />
+          {msg.imageUrl && (
+            <img src={msg.imageUrl} alt={msg.fileName || 'attachment'} className="mt-2 rounded-xl max-w-full" style={{ maxHeight: '300px', objectFit: 'contain' }} />
+          )}
+        </div>
+      </div>
+    ))
+  ) : null}
+  {loading && !voiceRunning && (
+    <div className="flex gap-2.5">
+      <div className="w-6 h-6 rounded-full flex-shrink-0 mt-1" style={{ background: orbBg }} />
+      <div className="bg-white/5 border border-white/7 rounded-2xl rounded-tl-sm px-4 py-3">
+        <div className="flex gap-1">
+          {[0, 150, 300].map(delay => <span key={delay} className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: `${delay}ms` }} />)}
+        </div>
+      </div>
+    </div>
+  )}
+  <div ref={bottomRef} />
+</div>
+
+{attachedFile && (
           <div className="px-4 pt-2 flex-shrink-0">
             <div className="flex items-center gap-2">
               {attachedFile.type.startsWith('image/') ? (

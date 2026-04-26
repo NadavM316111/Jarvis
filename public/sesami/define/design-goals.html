@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Design Goals & Criteria - Sesami Define</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../edit-mode.css">
+    <style>
+        .goals-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin: 50px 0;
+        }
+        .goal-card {
+            background: rgba(255,255,255,0.03);
+            border-radius: 20px;
+            padding: 35px;
+            border: 1px solid rgba(255,255,255,0.08);
+            position: relative;
+            overflow: hidden;
+        }
+        .goal-card::before {
+            content: attr(data-number);
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 4rem;
+            font-weight: 700;
+            color: rgba(212,175,55,0.1);
+            font-family: 'Playfair Display', serif;
+        }
+        .goal-card i {
+            font-size: 2.5rem;
+            color: var(--accent-gold);
+            margin-bottom: 20px;
+        }
+        .goal-card h3 {
+            color: var(--text-primary);
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+        }
+        .goal-card p {
+            color: var(--text-secondary);
+            line-height: 1.7;
+            margin-bottom: 20px;
+        }
+        .goal-metrics {
+            background: rgba(0,0,0,0.3);
+            border-radius: 12px;
+            padding: 15px;
+        }
+        .goal-metrics span {
+            display: block;
+            color: var(--accent-gold);
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+        .goal-metrics strong {
+            color: var(--text-primary);
+            font-size: 1.1rem;
+        }
+        .criteria-section {
+            background: linear-gradient(135deg, rgba(212,175,55,0.1), rgba(212,175,55,0.02));
+            border-radius: 24px;
+            padding: 50px;
+            margin: 50px 0;
+            border: 1px solid rgba(212,175,55,0.2);
+        }
+        .criteria-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 30px;
+        }
+        .criteria-table th {
+            background: rgba(0,0,0,0.4);
+            color: var(--accent-gold);
+            padding: 18px 20px;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 2px solid rgba(212,175,55,0.3);
+        }
+        .criteria-table td {
+            padding: 18px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            color: var(--text-secondary);
+        }
+        .criteria-table tr:hover td {
+            background: rgba(255,255,255,0.02);
+        }
+        .priority-high {
+            color: #4ade80 !important;
+            font-weight: 600;
+        }
+        .priority-medium {
+            color: #fbbf24 !important;
+            font-weight: 600;
+        }
+        .priority-low {
+            color: #94a3b8 !important;
+        }
+        .constraints-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin: 40px 0;
+        }
+        .constraint-card {
+            background: rgba(220,38,38,0.1);
+            border-radius: 16px;
+            padding: 30px;
+            border: 1px solid rgba(220,38,38,0.2);
+        }
+        .constraint-card.technical {
+            background: rgba(59,130,246,0.1);
+            border-color: rgba(59,130,246,0.2);
+        }
+        .constraint-card.regulatory {
+            background: rgba(168,85,247,0.1);
+            border-color: rgba(168,85,247,0.2);
+        }
+        .constraint-card.business {
+            background: rgba(34,197,94,0.1);
+            border-color: rgba(34,197,94,0.2);
+        }
+        .constraint-card h4 {
+            color: var(--text-primary);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .constraint-card ul {
+            list-style: none;
+            padding: 0;
+        }
+        .constraint-card li {
+            color: var(--text-secondary);
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+            line-height: 1.6;
+        }
+        .constraint-card li:before {
+            content: "!";
+            position: absolute;
+            left: 0;
+            color: var(--accent-gold);
+            font-weight: bold;
+            background: rgba(212,175,55,0.2);
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+        }
+        .tradeoff-section {
+            background: rgba(0,0,0,0.3);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 50px 0;
+        }
+        .tradeoff-item {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .tradeoff-item:last-child {
+            border-bottom: none;
+        }
+        .tradeoff-vs {
+            background: var(--accent-gold);
+            color: #000;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+        .tradeoff-left, .tradeoff-right {
+            flex: 1;
+            color: var(--text-secondary);
+        }
+        .tradeoff-decision {
+            color: var(--text-primary);
+            font-weight: 500;
+            margin-top: 8px;
+            font-size: 0.95rem;
+        }
+        .content-text {
+            color: var(--text-secondary);
+            line-height: 1.8;
+            font-size: 1.05rem;
+        }
+        .content-text strong {
+            color: var(--text-primary);
+        }
+    </style>
+</head>
+<body data-page="define">
+    <div class="bg-gradient"></div>
+    <div class="bg-pattern"></div>
+    <div class="floating-orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="../index.html" class="logo">
+                <div class="logo-icon"><i class="fas fa-baby"></i></div>
+                <span class="logo-text">Sesami</span>
+            </a>
+            <ul class="nav-links" id="navLinks">
+                <li class="nav-item"><a href="../index.html" class="nav-link">Home</a></li>
+                <li class="nav-item has-dropdown">
+                    <a href="../background.html" class="nav-link">Background <i class="fas fa-chevron-down arrow"></i></a>
+                    <div class="dropdown">
+                        <a href="../background/preliminary-research.html"><i class="fas fa-file-alt"></i> Preliminary Research</a>
+                        <a href="../background/final-research.html"><i class="fas fa-file-lines"></i> Final Research Paper</a>
+                        <a href="../background/baby-development-tech.html"><i class="fas fa-baby"></i> Baby Development Tech</a>
+                        <a href="../background/competitor-chart.html"><i class="fas fa-chart-bar"></i> Competitor Chart</a>
+                        <a href="../background/expert-source.html"><i class="fas fa-user-md"></i> Expert Source</a>
+                    </div>
+                </li>
+                <li class="nav-item has-dropdown">
+                    <a href="../empathize.html" class="nav-link">Empathize <i class="fas fa-chevron-down arrow"></i></a>
+                    <div class="dropdown">
+                        <a href="../empathize/end-users-survey.html"><i class="fas fa-poll"></i> End Users Survey</a>
+                        <a href="../empathize/deep-dive.html"><i class="fas fa-search"></i> Deep Dive of End Users</a>
+                        <a href="../empathize/potential-solutions.html"><i class="fas fa-lightbulb"></i> Potential Solutions</a>
+                        <a href="../empathize/direct-observation.html"><i class="fas fa-eye"></i> Direct Observation</a>
+                    </div>
+                </li>
+                <li class="nav-item has-dropdown">
+                    <a href="../define.html" class="nav-link active">Define <i class="fas fa-chevron-down arrow"></i></a>
+                    <div class="dropdown">
+                        <a href="purpose.html"><i class="fas fa-bullseye"></i> Purpose for Innovation</a>
+                        <a href="design-goals.html"><i class="fas fa-tasks"></i> Design Goals/Criteria</a>
+                        <a href="end-user-interview.html"><i class="fas fa-comments"></i> End User Interview</a>
+                        <a href="thesis.html"><i class="fas fa-scroll"></i> Thesis Statement</a>
+                        <a href="user-profiles.html"><i class="fas fa-users"></i> End User Profiles</a>
+                    </div>
+                </li>
+                <li class="nav-item has-dropdown">
+                    <a href="../ideate.html" class="nav-link">Ideate <i class="fas fa-chevron-down arrow"></i></a>
+                    <div class="dropdown">
+                        <a href="../ideate.html#brainstorm"><i class="fas fa-brain"></i> Brainstorming</a>
+                        <a href="../ideate.html#features"><i class="fas fa-list-check"></i> Feature Prioritization</a>
+                    </div>
+                </li>
+                <li class="nav-item has-dropdown">
+                    <a href="../engineering.html" class="nav-link">Engineering <i class="fas fa-chevron-down arrow"></i></a>
+                    <div class="dropdown">
+                        <a href="../engineering.html#specs"><i class="fas fa-cogs"></i> Technical Specs</a>
+                        <a href="../engineering.html#cad"><i class="fas fa-drafting-compass"></i> CAD Drawings</a>
+                    </div>
+                </li>
+                <li class="nav-item has-dropdown">
+                    <a href="../test.html" class="nav-link">Test <i class="fas fa-chevron-down arrow"></i></a>
+                    <div class="dropdown">
+                        <a href="../test.html#methods"><i class="fas fa-flask"></i> Testing Methods</a>
+                        <a href="../test.html#results"><i class="fas fa-chart-bar"></i> Results</a>
+                    </div>
+                </li>
+            </ul>
+            <button class="menu-toggle" id="menuToggle">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+
+    <section class="page-hero">
+        <div class="page-hero-content">
+            <div class="page-badge"><i class="fas fa-tasks"></i> Define Phase</div>
+            <h1>Design Goals, <span>Criteria & Constraints</span></h1>
+            <p>The specific objectives, success metrics, and limitations that guide our design decisions.</p>
+        </div>
+    </section>
+
+    <main class="main-content">
+        <div class="container">
+            <section class="section-header">
+                <h2>Primary Design Goals</h2>
+                <p>The core objectives that Sesami must achieve to be successful</p>
+            </section>
+
+            <div class="goals-grid">
+                <div class="goal-card" data-number="01" data-editable="true">
+                    <i class="fas fa-shield-alt"></i>
+                    <h3>Safety First</h3>
+                    <p>Create a wearable device that is completely safe for infants during sleep and play, with no choking hazards, skin irritation, or interference with natural movement patterns.</p>
+                    <div class="goal-metrics">
+                        <span>Success Metric:</span>
+                        <strong>Zero safety incidents in 10,000+ hours of testing</strong>
+                    </div>
+                </div>
+
+                <div class="goal-card" data-number="02" data-editable="true">
+                    <i class="fas fa-bullseye"></i>
+                    <h3>Accurate Detection</h3>
+                    <p>Achieve clinical-grade accuracy in detecting gross motor milestones (rolling, crawling, walking) that matches or exceeds current pediatric screening tools.</p>
+                    <div class="goal-metrics">
+                        <span>Success Metric:</span>
+                        <strong>90%+ sensitivity and 85%+ specificity for milestone detection</strong>
+                    </div>
+                </div>
+
+                <div class="goal-card" data-number="03" data-editable="true">
+                    <i class="fas fa-battery-full"></i>
+                    <h3>Seamless Integration</h3>
+                    <p>Design a solution that fits naturally into parents' existing routines without requiring constant charging, manual logging, or technical expertise.</p>
+                    <div class="goal-metrics">
+                        <span>Success Metric:</span>
+                        <strong>7+ day battery life, < 5 minutes setup time</strong>
+                    </div>
+                </div>
+
+                <div class="goal-card" data-number="04" data-editable="true">
+                    <i class="fas fa-heart"></i>
+                    <h3>Anxiety Reduction</h3>
+                    <p>Transform developmental monitoring from a source of parental stress into a tool that provides reassurance and confidence through clear, actionable insights.</p>
+                    <div class="goal-metrics">
+                        <span>Success Metric:</span>
+                        <strong>40%+ reduction in self-reported parental anxiety scores</strong>
+                    </div>
+                </div>
+
+                <div class="goal-card" data-number="05" data-editable="true">
+                    <i class="fas fa-dollar-sign"></i>
+                    <h3>Accessible Pricing</h3>
+                    <p>Make developmental monitoring technology affordable for middle-class families, not just a luxury item for wealthy parents.</p>
+                    <div class="goal-metrics">
+                        <span>Success Metric:</span>
+                        <strong>Retail price under $150, comparable to premium baby monitors</strong>
+                    </div>
+                </div>
+
+                <div class="goal-card" data-number="06" data-editable="true">
+                    <i class="fas fa-user-md"></i>
+                    <h3>Clinical Utility</h3>
+                    <p>Generate data that pediatricians find valuable and actionable, enabling better-informed discussions during well-child visits.</p>
+                    <div class="goal-metrics">
+                        <span>Success Metric:</span>
+                        <strong>70%+ of pediatricians rate data as "useful" or "very useful"</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="criteria-section" data-editable="true">
+                <div class="section-header">
+                    <h2>Design Criteria Matrix</h2>
+                    <p>Measurable requirements that our solution must meet</p>
+                </div>
+
+                <table class="criteria-table">
+                    <thead>
+                        <tr>
+                            <th>Criterion</th>
+                            <th>Requirement</th>
+                            <th>Priority</th>
+                            <th>Validation Method</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Physical Safety</strong></td>
+                            <td>Pass CPSC infant product safety standards</td>
+                            <td class="priority-high">Critical</td>
+                            <td>Third-party testing lab certification</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Sensor Accuracy</strong></td>
+                            <td>IMU accuracy within 2 degrees for orientation</td>
+                            <td class="priority-high">Critical</td>
+                            <td>Motion capture comparison study</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Battery Life</strong></td>
+                            <td>Minimum 7 days continuous use</td>
+                            <td class="priority-high">Critical</td>
+                            <td>Real-world usage testing</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Wireless Range</strong></td>
+                            <td>Bluetooth 5.0, 30+ meter range</td>
+                            <td class="priority-medium">High</td>
+                            <td>Range testing in home environments</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Washability</strong></td>
+                            <td>Sock machine washable, sensor removable</td>
+                            <td class="priority-high">Critical</td>
+                            <td>50+ wash cycle durability test</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Data Privacy</strong></td>
+                            <td>HIPAA compliant, AES-256 encryption</td>
+                            <td class="priority-high">Critical</td>
+                            <td>Security audit and penetration testing</td>
+                        </tr>
+                        <tr>
+                            <td><strong>App Usability</strong></td>
+                            <td>System Usability Scale score > 80</td>
+                            <td class="priority-medium">High</td>
+                            <td>User testing with 50+ parents</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Milestone Detection</strong></td>
+                            <td>Identify 8 major gross motor milestones</td>
+                            <td class="priority-high">Critical</td>
+                            <td>Clinical validation with pediatric PT</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Size/Weight</strong></td>
+                            <td>Sensor pod < 15g, sock fits 0-24 months</td>
+                            <td class="priority-medium">High</td>
+                            <td>Fit testing with 100+ infants</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Manufacturing Cost</strong></td>
+                            <td>Bill of materials under $35</td>
+                            <td class="priority-medium">High</td>
+                            <td>Supplier quotes and prototype costing</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <section class="section-header">
+                <h2>Design Constraints</h2>
+                <p>Limitations and boundaries we must work within</p>
+            </section>
+
+            <div class="constraints-grid">
+                <div class="constraint-card technical" data-editable="true">
+                    <h4><i class="fas fa-microchip"></i> Technical Constraints</h4>
+                    <ul>
+                        <li>Battery technology limits energy density - must optimize power consumption</li>
+                        <li>Bluetooth bandwidth limits real-time data streaming - need edge processing</li>
+                        <li>Small form factor limits sensor options - must use micro IMU chips</li>
+                        <li>Infant skin sensitivity restricts material choices - hypoallergenic only</li>
+                        <li>WiFi connectivity unreliable - must work with Bluetooth only</li>
+                    </ul>
+                </div>
+
+                <div class="constraint-card regulatory" data-editable="true">
+                    <h4><i class="fas fa-gavel"></i> Regulatory Constraints</h4>
+                    <ul>
+                        <li>Cannot market as a medical diagnostic device without FDA clearance</li>
+                        <li>Must comply with CPSIA lead and phthalate limits for children's products</li>
+                        <li>FCC certification required for wireless transmission</li>
+                        <li>COPPA compliance for any data collected about children</li>
+                        <li>Cannot claim to diagnose, treat, or prevent any condition</li>
+                    </ul>
+                </div>
+
+                <div class="constraint-card business" data-editable="true">
+                    <h4><i class="fas fa-chart-pie"></i> Business Constraints</h4>
+                    <ul>
+                        <li>Initial development budget capped at $75,000</li>
+                        <li>Must achieve positive unit economics at launch</li>
+                        <li>Timeline: MVP ready for user testing within 6 months</li>
+                        <li>Team size limited to 4 core members plus advisors</li>
+                        <li>Must differentiate from Owlet, Nanit, and other competitors</li>
+                    </ul>
+                </div>
+
+                <div class="constraint-card" data-editable="true">
+                    <h4><i class="fas fa-users"></i> User Constraints</h4>
+                    <ul>
+                        <li>Parents have limited technical expertise - must be plug-and-play</li>
+                        <li>Sleep-deprived users - interface must be simple, no complex setup</li>
+                        <li>Multiple caregivers - must support shared access (parents, grandparents)</li>
+                        <li>Varying home layouts - must work in apartments and large houses</li>
+                        <li>Users expect instant gratification - insights must be timely</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="tradeoff-section" data-editable="true">
+                <div class="section-header">
+                    <h2>Key Design Tradeoffs</h2>
+                    <p>Balancing competing priorities in our design decisions</p>
+                </div>
+
+                <div class="tradeoff-item">
+                    <div class="tradeoff-left">
+                        <strong>More Sensors</strong><br>
+                        Better accuracy, more data points
+                    </div>
+                    <span class="tradeoff-vs">VS</span>
+                    <div class="tradeoff-right">
+                        <strong>Simplicity</strong><br>
+                        Easier to use, lower cost, better battery
+                    </div>
+                </div>
+                <div class="tradeoff-decision">Decision: Single ankle sensor with high-quality IMU - sufficient for gross motor tracking without complexity</div>
+
+                <div class="tradeoff-item">
+                    <div class="tradeoff-left">
+                        <strong>Real-Time Streaming</strong><br>
+                        Instant insights, continuous monitoring
+                    </div>
+                    <span class="tradeoff-vs">VS</span>
+                    <div class="tradeoff-right">
+                        <strong>Battery Life</strong><br>
+                        Less frequent charging, better UX
+                    </div>
+                </div>
+                <div class="tradeoff-decision">Decision: Edge processing with periodic sync - 7 day battery with 4x daily data uploads</div>
+
+                <div class="tradeoff-item">
+                    <div class="tradeoff-left">
+                        <strong>Medical Device Path</strong><br>
+                        Clinical credibility, insurance coverage
+                    </div>
+                    <span class="tradeoff-vs">VS</span>
+                    <div class="tradeoff-right">
+                        <strong>Consumer Product</strong><br>
+                        Faster to market, lower regulatory burden
+                    </div>
+                </div>
+                <div class="tradeoff-decision">Decision: Launch as consumer wellness device, pursue FDA clearance as Phase 2 expansion</div>
+
+                <div class="tradeoff-item">
+                    <div class="tradeoff-left">
+                        <strong>Subscription Model</strong><br>
+                        Recurring revenue, lower upfront cost
+                    </div>
+                    <span class="tradeoff-vs">VS</span>
+                    <div class="tradeoff-right">
+                        <strong>One-Time Purchase</strong><br>
+                        Simpler for users, no ongoing commitment
+                    </div>
+                </div>
+                <div class="tradeoff-decision">Decision: Hybrid model - basic features included, premium AI insights as optional subscription</div>
+            </div>
+
+            <div class="cta-container" style="text-align: center; margin-top: 60px;">
+                <a href="end-user-interview.html" class="btn-primary" style="display: inline-flex; align-items: center; gap: 10px;">
+                    Continue to End User Interview <i class="fas fa-arrow-right"></i>
+                </a>
+                <a href="purpose.html" class="btn-secondary" style="display: inline-flex; align-items: center; gap: 10px; margin-left: 20px;">
+                    <i class="fas fa-arrow-left"></i> Back to Purpose
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p>Sesami - AI-Powered Infant Development Tracking</p>
+            <a href="design-goals.html?edit=true" class="edit-link"><i class="fas fa-edit"></i> Edit Site</a>
+        </div>
+    </footer>
+
+    <script src="../app.js"></script>
+    <script src="../edit-mode.js"></script>
+</body>
+</html>
