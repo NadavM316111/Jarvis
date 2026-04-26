@@ -695,12 +695,24 @@ app.post('/auth/signup', async (req, res) => {
     const { email, password, name } = req.body;
     if (!email || !password || !name) return res.status(400).json({ error: 'Email, password and name required' });
     const result = await signup(email, password, name);
+    // Pre-populate memory with email and name
+    const session = getSession(result.userId);
+    session.userMemory.email = email;
+    session.userMemory.userName = name;
+    saveUserMemory(result.userId, session.userMemory);
     res.json({ success: true, ...result });
   } catch (e) { res.status(400).json({ error: e.message }); }
 });
 app.post('/auth/login', async (req, res) => {
   try {
     const result = await login(req.body.email, req.body.password);
+    // Ensure memory has email and name
+    const session = getSession(result.userId);
+    if (!session.userMemory.email) {
+      session.userMemory.email = req.body.email;
+      session.userMemory.userName = result.name;
+      saveUserMemory(result.userId, session.userMemory);
+    }
     res.json({ success: true, ...result });
   } catch (e) { res.status(401).json({ error: e.message }); }
 });
@@ -794,6 +806,11 @@ app.post('/chat', authMiddleware, async (req, res) => {
     const session = getSession(userId);
     // Store name from JWT in session for system prompt
     if (!session.name) session.name = req.user.name;
+    if (!session.userMemory.email) {
+  session.userMemory.email = req.user.email;
+  session.userMemory.userName = req.user.name;
+  saveUserMemory(userId, session.userMemory);
+}
 
     session.conversationHistory = session.conversationHistory.filter(msg => {
       if (!msg.content) return false;
