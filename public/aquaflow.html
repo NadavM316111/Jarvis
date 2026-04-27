@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AquaFlow - Smart Hydration Revolution</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0c1445 0%, #1a237e 50%, #0d47a1 100%);
+            min-height: 100vh;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        /* Animated water background */
+        .water-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.3;
+        }
+
+        .bubble {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.8), rgba(100,181,246,0.3));
+            animation: float 8s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(100vh) scale(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100px) scale(1); opacity: 0; }
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 20px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            background: rgba(255,255,255,0.05);
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(90deg, #4fc3f7, #00e5ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo svg {
+            width: 40px;
+            height: 40px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 40px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 400;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #4fc3f7;
+        }
+
+        .cta-nav {
+            background: linear-gradient(90deg, #00bcd4, #4fc3f7);
+            padding: 12px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            color: #fff;
+            font-weight: 600;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .cta-nav:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 40px rgba(79, 195, 247, 0.4);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 120px 50px 50px;
+            position: relative;
+        }
+
+        .hero-content {
+            max-width: 600px;
+            z-index: 10;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: rgba(79, 195, 247, 0.2);
+            border: 1px solid rgba(79, 195, 247, 0.5);
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-size: 14px;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(79, 195, 247, 0.4); }
+            50% { box-shadow: 0 0 0 15px rgba(79, 195, 247, 0); }
+        }
+
+        .hero h1 {
+            font-size: 60px;
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 25px;
+        }
+
+        .hero h1 span {
+            background: linear-gradient(90deg, #4fc3f7, #00e5ff, #18ffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 18px;
+            color: rgba(255,255,255,0.8);
+            line-height: 1.7;
+            margin-bottom: 40px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 20px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg, #00bcd4, #4fc3f7);
+            padding: 16px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            color: #fff;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(79, 195, 247, 0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 2px solid rgba(255,255,255,0.3);
+            padding: 14px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            color: #fff;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn-secondary:hover {
+            border-color: #4fc3f7;
+            background: rgba(79, 195, 247, 0.1);
+        }
+
+        .hero-image {
+            position: relative;
+            width: 500px;
+            height: 500px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .bottle-container {
+            position: relative;
+            animation: bob 3s ease-in-out infinite;
+        }
+
+        @keyframes bob {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .bottle {
+            width: 200px;
+            height: 400px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.2) 0%, rgba(79,195,247,0.4) 100%);
+            border-radius: 30px 30px 50px 50px;
+            position: relative;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255,255,255,0.3);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.3), inset 0 -50px 100px rgba(79,195,247,0.2);
+        }
+
+        .bottle::before {
+            content: '';
+            position: absolute;
+            top: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 50px;
+            background: linear-gradient(180deg, #37474f 0%, #263238 100%);
+            border-radius: 10px 10px 5px 5px;
+        }
+
+        .bottle::after {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 30px;
+            height: 100px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.4), transparent);
+            border-radius: 20px;
+        }
+
+        .water-level {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            height: 60%;
+            background: linear-gradient(180deg, rgba(79,195,247,0.6), rgba(0,188,212,0.8));
+            border-radius: 20px 20px 40px 40px;
+            animation: wave 2s ease-in-out infinite;
+        }
+
+        @keyframes wave {
+            0%, 100% { height: 60%; }
+            50% { height: 62%; }
+        }
+
+        .glow-ring {
+            position: absolute;
+            width: 350px;
+            height: 350px;
+            border: 2px solid rgba(79, 195, 247, 0.3);
+            border-radius: 50%;
+            animation: rotate 10s linear infinite;
+        }
+
+        .glow-ring::before {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: #4fc3f7;
+            border-radius: 50%;
+            top: -10px;
+            left: 50%;
+            box-shadow: 0 0 30px #4fc3f7;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Features Section */
+        .features {
+            padding: 100px 50px;
+            background: rgba(255,255,255,0.02);
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .section-title h2 {
+            font-size: 42px;
+            margin-bottom: 15px;
+        }
+
+        .section-title p {
+            color: rgba(255,255,255,0.7);
+            font-size: 18px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(79, 195, 247, 0.5);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #00bcd4, #4fc3f7);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 25px;
+            font-size: 30px;
+        }
+
+        .feature-card h3 {
+            font-size: 22px;
+            margin-bottom: 15px;
+        }
+
+        .feature-card p {
+            color: rgba(255,255,255,0.7);
+            line-height: 1.6;
+        }
+
+        /* Stats Section */
+        .stats {
+            padding: 80px 50px;
+            display: flex;
+            justify-content: center;
+            gap: 100px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 60px;
+            font-weight: 700;
+            background: linear-gradient(90deg, #4fc3f7, #00e5ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-label {
+            color: rgba(255,255,255,0.7);
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        /* Pricing Section */
+        .pricing {
+            padding: 100px 50px;
+        }
+
+        .pricing-cards {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .pricing-card {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            padding: 50px 40px;
+            border: 1px solid rgba(255,255,255,0.1);
+            width: 320px;
+            transition: all 0.3s;
+        }
+
+        .pricing-card.featured {
+            background: linear-gradient(135deg, rgba(0,188,212,0.2), rgba(79,195,247,0.2));
+            border-color: rgba(79, 195, 247, 0.5);
+            transform: scale(1.05);
+        }
+
+        .pricing-card h3 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .pricing-card .price {
+            font-size: 48px;
+            font-weight: 700;
+            margin: 20px 0;
+        }
+
+        .pricing-card .price span {
+            font-size: 18px;
+            color: rgba(255,255,255,0.7);
+        }
+
+        .pricing-card ul {
+            list-style: none;
+            margin: 30px 0;
+        }
+
+        .pricing-card li {
+            padding: 12px 0;
+            color: rgba(255,255,255,0.8);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .pricing-card li:last-child {
+            border-bottom: none;
+        }
+
+        /* Footer */
+        footer {
+            padding: 50px;
+            text-align: center;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        footer p {
+            color: rgba(255,255,255,0.5);
+        }
+
+        @media (max-width: 900px) {
+            .hero {
+                flex-direction: column;
+                text-align: center;
+            }
+            .hero h1 {
+                font-size: 40px;
+            }
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            .stats {
+                flex-direction: column;
+                gap: 40px;
+            }
+            .pricing-cards {
+                flex-direction: column;
+                align-items: center;
+            }
+            .pricing-card.featured {
+                transform: scale(1);
+            }
+            nav {
+                padding: 20px;
+            }
+            .nav-links {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="water-bg" id="waterBg"></div>
+
+    <nav>
+        <div class="logo">
+            <svg viewBox="0 0 100 100" fill="none">
+                <circle cx="50" cy="50" r="45" stroke="url(#grad)" stroke-width="4" fill="none"/>
+                <path d="M50 20 C30 45, 30 70, 50 85 C70 70, 70 45, 50 20" fill="url(#grad)"/>
+                <defs>
+                    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#4fc3f7"/>
+                        <stop offset="100%" style="stop-color:#00e5ff"/>
+                    </linearGradient>
+                </defs>
+            </svg>
+            AquaFlow
+        </div>
+        <ul class="nav-links">
+            <li><a href="#features">Features</a></li>
+            <li><a href="#pricing">Pricing</a></li>
+            <li><a href="#about">About</a></li>
+        </ul>
+        <a href="#" class="cta-nav">Pre-Order</a>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-badge">Launching Summer 2026</div>
+            <h1>Hydration <span>Reimagined</span> for the Future</h1>
+            <p>AquaFlow is the world's first AI-powered smart water bottle that learns your hydration needs, tracks your intake, and reminds you to drink at the perfect moments.</p>
+            <div class="hero-buttons">
+                <a href="#" class="btn-primary">Pre-Order Now</a>
+                <a href="#" class="btn-secondary">Watch Demo</a>
+            </div>
+        </div>
+        <div class="hero-image">
+            <div class="glow-ring"></div>
+            <div class="bottle-container">
+                <div class="bottle">
+                    <div class="water-level"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="features" id="features">
+        <div class="section-title">
+            <h2>Revolutionary Features</h2>
+            <p>Everything you need to stay perfectly hydrated</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">AI</div>
+                <h3>AI Hydration Coach</h3>
+                <p>Our proprietary AI learns your body's needs based on activity, weather, and health data to optimize your hydration schedule.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">UV</div>
+                <h3>UV-C Purification</h3>
+                <p>Built-in UV-C light eliminates 99.99% of bacteria and viruses, ensuring every sip is pure and safe.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">T</div>
+                <h3>Temperature Control</h3>
+                <p>Advanced thermal technology keeps your water ice cold for 48 hours or steaming hot for 24 hours.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">S</div>
+                <h3>Smart Sync</h3>
+                <p>Seamlessly connects with Apple Health, Google Fit, and all major fitness trackers for complete health integration.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">G</div>
+                <h3>Glow Reminders</h3>
+                <p>Gentle LED pulses remind you to drink without being intrusive. Customize colors to match your style.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">E</div>
+                <h3>Eco-Conscious</h3>
+                <p>Made from 100% recycled ocean plastics. Every bottle saves 1000+ single-use plastic bottles from landfills.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="stats">
+        <div class="stat">
+            <div class="stat-number">50K+</div>
+            <div class="stat-label">Pre-orders</div>
+        </div>
+        <div class="stat">
+            <div class="stat-number">99.9%</div>
+            <div class="stat-label">Purity Rate</div>
+        </div>
+        <div class="stat">
+            <div class="stat-number">48hr</div>
+            <div class="stat-label">Cold Retention</div>
+        </div>
+        <div class="stat">
+            <div class="stat-number">4.9</div>
+            <div class="stat-label">Beta Rating</div>
+        </div>
+    </section>
+
+    <section class="pricing" id="pricing">
+        <div class="section-title">
+            <h2>Choose Your AquaFlow</h2>
+            <p>Early bird pricing - Limited time only</p>
+        </div>
+        <div class="pricing-cards">
+            <div class="pricing-card">
+                <h3>Essential</h3>
+                <div class="price">$79 <span>/bottle</span></div>
+                <ul>
+                    <li>Smart hydration tracking</li>
+                    <li>Basic app features</li>
+                    <li>24hr temperature control</li>
+                    <li>1 year warranty</li>
+                </ul>
+                <a href="#" class="btn-primary" style="width:100%;display:block;text-align:center;">Select</a>
+            </div>
+            <div class="pricing-card featured">
+                <h3>Pro</h3>
+                <div class="price">$149 <span>/bottle</span></div>
+                <ul>
+                    <li>Everything in Essential</li>
+                    <li>AI Hydration Coach</li>
+                    <li>UV-C Purification</li>
+                    <li>48hr temperature control</li>
+                    <li>Lifetime warranty</li>
+                </ul>
+                <a href="#" class="btn-primary" style="width:100%;display:block;text-align:center;">Select</a>
+            </div>
+            <div class="pricing-card">
+                <h3>Family Pack</h3>
+                <div class="price">$399 <span>/4 bottles</span></div>
+                <ul>
+                    <li>4x Pro bottles</li>
+                    <li>Family dashboard</li>
+                    <li>Kids hydration mode</li>
+                    <li>Priority support</li>
+                </ul>
+                <a href="#" class="btn-primary" style="width:100%;display:block;text-align:center;">Select</a>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>AquaFlow 2026 - Hydration Reimagined (This is a demo product)</p>
+    </footer>
+
+    <script>
+        // Create floating bubbles
+        const waterBg = document.getElementById('waterBg');
+        for (let i = 0; i < 20; i++) {
+            const bubble = document.createElement('div');
+            bubble.className = 'bubble';
+            const size = Math.random() * 60 + 20;
+            bubble.style.width = size + 'px';
+            bubble.style.height = size + 'px';
+            bubble.style.left = Math.random() * 100 + '%';
+            bubble.style.animationDelay = Math.random() * 8 + 's';
+            bubble.style.animationDuration = (Math.random() * 4 + 6) + 's';
+            waterBg.appendChild(bubble);
+        }
+    </script>
+</body>
+</html>
