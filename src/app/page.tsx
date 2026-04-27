@@ -153,6 +153,8 @@ export default function Home() {
             source: "text",
             timestamp: r.timestamp ?? Date.now()
           });
+          const urlMatch2 = r.message.match(/https:\/\/api\.heyjarvis\.me\/view\/[^\s)]+/);
+if (urlMatch2) setTimeout(() => window.open(urlMatch2[0], '_blank'), 500);
         }
       } catch {}
     }, 800);
@@ -442,6 +444,11 @@ const toggleVoice = async () => {
       const data = await res.json();
       if (data.message && data.message !== 'On it.') {
         addMessageToConv(finalConvId, { role: "assistant", content: data.message, source: "text", timestamp: Date.now() });
+        // Auto-open links if JARVIS built something
+const urlMatch = data.message.match(/https:\/\/api\.heyjarvis\.me\/view\/[^\s)]+/);
+if (urlMatch) {
+  setTimeout(() => window.open(urlMatch[0], '_blank'), 500);
+}
         // Speak response in user's browser
         if (typeof window !== 'undefined' && window.speechSynthesis) {
           window.speechSynthesis.cancel();
