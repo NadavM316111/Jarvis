@@ -398,32 +398,20 @@ async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame
   const userLocation = userMemory.location || (isNadav ? 'Fort Lauderdale, Florida' : 'Unknown');
 
   const tools = [
-    { name: 'web_search', description: 'Search the web for any information.', input_schema: { type: 'object', properties: { query: { type: 'string' } }, required: ['query'] } },
-    { name: 'browse_url', description: 'Read full content of any webpage.', input_schema: { type: 'object', properties: { url: { type: 'string' } }, required: ['url'] } },
-    ...(isNadav ? [{
-      name: 'execute_actions',
-      description: 'Execute computer actions: OPEN_URL, OPEN_APP, CLICK, TYPE, ENTER, HOTKEY, SELECT_ALL_AND_DELETE, SEND_EMAIL, RUN',
-      input_schema: { type: 'object', properties: { actions: { type: 'array', items: { type: 'object', properties: { type: { type: 'string' }, value: { type: 'string' } } } }, summary: { type: 'string' } }, required: ['actions', 'summary'] }
-    }] : []),
-    {
-      name: 'run_code',
-      description: isNadav
-        ? 'Execute code in node, python, powershell, or bash. Auto-installs missing packages.'
-        : 'Execute code in node, python, or bash for data processing and web tasks only. No file system access.',
-      input_schema: { type: 'object', properties: { code: { type: 'string' }, language: { type: 'string', enum: isNadav ? ['node', 'python', 'powershell', 'bash'] : ['node', 'python', 'bash'] }, description: { type: 'string' } }, required: ['code', 'description'] }
-    },
-    ...(isNadav ? [{
-      name: 'read_file',
-      description: 'Read, list, or search files on the computer.',
-      input_schema: { type: 'object', properties: { path: { type: 'string' }, action: { type: 'string', enum: ['read', 'list', 'search'] }, query: { type: 'string' } }, required: ['path', 'action'] }
-    }] : []),
-    ...(isNadav ? [{ name: 'get_system_info', description: 'Get battery, top processes, disk space, who is home on network.', input_schema: { type: 'object', properties: {} } }] : []),
-    ...(isNadav ? [{ name: 'capture_screen', description: 'Capture a fresh screenshot of the current screen.', input_schema: { type: 'object', properties: {} } }] : []),
-    { name: 'remember', description: 'Save to persistent memory across sessions.', input_schema: { type: 'object', properties: { category: { type: 'string' }, key: { type: 'string' }, value: { type: 'string' } }, required: ['category', 'key', 'value'] } },
-    { name: 'proactive_update', description: 'Push a notification to the user.', input_schema: { type: 'object', properties: { message: { type: 'string' } }, required: ['message'] } },
-    { name: 'search_3d_models', description: 'Search Thingiverse and Printables for 3D models.', input_schema: { type: 'object', properties: { query: { type: 'string' }, source: { type: 'string', enum: ['thingiverse', 'printables', 'both'] } }, required: ['query'] } },
-    { name: 'finish', description: 'Task complete. Deliver final response.', input_schema: { type: 'object', properties: { response: { type: 'string' } }, required: ['response'] } }
-  ];
+  { name: 'web_search', description: 'Search the web for any information.', input_schema: { type: 'object', properties: { query: { type: 'string' } }, required: ['query'] } },
+  { name: 'browse_url', description: 'Read full content of any webpage.', input_schema: { type: 'object', properties: { url: { type: 'string' } }, required: ['url'] } },
+  { name: 'run_code', description: 'Execute code in node, python, powershell, or bash. Auto-installs missing packages. Build websites, call APIs, process data.', input_schema: { type: 'object', properties: { code: { type: 'string' }, language: { type: 'string', enum: ['node', 'python', 'powershell', 'bash'] }, description: { type: 'string' } }, required: ['code', 'description'] } },
+  { name: 'remember', description: 'Save to persistent memory across sessions.', input_schema: { type: 'object', properties: { category: { type: 'string' }, key: { type: 'string' }, value: { type: 'string' } }, required: ['category', 'key', 'value'] } },
+  { name: 'proactive_update', description: 'Push a notification to the user.', input_schema: { type: 'object', properties: { message: { type: 'string' } }, required: ['message'] } },
+  { name: 'search_3d_models', description: 'Search Thingiverse and Printables for 3D models.', input_schema: { type: 'object', properties: { query: { type: 'string' }, source: { type: 'string', enum: ['thingiverse', 'printables', 'both'] } }, required: ['query'] } },
+  ...(isNadav ? [
+    { name: 'execute_actions', description: 'Execute computer actions: OPEN_URL, OPEN_APP, CLICK, TYPE, ENTER, HOTKEY, SELECT_ALL_AND_DELETE, SEND_EMAIL, RUN', input_schema: { type: 'object', properties: { actions: { type: 'array', items: { type: 'object', properties: { type: { type: 'string' }, value: { type: 'string' } } } }, summary: { type: 'string' } }, required: ['actions', 'summary'] } },
+    { name: 'read_file', description: 'Read, list, or search files on the computer.', input_schema: { type: 'object', properties: { path: { type: 'string' }, action: { type: 'string', enum: ['read', 'list', 'search'] }, query: { type: 'string' } }, required: ['path', 'action'] } },
+    { name: 'get_system_info', description: 'Get battery, top processes, disk space.', input_schema: { type: 'object', properties: {} } },
+    { name: 'capture_screen', description: 'Capture a fresh screenshot.', input_schema: { type: 'object', properties: {} } },
+  ] : []),
+  { name: 'finish', description: 'Task complete. Deliver final response.', input_schema: { type: 'object', properties: { response: { type: 'string' } }, required: ['response'] } }
+];
 
   const emotionContext = isNadav && faceStatus.present && faceStatus.emotion
     ? `\nUser's current emotion: ${faceStatus.emotion}. Adjust tone to be ${faceStatus.tone}.`
@@ -494,11 +482,20 @@ async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame
       `Credentials: .env.local | Google: credentials.json + token.json`,
     ] : [
       '',
-      '═══ FOR THIS USER ═══',
-      'You are a general-purpose AI assistant. Help with questions, research, writing, coding advice, analysis.',
-      'You can search the web, run code for data processing, and remember user preferences.',
-      'You do NOT have access to file systems, PC control, or smart home devices.',
-      `If the user mentions their location, remember it. Current known location: ${userLocation}`,
+      '═══ CAPABILITIES ═══',
+      'You are FULLY POWERFUL — same as JARVIS from Iron Man.',
+      'run_code: Build websites, call APIs, run Python/Node/bash/powershell.',
+      'ALL built websites saved to: C:/Users/nadav/jarvis-web/public/',
+      'ALL websites served at: https://heyjarvis.me/view/filename.html',
+      'HyperFlex studio: https://heyjarvis.me/hyperflex',
+      'Design studio: https://heyjarvis.me/design',
+      'NEVER use localhost URLs for users — always use https://heyjarvis.me/...',
+      'web_search, browse_url, run_code, remember, proactive_update, search_3d_models all available.',
+      'For 3D models: search_3d_models first, then run_code to process.',
+      'ENCODING: When writing HTML/CSS/JS with fs.writeFileSync, NEVER use emojis.',
+      `User location: ${userLocation}`,
+      `node_modules: ${process.cwd()}\\node_modules`,
+      `Working dir: ${process.cwd()}`,
     ]),
     '',
     `Memory: ${JSON.stringify(userMemory).substring(0, 1500)}`,
