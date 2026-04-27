@@ -504,6 +504,15 @@ async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame
 `const events = await getCalendarEvents("${userId}", 7);`,
 `If not connected, tell user: "Connect your Gmail at https://api.heyjarvis.me/auth/google"`,
 '',
+'═══ GOOGLE DRIVE ═══',
+'To list files: const { listDriveFiles } = require("./gmail_multi");',
+`const files = await listDriveFiles("${userId}", "search query");`,
+'To read a file: const { readDriveFile } = require("./gmail_multi");',
+`const file = await readDriveFile("${userId}", "FILE_ID");`,
+'To create a doc: const { createDriveDocument } = require("./gmail_multi");',
+`const doc = await createDriveDocument("${userId}", "title", "content");`,
+'Works for Google Docs, Sheets, Slides, and regular files.',
+'',
   '═══ SMS (TWILIO) ═══',
 'You CAN send real SMS text messages using Twilio run_code.',
 'Use run_code with node to send texts:',
@@ -1079,7 +1088,7 @@ app.delete('/conversations/:id', authMiddleware, async (req, res) => {
 });
 
 // ============ GOOGLE OAUTH ============
-const { getAuthUrl, saveTokens, getRecentEmails: getEmailsMulti, sendEmail: sendEmailMulti, getCalendarEvents, createCalendarEvent, isConnected } = require('./gmail_multi');
+const { getAuthUrl, saveTokens, getRecentEmails: getEmailsMulti, sendEmail: sendEmailMulti, getCalendarEvents, createCalendarEvent, listDriveFiles, readDriveFile, createDriveDocument, isConnected } = require('./gmail_multi');
 app.get('/auth/google', (req, res) => {
   const token = req.query.token || req.headers.authorization?.replace('Bearer ', '');
   if (!token) return res.status(401).json({ error: 'No token' });

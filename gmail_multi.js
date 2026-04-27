@@ -15,11 +15,15 @@ function getAuthUrl(userId) {
   return auth.generateAuthUrl({
     access_type: 'offline',
     scope: [
-      'https://www.googleapis.com/auth/gmail.readonly',
-      'https://www.googleapis.com/auth/gmail.send',
-      'https://www.googleapis.com/auth/calendar.readonly',
-      'https://www.googleapis.com/auth/calendar.events',
-    ],
+  'https://www.googleapis.com/auth/gmail.readonly',
+  'https://www.googleapis.com/auth/gmail.send',
+  'https://www.googleapis.com/auth/calendar.readonly',
+  'https://www.googleapis.com/auth/calendar.events',
+  'https://www.googleapis.com/auth/drive',
+  'https://www.googleapis.com/auth/documents',
+  'https://www.googleapis.com/auth/spreadsheets',
+  'https://www.googleapis.com/auth/presentations',
+],
     state: userId,
     prompt: 'consent'
   });
@@ -114,10 +118,53 @@ async function createCalendarEvent(userId, title, startTime, endTime, descriptio
   });
   return `Event created: ${event.data.htmlLink}`;
 }
+async function listDriveFiles(userId, query = '', maxResults = 20) {
+  const auth = await getAuthForUser(userId);
+  if (!auth) return 'Not connected to Google Drive.';
+  const drive = google.drive({ version: 'v3', auth });
+  const res = await drive.files.list({
+    q: query ? `name contains '${query}' and trashed=false` : 'trashed=false',
+    pageSize: maxResults,
+    fields: 'files(id, name, mimeType, modifiedTime, webViewLink, size)'
+  });
+  return res.data.files || [];
+}
 
+async function readDriveFile(userId, fileId) {
+  const auth = await getAuthForUser(userId);
+  if (!auth) return 'Not connected to Google Drive.';
+  const drive = google.drive({ version: 'v3', auth });
+  const meta = await drive.files.get({ fileId, fields: 'mimeType, name' });
+  const mimeType = meta.data.mimeType;
+  if (mimeType === 'application/vnd.google-apps.document') {
+    const docs = google.docs({ version: 'v1', auth });
+    const doc = await docs.documents.get({ documentId: fileId });
+    const text = doc.data.body.content.map(e => e.paragraph?.elements?.map(el => el.textRun?.content || '').join('') || '').join('');
+    return { name: meta.data.name, content: text.substring(0, 8000) };
+  }
+  if (mimeType === 'application/vnd.google-apps.spreadsheet') {
+    const sheets = google.sheets({ version: 'v4', auth });
+    const sheet = await sheets.spreadsheets.values.get({ spreadsheetId: fileId, range: 'A1:Z100' });
+    return { name: meta.data.name, content: JSON.stringify(sheet.data.values).substring(0, 8000) };
+  }
+  const res = await drive.files.get({ fileId, alt: 'media' }, { responseType: 'text' });
+  return { name: meta.data.name, content: String(res.data).substring(0, 8000) };
+}
+
+async function createDriveDocument(userId, title, content) {
+  const auth = await getAuthForUser(userId);
+  if (!auth) return 'Not connected to Google Drive.';
+  const docs = google.docs({ version: 'v1', auth });
+  const doc = await docs.documents.create({ requestBody: { title } });
+  await docs.documents.batchUpdate({
+    documentId: doc.data.documentId,
+    requestBody: { requests: [{ insertText: { location: { index: 1 }, text: content } }] }
+  });
+  return { id: doc.data.documentId, link: `https://docs.google.com/document/d/${doc.data.documentId}` };
+}
 async function isConnected(userId) {
   const rows = await sql`SELECT google_access_token FROM user_oauth WHERE user_id = ${userId}`;
   return rows.length > 0 && !!rows[0].google_access_token;
 }
 
-module.exports = { getAuthUrl, saveTokens, getRecentEmails, sendEmail, getCalendarEvents, createCalendarEvent, isConnected };
+module.exports = { getAuthUrl, saveTokens, getRecentEmails, sendEmail, getCalendarEvents, createCalendarEvent, listDriveFiles, readDriveFile, createDriveDocument, isConnected };

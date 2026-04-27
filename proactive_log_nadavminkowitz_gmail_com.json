@@ -1,6 +1,20 @@
 {
   "updates": [
     {
+      "id": 1777293228365,
+      "message": "Battery at 32% and not plugged in - consider charging soon.",
+      "time": "8:33:48 AM",
+      "date": "4/27/2026",
+      "read": false
+    },
+    {
+      "id": 1777293187067,
+      "message": "Morning Briefing: ☀️ WEATHER: 71°F now, high of 84°F, sunny and beautiful today. 📧 EMAILS - URGENT: GitGuardian detected a PostgreSQL URI exposed in your Jarvis GitHub repo - handle this ASAP. Also: Daniel Minkowitz invited you to ClickFlo dinner on May 12 at 8pm at Abazu, Tom Kahan sent you a message, and Investopedia reports stock futures flat ahead of Fed decision. 📅 CALENDAR: No events today. Upcoming: Sunness Supper Club on Thursday April 30, SAT Exam on Sunday May 3 (6 days away - study time!). Have a great Monday, sir.",
+      "time": "8:33:07 AM",
+      "date": "4/27/2026",
+      "read": false
+    },
+    {
       "id": 1777292597476,
       "message": "Morning Briefing: ☀️ WEATHER: 84°F sunny today, beautiful week ahead. 📧 URGENT EMAIL: GitGuardian detected a PostgreSQL URI exposed in your Jarvis GitHub repo - action needed. Also, Daniel Minkowitz invited you to ClickFlo dinner May 12th at Abazu (8pm), and Tom Kahan sent you a blank email yesterday. 📅 CALENDAR: Clear today. Upcoming: Sunness Supper Club Apr 30, SAT Exam May 3 (6 days away - time to prep!). No fires, solid day ahead sir.",
       "time": "8:23:17 AM",
@@ -683,20 +697,6 @@
       "id": 1776967137787,
       "message": "Unrecognized person detected at computer",
       "time": "1:58:57 PM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776967098204,
-      "message": "Unrecognized person detected at computer",
-      "time": "1:58:18 PM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776967049348,
-      "message": "Nadav detected at computer — neutral mood",
-      "time": "1:57:29 PM",
       "date": "4/23/2026",
       "read": true
     }
