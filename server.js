@@ -1115,7 +1115,7 @@ app.get('/auth/google/callback', async (req, res) => {
 );
     const { tokens } = await auth.getToken(code);
     await saveTokens(userId, tokens);
-    res.send('<html><body style="background:#060608;color:white;font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0"><div style="text-align:center"><div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(to bottom right,#60a5fa,#1d4ed8);margin:0 auto 16px"></div><h2>Gmail Connected!</h2><p style="color:rgba(255,255,255,0.4)">You can close this tab and go back to JARVIS.</p></div></body></html>');
+    res.send('<html><body style="background:#060608;color:white;font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0"><div style="text-align:center"><div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(to bottom right,#60a5fa,#1d4ed8);margin:0 auto 16px"></div><h2>Google Connected!</h2><p style="color:rgba(255,255,255,0.4)">You can close this tab and go back to JARVIS.</p></div></body></html>');
   } catch (e) {
     res.status(500).send('Auth failed: ' + e.message);
   }
