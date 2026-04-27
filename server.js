@@ -494,6 +494,16 @@ async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame
   'web_search, browse_url, run_code, remember, proactive_update, search_3d_models all available.',
   'ENCODING: When writing HTML/CSS/JS with fs.writeFileSync, NEVER use emojis.',
   '',
+  '═══ GMAIL & CALENDAR ═══',
+'To read emails: use run_code with node:',
+'const { getRecentEmails } = require("./gmail_multi");',
+`const emails = await getRecentEmails("${userId}", 10);`,
+'To send email: const { sendEmail } = require("./gmail_multi");',
+`await sendEmail("${userId}", to, subject, body);`,
+'To get calendar: const { getCalendarEvents } = require("./gmail_multi");',
+`const events = await getCalendarEvents("${userId}", 7);`,
+`If not connected, tell user: "Connect your Gmail at https://api.heyjarvis.me/auth/google"`,
+'',
   '═══ SMS (TWILIO) ═══',
 'You CAN send real SMS text messages using Twilio run_code.',
 'Use run_code with node to send texts:',
@@ -1066,6 +1076,38 @@ app.post('/conversations/:id', authMiddleware, async (req, res) => {
 app.delete('/conversations/:id', authMiddleware, async (req, res) => {
   await deleteConversation(req.params.id, req.user.userId);
   res.json({ ok: true });
+});
+
+// ============ GOOGLE OAUTH ============
+const { getAuthUrl, saveTokens, getRecentEmails: getEmailsMulti, sendEmail: sendEmailMulti, getCalendarEvents, isConnected } = require('./gmail_multi');
+
+app.get('/auth/google', authMiddleware, (req, res) => {
+  const url = getAuthUrl(req.user.userId);
+  res.redirect(url);
+});
+
+app.get('/auth/google/callback', async (req, res) => {
+  const { code, state: userId } = req.query;
+  if (!code || !userId) return res.status(400).send('Missing code or state');
+  try {
+    const { google } = require('googleapis');
+    const { OAuth2 } = google.auth;
+    const auth = new OAuth2(
+  process.env.GOOGLE_CLIENT_ID,
+  process.env.GOOGLE_CLIENT_SECRET,
+  'https://api.heyjarvis.me/auth/google/callback'
+);
+    const { tokens } = await auth.getToken(code);
+    await saveTokens(userId, tokens);
+    res.send('<html><body style="background:#060608;color:white;font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0"><div style="text-align:center"><div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(to bottom right,#60a5fa,#1d4ed8);margin:0 auto 16px"></div><h2>Gmail Connected!</h2><p style="color:rgba(255,255,255,0.4)">You can close this tab and go back to JARVIS.</p></div></body></html>');
+  } catch (e) {
+    res.status(500).send('Auth failed: ' + e.message);
+  }
+});
+
+app.get('/auth/google/status', authMiddleware, async (req, res) => {
+  const connected = await isConnected(req.user.userId);
+  res.json({ connected });
 });
 app.listen(3001, () => {
   console.log('\n╔════════════════════════════════════════╗');

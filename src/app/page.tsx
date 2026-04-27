@@ -80,6 +80,7 @@ export default function Home() {
   const [cameraActive, setCameraActive] = useState(false);
   const [attachedFile, setAttachedFile] = useState<{data: string, type: string, name: string} | null>(null);
   const [voiceBubbleVisible, setVoiceBubbleVisible] = useState(false);
+  const [googleConnected, setGoogleConnected] = useState(false);
 
   const bottomRef = useRef<HTMLDivElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -95,6 +96,11 @@ export default function Home() {
 
   useEffect(() => { activeIdRef.current = activeId; }, [activeId]);
   useEffect(() => { tokenRef.current = token; }, [token]);
+  useEffect(() => {
+  if (!token) return;
+  fetch(`${API}/auth/google/status`, { headers: { Authorization: `Bearer ${token}` } })
+    .then(r => r.json()).then(d => setGoogleConnected(d.connected)).catch(() => {});
+}, [token]);
 
   const activeConv = conversations.find(c => c.id === activeId);
   const messages = activeConv?.messages || [];
@@ -461,19 +467,29 @@ export default function Home() {
         </div>
 
         {/* Sidebar actions */}
-        <div className="px-3 pt-3 pb-2 flex-shrink-0">
-          <button onClick={newConversation} className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/20 text-blue-300 text-xs font-medium transition-all mb-2">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-              <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-            </svg>
-            New conversation
-          </button>
-          {typeof window !== 'undefined' && window.location.hostname === 'localhost' && (
-            <button onClick={toggleVoice} className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl border text-xs font-medium transition-all mb-2 ${voiceRunning ? 'bg-green-500/15 border-green-500/30 text-green-400' : 'bg-white/5 border-white/10 text-white/50 hover:text-white/70'}`}>
-              <div className={`w-2 h-2 rounded-full ${voiceRunning ? 'bg-green-400 animate-pulse' : 'bg-white/20'}`} />
-              {voiceRunning ? 'Voice active — stop' : 'Start voice'}
-            </button>
-          )}
+<div className="px-3 pt-3 pb-2 flex-shrink-0">
+  <button onClick={newConversation} className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/20 text-blue-300 text-xs font-medium transition-all mb-2">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+      <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+    </svg>
+    New conversation
+  </button>
+  
+  <a
+    href={`${API}/auth/google`}
+    target="_blank"
+    rel="noopener noreferrer"
+    className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl border text-xs font-medium transition-all mb-2 ${googleConnected ? 'bg-green-500/15 border-green-500/30 text-green-400' : 'bg-white/5 border-white/10 text-white/50 hover:text-white/70'}`}
+  >
+    <div className={`w-2 h-2 rounded-full ${googleConnected ? 'bg-green-400' : 'bg-white/20'}`} />
+    {googleConnected ? 'Gmail connected' : 'Connect Gmail'}
+  </a>
+  {typeof window !== 'undefined' && window.location.hostname === 'localhost' && (
+    <button onClick={toggleVoice} className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl border text-xs font-medium transition-all mb-2 ${voiceRunning ? 'bg-green-500/15 border-green-500/30 text-green-400' : 'bg-white/5 border-white/10 text-white/50 hover:text-white/70'}`}>
+      <div className={`w-2 h-2 rounded-full ${voiceRunning ? 'bg-green-400 animate-pulse' : 'bg-white/20'}`} />
+      {voiceRunning ? 'Voice active — stop' : 'Start voice'}
+    </button>
+  )}
           <button
             onClick={async () => {
               const res = await fetch(`${API}/voice/spoken-updates`, { method: 'POST', headers: { 'Content-Type': 'application/json' } });

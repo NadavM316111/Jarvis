@@ -1,0 +1,704 @@
+{
+  "updates": [
+    {
+      "id": 1777291260268,
+      "message": "Morning Briefing: \n\n📧 EMAIL HIGHLIGHTS:\n• 🚨 URGENT: GitGuardian detected PostgreSQL URI exposed in your Jarvis GitHub repo - security action needed\n• Daniel Minkowitz invited you to ClickFlo dinner May 12 @ 8pm at Abazu (unread)\n• Tom Kahan sent you an email (no subject/content)\n• Rest is promotional: Uber Eats, college ads, Instagram, Tubi\n\n📅 CALENDAR:\n• Today (Apr 27): No events scheduled\n• Coming up: Sunness Supper Club on April 30th\n\n🌤️ WEATHER (Fort Lauderdale):\nCurrently 70°F with 93% humidity. Today: Sunny, high 84°F. Tonight: Partly cloudy, low 72°F. Beautiful day ahead.\n\n⚡ ACTION ITEMS:\n1. Rotate the exposed PostgreSQL credentials in your Jarvis repo ASAP\n2. RSVP to Daniel's ClickFlo dinner invitation\n3. Check Tom Kahan's email - may need response",
+      "time": "8:01:00 AM",
+      "date": "4/27/2026",
+      "read": false
+    },
+    {
+      "id": 1777246849075,
+      "message": "Unrecognized person detected at computer",
+      "time": "7:40:49 PM",
+      "date": "4/26/2026",
+      "read": false
+    },
+    {
+      "id": 1777246794925,
+      "message": "I've detected your .env.local file containing sensitive API keys is currently displayed on screen with all credentials visible - you may want to close this before it's captured or seen by anyone else.",
+      "time": "7:39:54 PM",
+      "date": "4/26/2026",
+      "read": false
+    },
+    {
+      "id": 1777246715843,
+      "message": "Unrecognized person detected at computer",
+      "time": "7:38:35 PM",
+      "date": "4/26/2026",
+      "read": true
+    },
+    {
+      "id": 1777246702260,
+      "message": "Unrecognized person detected at computer",
+      "time": "7:38:22 PM",
+      "date": "4/26/2026",
+      "read": true
+    },
+    {
+      "id": 1777246692226,
+      "message": "Nadav detected at computer — neutral mood",
+      "time": "7:38:12 PM",
+      "date": "4/26/2026",
+      "read": true
+    },
+    {
+      "id": 1777178432838,
+      "message": "Sir, you're setting up two-factor authentication for your Alpaca trading account, and I notice the QR code containing your TOTP secret is visible on screen while no one is detected at the camera - this is sensitive security information that should be scanned promptly and not left exposed.",
+      "time": "12:40:32 AM",
+      "date": "4/26/2026",
+      "read": true
+    },
+    {
+      "id": 1777177567980,
+      "message": "Sir, your Alpaca API credentials are currently displayed on screen with your email address visible in the API Key ID field - I'd recommend caution as this is sensitive brokerage authentication information.",
+      "time": "12:26:07 AM",
+      "date": "4/26/2026",
+      "read": true
+    },
+    {
+      "id": 1777175524544,
+      "message": "Sir, you have a 500 error on your POST /api/troy endpoint that needs attention - the request is failing with a server error.",
+      "time": "11:52:04 PM",
+      "date": "4/25/2026",
+      "read": true
+    },
+    {
+      "id": 1777173163728,
+      "message": "Sir, your payment is processing for $10.00 in OpenAI API credits, and I should note that your credit card details ending in 2444 are currently visible on screen while no one is detected at the camera.",
+      "time": "11:12:43 PM",
+      "date": "4/25/2026",
+      "read": true
+    },
+    {
+      "id": 1777172664934,
+      "message": "Sir, I notice your .env.local file containing sensitive API keys and secrets is currently visible on screen - you may want to be cautious about screen sharing or recording while these credentials are exposed.",
+      "time": "11:04:24 PM",
+      "date": "4/25/2026",
+      "read": true
+    },
+    {
+      "id": 1777171477154,
+      "message": "Battery critical at 22% and discharging — plug in soon to avoid shutdown.",
+      "time": "10:44:37 PM",
+      "date": "4/25/2026",
+      "read": true
+    },
+    {
+      "id": 1777168955957,
+      "message": "Nadav has stepped away from the computer",
+      "time": "10:02:35 PM",
+      "date": "4/25/2026",
+      "read": true
+    },
+    {
+      "id": 1777166865232,
+      "message": "Nadav detected at computer — neutral mood",
+      "time": "9:27:45 PM",
+      "date": "4/25/2026",
+      "read": true
+    },
+    {
+      "id": 1777166489027,
+      "message": "Nadav has stepped away from the computer",
+      "time": "9:21:29 PM",
+      "date": "4/25/2026",
+      "read": true
+    },
+    {
+      "id": 1777166276069,
+      "message": "Unknown has stepped away from the computer",
+      "time": "9:17:56 PM",
+      "date": "4/25/2026",
+      "read": true
+    },
+    {
+      "id": 1777166212437,
+      "message": "Evening briefing: Battery at 27% - plug in soon. Weather shows 14% chance of severe thunderstorms tonight in Fort Lauderdale, nothing extreme. No significant news on your monitored projects today.",
+      "time": "9:16:52 PM",
+      "date": "4/25/2026",
+      "read": true
+    },
+    {
+      "id": 1777166196080,
+      "message": "Unrecognized person detected at computer",
+      "time": "9:16:36 PM",
+      "date": "4/25/2026",
+      "read": true
+    },
+    {
+      "id": 1777166175967,
+      "message": "Nadav detected at computer — neutral mood",
+      "time": "9:16:15 PM",
+      "date": "4/25/2026",
+      "read": true
+    },
+    {
+      "id": 1777163301887,
+      "message": "Unknown has stepped away from the computer",
+      "time": "8:28:21 PM",
+      "date": "4/25/2026",
+      "read": true
+    },
+    {
+      "id": 1777163136583,
+      "message": "Unrecognized person detected at computer",
+      "time": "8:25:36 PM",
+      "date": "4/25/2026",
+      "read": true
+    },
+    {
+      "id": 1777162888783,
+      "message": "Nadav has stepped away from the computer",
+      "time": "8:21:28 PM",
+      "date": "4/25/2026",
+      "read": true
+    },
+    {
+      "id": 1777162758091,
+      "message": "Nadav detected at computer — neutral mood",
+      "time": "8:19:18 PM",
+      "date": "4/25/2026",
+      "read": true
+    },
+    {
+      "id": 1777162568380,
+      "message": "Nadav has stepped away from the computer",
+      "time": "8:16:08 PM",
+      "date": "4/25/2026",
+      "read": true
+    },
+    {
+      "id": 1777162469856,
+      "message": "Nadav has stepped away from the computer",
+      "time": "8:14:29 PM",
+      "date": "4/25/2026",
+      "read": true
+    },
+    {
+      "id": 1777162231124,
+      "message": "Unrecognized person detected at computer",
+      "time": "8:10:31 PM",
+      "date": "4/25/2026",
+      "read": true
+    },
+    {
+      "id": 1777162227809,
+      "message": "Nadav detected at computer — neutral mood",
+      "time": "8:10:27 PM",
+      "date": "4/25/2026",
+      "read": true
+    },
+    {
+      "id": 1777162207764,
+      "message": "Unrecognized person detected at computer",
+      "time": "8:10:07 PM",
+      "date": "4/25/2026",
+      "read": true
+    },
+    {
+      "id": 1777034403993,
+      "message": "Nadav detected at computer — neutral mood",
+      "time": "8:40:03 AM",
+      "date": "4/24/2026",
+      "read": true
+    },
+    {
+      "id": 1777034207495,
+      "message": "Unrecognized person detected at computer",
+      "time": "8:36:47 AM",
+      "date": "4/24/2026",
+      "read": true
+    },
+    {
+      "id": 1777034187090,
+      "message": "Unrecognized person detected at computer",
+      "time": "8:36:27 AM",
+      "date": "4/24/2026",
+      "read": true
+    },
+    {
+      "id": 1777034082996,
+      "message": "Unrecognized person detected at computer",
+      "time": "8:34:42 AM",
+      "date": "4/24/2026",
+      "read": true
+    },
+    {
+      "id": 1777034036898,
+      "message": "Unrecognized person detected at computer",
+      "time": "8:33:56 AM",
+      "date": "4/24/2026",
+      "read": true
+    },
+    {
+      "id": 1777034026312,
+      "message": "Nadav detected at computer — neutral mood",
+      "time": "8:33:46 AM",
+      "date": "4/24/2026",
+      "read": true
+    },
+    {
+      "id": 1777034012748,
+      "message": "Unrecognized person detected at computer",
+      "time": "8:33:32 AM",
+      "date": "4/24/2026",
+      "read": true
+    },
+    {
+      "id": 1777033075798,
+      "message": "Morning Briefing for Thursday, April 24, 2026:\n\n☀️ WEATHER: 79°F today with chance of afternoon thunderstorms (30% around 2-3pm). Currently 74°F and overcast. Clearing tonight, 70°F low.\n\n📧 EMAILS (Notable):\n• Northwestern Admissions — \"Join Us: Arts at Northwestern\" (college outreach)\n• Investopedia — Markets down, software stocks sank, oil surged\n• Ubisoft — Account update required by April 30th (action needed)\n• Rest: newsletters and social notifications\n\n📅 CALENDAR: No events scheduled today or this week. Clear runway.\n\n⚡ ACTION ITEMS:\n1. AP Lang exam prep — stay focused (exam coming up)\n2. Post your daily Phoenix Party content\n3. Update Ubisoft account before April 30th\n\nYou're clear for the day, sir. Make it count.",
+      "time": "8:17:55 AM",
+      "date": "4/24/2026",
+      "read": true
+    },
+    {
+      "id": 1777033011442,
+      "message": "Nadav detected at computer — neutral mood",
+      "time": "8:16:51 AM",
+      "date": "4/24/2026",
+      "read": true
+    },
+    {
+      "id": 1776997759133,
+      "message": "It's 10:30 PM, sir — English formative tomorrow on chapters 8-15. You crushed the MCQ practice, but hit those SAQ questions before bed. Also, did the Phoenix Party post go live?",
+      "time": "10:29:19 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776995655635,
+      "message": "Quick reminder, sir — did the Phoenix Party post go out? Also, tomorrow's English formative on chapters 8-15 awaits. You nailed the MCQ prep, just review those two SAQ questions before bed.",
+      "time": "9:54:15 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776983425571,
+      "message": "Evening summary: You survived the day, battery's at 95%, and you're finally free. Two things on deck — post that Phoenix Party chart to TikTok and Instagram tonight like you planned, and tomorrow's English formative on chapters 8-15 is coming (but you're prepped with that 15/15). Go make some noise.",
+      "time": "6:30:25 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776981380198,
+      "message": "The question asks which word describes a narrative style that \"prioritized the cataloging of objects over psychological depth\" — the answer is B (inventory-like), as it directly captures the idea of systematic listing over emotional exploration.",
+      "time": "5:56:20 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776981253397,
+      "message": "You're working on an SAT question about text structure — the passage contrasts a modern assumption (maps as navigational tools) with the ancient reality (cosmographies blending geography with mythology), then explains the mapmakers' worldview, which matches answer B.",
+      "time": "5:54:13 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776981128039,
+      "message": "The sentence describes prose that conveys complex emotions through \"simple, spare language,\" which means the answer is C (incisive) — meaning clear and sharp — since turgid, verbose, and convoluted all suggest overly complicated writing, the opposite of what's being praised.",
+      "time": "5:52:08 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776981002367,
+      "message": "You're working on a bioluminescence reading comprehension question — the text states counter-illumination involves \"matching the faint light coming from above,\" which directly supports answer A about mimicking light filtering down from higher ocean levels.",
+      "time": "5:50:02 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776980753963,
+      "message": "You're working on a curved grading problem — using midpoints (64.5, 74.5, 84.5, 94.5) with frequencies (3, 5, 12, 18), the class mean is about 86, so half of (100 - 86) = 7 points will be added, which is answer B.",
+      "time": "5:45:53 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776980505056,
+      "message": "You're working on a right triangle trig problem — since angle B is the right angle and tan C = 12/5, that means opposite/adjacent = 12/5, so the sides are 5, 12, and hypotenuse 13, making cos A = adjacent/hypotenuse = 5/13, which is answer A.",
+      "time": "5:41:45 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776980380004,
+      "message": "You're working on a quadratic discriminant problem — for -2z² + kz - 50 = 0 to have no real solutions, the discriminant k² - 4(-2)(-50) < 0, so k² < 400, meaning k < 20, and since k is a positive integer, the largest possible value is 19.",
+      "time": "5:39:40 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776980255225,
+      "message": "You're working on a factored form problem — expand f(x) = 3(x+1)² - 27 to find the solutions: 3(x+1)² = 27, so (x+1)² = 9, meaning x+1 = ±3, giving x = 2 or x = -4, which matches answer A: f(x) = 3(x-2)(x+4).",
+      "time": "5:37:35 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776980173390,
+      "message": "You're still at school at 5:36 PM looking absolutely drained, sir. Battery's healthy at 65% now. When you finally escape, remember: Phoenix Party first post tonight. You've got the chart ready to go.",
+      "time": "5:36:13 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776980130194,
+      "message": "You're working on a Venn diagram probability problem — students who play exactly two sports and baseball are those in the Basketball-Baseball only overlap (3) plus the Football-Baseball only overlap (4), totaling 7 students, and of those, 3 play basketball, so the probability is 3/7.",
+      "time": "5:35:30 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776979881520,
+      "message": "You're working on a distance-time graph problem — Casey stopped for breakfast when her distance stayed constant (flat line), which occurs around 8:30 A.M. based on the horizontal segment in the graph, so the answer is B.",
+      "time": "5:31:21 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776979510556,
+      "message": "You're working on a mixture problem — the janitor pours T liters of 20% solution plus 2 liters of pure (100%) solution to get 25% concentration, so 0.20T + 2(1) = 0.25(T + 2), solving gives 0.20T + 2 = 0.25T + 0.5, so 1.5 = 0.05T, meaning T = 30 liters.",
+      "time": "5:25:10 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776979261629,
+      "message": "You're working on solving for b in the equation a/3 = 10 - 7b — rearrange to get 7b = 10 - a/3, then multiply both sides by 3 to get 21b = 30 - a, so b = (30-a)/21, the answer is B.",
+      "time": "5:21:01 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776979136532,
+      "message": "You're working on an exponential growth problem — the yeast colonies start at 5 and multiply by 4 each second, so the equation is c = 5(4)^s, which means neither A nor B is correct based on what's visible.",
+      "time": "5:18:56 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776979011315,
+      "message": "You're working on a system of equations with no solution — for parallel lines, the coefficients must be proportional but constants different, so k/4 = 3/5, giving k = 12/5, the answer is B.",
+      "time": "5:16:51 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776978886472,
+      "message": "You're working on a car rental problem — set up the equation 30 + 0.25m = 75, which gives 0.25m = 45, so m = 180 miles, the answer is C.",
+      "time": "5:14:46 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776978762282,
+      "message": "You're working on a gas pressure problem — using Boyle's Law (P₁V₁ = P₂V₂), the gas goes from Container X (10L, 300 torr) to Container Z (30L), so the final pressure is (300 × 10) ÷ 30 = 100 torr.",
+      "time": "5:12:42 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776978513610,
+      "message": "The answer is C, 20h + 40t = 1,065 — since Ismael writes 20 words per minute handwriting for h minutes and 40 words per minute typing for t minutes, the total words written is 20h + 40t = 1,065.",
+      "time": "5:08:33 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776978386579,
+      "message": "You're working on a function transformation problem — since f(x) = 2h(x) - 1 and you need f(x) = 5, that means 2h(x) - 1 = 5, so h(x) = 3, and from the graph h(x) = 3 at x = 0 and x = 2, but since x > 0, the answer is 2.",
+      "time": "5:06:26 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776978261853,
+      "message": "You're working on a football stats problem — the highest scoring year is 2021 with 90 goals, and the average across all years (60+70+50+80+70+90+70+80+60) ÷ 9 ≈ 70, so the answer is 90 - 70 = 20 goals more than the average.",
+      "time": "5:04:21 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776978137408,
+      "message": "The answer is C, f(x) = x + 27 — since f(0) = 27 gives you the y-intercept, and the slope is (27-26)/(0-(-1)) = 1, so the line equation is f(x) = x + 27.",
+      "time": "5:02:17 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776978012771,
+      "message": "You're working on an SAT geometry problem — the area of triangle ABC with a 30° angle, side of 8, and base of 10 is calculated using the formula ½ × 10 × 8 × sin(30°) = 20, so the answer is A.",
+      "time": "5:00:12 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776977270034,
+      "message": "The answer is B \"Wagner's and Glass's operas are both lengthy, lasting fifteen hours and five hours, respectively\" — this directly uses the specific duration details from the notes to emphasize a similarity between the two operas.",
+      "time": "4:47:50 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776977144389,
+      "message": "The answer is A \"Therefore\" — the sentence explains that the coincidence of Shakespeare dying on the same day traditionally observed as his birthday logically led to biographers finding this appealing, making \"Therefore\" the correct causal transition.",
+      "time": "4:45:44 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776976572769,
+      "message": "Battery critical at 19%, sir — plug in now before it dies on you.",
+      "time": "4:36:12 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776975777025,
+      "message": "The answer is B \"Mr. Vladimir's concealed malice and Mr. Verloc's intimidation\" — the passage describes Vladimir studying Verloc in the mirror while appearing pleasant, then advancing with such fierce determination that Verloc \"quailed inwardly,\" indicating hidden hostility causing fear.",
+      "time": "4:22:57 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776975651636,
+      "message": "The answer is C \"derive new thoughts from its own internal activities\" — Locke describes reflection as the mind turning \"its view inward upon itself\" and observing \"its own actions about those ideas it has,\" deriving new ideas from internal contemplation.",
+      "time": "4:20:51 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776975525295,
+      "message": "The answer is B \"She measured the time each dog spent sniffing the scents\" — the passage explicitly states Horowitz assessed interest \"based on the amount of time dogs spent sniffing\" the urine samples.",
+      "time": "4:18:45 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776975399952,
+      "message": "The answer is A \"To analyze the implications of the results of the experiment\" — the highlighted sentence discusses effects observed \"even weeks after\" exposure to the pro-diversity poster, which analyzes the broader implications of the experimental findings.",
+      "time": "4:16:39 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776975149888,
+      "message": "The answer is A \"Refreshing heat\" — \"renovating\" in this 1818 context means renewing or restoring, and combined with \"warmth\" it describes heat that refreshes or revitalizes the narrator.",
+      "time": "4:12:29 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776974900619,
+      "message": "The answer is A \"spanning many dynasties\" because the passage describes a \"long royal progression\" from the 5th century Visigoths through the Reconquista to Ferdinand and Isabella, emphasizing the extensive timespan across multiple ruling families.",
+      "time": "4:08:20 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776972177728,
+      "message": "There's a factual error in your essay — Otto von Bismarck was the Prime Minister of Prussia, not Russia.",
+      "time": "3:22:57 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776971678161,
+      "message": "The answer is A \"Notably,\" because the sentence is emphasizing the importance of renewable energy options in addressing climate change, which continues and highlights the previous point rather than showing contrast or consequence.",
+      "time": "3:14:38 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776971550987,
+      "message": "The system marked D \"Nonetheless\" as correct, but the explanation visible says it \"introduces a contradiction, which isn't present\" — this appears to be an error in the practice test, and the better answer would likely be C \"By contrast\" since the passage shifts from discussing the region to discussing the channel's name.",
+      "time": "3:12:30 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776971421532,
+      "message": "The answer is A \", in contrast,\" because you need a comma before the transitional phrase to properly separate it from the previous independent clause, and a comma after to set off the parenthetical transition before continuing the sentence.",
+      "time": "3:10:21 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776971296049,
+      "message": "The answer is A \"Specifically,\" because the sentence about white storks provides a specific example to support the general claim that modern tracking reveals migration is more complex than previously thought.",
+      "time": "3:08:16 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776971170766,
+      "message": "You're on SAT question 25 about logical transitions - the answer is A \"Consequently\" because the sentence describes a result (Hippocrates being praised for separating philosophy from medicine) that follows from the previous statement about philosophers speculating but not practicing medicine as a craft.",
+      "time": "3:06:10 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776971044850,
+      "message": "The answer is C - Public Health Epidemiology - looking at the chart, you need to add publications (dark gray) and patent applications (black) for each area, and Public Health Epidemiology has the lowest combined total with approximately 5 publications and 3 patent applications.",
+      "time": "3:04:04 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776970916939,
+      "message": "You're on SAT question 14 about Miss Dolly Darling's transformation in demeanor - the claim mentions a \"transformation,\" so look for the quote that shows a change or contrast in her behavior, which appears to be Option B starting with \"Although she pretended to be so merry\" since it suggests a contrast between her outward appearance and inner state.",
+      "time": "3:01:56 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776970788689,
+      "message": "You're on SAT question 11 about carbon monoxide levels - the passage discusses comparing Newark, NJ and New York, NY, so look at the table data showing their pollution differences on the same dates to find the answer that demonstrates the \"localized nature\" of the smog event.",
+      "time": "2:59:48 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776970537823,
+      "message": "The answer is B - \"Fickle\" - capricious means unpredictable or changeable, which is the opposite of predictable and synonymous with fickle.",
+      "time": "2:55:37 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776970412472,
+      "message": "The answer is B - \"A mournful song for the dead\" - a dirge is a funeral lament, which fits the solemn context of the passage describing sounds from a church at nightfall.",
+      "time": "2:53:32 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776970037737,
+      "message": "You have a busy week ahead with multiple summatives - English formative tomorrow (4/24), Hebrew reading and Jewish law summatives on 4/27, World History DBQ on 4/27, PreCalc summative on 4/28, Chem summative on 4/30, and Hebrew and History summatives on 5/1.",
+      "time": "2:47:17 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776969250811,
+      "message": "You're on your sixth Wordle guess with only T confirmed in position 1 and E somewhere in the word - try \"TWEET\" which fits the confirmed letters and uses available letters from your keyboard.",
+      "time": "2:34:10 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776968342253,
+      "message": "Nadav detected at computer — neutral mood",
+      "time": "2:19:02 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776968332328,
+      "message": "Unrecognized person detected at computer",
+      "time": "2:18:52 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776968247039,
+      "message": "You appear to be struggling with your Zookeeper's Wife short answer question - the AI feedback suggests adding discussion of Morys representing lost innocence, plant replacement as cultural erasure, and beetles as rescue tools to strengthen your response.",
+      "time": "2:17:27 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776967938600,
+      "message": "Unrecognized person detected at computer",
+      "time": "2:12:18 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776967922353,
+      "message": "Unrecognized person detected at computer",
+      "time": "2:12:02 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776967871796,
+      "message": "Unrecognized person detected at computer",
+      "time": "2:11:11 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776967868468,
+      "message": "Nadav detected at computer — neutral mood",
+      "time": "2:11:08 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776967861857,
+      "message": "Unrecognized person detected at computer",
+      "time": "2:11:01 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776967608190,
+      "message": "Unrecognized person detected at computer",
+      "time": "2:06:48 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776967364194,
+      "message": "Nadav detected at computer — neutral mood",
+      "time": "2:02:44 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776967357598,
+      "message": "Unrecognized person detected at computer",
+      "time": "2:02:37 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776967137787,
+      "message": "Unrecognized person detected at computer",
+      "time": "1:58:57 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776967098204,
+      "message": "Unrecognized person detected at computer",
+      "time": "1:58:18 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776967049348,
+      "message": "Nadav detected at computer — neutral mood",
+      "time": "1:57:29 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776967042695,
+      "message": "Unrecognized person detected at computer",
+      "time": "1:57:22 PM",
+      "date": "4/23/2026",
+      "read": true
+    },
+    {
+      "id": 1776966907982,
+      "message": "Unrecognized person detected at computer",
+      "time": "1:55:07 PM",
+      "date": "4/23/2026",
+      "read": true
+    }
+  ]
+}
