@@ -12,12 +12,22 @@ const path = require('path');
 const https = require('https');
 const http = require('http');
 const { signup, login, verifyToken, loadUserMemory, saveUserMemory, saveConversation, loadConversations, deleteConversation } = require('./auth');
-
+const rateLimit = require('express-rate-limit');
 
 const app = express();
 app.use(cors({ origin: true, credentials: true }));
 app.use(express.json({ limit: '100mb' }));
-
+const chatLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 20,
+  message: { error: 'Too many requests, slow down.' },
+  keyGenerator: (req) => {
+    const token = req.headers.authorization?.replace('Bearer ', '');
+    if (token) { const user = verifyToken(token); if (user) return user.userId; }
+    return req.ip;
+  }
+});
+app.use('/chat', chatLimiter);
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 const NADAV_USER_ID = 'nadavminkowitz_gmail_com';
