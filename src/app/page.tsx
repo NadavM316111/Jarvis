@@ -507,20 +507,25 @@ if (urlMatch) {
   }
 
   return (
-    <div className="h-screen bg-[#060608] flex overflow-hidden" style={{ fontFamily: "-apple-system, 'SF Pro Display', sans-serif" }}>
+    <div className="h-[100dvh] bg-[#060608] flex overflow-hidden" style={{ fontFamily: "-apple-system, 'SF Pro Display', sans-serif" }}>
 
       {sidebarOpen && (
         <div className="fixed inset-0 bg-black/60 z-30 md:hidden" onClick={() => setSidebarOpen(false)} />
       )}
 
       <div className={`
-        fixed md:relative inset-y-0 left-0 z-40 md:z-auto
-        ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
-        w-64
-        bg-[#060608]
-        border-r border-white/5 flex flex-col h-screen
-        transition-transform duration-300
-      `}>
+  fixed md:relative z-40 md:z-auto
+  bottom-0 md:inset-y-0 left-0
+  ${sidebarOpen ? 'translate-y-0 md:translate-x-0' : 'translate-y-full md:-translate-x-full md:translate-y-0 md:translate-x-0'}
+  w-full md:w-64
+  max-h-[80vh] md:max-h-none md:h-screen
+  bg-[#0a0a0f] md:bg-[#060608]
+  rounded-t-3xl md:rounded-none
+  border-t md:border-t-0 md:border-r border-white/10
+  flex flex-col
+  transition-transform duration-300
+  overflow-hidden
+`}>
         <div className="p-4 flex-shrink-0">
           <div className="flex items-center justify-between mb-6 px-1">
             <div className="flex items-center gap-2.5">
@@ -713,7 +718,7 @@ if (urlMatch) {
           </div>
         )}
 
-        <div className="flex-1 overflow-y-auto px-4 py-5 flex flex-col gap-4 min-h-0 relative">
+        <div className="flex-1 overflow-y-auto px-4 py-5 flex flex-col gap-4 min-h-0 relative overscroll-none">
   {/* VOICE BUBBLE — shown when voice is running */}
   {voiceRunning && (
     <div className="absolute inset-0 flex flex-col items-center justify-center z-10 bg-[#060608]">
@@ -856,7 +861,7 @@ if (urlMatch) {
           </div>
         )}
 
-        <div className="px-4 pb-4 pt-3 flex gap-2.5 border-t border-white/5 flex-shrink-0">
+        <div className="px-4 pb-safe pb-4 pt-3 flex gap-2.5 border-t border-white/5 flex-shrink-0 sticky bottom-0 bg-[#060608]">
           <input
             ref={fileInputRef}
             type="file"
@@ -914,6 +919,7 @@ if (urlMatch) {
             placeholder="Message JARVIS..."
             disabled={loading}
             className="flex-1 bg-white/5 border border-white/10 rounded-xl text-white text-sm px-4 py-3 outline-none placeholder:text-white/20 focus:border-blue-500/30 transition-all"
+style={{ fontSize: '16px' }}
           />
           <button onClick={send} disabled={loading || (!input.trim() && !attachedFile)}
             className="w-11 h-11 bg-blue-600 hover:bg-blue-500 disabled:opacity-30 rounded-xl flex items-center justify-center transition-all flex-shrink-0">

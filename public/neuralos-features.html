@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Features - NeuralOS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #00f0ff;
+            --secondary: #8b5cf6;
+            --accent: #f43f5e;
+            --dark: #0a0a0f;
+            --darker: #050508;
+            --card: #12121a;
+            --text: #e4e4e7;
+            --muted: #71717a;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--dark);
+            color: var(--text);
+            line-height: 1.6;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            padding: 20px 0; background: rgba(5, 5, 8, 0.9); backdrop-filter: blur(10px);
+        }
+        nav .container { display: flex; justify-content: space-between; align-items: center; }
+        .logo {
+            font-family: 'Orbitron', monospace; font-size: 1.8rem; font-weight: 900;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-decoration: none;
+        }
+        .nav-links { display: flex; gap: 30px; list-style: none; }
+        .nav-links a { color: var(--text); text-decoration: none; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover { color: var(--primary); }
+        .nav-cta {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--dark) !important; padding: 10px 25px; border-radius: 30px; font-weight: 600;
+        }
+        .page-header {
+            padding: 180px 0 100px; text-align: center;
+            background: linear-gradient(to bottom, var(--darker), var(--dark));
+        }
+        .page-header h1 {
+            font-family: 'Orbitron', monospace; font-size: 3.5rem; margin-bottom: 20px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .page-header p { color: var(--muted); max-width: 600px; margin: 0 auto; font-size: 1.2rem; }
+        .feature-section { padding: 100px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .feature-section:nth-child(even) { background: var(--darker); }
+        .feature-row { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+        .feature-row.reverse { direction: rtl; }
+        .feature-row.reverse > * { direction: ltr; }
+        .feature-text h2 { font-family: 'Orbitron', monospace; font-size: 2rem; margin-bottom: 20px; }
+        .feature-text h2 span { color: var(--primary); }
+        .feature-text p { color: var(--muted); margin-bottom: 25px; }
+        .feature-text ul { list-style: none; }
+        .feature-text ul li { padding: 10px 0; display: flex; align-items: center; gap: 15px; }
+        .feature-text ul li::before { content: '>'; color: var(--primary); font-family: 'Orbitron'; font-weight: bold; }
+        .feature-image img {
+            width: 100%; border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .btn {
+            display: inline-flex; align-items: center; gap: 10px;
+            padding: 15px 35px; border-radius: 30px; font-weight: 600;
+            text-decoration: none; transition: all 0.3s; margin-top: 20px;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--dark); box-shadow: 0 0 30px rgba(0, 240, 255, 0.3);
+        }
+        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 0 50px rgba(0, 240, 255, 0.5); }
+        footer {
+            padding: 60px 0; border-top: 1px solid rgba(255,255,255,0.1);
+            text-align: center; color: var(--muted);
+        }
+        footer a { color: var(--primary); text-decoration: none; }
+        @media (max-width: 968px) {
+            .feature-row, .feature-row.reverse { grid-template-columns: 1fr; direction: ltr; }
+            .page-header h1 { font-size: 2.5rem; }
+            .nav-links { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <a href="neuralos.html" class="logo">NeuralOS</a>
+            <ul class="nav-links">
+                <li><a href="neuralos-features.html">Features</a></li>
+                <li><a href="neuralos-about.html">About</a></li>
+                <li><a href="neuralos-docs.html">Docs</a></li>
+                <li><a href="neuralos-pricing.html">Pricing</a></li>
+                <li><a href="neuralos-waitlist.html" class="nav-cta">Join Waitlist</a></li>
+            </ul>
+        </div>
+    </nav>
+    
+    <div class="page-header">
+        <div class="container">
+            <h1>Revolutionary Features</h1>
+            <p>Discover the cutting-edge capabilities that make NeuralOS the most advanced operating system ever created</p>
+        </div>
+    </div>
+    
+    <section class="feature-section" id="neural">
+        <div class="container">
+            <div class="feature-row">
+                <div class="feature-text">
+                    <h2><span>Neural</span> Interface</h2>
+                    <p>Experience direct brain-computer interaction through our advanced neural mapping technology. NeuralOS understands your thoughts before you type them.</p>
+                    <ul>
+                        <li>Thought-to-text conversion</li>
+                        <li>Emotional state recognition</li>
+                        <li>Dream-state processing mode</li>
+                        <li>Neural feedback optimization</li>
+                    </ul>
+                    <a href="neuralos-waitlist.html" class="btn btn-primary">Get Early Access</a>
+                </div>
+                <div class="feature-image">
+                    <img src="https://images.unsplash.com/photo-1677442136019-21780ecad995?w=600&h=400&fit=crop" alt="Neural Interface">
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="feature-section" id="quantum">
+        <div class="container">
+            <div class="feature-row reverse">
+                <div class="feature-text">
+                    <h2><span>Quantum</span> Processing</h2>
+                    <p>Harness the power of quantum computing for tasks that were previously impossible. From complex simulations to cryptographic operations.</p>
+                    <ul>
+                        <li>1000x faster calculations</li>
+                        <li>Parallel universe computation</li>
+                        <li>Quantum-safe encryption</li>
+                        <li>Time-complexity optimization</li>
+                    </ul>
+                    <a href="neuralos-waitlist.html" class="btn btn-primary">Get Early Access</a>
+                </div>
+                <div class="feature-image">
+                    <img src="https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=600&h=400&fit=crop" alt="Quantum Processing">
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="feature-section" id="security">
+        <div class="container">
+            <div class="feature-row">
+                <div class="feature-text">
+                    <h2><span>Zero-Trust</span> Security</h2>
+                    <p>Military-grade encryption combined with AI-powered threat detection ensures your data remains completely secure at all times.</p>
+                    <ul>
+                        <li>256-bit neural encryption</li>
+                        <li>Biometric authentication suite</li>
+                        <li>Real-time threat neutralization</li>
+                        <li>Self-destructing data protocols</li>
+                    </ul>
+                    <a href="neuralos-waitlist.html" class="btn btn-primary">Get Early Access</a>
+                </div>
+                <div class="feature-image">
+                    <img src="https://images.unsplash.com/photo-1563986768494-4dee2763ff3f?w=600&h=400&fit=crop" alt="Security">
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="feature-section" id="cloud">
+        <div class="container">
+            <div class="feature-row reverse">
+                <div class="feature-text">
+                    <h2><span>Cloud</span> Synapse</h2>
+                    <p>Seamless cloud integration that anticipates your needs. Your data flows effortlessly between devices with zero latency.</p>
+                    <ul>
+                        <li>Predictive file synchronization</li>
+                        <li>Edge computing optimization</li>
+                        <li>Infinite scalable storage</li>
+                        <li>Cross-dimensional backup</li>
+                    </ul>
+                    <a href="neuralos-waitlist.html" class="btn btn-primary">Get Early Access</a>
+                </div>
+                <div class="feature-image">
+                    <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=600&h=400&fit=crop" alt="Cloud Synapse">
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="feature-section" id="analytics">
+        <div class="container">
+            <div class="feature-row">
+                <div class="feature-text">
+                    <h2><span>Predictive</span> Analytics</h2>
+                    <p>Our AI anticipates problems before they occur and optimizes your system proactively. Experience computing without interruptions.</p>
+                    <ul>
+                        <li>Failure prediction engine</li>
+                        <li>Resource pre-allocation</li>
+                        <li>Behavioral pattern analysis</li>
+                        <li>Autonomous optimization</li>
+                    </ul>
+                    <a href="neuralos-waitlist.html" class="btn btn-primary">Get Early Access</a>
+                </div>
+                <div class="feature-image">
+                    <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=400&fit=crop" alt="Analytics">
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="feature-section" id="holographic">
+        <div class="container">
+            <div class="feature-row reverse">
+                <div class="feature-text">
+                    <h2><span>Holographic</span> Display</h2>
+                    <p>Project your workspace anywhere with integrated holographic technology. Break free from screens and work in 3D space.</p>
+                    <ul>
+                        <li>360-degree projection</li>
+                        <li>Gesture-based interaction</li>
+                        <li>Multi-user holographic rooms</li>
+                        <li>AR/VR seamless integration</li>
+                    </ul>
+                    <a href="neuralos-waitlist.html" class="btn btn-primary">Get Early Access</a>
+                </div>
+                <div class="feature-image">
+                    <img src="https://images.unsplash.com/photo-1617802690992-15d93263d3a9?w=600&h=400&fit=crop" alt="Holographic Display">
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <footer>
+        <div class="container">
+            <p>2026 NeuralOS. Building the future of computing. <a href="neuralos.html">Back to Home</a></p>
+        </div>
+    </footer>
+</body>
+</html>

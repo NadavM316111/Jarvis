@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentation - NeuralOS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600&family=Fira+Code&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #00f0ff; --secondary: #8b5cf6; --accent: #f43f5e;
+            --dark: #0a0a0f; --darker: #050508; --card: #12121a;
+            --text: #e4e4e7; --muted: #71717a;
+        }
+        body { font-family: 'Inter', sans-serif; background: var(--dark); color: var(--text); line-height: 1.6; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            padding: 20px 0; background: rgba(5, 5, 8, 0.95); backdrop-filter: blur(10px);
+        }
+        nav .container { display: flex; justify-content: space-between; align-items: center; }
+        .logo {
+            font-family: 'Orbitron', monospace; font-size: 1.8rem; font-weight: 900;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-decoration: none;
+        }
+        .nav-links { display: flex; gap: 30px; list-style: none; }
+        .nav-links a { color: var(--text); text-decoration: none; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover { color: var(--primary); }
+        .nav-cta { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: var(--dark) !important; padding: 10px 25px; border-radius: 30px; font-weight: 600; }
+        .docs-layout { display: flex; padding-top: 80px; min-height: 100vh; }
+        .sidebar {
+            width: 280px; background: var(--darker); padding: 40px 30px;
+            position: fixed; top: 80px; bottom: 0; left: 0; overflow-y: auto;
+            border-right: 1px solid rgba(255,255,255,0.05);
+        }
+        .sidebar h3 { font-family: 'Orbitron', monospace; color: var(--primary); font-size: 0.9rem; margin-bottom: 15px; letter-spacing: 1px; }
+        .sidebar ul { list-style: none; margin-bottom: 30px; }
+        .sidebar ul li a {
+            display: block; padding: 10px 15px; color: var(--muted); text-decoration: none;
+            border-radius: 8px; transition: all 0.3s; font-size: 0.95rem;
+        }
+        .sidebar ul li a:hover, .sidebar ul li a.active { background: rgba(0, 240, 255, 0.1); color: var(--primary); }
+        .docs-content { flex: 1; margin-left: 280px; padding: 60px; }
+        .docs-content h1 {
+            font-family: 'Orbitron', monospace; font-size: 2.5rem; margin-bottom: 30px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .docs-content h2 { font-family: 'Orbitron', monospace; font-size: 1.5rem; margin: 40px 0 20px; color: var(--text); }
+        .docs-content p { color: var(--muted); margin-bottom: 20px; font-size: 1.05rem; }
+        .code-block {
+            background: var(--darker); border-radius: 15px; padding: 25px;
+            margin: 25px 0; border: 1px solid rgba(255,255,255,0.05); overflow-x: auto;
+        }
+        .code-block code { font-family: 'Fira Code', monospace; font-size: 0.9rem; color: var(--primary); }
+        .code-block .comment { color: var(--muted); }
+        .code-block .keyword { color: var(--secondary); }
+        .code-block .string { color: #22c55e; }
+        .info-box {
+            background: rgba(0, 240, 255, 0.1); border-left: 4px solid var(--primary);
+            padding: 20px 25px; border-radius: 0 10px 10px 0; margin: 25px 0;
+        }
+        .info-box h4 { font-family: 'Orbitron', monospace; color: var(--primary); margin-bottom: 10px; }
+        .info-box p { color: var(--text); margin: 0; }
+        .api-table { width: 100%; border-collapse: collapse; margin: 25px 0; }
+        .api-table th, .api-table td { padding: 15px 20px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .api-table th { font-family: 'Orbitron', monospace; color: var(--primary); font-size: 0.85rem; background: var(--darker); }
+        .api-table td { color: var(--muted); font-size: 0.95rem; }
+        .api-table code { background: var(--darker); padding: 3px 8px; border-radius: 5px; font-family: 'Fira Code', monospace; color: var(--primary); font-size: 0.85rem; }
+        footer { margin-left: 280px; padding: 40px 60px; border-top: 1px solid rgba(255,255,255,0.1); color: var(--muted); }
+        footer a { color: var(--primary); text-decoration: none; }
+        @media (max-width: 968px) {
+            .sidebar { display: none; }
+            .docs-content, footer { margin-left: 0; padding: 40px 20px; }
+            .nav-links { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <a href="neuralos.html" class="logo">NeuralOS</a>
+            <ul class="nav-links">
+                <li><a href="neuralos-features.html">Features</a></li>
+                <li><a href="neuralos-about.html">About</a></li>
+                <li><a href="neuralos-docs.html">Docs</a></li>
+                <li><a href="neuralos-pricing.html">Pricing</a></li>
+                <li><a href="neuralos-waitlist.html" class="nav-cta">Join Waitlist</a></li>
+            </ul>
+        </div>
+    </nav>
+    
+    <div class="docs-layout">
+        <aside class="sidebar">
+            <h3>GETTING STARTED</h3>
+            <ul>
+                <li><a href="#" class="active">Introduction</a></li>
+                <li><a href="#">Installation</a></li>
+                <li><a href="#">Quick Start</a></li>
+                <li><a href="#">Configuration</a></li>
+            </ul>
+            
+            <h3>CORE CONCEPTS</h3>
+            <ul>
+                <li><a href="#">Neural Interface</a></li>
+                <li><a href="#">Cloud Synapse</a></li>
+                <li><a href="#">Quantum Engine</a></li>
+                <li><a href="#">Security Model</a></li>
+            </ul>
+            
+            <h3>API REFERENCE</h3>
+            <ul>
+                <li><a href="#">Neural API</a></li>
+                <li><a href="#">Cloud API</a></li>
+                <li><a href="#">Analytics API</a></li>
+                <li><a href="#">Webhooks</a></li>
+            </ul>
+            
+            <h3>RESOURCES</h3>
+            <ul>
+                <li><a href="#">Examples</a></li>
+                <li><a href="#">Community</a></li>
+                <li><a href="#">Changelog</a></li>
+            </ul>
+        </aside>
+        
+        <main class="docs-content">
+            <h1>NeuralOS Documentation</h1>
+            <p>Welcome to the official NeuralOS documentation. Here you'll find everything you need to get started with the world's first AI-native operating system.</p>
+            
+            <div class="info-box">
+                <h4>Early Access Note</h4>
+                <p>NeuralOS is currently in private beta. Documentation reflects the latest beta release (v0.9.2).</p>
+            </div>
+            
+            <h2>Quick Installation</h2>
+            <p>Install NeuralOS on your system with a single command. Our installer will detect your hardware and configure optimal settings automatically.</p>
+            
+            <div class="code-block">
+                <code>
+                    <span class="comment"># Install NeuralOS via command line</span><br>
+                    <span class="keyword">curl</span> -sSL https://install.neuralos.com | <span class="keyword">sh</span><br><br>
+                    <span class="comment"># Or with specific version</span><br>
+                    <span class="keyword">curl</span> -sSL https://install.neuralos.com/<span class="string">v0.9.2</span> | <span class="keyword">sh</span>
+                </code>
+            </div>
+            
+            <h2>Initialize Neural Interface</h2>
+            <p>Once installed, initialize the Neural Interface to begin brain-computer interaction.</p>
+            
+            <div class="code-block">
+                <code>
+                    <span class="keyword">import</span> { Neural } <span class="keyword">from</span> <span class="string">'@neuralos/core'</span>;<br><br>
+                    <span class="keyword">const</span> neural = <span class="keyword">new</span> Neural({<br>
+                    &nbsp;&nbsp;mode: <span class="string">'standard'</span>,<br>
+                    &nbsp;&nbsp;sensitivity: <span class="string">0.8</span>,<br>
+                    &nbsp;&nbsp;calibrate: <span class="string">true</span><br>
+                    });<br><br>
+                    <span class="keyword">await</span> neural.connect();<br>
+                    <span class="keyword">console</span>.log(<span class="string">'Neural Interface Active'</span>);
+                </code>
+            </div>
+            
+            <h2>API Reference</h2>
+            <p>Core methods available in the NeuralOS SDK:</p>
+            
+            <table class="api-table">
+                <thead>
+                    <tr>
+                        <th>METHOD</th>
+                        <th>DESCRIPTION</th>
+                        <th>RETURNS</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>neural.connect()</code></td>
+                        <td>Establishes neural link connection</td>
+                        <td>Promise&lt;Connection&gt;</td>
+                    </tr>
+                    <tr>
+                        <td><code>neural.think(intent)</code></td>
+                        <td>Processes thought-to-action conversion</td>
+                        <td>Promise&lt;Action&gt;</td>
+                    </tr>
+                    <tr>
+                        <td><code>neural.predict()</code></td>
+                        <td>Returns predictive analytics</td>
+                        <td>PredictionStream</td>
+                    </tr>
+                    <tr>
+                        <td><code>cloud.sync()</code></td>
+                        <td>Syncs data across all devices</td>
+                        <td>Promise&lt;SyncResult&gt;</td>
+                    </tr>
+                    <tr>
+                        <td><code>quantum.compute()</code></td>
+                        <td>Executes quantum computation</td>
+                        <td>QuantumResult</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h2>Next Steps</h2>
+            <p>Ready to dive deeper? Explore our comprehensive guides on Neural Interface configuration, Cloud Synapse setup, and Quantum Engine optimization.</p>
+            
+            <div class="info-box">
+                <h4>Need Help?</h4>
+                <p>Join our community Discord or contact support at support@neuralos.com for assistance.</p>
+            </div>
+        </main>
+    </div>
+    
+    <footer>
+        <p>2026 NeuralOS Documentation. <a href="neuralos.html">Back to Home</a></p>
+    </footer>
+</body>
+</html>

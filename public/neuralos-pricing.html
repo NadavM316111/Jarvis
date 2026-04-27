@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pricing - NeuralOS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #00f0ff; --secondary: #8b5cf6; --accent: #f43f5e;
+            --dark: #0a0a0f; --darker: #050508; --card: #12121a;
+            --text: #e4e4e7; --muted: #71717a;
+        }
+        body { font-family: 'Inter', sans-serif; background: var(--dark); color: var(--text); line-height: 1.6; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            padding: 20px 0; background: rgba(5, 5, 8, 0.9); backdrop-filter: blur(10px);
+        }
+        nav .container { display: flex; justify-content: space-between; align-items: center; }
+        .logo {
+            font-family: 'Orbitron', monospace; font-size: 1.8rem; font-weight: 900;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-decoration: none;
+        }
+        .nav-links { display: flex; gap: 30px; list-style: none; }
+        .nav-links a { color: var(--text); text-decoration: none; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover { color: var(--primary); }
+        .nav-cta { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: var(--dark) !important; padding: 10px 25px; border-radius: 30px; font-weight: 600; }
+        .page-header {
+            padding: 180px 0 100px; text-align: center;
+            background: linear-gradient(to bottom, var(--darker), var(--dark));
+        }
+        .page-header h1 {
+            font-family: 'Orbitron', monospace; font-size: 3.5rem; margin-bottom: 20px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .page-header p { color: var(--muted); max-width: 600px; margin: 0 auto; font-size: 1.2rem; }
+        .pricing-section { padding: 80px 0; }
+        .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
+        .pricing-card {
+            background: var(--card); border-radius: 25px; padding: 50px 40px;
+            border: 1px solid rgba(255,255,255,0.05); text-align: center; transition: all 0.4s;
+            position: relative; overflow: hidden;
+        }
+        .pricing-card:hover { transform: translateY(-10px); border-color: rgba(0, 240, 255, 0.3); }
+        .pricing-card.featured {
+            border: 2px solid var(--primary);
+            box-shadow: 0 0 50px rgba(0, 240, 255, 0.2);
+        }
+        .pricing-card.featured::before {
+            content: 'MOST POPULAR';
+            position: absolute; top: 20px; right: -35px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--dark); padding: 5px 40px; font-size: 0.7rem; font-weight: 700;
+            transform: rotate(45deg); letter-spacing: 1px;
+        }
+        .pricing-card h3 { font-family: 'Orbitron', monospace; font-size: 1.5rem; margin-bottom: 15px; }
+        .pricing-card .price {
+            font-family: 'Orbitron', monospace; font-size: 3.5rem; font-weight: 900;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .pricing-card .price span { font-size: 1rem; color: var(--muted); -webkit-text-fill-color: var(--muted); }
+        .pricing-card .description { color: var(--muted); margin: 20px 0 30px; }
+        .pricing-card ul { list-style: none; text-align: left; margin-bottom: 30px; }
+        .pricing-card ul li { padding: 12px 0; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .pricing-card ul li::before { content: '>'; color: var(--primary); font-family: 'Orbitron'; font-weight: bold; }
+        .pricing-card .btn {
+            width: 100%; display: block; padding: 18px; border-radius: 30px;
+            font-weight: 600; text-decoration: none; transition: all 0.3s; text-align: center;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--dark); box-shadow: 0 0 30px rgba(0, 240, 255, 0.3);
+        }
+        .btn-primary:hover { transform: scale(1.02); box-shadow: 0 0 50px rgba(0, 240, 255, 0.5); }
+        .btn-secondary { background: transparent; color: var(--text); border: 2px solid var(--muted); }
+        .btn-secondary:hover { border-color: var(--primary); color: var(--primary); }
+        .faq { padding: 100px 0; background: var(--darker); }
+        .faq h2 { font-family: 'Orbitron', monospace; font-size: 2.5rem; text-align: center; margin-bottom: 60px; }
+        .faq-grid { max-width: 800px; margin: 0 auto; }
+        .faq-item {
+            background: var(--card); border-radius: 15px; margin-bottom: 15px;
+            border: 1px solid rgba(255,255,255,0.05); overflow: hidden;
+        }
+        .faq-question {
+            padding: 25px 30px; cursor: pointer; display: flex;
+            justify-content: space-between; align-items: center; transition: background 0.3s;
+        }
+        .faq-question:hover { background: rgba(0, 240, 255, 0.05); }
+        .faq-question h4 { font-family: 'Orbitron', monospace; font-size: 1rem; }
+        .faq-question span { color: var(--primary); font-size: 1.5rem; transition: transform 0.3s; }
+        .faq-answer { padding: 0 30px 25px; color: var(--muted); display: none; }
+        .faq-item.active .faq-answer { display: block; }
+        .faq-item.active .faq-question span { transform: rotate(45deg); }
+        footer { padding: 60px 0; border-top: 1px solid rgba(255,255,255,0.1); text-align: center; color: var(--muted); }
+        footer a { color: var(--primary); text-decoration: none; }
+        @media (max-width: 968px) {
+            .pricing-grid { grid-template-columns: 1fr; }
+            .page-header h1 { font-size: 2.5rem; }
+            .nav-links { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <a href="neuralos.html" class="logo">NeuralOS</a>
+            <ul class="nav-links">
+                <li><a href="neuralos-features.html">Features</a></li>
+                <li><a href="neuralos-about.html">About</a></li>
+                <li><a href="neuralos-docs.html">Docs</a></li>
+                <li><a href="neuralos-pricing.html">Pricing</a></li>
+                <li><a href="neuralos-waitlist.html" class="nav-cta">Join Waitlist</a></li>
+            </ul>
+        </div>
+    </nav>
+    
+    <div class="page-header">
+        <div class="container">
+            <h1>Simple Pricing</h1>
+            <p>Choose the plan that fits your needs. All plans include core NeuralOS features.</p>
+        </div>
+    </div>
+    
+    <section class="pricing-section">
+        <div class="container">
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <h3>Personal</h3>
+                    <div class="price">$29<span>/month</span></div>
+                    <p class="description">Perfect for individual users and creators</p>
+                    <ul>
+                        <li>Neural Interface (Basic)</li>
+                        <li>100GB Cloud Synapse</li>
+                        <li>Standard Security</li>
+                        <li>Community Support</li>
+                        <li>2 Device Sync</li>
+                    </ul>
+                    <a href="neuralos-waitlist.html" class="btn btn-secondary">Join Waitlist</a>
+                </div>
+                <div class="pricing-card featured">
+                    <h3>Professional</h3>
+                    <div class="price">$79<span>/month</span></div>
+                    <p class="description">For power users and small teams</p>
+                    <ul>
+                        <li>Neural Interface (Advanced)</li>
+                        <li>1TB Cloud Synapse</li>
+                        <li>Quantum Processing</li>
+                        <li>Priority Support</li>
+                        <li>10 Device Sync</li>
+                        <li>Predictive Analytics</li>
+                    </ul>
+                    <a href="neuralos-waitlist.html" class="btn btn-primary">Join Waitlist</a>
+                </div>
+                <div class="pricing-card">
+                    <h3>Enterprise</h3>
+                    <div class="price">$299<span>/month</span></div>
+                    <p class="description">For organizations requiring full power</p>
+                    <ul>
+                        <li>Neural Interface (Full)</li>
+                        <li>Unlimited Cloud Synapse</li>
+                        <li>Full Quantum Suite</li>
+                        <li>Dedicated Support</li>
+                        <li>Unlimited Devices</li>
+                        <li>Holographic Display</li>
+                        <li>Custom Integrations</li>
+                    </ul>
+                    <a href="neuralos-contact.html" class="btn btn-secondary">Contact Sales</a>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="faq">
+        <div class="container">
+            <h2>Frequently Asked Questions</h2>
+            <div class="faq-grid">
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h4>When will NeuralOS be available?</h4>
+                        <span>+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>NeuralOS is scheduled for public release in Q1 2027. Waitlist members will receive early access starting Q4 2026.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h4>What hardware is required?</h4>
+                        <span>+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>NeuralOS is designed to run on a wide range of hardware. Basic features require a modern CPU with 8GB RAM. Advanced features like Neural Interface require our optional NeuroLink headset.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h4>Is my data secure?</h4>
+                        <span>+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Absolutely. NeuralOS uses 256-bit neural encryption, and all data processing happens locally by default. Cloud features are end-to-end encrypted with zero-knowledge architecture.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h4>Can I switch plans later?</h4>
+                        <span>+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Yes! You can upgrade or downgrade your plan at any time. Changes take effect at your next billing cycle.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <footer>
+        <div class="container">
+            <p>2026 NeuralOS. Building the future of computing. <a href="neuralos.html">Back to Home</a></p>
+        </div>
+    </footer>
+    
+    <script>
+        document.querySelectorAll('.faq-question').forEach(question => {
+            question.addEventListener('click', () => {
+                const item = question.parentElement;
+                item.classList.toggle('active');
+            });
+        });
+    </script>
+</body>
+</html>

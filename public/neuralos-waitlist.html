@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Join Waitlist - NeuralOS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #00f0ff; --secondary: #8b5cf6; --accent: #f43f5e;
+            --dark: #0a0a0f; --darker: #050508; --card: #12121a;
+            --text: #e4e4e7; --muted: #71717a;
+        }
+        body { font-family: 'Inter', sans-serif; background: var(--dark); color: var(--text); line-height: 1.6; min-height: 100vh; }
+        #particles-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; position: relative; z-index: 1; }
+        nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            padding: 20px 0; background: rgba(5, 5, 8, 0.9); backdrop-filter: blur(10px);
+        }
+        nav .container { display: flex; justify-content: space-between; align-items: center; }
+        .logo {
+            font-family: 'Orbitron', monospace; font-size: 1.8rem; font-weight: 900;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-decoration: none;
+        }
+        .nav-links { display: flex; gap: 30px; list-style: none; }
+        .nav-links a { color: var(--text); text-decoration: none; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover { color: var(--primary); }
+        .waitlist-page { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 120px 20px; }
+        .waitlist-container {
+            max-width: 600px; width: 100%; background: var(--card);
+            border-radius: 30px; padding: 60px; text-align: center;
+            border: 1px solid rgba(255,255,255,0.1); position: relative; overflow: hidden;
+        }
+        .waitlist-container::before {
+            content: ''; position: absolute; top: -100%; left: -100%; width: 300%; height: 300%;
+            background: radial-gradient(circle, rgba(0, 240, 255, 0.05) 0%, transparent 40%);
+            animation: rotate 30s linear infinite;
+        }
+        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .waitlist-container > * { position: relative; z-index: 1; }
+        .waitlist-container h1 {
+            font-family: 'Orbitron', monospace; font-size: 2.5rem; margin-bottom: 15px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .waitlist-container p { color: var(--muted); margin-bottom: 40px; font-size: 1.1rem; }
+        .form-group { margin-bottom: 20px; text-align: left; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 500; color: var(--text); }
+        .form-group input, .form-group select {
+            width: 100%; padding: 18px 20px; border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.1); background: var(--darker);
+            color: var(--text); font-size: 1rem; outline: none; transition: border-color 0.3s;
+        }
+        .form-group input:focus, .form-group select:focus { border-color: var(--primary); }
+        .form-group select option { background: var(--darker); }
+        .btn {
+            width: 100%; padding: 18px; border-radius: 30px; border: none;
+            font-weight: 600; font-size: 1.1rem; cursor: pointer; transition: all 0.3s;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--dark); box-shadow: 0 0 30px rgba(0, 240, 255, 0.3); margin-top: 20px;
+        }
+        .btn:hover { transform: translateY(-3px); box-shadow: 0 0 50px rgba(0, 240, 255, 0.5); }
+        .counter { margin-top: 40px; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.1); }
+        .counter h3 { font-family: 'Orbitron', monospace; font-size: 3rem; color: var(--primary); }
+        .counter p { color: var(--muted); }
+        .success-state { display: none; }
+        .success-state h2 {
+            font-family: 'Orbitron', monospace; font-size: 2rem; margin-bottom: 20px;
+            color: var(--primary);
+        }
+        .success-state p { color: var(--muted); margin-bottom: 30px; }
+        .success-state .position {
+            font-family: 'Orbitron', monospace; font-size: 5rem; font-weight: 900;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .success-state .share-text { margin-top: 30px; font-size: 0.9rem; }
+        .social-share { display: flex; gap: 15px; justify-content: center; margin-top: 20px; }
+        .social-share a {
+            width: 50px; height: 50px; border-radius: 50%; background: var(--darker);
+            display: flex; align-items: center; justify-content: center;
+            color: var(--text); text-decoration: none; transition: all 0.3s;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .social-share a:hover { background: var(--primary); color: var(--dark); }
+        footer { padding: 40px 0; text-align: center; color: var(--muted); position: relative; z-index: 1; }
+        footer a { color: var(--primary); text-decoration: none; }
+        @media (max-width: 768px) {
+            .waitlist-container { padding: 40px 25px; }
+            .waitlist-container h1 { font-size: 1.8rem; }
+            .nav-links { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="particles-canvas"></canvas>
+    
+    <nav>
+        <div class="container">
+            <a href="neuralos.html" class="logo">NeuralOS</a>
+            <ul class="nav-links">
+                <li><a href="neuralos-features.html">Features</a></li>
+                <li><a href="neuralos-about.html">About</a></li>
+                <li><a href="neuralos-docs.html">Docs</a></li>
+                <li><a href="neuralos-pricing.html">Pricing</a></li>
+            </ul>
+        </div>
+    </nav>
+    
+    <div class="waitlist-page">
+        <div class="waitlist-container">
+            <div id="formState">
+                <h1>Join the Future</h1>
+                <p>Be among the first to experience NeuralOS. Early access begins Q4 2026.</p>
+                
+                <form id="waitlistForm">
+                    <div class="form-group">
+                        <label for="name">Full Name</label>
+                        <input type="text" id="name" placeholder="Enter your name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" placeholder="Enter your email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="plan">Interested Plan</label>
+                        <select id="plan">
+                            <option value="personal">Personal - $29/month</option>
+                            <option value="professional" selected>Professional - $79/month</option>
+                            <option value="enterprise">Enterprise - $299/month</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="usecase">Primary Use Case</label>
+                        <select id="usecase">
+                            <option value="personal">Personal Productivity</option>
+                            <option value="creative">Creative Work</option>
+                            <option value="development">Software Development</option>
+                            <option value="business">Business Operations</option>
+                            <option value="research">Research & Science</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn">Join Waitlist</button>
+                </form>
+                
+                <div class="counter">
+                    <h3 id="counterNum">10,234,567</h3>
+                    <p>People already on the waitlist</p>
+                </div>
+            </div>
+            
+            <div class="success-state" id="successState">
+                <h2>Welcome to the Future!</h2>
+                <p>You're officially on the NeuralOS waitlist.</p>
+                <p>Your position:</p>
+                <div class="position" id="position">#10,234,568</div>
+                <p class="share-text">Share with friends to move up the list:</p>
+                <div class="social-share">
+                    <a href="https://twitter.com/intent/tweet?text=I just joined the NeuralOS waitlist! The future of computing is here." target="_blank">X</a>
+                    <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://neuralos.com" target="_blank">in</a>
+                    <a href="mailto:?subject=Check out NeuralOS&body=I just joined the waitlist for NeuralOS, a revolutionary AI operating system!" target="_blank">@</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <div class="container">
+            <p><a href="neuralos.html">Back to Home</a></p>
+        </div>
+    </footer>
+    
+    <script>
+        // Particle Animation
+        const canvas = document.getElementById('particles-canvas');
+        const ctx = canvas.getContext('2d');
+        
+        function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+        
+        const particles = [];
+        for (let i = 0; i < 80; i++) {
+            particles.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                size: Math.random() * 2 + 0.5,
+                speedX: (Math.random() - 0.5) * 0.5,
+                speedY: (Math.random() - 0.5) * 0.5,
+                opacity: Math.random() * 0.5 + 0.2
+            });
+        }
+        
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.x += p.speedX; p.y += p.speedY;
+                if (p.x < 0 || p.x > canvas.width) p.speedX *= -1;
+                if (p.y < 0 || p.y > canvas.height) p.speedY *= -1;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(0, 240, 255, ' + p.opacity + ')';
+                ctx.fill();
+            });
+            
+            particles.forEach((p1, i) => {
+                particles.slice(i + 1).forEach(p2 => {
+                    const dist = Math.hypot(p1.x - p2.x, p1.y - p2.y);
+                    if (dist < 120) {
+                        ctx.beginPath();
+                        ctx.strokeStyle = 'rgba(0, 240, 255, ' + (0.1 - dist/1200) + ')';
+                        ctx.moveTo(p1.x, p1.y);
+                        ctx.lineTo(p2.x, p2.y);
+                        ctx.stroke();
+                    }
+                });
+            });
+            requestAnimationFrame(animate);
+        }
+        animate();
+        
+        // Counter animation
+        let count = 10234567;
+        setInterval(() => {
+            count += Math.floor(Math.random() * 3) + 1;
+            document.getElementById('counterNum').textContent = count.toLocaleString();
+        }, 3000);
+        
+        // Form submission
+        document.getElementById('waitlistForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            
+            localStorage.setItem('neuralos_user', JSON.stringify({ name, email }));
+            
+            document.getElementById('formState').style.display = 'none';
+            document.getElementById('successState').style.display = 'block';
+            document.getElementById('position').textContent = '#' + (count + 1).toLocaleString();
+        });
+    </script>
+</body>
+</html>

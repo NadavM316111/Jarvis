@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Renato Watches | Bold by Design</title>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --gold: #D4AF37;
+            --gold-light: #F4E4BA;
+            --black: #0a0a0a;
+            --dark: #1a1a1a;
+            --white: #ffffff;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: var(--black);
+            color: var(--white);
+            overflow-x: hidden;
+        }
+
+        /* Mobile-First Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(10px);
+        }
+
+        .logo {
+            font-family: 'Oswald', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--gold);
+            letter-spacing: 3px;
+        }
+
+        .nav-links {
+            display: none;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            color: var(--white);
+            text-decoration: none;
+            font-size: 0.85rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--gold);
+        }
+
+        .menu-btn {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            padding: 10px;
+        }
+
+        .menu-btn span {
+            width: 25px;
+            height: 2px;
+            background: var(--gold);
+            transition: 0.3s;
+        }
+
+        /* Mobile Menu */
+        .mobile-menu {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 100%;
+            height: 100vh;
+            background: var(--black);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 40px;
+            transition: right 0.4s ease;
+            z-index: 999;
+        }
+
+        .mobile-menu.active {
+            right: 0;
+        }
+
+        .mobile-menu a {
+            color: var(--white);
+            text-decoration: none;
+            font-family: 'Oswald', sans-serif;
+            font-size: 2rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            transition: color 0.3s;
+        }
+
+        .mobile-menu a:hover {
+            color: var(--gold);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 2rem;
+            color: var(--gold);
+            cursor: pointer;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 100px 20px 60px;
+            background: radial-gradient(ellipse at center, #1a1a1a 0%, #0a0a0a 70%);
+            position: relative;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 250px;
+            height: 250px;
+            border: 2px solid var(--gold);
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: pulse 3s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.3; }
+            50% { transform: translate(-50%, -50%) scale(1.1); opacity: 0.1; }
+        }
+
+        .hero h1 {
+            font-family: 'Oswald', sans-serif;
+            font-size: clamp(2.5rem, 10vw, 5rem);
+            font-weight: 700;
+            letter-spacing: 8px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+
+        .hero h1 span {
+            color: var(--gold);
+        }
+
+        .hero p {
+            font-size: clamp(1rem, 3vw, 1.3rem);
+            color: #999;
+            margin-bottom: 40px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+        }
+
+        .watch-display {
+            width: clamp(200px, 60vw, 350px);
+            height: clamp(200px, 60vw, 350px);
+            border-radius: 50%;
+            background: linear-gradient(145deg, #2a2a2a, #0a0a0a);
+            border: 4px solid var(--gold);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 30px 0;
+            position: relative;
+            box-shadow: 0 0 60px rgba(212, 175, 55, 0.2);
+        }
+
+        .watch-face {
+            width: 85%;
+            height: 85%;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #1a1a1a, #0a0a0a);
+            border: 2px solid var(--gold);
+            position: relative;
+        }
+
+        .watch-face::after {
+            content: 'RENATO';
+            position: absolute;
+            top: 35%;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: 'Oswald', sans-serif;
+            font-size: clamp(0.8rem, 3vw, 1.2rem);
+            color: var(--gold);
+            letter-spacing: 3px;
+        }
+
+        .hour-hand, .minute-hand, .second-hand {
+            position: absolute;
+            bottom: 50%;
+            left: 50%;
+            transform-origin: bottom center;
+            background: var(--gold);
+        }
+
+        .hour-hand {
+            width: 4px;
+            height: 25%;
+            transform: translateX(-50%) rotate(45deg);
+            border-radius: 2px;
+        }
+
+        .minute-hand {
+            width: 3px;
+            height: 35%;
+            transform: translateX(-50%) rotate(180deg);
+            border-radius: 2px;
+        }
+
+        .second-hand {
+            width: 1px;
+            height: 40%;
+            background: #ff4444;
+            transform: translateX(-50%) rotate(90deg);
+            animation: rotate 60s linear infinite;
+        }
+
+        @keyframes rotate {
+            to { transform: translateX(-50%) rotate(450deg); }
+        }
+
+        .center-dot {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 12px;
+            height: 12px;
+            background: var(--gold);
+            border-radius: 50%;
+        }
+
+        .btn {
+            padding: 15px 40px;
+            background: transparent;
+            border: 2px solid var(--gold);
+            color: var(--gold);
+            font-family: 'Oswald', sans-serif;
+            font-size: 1rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            background: var(--gold);
+            color: var(--black);
+        }
+
+        /* Collection Section */
+        .collection {
+            padding: 80px 20px;
+            background: var(--dark);
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .section-title h2 {
+            font-family: 'Oswald', sans-serif;
+            font-size: clamp(2rem, 6vw, 3rem);
+            letter-spacing: 5px;
+            text-transform: uppercase;
+        }
+
+        .section-title span {
+            color: var(--gold);
+        }
+
+        .watches-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .watch-card {
+            background: linear-gradient(145deg, #252525, #1a1a1a);
+            border: 1px solid #333;
+            padding: 30px 20px;
+            text-align: center;
+            transition: all 0.4s;
+        }
+
+        .watch-card:hover {
+            border-color: var(--gold);
+            transform: translateY(-5px);
+        }
+
+        .watch-icon {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 20px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #333, #1a1a1a);
+            border: 3px solid var(--gold);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Oswald', sans-serif;
+            font-size: 0.8rem;
+            color: var(--gold);
+            letter-spacing: 2px;
+        }
+
+        .watch-card h3 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 1.5rem;
+            letter-spacing: 3px;
+            margin-bottom: 10px;
+            color: var(--gold);
+        }
+
+        .watch-card p {
+            color: #888;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+
+        .watch-card .price {
+            font-family: 'Oswald', sans-serif;
+            font-size: 1.5rem;
+            color: var(--white);
+        }
+
+        /* Features Section */
+        .features {
+            padding: 80px 20px;
+            background: var(--black);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 40px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .feature {
+            text-align: center;
+            padding: 30px 20px;
+        }
+
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            border: 2px solid var(--gold);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            color: var(--gold);
+        }
+
+        .feature h3 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 1.3rem;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+            color: var(--gold);
+        }
+
+        .feature p {
+            color: #888;
+            line-height: 1.6;
+        }
+
+        /* Statement Section */
+        .statement {
+            padding: 100px 20px;
+            background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
+            text-align: center;
+        }
+
+        .statement h2 {
+            font-family: 'Oswald', sans-serif;
+            font-size: clamp(1.8rem, 5vw, 3rem);
+            letter-spacing: 4px;
+            line-height: 1.4;
+            margin-bottom: 30px;
+        }
+
+        .statement h2 span {
+            color: var(--gold);
+        }
+
+        /* Contact Section */
+        .contact {
+            padding: 80px 20px;
+            background: var(--dark);
+        }
+
+        .contact-form {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 15px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            color: var(--white);
+            font-family: 'Roboto', sans-serif;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--gold);
+        }
+
+        .form-group textarea {
+            height: 120px;
+            resize: vertical;
+        }
+
+        /* Footer */
+        footer {
+            padding: 40px 20px;
+            text-align: center;
+            background: var(--black);
+            border-top: 1px solid #333;
+        }
+
+        footer .logo {
+            margin-bottom: 20px;
+        }
+
+        footer p {
+            color: #666;
+            font-size: 0.85rem;
+        }
+
+        /* Tablet and Desktop Styles */
+        @media (min-width: 600px) {
+            .watches-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .features-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 900px) {
+            nav {
+                padding: 20px 50px;
+            }
+
+            .logo {
+                font-size: 1.8rem;
+            }
+
+            .nav-links {
+                display: flex;
+            }
+
+            .menu-btn {
+                display: none;
+            }
+
+            .hero {
+                padding: 120px 50px 80px;
+            }
+
+            .hero::before {
+                width: 400px;
+                height: 400px;
+            }
+
+            .watches-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .features-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+
+            .feature {
+                padding: 40px 30px;
+            }
+        }
+
+        @media (min-width: 1200px) {
+            nav {
+                padding: 25px 80px;
+            }
+
+            .collection,
+            .features,
+            .contact {
+                padding: 100px 50px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="logo">RENATO</div>
+        <div class="nav-links">
+            <a href="#collection">Collection</a>
+            <a href="#features">Craftsmanship</a>
+            <a href="#contact">Contact</a>
+        </div>
+        <div class="menu-btn" onclick="toggleMenu()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </nav>
+
+    <div class="mobile-menu" id="mobileMenu">
+        <span class="close-btn" onclick="toggleMenu()">X</span>
+        <a href="#collection" onclick="toggleMenu()">Collection</a>
+        <a href="#features" onclick="toggleMenu()">Craftsmanship</a>
+        <a href="#contact" onclick="toggleMenu()">Contact</a>
+    </div>
+
+    <section class="hero">
+        <h1>RENATO <span>WATCHES</span></h1>
+        <p>Bold by Design</p>
+        <div class="watch-display">
+            <div class="watch-face">
+                <div class="hour-hand"></div>
+                <div class="minute-hand"></div>
+                <div class="second-hand"></div>
+                <div class="center-dot"></div>
+            </div>
+        </div>
+        <a href="#collection" class="btn">Explore Collection</a>
+    </section>
+
+    <section class="collection" id="collection">
+        <div class="section-title">
+            <h2>THE <span>COLLECTION</span></h2>
+        </div>
+        <div class="watches-grid">
+            <div class="watch-card">
+                <div class="watch-icon">BEAST</div>
+                <h3>THE BEAST</h3>
+                <p>Aggressive 50mm case, titanium build</p>
+                <div class="price">$2,450</div>
+            </div>
+            <div class="watch-card">
+                <div class="watch-icon">VULCAN</div>
+                <h3>VULCAN</h3>
+                <p>Volcanic black with red accents</p>
+                <div class="price">$1,895</div>
+            </div>
+            <div class="watch-card">
+                <div class="watch-icon">TRIDENT</div>
+                <h3>TRIDENT</h3>
+                <p>500m dive rated, luminous dial</p>
+                <div class="price">$2,850</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="features" id="features">
+        <div class="section-title">
+            <h2>UNCOMPROMISING <span>CRAFT</span></h2>
+        </div>
+        <div class="features-grid">
+            <div class="feature">
+                <div class="feature-icon">S</div>
+                <h3>SWISS MOVEMENT</h3>
+                <p>Precision engineering from the heart of Switzerland</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">T</div>
+                <h3>TITANIUM</h3>
+                <p>Aerospace-grade materials built to last</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">W</div>
+                <h3>WATER PROOF</h3>
+                <p>Rated to 500 meters below surface</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">L</div>
+                <h3>LIMITED</h3>
+                <p>Each design limited to 500 pieces</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="statement">
+        <h2>TIME WAITS FOR <span>NO ONE</span><br>NEITHER DO WE</h2>
+        <a href="#contact" class="btn">Join the Bold</a>
+    </section>
+
+    <section class="contact" id="contact">
+        <div class="section-title">
+            <h2>GET IN <span>TOUCH</span></h2>
+        </div>
+        <form class="contact-form">
+            <div class="form-group">
+                <input type="text" placeholder="Your Name" required>
+            </div>
+            <div class="form-group">
+                <input type="email" placeholder="Your Email" required>
+            </div>
+            <div class="form-group">
+                <textarea placeholder="Your Message"></textarea>
+            </div>
+            <button type="submit" class="btn" style="width: 100%;">Send Message</button>
+        </form>
+    </section>
+
+    <footer>
+        <div class="logo">RENATO</div>
+        <p>2026 Renato Watches. Bold by Design.</p>
+    </footer>
+
+    <script>
+        function toggleMenu() {
+            document.getElementById('mobileMenu').classList.toggle('active');
+        }
+
+        // Animate watch hands with real time
+        function updateClock() {
+            const now = new Date();
+            const hours = now.getHours() % 12;
+            const minutes = now.getMinutes();
+            const seconds = now.getSeconds();
+
+            const hourDeg = (hours * 30) + (minutes * 0.5);
+            const minDeg = minutes * 6;
+            const secDeg = seconds * 6;
+
+            document.querySelector('.hour-hand').style.transform = 'translateX(-50%) rotate(' + hourDeg + 'deg)';
+            document.querySelector('.minute-hand').style.transform = 'translateX(-50%) rotate(' + minDeg + 'deg)';
+            document.querySelector('.second-hand').style.transform = 'translateX(-50%) rotate(' + secDeg + 'deg)';
+        }
+
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
