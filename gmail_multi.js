@@ -14,7 +14,12 @@ function getAuthUrl(userId) {
   const auth = getClient();
   return auth.generateAuthUrl({
     access_type: 'offline',
-    scope: ['https://www.googleapis.com/auth/gmail.readonly', 'https://www.googleapis.com/auth/gmail.send', 'https://www.googleapis.com/auth/calendar.readonly'],
+    scope: [
+      'https://www.googleapis.com/auth/gmail.readonly',
+      'https://www.googleapis.com/auth/gmail.send',
+      'https://www.googleapis.com/auth/calendar.readonly',
+      'https://www.googleapis.com/auth/calendar.events',
+    ],
     state: userId,
     prompt: 'consent'
   });
@@ -47,7 +52,7 @@ async function getAuthForUser(userId) {
 
 async function getRecentEmails(userId, count = 10) {
   const auth = await getAuthForUser(userId);
-  if (!auth) return 'Not connected to Gmail. Ask user to connect at https://api.heyjarvis.me/auth/google?userId=' + userId;
+  if (!auth) return 'Not connected to Gmail. Ask user to connect at https://api.heyjarvis.me/auth/google?token=USER_TOKEN';
   const gmail = google.gmail({ version: 'v1', auth });
   const list = await gmail.users.messages.list({ userId: 'me', maxResults: count, q: 'in:inbox' });
   const messages = [];
@@ -94,9 +99,25 @@ async function getCalendarEvents(userId, days = 7) {
   }));
 }
 
+async function createCalendarEvent(userId, title, startTime, endTime, description = '') {
+  const auth = await getAuthForUser(userId);
+  if (!auth) return 'Not connected to Google Calendar.';
+  const calendar = google.calendar({ version: 'v3', auth });
+  const event = await calendar.events.insert({
+    calendarId: 'primary',
+    requestBody: {
+      summary: title,
+      description,
+      start: { dateTime: new Date(startTime).toISOString(), timeZone: 'America/New_York' },
+      end: { dateTime: new Date(endTime || new Date(new Date(startTime).getTime() + 3600000)).toISOString(), timeZone: 'America/New_York' },
+    }
+  });
+  return `Event created: ${event.data.htmlLink}`;
+}
+
 async function isConnected(userId) {
   const rows = await sql`SELECT google_access_token FROM user_oauth WHERE user_id = ${userId}`;
   return rows.length > 0 && !!rows[0].google_access_token;
 }
 
-module.exports = { getAuthUrl, saveTokens, getRecentEmails, sendEmail, getCalendarEvents, isConnected };
+module.exports = { getAuthUrl, saveTokens, getRecentEmails, sendEmail, getCalendarEvents, createCalendarEvent, isConnected };

@@ -1079,8 +1079,7 @@ app.delete('/conversations/:id', authMiddleware, async (req, res) => {
 });
 
 // ============ GOOGLE OAUTH ============
-const { getAuthUrl, saveTokens, getRecentEmails: getEmailsMulti, sendEmail: sendEmailMulti, getCalendarEvents, isConnected } = require('./gmail_multi');
-
+const { getAuthUrl, saveTokens, getRecentEmails: getEmailsMulti, sendEmail: sendEmailMulti, getCalendarEvents, createCalendarEvent, isConnected } = require('./gmail_multi');
 app.get('/auth/google', (req, res) => {
   const token = req.query.token || req.headers.authorization?.replace('Bearer ', '');
   if (!token) return res.status(401).json({ error: 'No token' });
