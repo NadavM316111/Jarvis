@@ -582,9 +582,10 @@ async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame
   while (iterations < 25) {
     iterations++;
 
+    const isComplexTask = /build|website|html|code|program|script|3d model|generate image|luma|video|spreadsheet|presentation/i.test(userMessage);
     const response = await anthropic.messages.create({
-      model: 'claude-opus-4-5',
-      max_tokens: 16000,
+      model: isComplexTask ? 'claude-opus-4-5' : 'claude-sonnet-4-6',
+      max_tokens: isComplexTask ? 16000 : 4000,
       system: systemPrompt,
       tools,
       messages
