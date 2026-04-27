@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Napoleon Bonaparte - The Emperor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Lora', serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: #e8e8e8;
+            min-height: 100vh;
+            line-height: 1.8;
+        }
+
+        header {
+            background: linear-gradient(to right, #d4af37, #f4e4ba, #d4af37);
+            padding: 60px 20px;
+            text-align: center;
+            border-bottom: 5px solid #8b7355;
+        }
+
+        header h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 3.5rem;
+            color: #1a1a2e;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-style: italic;
+            color: #333;
+            font-size: 1.3rem;
+        }
+
+        nav {
+            background: #0f3460;
+            padding: 15px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 3px solid #d4af37;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            color: #d4af37;
+            text-decoration: none;
+            font-family: 'Cinzel', serif;
+            font-size: 1.1rem;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: #f4e4ba;
+        }
+
+        main {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        section {
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            padding: 40px;
+            margin-bottom: 40px;
+            border-left: 4px solid #d4af37;
+        }
+
+        h2 {
+            font-family: 'Cinzel', serif;
+            color: #d4af37;
+            font-size: 2rem;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+        }
+
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .quote {
+            background: rgba(212, 175, 55, 0.1);
+            border-left: 4px solid #d4af37;
+            padding: 20px 30px;
+            margin: 30px 0;
+            font-style: italic;
+            font-size: 1.2rem;
+        }
+
+        .quote cite {
+            display: block;
+            margin-top: 10px;
+            color: #d4af37;
+            font-style: normal;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: #d4af37;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 25px;
+            padding-left: 20px;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -35px;
+            top: 5px;
+            width: 15px;
+            height: 15px;
+            background: #d4af37;
+            border-radius: 50%;
+        }
+
+        .timeline-item strong {
+            color: #d4af37;
+            font-size: 1.1rem;
+        }
+
+        .battles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .battle-card {
+            background: rgba(212, 175, 55, 0.1);
+            padding: 25px;
+            border-radius: 8px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .battle-card h3 {
+            color: #d4af37;
+            font-family: 'Cinzel', serif;
+            margin-bottom: 10px;
+        }
+
+        .battle-card .year {
+            color: #888;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .stat-box {
+            background: rgba(212, 175, 55, 0.15);
+            padding: 25px;
+            text-align: center;
+            border-radius: 8px;
+        }
+
+        .stat-box .number {
+            font-family: 'Cinzel', serif;
+            font-size: 2.5rem;
+            color: #d4af37;
+        }
+
+        .stat-box .label {
+            color: #aaa;
+            margin-top: 5px;
+        }
+
+        footer {
+            background: #0a0a15;
+            text-align: center;
+            padding: 30px;
+            border-top: 3px solid #d4af37;
+            color: #888;
+        }
+
+        @media (max-width: 600px) {
+            header h1 {
+                font-size: 2.2rem;
+            }
+            
+            nav ul {
+                gap: 20px;
+            }
+            
+            section {
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Napoleon Bonaparte</h1>
+        <p>Emperor of the French (1804-1814, 1815)</p>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="#early-life">Early Life</a></li>
+            <li><a href="#rise">Rise to Power</a></li>
+            <li><a href="#battles">Famous Battles</a></li>
+            <li><a href="#timeline">Timeline</a></li>
+            <li><a href="#legacy">Legacy</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <section id="early-life">
+            <h2>Early Life</h2>
+            <p>Napoleon Bonaparte was born on August 15, 1769, in Ajaccio, Corsica, just one year after the island was transferred from Genoa to France. Born into a family of minor Italian nobility, he was the fourth of eleven children to Carlo Buonaparte and Letizia Ramolino.</p>
+            <p>At age nine, Napoleon was sent to mainland France to study at the military academy of Brienne-le-Chateau. Despite being mocked for his Corsican accent and modest background, he excelled in mathematics and history. In 1785, he graduated from the prestigious Ecole Militaire in Paris as a second lieutenant of artillery.</p>
+            
+            <div class="quote">
+                "I am the successor, not of Louis XVI, but of Charlemagne."
+                <cite>- Napoleon Bonaparte</cite>
+            </div>
+        </section>
+
+        <section id="rise">
+            <h2>Rise to Power</h2>
+            <p>Napoleon's military genius first gained attention during the Siege of Toulon in 1793, where his artillery tactics helped recapture the city from British forces. This victory earned him a promotion to brigadier general at just 24 years old.</p>
+            <p>His Italian Campaign of 1796-1797 established him as one of France's most brilliant military commanders. Leading an underfunded and demoralized army, he won a series of stunning victories against Austrian and Sardinian forces, securing northern Italy for France.</p>
+            <p>On November 9, 1799 (18 Brumaire), Napoleon seized power in a coup d'etat, overthrowing the Directory and establishing the Consulate. By 1804, he had crowned himself Emperor of the French in a lavish ceremony at Notre-Dame Cathedral.</p>
+        </section>
+
+        <section id="battles">
+            <h2>Famous Battles</h2>
+            <div class="battles-grid">
+                <div class="battle-card">
+                    <h3>Battle of Austerlitz</h3>
+                    <p class="year">December 2, 1805</p>
+                    <p>Often called the "Battle of the Three Emperors," Napoleon defeated the combined forces of Russia and Austria, destroying the Third Coalition.</p>
+                </div>
+                <div class="battle-card">
+                    <h3>Battle of Jena-Auerstedt</h3>
+                    <p class="year">October 14, 1806</p>
+                    <p>A decisive defeat of Prussia that led to French occupation of Berlin and the collapse of the Prussian military.</p>
+                </div>
+                <div class="battle-card">
+                    <h3>Battle of Wagram</h3>
+                    <p class="year">July 5-6, 1809</p>
+                    <p>One of the largest battles of the Napoleonic Wars, resulting in Austrian defeat and the Treaty of Schonbrunn.</p>
+                </div>
+                <div class="battle-card">
+                    <h3>Battle of Waterloo</h3>
+                    <p class="year">June 18, 1815</p>
+                    <p>Napoleon's final defeat by the Duke of Wellington and Prussian forces, ending his Hundred Days return to power.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="timeline">
+            <h2>Key Timeline</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <strong>1769</strong> - Born in Ajaccio, Corsica
+                </div>
+                <div class="timeline-item">
+                    <strong>1785</strong> - Graduates from Ecole Militaire as artillery officer
+                </div>
+                <div class="timeline-item">
+                    <strong>1793</strong> - Gains fame at the Siege of Toulon
+                </div>
+                <div class="timeline-item">
+                    <strong>1796</strong> - Commands the Italian Campaign; marries Josephine
+                </div>
+                <div class="timeline-item">
+                    <strong>1799</strong> - Coup of 18 Brumaire; becomes First Consul
+                </div>
+                <div class="timeline-item">
+                    <strong>1804</strong> - Crowns himself Emperor of the French
+                </div>
+                <div class="timeline-item">
+                    <strong>1805</strong> - Triumph at Austerlitz
+                </div>
+                <div class="timeline-item">
+                    <strong>1812</strong> - Disastrous invasion of Russia
+                </div>
+                <div class="timeline-item">
+                    <strong>1814</strong> - First abdication; exiled to Elba
+                </div>
+                <div class="timeline-item">
+                    <strong>1815</strong> - Hundred Days; defeat at Waterloo
+                </div>
+                <div class="timeline-item">
+                    <strong>1821</strong> - Dies in exile on Saint Helena
+                </div>
+            </div>
+        </section>
+
+        <section id="legacy">
+            <h2>Legacy</h2>
+            <p>Napoleon's influence extends far beyond his military conquests. The Napoleonic Code, his civil law reform, remains the foundation of legal systems in France and over 40 countries worldwide. He modernized education, established the Bank of France, and built infrastructure that still serves France today.</p>
+            
+            <div class="stats">
+                <div class="stat-box">
+                    <div class="number">60+</div>
+                    <div class="label">Major Battles</div>
+                </div>
+                <div class="stat-box">
+                    <div class="number">40+</div>
+                    <div class="label">Countries Use His Legal Code</div>
+                </div>
+                <div class="stat-box">
+                    <div class="number">15</div>
+                    <div class="label">Years as Ruler</div>
+                </div>
+                <div class="stat-box">
+                    <div class="number">51</div>
+                    <div class="label">Age at Death</div>
+                </div>
+            </div>
+
+            <div class="quote">
+                "Impossible is a word to be found only in the dictionary of fools."
+                <cite>- Napoleon Bonaparte</cite>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>Napoleon Bonaparte (1769-1821) - A figure who shaped the modern world</p>
+    </footer>
+</body>
+</html>

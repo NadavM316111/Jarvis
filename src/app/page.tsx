@@ -384,7 +384,7 @@ if (ytMatch2) setTimeout(() => window.open(ytMatch2[0], '_blank'), 500);
 
     setLoading(true);
     try {
-      const res = await fetch(`${API}/chat`, { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` }, body: JSON.stringify({ message: userMsg, cameraFrame: latestCameraFrameRef.current, attachedFile: fileToSend }) });
+      const res = await fetch(`${API}/chat`, { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` }, body: JSON.stringify({ message: userMsg, attachedFile: fileToSend }) });
       const data = await res.json();
       if (data.message && data.message !== 'On it.') {
         addMessageToConv(finalConvId, { role: "assistant", content: data.message, source: "text", timestamp: Date.now() });
@@ -413,27 +413,63 @@ if (ytMatch) { const w = window.open(ytMatch[0], '_blank'); if (w) w.focus(); }
   if (!token) {
     return (
       <div style={{ minHeight: '100dvh' }} className="bg-[#060608] flex items-center justify-center p-4">
-        <div className="w-full max-w-sm bg-[rgba(8,8,12,0.97)] border border-white/10 rounded-2xl overflow-hidden shadow-2xl">
-          <div className="px-8 pt-8 pb-6 text-center border-b border-white/5">
-            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-blue-700 mx-auto mb-4" style={{ boxShadow: "0 0 24px rgba(96,165,250,0.5)" }} />
-            <div className="text-white text-xl font-semibold tracking-wide">JARVIS</div>
-            <div className="text-white/30 text-xs mt-1">Your autonomous AI</div>
-          </div>
-          <div className="p-8">
-            <div className="flex gap-2 mb-6">
-              <button onClick={() => setAuthMode('login')} className={`flex-1 py-2 rounded-xl text-sm font-medium transition-all ${authMode === 'login' ? 'bg-blue-600 text-white' : 'bg-white/5 text-white/40 hover:text-white/60'}`}>Sign In</button>
-              <button onClick={() => setAuthMode('signup')} className={`flex-1 py-2 rounded-xl text-sm font-medium transition-all ${authMode === 'signup' ? 'bg-blue-600 text-white' : 'bg-white/5 text-white/40 hover:text-white/60'}`}>Sign Up</button>
+        <div className="w-full max-w-4xl flex gap-8 items-center">
+          
+          {/* Left side — product info */}
+          <div className="hidden md:flex flex-col flex-1 pr-8">
+            <div className="flex items-center gap-3 mb-8">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-700" style={{ boxShadow: "0 0 24px rgba(96,165,250,0.5)" }} />
+              <span className="text-white text-xl font-semibold tracking-wide">JARVIS</span>
             </div>
-            <div className="flex flex-col gap-3">
-              {authMode === 'signup' && <input value={authName} onChange={e => setAuthName(e.target.value)} placeholder="Your name" style={{ fontSize: '16px' }} className="bg-white/5 border border-white/10 rounded-xl text-white px-4 py-3 outline-none placeholder:text-white/25 focus:border-blue-500/40 transition-all" />}
-              <input value={authEmail} onChange={e => setAuthEmail(e.target.value)} placeholder="Email" type="email" style={{ fontSize: '16px' }} className="bg-white/5 border border-white/10 rounded-xl text-white px-4 py-3 outline-none placeholder:text-white/25 focus:border-blue-500/40 transition-all" />
-              <input value={authPassword} onChange={e => setAuthPassword(e.target.value)} placeholder="Password" type="password" onKeyDown={e => e.key === 'Enter' && handleAuth()} style={{ fontSize: '16px' }} className="bg-white/5 border border-white/10 rounded-xl text-white px-4 py-3 outline-none placeholder:text-white/25 focus:border-blue-500/40 transition-all" />
-              {authError && <div className="text-red-400 text-xs px-1">{authError}</div>}
-              <button onClick={handleAuth} disabled={authLoading} className="w-full py-3 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 rounded-xl text-white text-sm font-medium transition-all mt-1">
-                {authLoading ? 'Loading...' : authMode === 'login' ? 'Sign In' : 'Create Account'}
-              </button>
+            <h1 className="text-white text-3xl font-semibold leading-tight mb-3">Your autonomous<br/>AI assistant</h1>
+            <p className="text-white/40 text-sm leading-relaxed mb-10">JARVIS connects to your digital life and acts on your behalf — from managing emails to making phone calls.</p>
+            <div className="flex flex-col gap-4">
+              {[
+                { icon: "M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z", label: "Gmail & Calendar", desc: "Reads, sends emails and manages your schedule" },
+                { icon: "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z", label: "Google Drive & Docs", desc: "Creates and reads your files and documents" },
+                { icon: "M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.948V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z", label: "Phone Calls & SMS", desc: "Makes real calls and sends texts on your behalf" },
+                { icon: "M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4", label: "Builds Websites & Docs", desc: "Generates full websites and documents instantly" },
+                { icon: "M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9", label: "Web Search & Research", desc: "Finds current information and answers instantly" },
+              ].map((item, i) => (
+                <div key={i} className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-blue-600/15 border border-blue-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" strokeWidth="1.8">
+                      <path d={item.icon}/>
+                    </svg>
+                  </div>
+                  <div>
+                    <div className="text-white/80 text-xs font-medium">{item.label}</div>
+                    <div className="text-white/30 text-xs mt-0.5">{item.desc}</div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
+
+          {/* Right side — auth form */}
+          <div className="w-full max-w-sm bg-[rgba(8,8,12,0.97)] border border-white/10 rounded-2xl overflow-hidden shadow-2xl flex-shrink-0">
+            <div className="px-8 pt-8 pb-6 text-center border-b border-white/5">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-blue-700 mx-auto mb-4 md:hidden" style={{ boxShadow: "0 0 24px rgba(96,165,250,0.5)" }} />
+              <div className="text-white text-xl font-semibold tracking-wide">Welcome to JARVIS</div>
+              <div className="text-white/30 text-xs mt-1">{authMode === 'login' ? 'Sign in to continue' : 'Create your account'}</div>
+            </div>
+            <div className="p-8">
+              <div className="flex gap-2 mb-6">
+                <button onClick={() => setAuthMode('login')} className={`flex-1 py-2 rounded-xl text-sm font-medium transition-all ${authMode === 'login' ? 'bg-blue-600 text-white' : 'bg-white/5 text-white/40 hover:text-white/60'}`}>Sign In</button>
+                <button onClick={() => setAuthMode('signup')} className={`flex-1 py-2 rounded-xl text-sm font-medium transition-all ${authMode === 'signup' ? 'bg-blue-600 text-white' : 'bg-white/5 text-white/40 hover:text-white/60'}`}>Sign Up</button>
+              </div>
+              <div className="flex flex-col gap-3">
+                {authMode === 'signup' && <input value={authName} onChange={e => setAuthName(e.target.value)} placeholder="Your name" style={{ fontSize: '16px' }} className="bg-white/5 border border-white/10 rounded-xl text-white px-4 py-3 outline-none placeholder:text-white/25 focus:border-blue-500/40 transition-all" />}
+                <input value={authEmail} onChange={e => setAuthEmail(e.target.value)} placeholder="Email" type="email" style={{ fontSize: '16px' }} className="bg-white/5 border border-white/10 rounded-xl text-white px-4 py-3 outline-none placeholder:text-white/25 focus:border-blue-500/40 transition-all" />
+                <input value={authPassword} onChange={e => setAuthPassword(e.target.value)} placeholder="Password" type="password" onKeyDown={e => e.key === 'Enter' && handleAuth()} style={{ fontSize: '16px' }} className="bg-white/5 border border-white/10 rounded-xl text-white px-4 py-3 outline-none placeholder:text-white/25 focus:border-blue-500/40 transition-all" />
+                {authError && <div className="text-red-400 text-xs px-1">{authError}</div>}
+                <button onClick={handleAuth} disabled={authLoading} className="w-full py-3 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 rounded-xl text-white text-sm font-medium transition-all mt-1">
+                  {authLoading ? 'Loading...' : authMode === 'login' ? 'Sign In' : 'Create Account'}
+                </button>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
     );
