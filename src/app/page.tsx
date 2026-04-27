@@ -40,7 +40,8 @@ function formatMessage(text: string) {
     .replace(/\*(.*?)\*/g, '<em>$1</em>')
     .replace(/#{1,3} (.*?)(\n|$)/g, '<strong>$1</strong><br/>')
     .replace(/^- (.*?)$/gm, '• $1')
-    .replace(/\n/g, '<br/>');
+    .replace(/\n/g, '<br/>')
+    .replace(/(https?:\/\/[^\s<"]+)/g, '<a href="$1" target="_blank" rel="noopener noreferrer" style="color:#60a5fa;text-decoration:underline;word-break:break-all;">$1</a>');
 }
 
 function generateId() {

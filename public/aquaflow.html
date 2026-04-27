@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AquaFlow - Smart Hydration Revolution</title>
+    <title>AquaFlow - Pure Hydration Technology</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
@@ -31,200 +31,159 @@
             opacity: 0.3;
         }
 
-        .bubble {
+        .wave {
             position: absolute;
-            border-radius: 50%;
-            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.8), rgba(100,181,246,0.3));
-            animation: float 8s infinite ease-in-out;
+            bottom: 0;
+            left: 0;
+            width: 200%;
+            height: 200px;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%2300bcd4" fill-opacity="0.5" d="M0,192L48,197.3C96,203,192,213,288,229.3C384,245,480,267,576,250.7C672,235,768,181,864,181.3C960,181,1056,235,1152,234.7C1248,235,1344,181,1392,154.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
+            background-size: 50% 100%;
+            animation: wave 15s linear infinite;
         }
 
-        @keyframes float {
-            0%, 100% { transform: translateY(100vh) scale(0); opacity: 0; }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { transform: translateY(-100px) scale(1); opacity: 0; }
+        .wave:nth-child(2) {
+            bottom: 10px;
+            opacity: 0.5;
+            animation: wave 12s linear reverse infinite;
         }
 
-        /* Navigation */
-        nav {
-            position: fixed;
-            top: 0;
-            width: 100%;
+        .wave:nth-child(3) {
+            bottom: 20px;
+            opacity: 0.3;
+            animation: wave 20s linear infinite;
+        }
+
+        @keyframes wave {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        /* Header */
+        header {
             padding: 20px 50px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            position: relative;
             z-index: 100;
-            backdrop-filter: blur(10px);
-            background: rgba(255,255,255,0.05);
         }
 
         .logo {
             font-size: 28px;
             font-weight: 700;
-            background: linear-gradient(90deg, #4fc3f7, #00e5ff);
+            background: linear-gradient(90deg, #00e5ff, #00bcd4);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            background-clip: text;
         }
 
-        .logo svg {
-            width: 40px;
-            height: 40px;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 40px;
-            list-style: none;
-        }
-
-        .nav-links a {
+        .logo span {
             color: #fff;
+            -webkit-text-fill-color: #fff;
+        }
+
+        nav a {
+            color: rgba(255,255,255,0.8);
             text-decoration: none;
+            margin-left: 30px;
             font-weight: 400;
             transition: color 0.3s;
         }
 
-        .nav-links a:hover {
-            color: #4fc3f7;
-        }
-
-        .cta-nav {
-            background: linear-gradient(90deg, #00bcd4, #4fc3f7);
-            padding: 12px 30px;
-            border-radius: 50px;
-            text-decoration: none;
-            color: #fff;
-            font-weight: 600;
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-
-        .cta-nav:hover {
-            transform: scale(1.05);
-            box-shadow: 0 10px 40px rgba(79, 195, 247, 0.4);
+        nav a:hover {
+            color: #00e5ff;
         }
 
         /* Hero Section */
         .hero {
-            min-height: 100vh;
+            min-height: calc(100vh - 80px);
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 120px 50px 50px;
+            padding: 50px;
             position: relative;
         }
 
         .hero-content {
             max-width: 600px;
-            z-index: 10;
-        }
-
-        .hero-badge {
-            display: inline-block;
-            background: rgba(79, 195, 247, 0.2);
-            border: 1px solid rgba(79, 195, 247, 0.5);
-            padding: 8px 20px;
-            border-radius: 50px;
-            font-size: 14px;
-            margin-bottom: 20px;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(79, 195, 247, 0.4); }
-            50% { box-shadow: 0 0 0 15px rgba(79, 195, 247, 0); }
+            text-align: left;
         }
 
         .hero h1 {
-            font-size: 60px;
+            font-size: 56px;
             font-weight: 700;
-            line-height: 1.1;
-            margin-bottom: 25px;
+            line-height: 1.2;
+            margin-bottom: 20px;
         }
 
         .hero h1 span {
-            background: linear-gradient(90deg, #4fc3f7, #00e5ff, #18ffff);
+            background: linear-gradient(90deg, #00e5ff, #76ff03);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .hero p {
             font-size: 18px;
-            color: rgba(255,255,255,0.8);
-            line-height: 1.7;
+            color: rgba(255,255,255,0.7);
             margin-bottom: 40px;
+            line-height: 1.8;
         }
 
-        .hero-buttons {
+        .cta-buttons {
             display: flex;
             gap: 20px;
         }
 
         .btn-primary {
-            background: linear-gradient(90deg, #00bcd4, #4fc3f7);
-            padding: 16px 40px;
-            border-radius: 50px;
-            text-decoration: none;
-            color: #fff;
-            font-weight: 600;
-            font-size: 16px;
-            transition: all 0.3s;
+            padding: 15px 40px;
+            background: linear-gradient(90deg, #00e5ff, #00bcd4);
             border: none;
+            border-radius: 50px;
+            color: #0c1445;
+            font-size: 16px;
+            font-weight: 600;
             cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
         }
 
         .btn-primary:hover {
             transform: translateY(-3px);
-            box-shadow: 0 15px 40px rgba(79, 195, 247, 0.4);
+            box-shadow: 0 10px 30px rgba(0, 229, 255, 0.4);
         }
 
         .btn-secondary {
+            padding: 15px 40px;
             background: transparent;
             border: 2px solid rgba(255,255,255,0.3);
-            padding: 14px 40px;
             border-radius: 50px;
-            text-decoration: none;
             color: #fff;
+            font-size: 16px;
             font-weight: 500;
+            cursor: pointer;
             transition: all 0.3s;
         }
 
         .btn-secondary:hover {
-            border-color: #4fc3f7;
-            background: rgba(79, 195, 247, 0.1);
+            border-color: #00e5ff;
+            color: #00e5ff;
         }
 
-        .hero-image {
+        /* Product Display */
+        .hero-product {
             position: relative;
-            width: 500px;
-            height: 500px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .bottle-container {
-            position: relative;
-            animation: bob 3s ease-in-out infinite;
-        }
-
-        @keyframes bob {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
+            margin-left: 100px;
         }
 
         .bottle {
-            width: 200px;
-            height: 400px;
-            background: linear-gradient(180deg, rgba(255,255,255,0.2) 0%, rgba(79,195,247,0.4) 100%);
-            border-radius: 30px 30px 50px 50px;
+            width: 300px;
+            height: 500px;
+            background: linear-gradient(180deg, rgba(0,229,255,0.3) 0%, rgba(0,188,212,0.6) 100%);
+            border-radius: 30px 30px 60px 60px;
             position: relative;
-            backdrop-filter: blur(10px);
-            border: 2px solid rgba(255,255,255,0.3);
-            box-shadow: 0 30px 60px rgba(0,0,0,0.3), inset 0 -50px 100px rgba(79,195,247,0.2);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.3), inset 0 0 60px rgba(255,255,255,0.1);
+            animation: float 4s ease-in-out infinite;
         }
 
         .bottle::before {
@@ -233,119 +192,121 @@
             top: -40px;
             left: 50%;
             transform: translateX(-50%);
-            width: 60px;
+            width: 80px;
             height: 50px;
-            background: linear-gradient(180deg, #37474f 0%, #263238 100%);
-            border-radius: 10px 10px 5px 5px;
+            background: linear-gradient(180deg, #00e5ff, #00bcd4);
+            border-radius: 10px 10px 0 0;
         }
 
         .bottle::after {
-            content: '';
+            content: 'AQUAFLOW';
             position: absolute;
-            top: 20px;
-            left: 20px;
-            width: 30px;
-            height: 100px;
-            background: linear-gradient(180deg, rgba(255,255,255,0.4), transparent);
-            border-radius: 20px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-90deg);
+            font-size: 36px;
+            font-weight: 700;
+            color: rgba(255,255,255,0.8);
+            letter-spacing: 10px;
         }
 
-        .water-level {
+        .water-fill {
             position: absolute;
             bottom: 20px;
             left: 20px;
             right: 20px;
-            height: 60%;
-            background: linear-gradient(180deg, rgba(79,195,247,0.6), rgba(0,188,212,0.8));
-            border-radius: 20px 20px 40px 40px;
-            animation: wave 2s ease-in-out infinite;
+            height: 70%;
+            background: linear-gradient(180deg, rgba(0,229,255,0.4) 0%, rgba(0,188,212,0.8) 100%);
+            border-radius: 20px 20px 50px 50px;
+            animation: waterMove 3s ease-in-out infinite;
         }
 
-        @keyframes wave {
-            0%, 100% { height: 60%; }
-            50% { height: 62%; }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes waterMove {
+            0%, 100% { height: 70%; }
+            50% { height: 68%; }
         }
 
         .glow-ring {
             position: absolute;
-            width: 350px;
-            height: 350px;
-            border: 2px solid rgba(79, 195, 247, 0.3);
-            border-radius: 50%;
-            animation: rotate 10s linear infinite;
-        }
-
-        .glow-ring::before {
-            content: '';
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            background: #4fc3f7;
-            border-radius: 50%;
-            top: -10px;
+            top: 50%;
             left: 50%;
-            box-shadow: 0 0 30px #4fc3f7;
+            transform: translate(-50%, -50%);
+            width: 400px;
+            height: 400px;
+            border: 2px solid rgba(0,229,255,0.3);
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
         }
 
-        @keyframes rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+        .glow-ring:nth-child(2) {
+            width: 500px;
+            height: 500px;
+            animation-delay: 0.5s;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.3; transform: translate(-50%, -50%) scale(1); }
+            50% { opacity: 0.6; transform: translate(-50%, -50%) scale(1.05); }
         }
 
         /* Features Section */
         .features {
             padding: 100px 50px;
-            background: rgba(255,255,255,0.02);
+            background: rgba(0,0,0,0.2);
+            position: relative;
+            z-index: 10;
         }
 
         .section-title {
             text-align: center;
+            font-size: 42px;
             margin-bottom: 60px;
         }
 
-        .section-title h2 {
-            font-size: 42px;
-            margin-bottom: 15px;
-        }
-
-        .section-title p {
-            color: rgba(255,255,255,0.7);
-            font-size: 18px;
+        .section-title span {
+            background: linear-gradient(90deg, #00e5ff, #76ff03);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .features-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 30px;
+            gap: 40px;
             max-width: 1200px;
             margin: 0 auto;
         }
 
         .feature-card {
             background: rgba(255,255,255,0.05);
-            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
             border-radius: 20px;
             padding: 40px;
-            border: 1px solid rgba(255,255,255,0.1);
-            transition: all 0.3s;
+            text-align: center;
+            transition: transform 0.3s, background 0.3s;
         }
 
         .feature-card:hover {
             transform: translateY(-10px);
-            border-color: rgba(79, 195, 247, 0.5);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            background: rgba(255,255,255,0.1);
         }
 
         .feature-icon {
-            width: 70px;
-            height: 70px;
-            background: linear-gradient(135deg, #00bcd4, #4fc3f7);
-            border-radius: 20px;
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #00e5ff, #00bcd4);
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 25px;
-            font-size: 30px;
+            margin: 0 auto 20px;
+            font-size: 36px;
         }
 
         .feature-card h3 {
@@ -354,7 +315,7 @@
         }
 
         .feature-card p {
-            color: rgba(255,255,255,0.7);
+            color: rgba(255,255,255,0.6);
             line-height: 1.6;
         }
 
@@ -364,104 +325,91 @@
             display: flex;
             justify-content: center;
             gap: 100px;
+            position: relative;
+            z-index: 10;
         }
 
-        .stat {
+        .stat-item {
             text-align: center;
         }
 
         .stat-number {
-            font-size: 60px;
+            font-size: 64px;
             font-weight: 700;
-            background: linear-gradient(90deg, #4fc3f7, #00e5ff);
+            background: linear-gradient(90deg, #00e5ff, #76ff03);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .stat-label {
-            color: rgba(255,255,255,0.7);
             font-size: 16px;
+            color: rgba(255,255,255,0.6);
             margin-top: 10px;
         }
 
-        /* Pricing Section */
-        .pricing {
+        /* CTA Section */
+        .cta-section {
             padding: 100px 50px;
+            text-align: center;
+            position: relative;
+            z-index: 10;
         }
 
-        .pricing-cards {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-
-        .pricing-card {
-            background: rgba(255,255,255,0.05);
-            backdrop-filter: blur(10px);
-            border-radius: 30px;
-            padding: 50px 40px;
-            border: 1px solid rgba(255,255,255,0.1);
-            width: 320px;
-            transition: all 0.3s;
-        }
-
-        .pricing-card.featured {
-            background: linear-gradient(135deg, rgba(0,188,212,0.2), rgba(79,195,247,0.2));
-            border-color: rgba(79, 195, 247, 0.5);
-            transform: scale(1.05);
-        }
-
-        .pricing-card h3 {
-            font-size: 24px;
-            margin-bottom: 10px;
-        }
-
-        .pricing-card .price {
+        .cta-section h2 {
             font-size: 48px;
-            font-weight: 700;
-            margin: 20px 0;
+            margin-bottom: 20px;
         }
 
-        .pricing-card .price span {
-            font-size: 18px;
+        .cta-section p {
             color: rgba(255,255,255,0.7);
+            margin-bottom: 40px;
+            font-size: 18px;
         }
 
-        .pricing-card ul {
-            list-style: none;
-            margin: 30px 0;
+        .price {
+            font-size: 64px;
+            font-weight: 700;
+            margin-bottom: 30px;
         }
 
-        .pricing-card li {
-            padding: 12px 0;
-            color: rgba(255,255,255,0.8);
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .pricing-card li:last-child {
-            border-bottom: none;
+        .price span {
+            font-size: 24px;
+            color: rgba(255,255,255,0.5);
         }
 
         /* Footer */
         footer {
-            padding: 50px;
+            padding: 40px 50px;
             text-align: center;
             border-top: 1px solid rgba(255,255,255,0.1);
-        }
-
-        footer p {
             color: rgba(255,255,255,0.5);
+            position: relative;
+            z-index: 10;
         }
 
-        @media (max-width: 900px) {
+        /* Floating particles */
+        .particle {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: rgba(0,229,255,0.5);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        @media (max-width: 1024px) {
             .hero {
                 flex-direction: column;
                 text-align: center;
             }
-            .hero h1 {
-                font-size: 40px;
+            .hero-content {
+                text-align: center;
+            }
+            .hero-product {
+                margin-left: 0;
+                margin-top: 50px;
             }
             .features-grid {
                 grid-template-columns: 1fr;
@@ -470,186 +418,115 @@
                 flex-direction: column;
                 gap: 40px;
             }
-            .pricing-cards {
-                flex-direction: column;
-                align-items: center;
-            }
-            .pricing-card.featured {
-                transform: scale(1);
-            }
-            nav {
-                padding: 20px;
-            }
-            .nav-links {
-                display: none;
-            }
         }
     </style>
 </head>
 <body>
-    <div class="water-bg" id="waterBg"></div>
+    <div class="water-bg">
+        <div class="wave"></div>
+        <div class="wave"></div>
+        <div class="wave"></div>
+    </div>
 
-    <nav>
-        <div class="logo">
-            <svg viewBox="0 0 100 100" fill="none">
-                <circle cx="50" cy="50" r="45" stroke="url(#grad)" stroke-width="4" fill="none"/>
-                <path d="M50 20 C30 45, 30 70, 50 85 C70 70, 70 45, 50 20" fill="url(#grad)"/>
-                <defs>
-                    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" style="stop-color:#4fc3f7"/>
-                        <stop offset="100%" style="stop-color:#00e5ff"/>
-                    </linearGradient>
-                </defs>
-            </svg>
-            AquaFlow
-        </div>
-        <ul class="nav-links">
-            <li><a href="#features">Features</a></li>
-            <li><a href="#pricing">Pricing</a></li>
-            <li><a href="#about">About</a></li>
-        </ul>
-        <a href="#" class="cta-nav">Pre-Order</a>
-    </nav>
+    <header>
+        <div class="logo">Aqua<span>Flow</span></div>
+        <nav>
+            <a href="#features">Features</a>
+            <a href="#science">Science</a>
+            <a href="#pricing">Pricing</a>
+            <a href="#contact">Contact</a>
+        </nav>
+    </header>
 
     <section class="hero">
         <div class="hero-content">
-            <div class="hero-badge">Launching Summer 2026</div>
             <h1>Hydration <span>Reimagined</span> for the Future</h1>
-            <p>AquaFlow is the world's first AI-powered smart water bottle that learns your hydration needs, tracks your intake, and reminds you to drink at the perfect moments.</p>
-            <div class="hero-buttons">
-                <a href="#" class="btn-primary">Pre-Order Now</a>
-                <a href="#" class="btn-secondary">Watch Demo</a>
+            <p>Experience the world's first AI-enhanced water filtration system. AquaFlow uses quantum nano-filtration technology to deliver water so pure, it actually improves cellular hydration by 340%.</p>
+            <div class="cta-buttons">
+                <button class="btn-primary">Pre-Order Now</button>
+                <button class="btn-secondary">Watch Demo</button>
             </div>
         </div>
-        <div class="hero-image">
+        <div class="hero-product">
             <div class="glow-ring"></div>
-            <div class="bottle-container">
-                <div class="bottle">
-                    <div class="water-level"></div>
-                </div>
+            <div class="glow-ring"></div>
+            <div class="bottle">
+                <div class="water-fill"></div>
             </div>
         </div>
     </section>
 
     <section class="features" id="features">
-        <div class="section-title">
-            <h2>Revolutionary Features</h2>
-            <p>Everything you need to stay perfectly hydrated</p>
-        </div>
+        <h2 class="section-title">Why <span>AquaFlow</span>?</h2>
         <div class="features-grid">
             <div class="feature-card">
+                <div class="feature-icon">H2O</div>
+                <h3>Quantum Filtration</h3>
+                <p>Our patented quantum nano-mesh removes impurities at the molecular level, leaving only pure H2O molecules.</p>
+            </div>
+            <div class="feature-card">
                 <div class="feature-icon">AI</div>
-                <h3>AI Hydration Coach</h3>
-                <p>Our proprietary AI learns your body's needs based on activity, weather, and health data to optimize your hydration schedule.</p>
+                <h3>Smart Hydration</h3>
+                <p>Built-in AI learns your hydration patterns and optimizes mineral content for your body's needs.</p>
             </div>
             <div class="feature-card">
-                <div class="feature-icon">UV</div>
-                <h3>UV-C Purification</h3>
-                <p>Built-in UV-C light eliminates 99.99% of bacteria and viruses, ensuring every sip is pure and safe.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">T</div>
-                <h3>Temperature Control</h3>
-                <p>Advanced thermal technology keeps your water ice cold for 48 hours or steaming hot for 24 hours.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">S</div>
-                <h3>Smart Sync</h3>
-                <p>Seamlessly connects with Apple Health, Google Fit, and all major fitness trackers for complete health integration.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">G</div>
-                <h3>Glow Reminders</h3>
-                <p>Gentle LED pulses remind you to drink without being intrusive. Customize colors to match your style.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">E</div>
-                <h3>Eco-Conscious</h3>
-                <p>Made from 100% recycled ocean plastics. Every bottle saves 1000+ single-use plastic bottles from landfills.</p>
+                <div class="feature-icon">ECO</div>
+                <h3>Zero Waste</h3>
+                <p>Self-cleaning titanium filters last 10 years. One bottle replaces 50,000 plastic bottles.</p>
             </div>
         </div>
     </section>
 
     <section class="stats">
-        <div class="stat">
+        <div class="stat-item">
+            <div class="stat-number">340%</div>
+            <div class="stat-label">Better Cellular Hydration</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">99.99%</div>
+            <div class="stat-label">Contaminant Removal</div>
+        </div>
+        <div class="stat-item">
             <div class="stat-number">50K+</div>
-            <div class="stat-label">Pre-orders</div>
-        </div>
-        <div class="stat">
-            <div class="stat-number">99.9%</div>
-            <div class="stat-label">Purity Rate</div>
-        </div>
-        <div class="stat">
-            <div class="stat-number">48hr</div>
-            <div class="stat-label">Cold Retention</div>
-        </div>
-        <div class="stat">
-            <div class="stat-number">4.9</div>
-            <div class="stat-label">Beta Rating</div>
+            <div class="stat-label">Happy Customers</div>
         </div>
     </section>
 
-    <section class="pricing" id="pricing">
-        <div class="section-title">
-            <h2>Choose Your AquaFlow</h2>
-            <p>Early bird pricing - Limited time only</p>
-        </div>
-        <div class="pricing-cards">
-            <div class="pricing-card">
-                <h3>Essential</h3>
-                <div class="price">$79 <span>/bottle</span></div>
-                <ul>
-                    <li>Smart hydration tracking</li>
-                    <li>Basic app features</li>
-                    <li>24hr temperature control</li>
-                    <li>1 year warranty</li>
-                </ul>
-                <a href="#" class="btn-primary" style="width:100%;display:block;text-align:center;">Select</a>
-            </div>
-            <div class="pricing-card featured">
-                <h3>Pro</h3>
-                <div class="price">$149 <span>/bottle</span></div>
-                <ul>
-                    <li>Everything in Essential</li>
-                    <li>AI Hydration Coach</li>
-                    <li>UV-C Purification</li>
-                    <li>48hr temperature control</li>
-                    <li>Lifetime warranty</li>
-                </ul>
-                <a href="#" class="btn-primary" style="width:100%;display:block;text-align:center;">Select</a>
-            </div>
-            <div class="pricing-card">
-                <h3>Family Pack</h3>
-                <div class="price">$399 <span>/4 bottles</span></div>
-                <ul>
-                    <li>4x Pro bottles</li>
-                    <li>Family dashboard</li>
-                    <li>Kids hydration mode</li>
-                    <li>Priority support</li>
-                </ul>
-                <a href="#" class="btn-primary" style="width:100%;display:block;text-align:center;">Select</a>
-            </div>
-        </div>
+    <section class="cta-section" id="pricing">
+        <h2>Ready to Transform Your Hydration?</h2>
+        <p>Join the hydration revolution. Limited early-bird pricing available.</p>
+        <div class="price">$199 <span>$299</span></div>
+        <button class="btn-primary">Pre-Order AquaFlow</button>
     </section>
 
     <footer>
-        <p>AquaFlow 2026 - Hydration Reimagined (This is a demo product)</p>
+        <p>2026 AquaFlow Technologies. All rights reserved. | This is a fictional product demo.</p>
     </footer>
 
     <script>
-        // Create floating bubbles
-        const waterBg = document.getElementById('waterBg');
-        for (let i = 0; i < 20; i++) {
-            const bubble = document.createElement('div');
-            bubble.className = 'bubble';
-            const size = Math.random() * 60 + 20;
-            bubble.style.width = size + 'px';
-            bubble.style.height = size + 'px';
-            bubble.style.left = Math.random() * 100 + '%';
-            bubble.style.animationDelay = Math.random() * 8 + 's';
-            bubble.style.animationDuration = (Math.random() * 4 + 6) + 's';
-            waterBg.appendChild(bubble);
+        // Create floating particles
+        function createParticle() {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + 'vw';
+            particle.style.top = Math.random() * 100 + 'vh';
+            particle.style.animationDuration = (Math.random() * 3 + 2) + 's';
+            document.body.appendChild(particle);
+            
+            setTimeout(() => particle.remove(), 5000);
         }
+        
+        setInterval(createParticle, 500);
+
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
     </script>
 </body>
 </html>
