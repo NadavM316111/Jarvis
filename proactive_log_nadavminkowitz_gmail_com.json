@@ -1,6 +1,20 @@
 {
   "updates": [
     {
+      "id": 1777293770954,
+      "message": "Good morning Nadav. Your laptop battery is at 19% and not charging - you should plug in soon to avoid losing work.",
+      "time": "8:42:50 AM",
+      "date": "4/27/2026",
+      "read": false
+    },
+    {
+      "id": 1777293763914,
+      "message": "Morning Briefing: \n\n📧 EMAIL HIGHLIGHTS:\n• URGENT - GitGuardian detected a PostgreSQL URI exposed in your Jarvis GitHub repo - needs immediate attention\n• Daniel Minkowitz invited you to ClickFlo dinner on May 12 at 8pm at Abazu\n• Tom Kahan sent you a message (empty subject/body - may be attachment)\n• Investopedia: Stock futures flat, Fed rate decision coming this week\n\n📅 TODAY'S CALENDAR:\n• 1:00 PM - Check phone for recent Clickflo news\n\n📅 UPCOMING:\n• Apr 30 - Sunness Supper Club\n• May 3 - SAT Exam (6 days away!)\n\n☀️ WEATHER:\nCurrently 71°F, sunny. High of 84°F today, low 72°F tonight. Perfect South Florida day ahead.",
+      "time": "8:42:43 AM",
+      "date": "4/27/2026",
+      "read": false
+    },
+    {
       "id": 1777293228365,
       "message": "Battery at 32% and not plugged in - consider charging soon.",
       "time": "8:33:48 AM",
@@ -683,20 +697,6 @@
       "id": 1776967364194,
       "message": "Nadav detected at computer — neutral mood",
       "time": "2:02:44 PM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776967357598,
-      "message": "Unrecognized person detected at computer",
-      "time": "2:02:37 PM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776967137787,
-      "message": "Unrecognized person detected at computer",
-      "time": "1:58:57 PM",
       "date": "4/23/2026",
       "read": true
     }

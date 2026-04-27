@@ -150,7 +150,9 @@ export default function Home() {
           }
           addMessageToConv(convId, { role: "assistant", content: r.message, source: "text", timestamp: r.timestamp ?? Date.now() });
           const urlMatch2 = r.message.match(/https:\/\/api\.heyjarvis\.me\/view\/[^\s)]+/);
-          if (urlMatch2) setTimeout(() => window.open(urlMatch2[0], '_blank'), 500);
+if (urlMatch2) setTimeout(() => window.open(urlMatch2[0], '_blank'), 500);
+const ytMatch2 = r.message.match(/https:\/\/(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)[^\s)"]+/);
+if (ytMatch2) setTimeout(() => window.open(ytMatch2[0], '_blank'), 500);
         }
       } catch {}
     }, 800);
@@ -386,7 +388,9 @@ export default function Home() {
       if (data.message && data.message !== 'On it.') {
         addMessageToConv(finalConvId, { role: "assistant", content: data.message, source: "text", timestamp: Date.now() });
         const urlMatch = data.message.match(/https:\/\/api\.heyjarvis\.me\/view\/[^\s)]+/);
-        if (urlMatch) setTimeout(() => window.open(urlMatch[0], '_blank'), 500);
+if (urlMatch) setTimeout(() => window.open(urlMatch[0], '_blank'), 500);
+const ytMatch = data.message.match(/https:\/\/(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)[^\s)"]+/);
+if (ytMatch) setTimeout(() => window.open(ytMatch[0], '_blank'), 500);
         if (typeof window !== 'undefined' && window.speechSynthesis) {
           window.speechSynthesis.cancel();
           const utterance = new SpeechSynthesisUtterance(data.message.replace(/<[^>]*>/g, '').replace(/\*\*/g, '').replace(/\*/g, ''));

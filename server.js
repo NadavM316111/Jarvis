@@ -513,6 +513,8 @@ async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame
 `const doc = await createDriveDocument("${userId}", "title", "content");`,
 'Works for Google Docs, Sheets, Slides, and regular files.',
 '',
+'YOUTUBE: When asked to play a video, use web_search to find the direct youtube.com/watch?v= URL, then include it in your response so it auto-opens.',
+'ALWAYS include the full YouTube URL in your response when playing videos.',
   '═══ SMS (TWILIO) ═══',
 'You CAN send real SMS text messages using Twilio run_code.',
 'Use run_code with node to send texts:',
