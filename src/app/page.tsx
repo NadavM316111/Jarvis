@@ -365,7 +365,7 @@ if (ytMatch2) setTimeout(() => window.open(ytMatch2[0], '_blank'), 500);
 
   const send = async () => {
     if (!input.trim() || loading) return;
-    const ytWindow = window.open('', '_blank');
+
     const userMsg = input.trim();
     const fileToSend = attachedFile;
     setInput(""); setAttachedFile(null);
@@ -391,8 +391,7 @@ if (ytMatch2) setTimeout(() => window.open(ytMatch2[0], '_blank'), 500);
         const urlMatch = data.message.match(/https:\/\/api\.heyjarvis\.me\/view\/[^\s)]+/);
 if (urlMatch) setTimeout(() => window.open(urlMatch[0], '_blank'), 500);
 const ytMatch = data.message.match(/https:\/\/(www\.)?youtube\.com\/watch\?[^\s<>"')]+/);
-if (ytMatch && ytWindow) { ytWindow.location.href = ytMatch[0]; ytWindow.focus(); }
-else if (ytWindow) { ytWindow.close(); }
+if (ytMatch) { const w = window.open(ytMatch[0], '_blank'); if (w) w.focus(); }
         if (typeof window !== 'undefined' && window.speechSynthesis) {
           window.speechSynthesis.cancel();
           const utterance = new SpeechSynthesisUtterance(data.message.replace(/<[^>]*>/g, '').replace(/\*\*/g, '').replace(/\*/g, ''));
