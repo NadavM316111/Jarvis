@@ -740,7 +740,7 @@ export default function Home() {
         )}
 
         {/* Input bar — always visible, never moves */}
-        <div className="flex-shrink-0 bg-[#060608] border-t border-white/5 px-3 py-3">
+        <div className="flex-shrink-0 bg-[#060608] border-t border-white/5 px-3 py-3" style={{ paddingBottom: 'max(12px, env(safe-area-inset-bottom))' }}>
           <input ref={fileInputRef} type="file" accept="image/*,.pdf,.txt,.js,.ts,.py,.md,.json,.csv,.doc,.docx" onChange={handleFileAttach} className="hidden" />
           <div className="flex items-center gap-2">
             <button
