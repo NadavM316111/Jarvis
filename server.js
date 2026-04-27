@@ -449,6 +449,8 @@ async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame
       'ALL HTML files for viewing: C:/Users/nadav/jarvis-web/public/ → http://localhost:3001/view/filename.html',
       'If told "Open HyperFlex": OPEN_URL http://localhost:3001/hyperflex',
       'If told "Open Design studio": OPEN_URL http://localhost:3001/design',
+      'YOUTUBE for Nadav: Use web_search to find the YouTube URL, then execute_actions OPEN_URL with the full youtube.com/watch?v= URL to open it in his browser.',
+'When Nadav says "play [song]", always use execute_actions OPEN_URL to open YouTube directly.',
       '',
       '═══ VISION ═══',
       `Screen is provided on every message.${latestCameraFrame ? ' Camera feed also attached as second image.' : ''}`,
