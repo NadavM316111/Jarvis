@@ -79,6 +79,7 @@ export default function Home() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [cameraActive, setCameraActive] = useState(false);
   const [attachedFile, setAttachedFile] = useState<{data: string, type: string, name: string} | null>(null);
+  const [voiceBubbleVisible, setVoiceBubbleVisible] = useState(false);
 
   const bottomRef = useRef<HTMLDivElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -110,6 +111,7 @@ export default function Home() {
         if (convs.length > 0) setActiveId(convs[0].id);
       } catch {}
     }
+    // Only open sidebar by default on desktop
     if (window.innerWidth >= 768) setSidebarOpen(true);
   }, []);
 
@@ -128,38 +130,24 @@ export default function Home() {
       const tok = tokenRef.current;
       if (!tok) return;
       try {
-        const res = await fetch(`${API}/bg-response`, {
-          headers: { Authorization: `Bearer ${tok}` }
-        });
+        const res = await fetch(`${API}/bg-response`, { headers: { Authorization: `Bearer ${tok}` } });
         const data = await res.json();
         if (!data.responses?.length) return;
-
         for (const r of data.responses) {
           let convId = activeIdRef.current;
           if (!convId) {
             convId = generateId();
-            const conv: Conversation = {
-              id: convId,
-              title: r.message.slice(0, 40),
-              messages: [],
-              createdAt: Date.now()
-            };
+            const conv: Conversation = { id: convId, title: r.message.slice(0, 40), messages: [], createdAt: Date.now() };
             setConversations(prev => [conv, ...prev]);
             setActiveId(convId);
             activeIdRef.current = convId;
           }
-          addMessageToConv(convId, {
-            role: "assistant",
-            content: r.message,
-            source: "text",
-            timestamp: r.timestamp ?? Date.now()
-          });
+          addMessageToConv(convId, { role: "assistant", content: r.message, source: "text", timestamp: r.timestamp ?? Date.now() });
           const urlMatch2 = r.message.match(/https:\/\/api\.heyjarvis\.me\/view\/[^\s)]+/);
-if (urlMatch2) setTimeout(() => window.open(urlMatch2[0], '_blank'), 500);
+          if (urlMatch2) setTimeout(() => window.open(urlMatch2[0], '_blank'), 500);
         }
       } catch {}
     }, 800);
-
     return () => clearInterval(interval);
   }, []);
 
@@ -195,7 +183,6 @@ if (urlMatch2) setTimeout(() => window.open(urlMatch2[0], '_blank'), 500);
         const data = await res.json();
         setIsListening(data.listening);
         setIsSpeaking(data.speaking);
-
         if (data.transcript && data.transcript !== lastTranscriptRef.current) {
           lastTranscriptRef.current = data.transcript;
           const convId = activeIdRef.current || generateId();
@@ -207,13 +194,12 @@ if (urlMatch2) setTimeout(() => window.open(urlMatch2[0], '_blank'), 500);
           }
           addMessageToConv(convId, { role: "user", content: data.transcript, source: "voice", timestamp: Date.now() });
         }
-
         if (data.response && data.response !== lastResponseRef.current && data.response !== '' && data.speaking) {
-  lastResponseRef.current = data.response;
-  const convId = activeIdRef.current;
-  if (convId) addMessageToConv(convId, { role: "assistant", content: data.response, source: "voice", timestamp: Date.now() });
-  setTimeout(() => { if (lastResponseRef.current === data.response) lastResponseRef.current = ''; }, 5000);
-}
+          lastResponseRef.current = data.response;
+          const convId = activeIdRef.current;
+          if (convId) addMessageToConv(convId, { role: "assistant", content: data.response, source: "voice", timestamp: Date.now() });
+          setTimeout(() => { if (lastResponseRef.current === data.response) lastResponseRef.current = ''; }, 5000);
+        }
       } catch {}
     }, 400);
 
@@ -240,44 +226,29 @@ if (urlMatch2) setTimeout(() => window.open(urlMatch2[0], '_blank'), 500);
         const video = document.createElement('video');
         video.srcObject = stream;
         video.play();
-
         const canvas = document.createElement('canvas');
-        canvas.width = 640;
-        canvas.height = 480;
+        canvas.width = 640; canvas.height = 480;
         const ctx = canvas.getContext('2d')!;
-
         video.addEventListener('loadeddata', async () => {
           try {
             ctx.drawImage(video, 0, 0, 640, 480);
             const frame = canvas.toDataURL('image/jpeg', 0.7).split(',')[1];
             latestCameraFrameRef.current = frame;
-            await fetch(`${API}/camera-frame`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${saved}` },
-              body: JSON.stringify({ frame })
-            });
+            await fetch(`${API}/camera-frame`, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${saved}` }, body: JSON.stringify({ frame }) });
           } catch {}
         });
-
         cameraIntervalRef.current = setInterval(async () => {
           try {
             ctx.drawImage(video, 0, 0, 640, 480);
             const frame = canvas.toDataURL('image/jpeg', 0.7).split(',')[1];
             latestCameraFrameRef.current = frame;
-            await fetch(`${API}/camera-frame`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${saved}` },
-              body: JSON.stringify({ frame })
-            });
+            await fetch(`${API}/camera-frame`, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${saved}` }, body: JSON.stringify({ frame }) });
           } catch {}
         }, 5000);
-      })
-      .catch(() => { setCameraActive(false); });
+      }).catch(() => { setCameraActive(false); });
 
     return () => {
-      clearInterval(interval);
-      clearInterval(updatesInterval);
-      clearInterval(voiceInterval);
+      clearInterval(interval); clearInterval(updatesInterval); clearInterval(voiceInterval);
       cancelAnimationFrame(animFrameRef.current);
       streamRef.current?.getTracks().forEach(t => t.stop());
       cameraStreamRef.current?.getTracks().forEach(t => t.stop());
@@ -320,43 +291,32 @@ if (urlMatch2) setTimeout(() => window.open(urlMatch2[0], '_blank'), 500);
     });
   }
 
-  const [voiceBubbleVisible, setVoiceBubbleVisible] = useState(false);
-
-const toggleVoice = async () => {
-  if (voiceRunning) {
-    await fetch(`${API}/voice/stop`, { method: "POST" });
-    setVoiceRunning(false);
-    setVoiceBubbleVisible(false);
-  } else {
-    await fetch(`${API}/voice/start`, { method: "POST" });
-    setVoiceRunning(true);
-    setVoiceBubbleVisible(true);
-  }
-};
+  const toggleVoice = async () => {
+    if (voiceRunning) {
+      await fetch(`${API}/voice/stop`, { method: "POST" });
+      setVoiceRunning(false); setVoiceBubbleVisible(false);
+    } else {
+      await fetch(`${API}/voice/start`, { method: "POST" });
+      setVoiceRunning(true); setVoiceBubbleVisible(true);
+    }
+  };
 
   const handleAuth = async () => {
-    setAuthError('');
-    setAuthLoading(true);
+    setAuthError(''); setAuthLoading(true);
     try {
       const endpoint = authMode === 'login' ? '/auth/login' : '/auth/signup';
       const body = authMode === 'login'
         ? { email: authEmail, password: authPassword }
         : { email: authEmail, password: authPassword, name: authName };
-      const res = await fetch(`${API}${endpoint}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
-      });
+      const res = await fetch(`${API}${endpoint}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
       const data = await res.json();
       if (!data.success) throw new Error(data.error);
       localStorage.setItem('jarvis_token', data.token);
       localStorage.setItem('jarvis_name', data.name);
-      setToken(data.token);
-      setUserName(data.name);
+      setToken(data.token); setUserName(data.name);
       const id = generateId();
       setConversations([{ id, title: 'New conversation', messages: [], createdAt: Date.now() }]);
-      setActiveId(id);
-      activeIdRef.current = id;
+      setActiveId(id); activeIdRef.current = id;
     } catch (e: any) { setAuthError(e.message); }
     setAuthLoading(false);
   };
@@ -375,16 +335,11 @@ const toggleVoice = async () => {
 
   const addDailyCheck = async () => {
     if (!newCheckInput.trim()) return;
-    const label = newCheckInput.trim();
-    setNewCheckInput("");
+    const label = newCheckInput.trim(); setNewCheckInput("");
     const check: DailyCheck = { id: Date.now(), label, status: "processing", lastResult: "", expanded: false, followUp: "" };
     setDailyChecks(prev => [...prev, check]);
     try {
-      const res = await fetch(`${API}/chat`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ message: `${label} — check this every day and send a proactive_update with the result` })
-      });
+      const res = await fetch(`${API}/chat`, { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` }, body: JSON.stringify({ message: `${label} — check this every day and send a proactive_update with the result` }) });
       const data = await res.json();
       setDailyChecks(prev => prev.map(c => c.id === check.id ? { ...c, status: "done", lastResult: data.message || "Done." } : c));
     } catch { setDailyChecks(prev => prev.map(c => c.id === check.id ? { ...c, status: "idle", lastResult: "Failed." } : c)); }
@@ -394,11 +349,7 @@ const toggleVoice = async () => {
     if (!check.followUp.trim()) return;
     setDailyChecks(prev => prev.map(c => c.id === check.id ? { ...c, status: "processing", followUp: "" } : c));
     try {
-      const res = await fetch(`${API}/chat`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ message: `Regarding my daily check "${check.label}": ${check.followUp}` })
-      });
+      const res = await fetch(`${API}/chat`, { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` }, body: JSON.stringify({ message: `Regarding my daily check "${check.label}": ${check.followUp}` }) });
       const data = await res.json();
       setDailyChecks(prev => prev.map(c => c.id === check.id ? { ...c, status: "done", lastResult: data.message || "Done." } : c));
     } catch {}
@@ -408,55 +359,32 @@ const toggleVoice = async () => {
     if (!input.trim() || loading) return;
     const userMsg = input.trim();
     const fileToSend = attachedFile;
-    setInput("");
-    setAttachedFile(null);
+    setInput(""); setAttachedFile(null);
 
     let convId = activeIdRef.current;
     if (!convId || !conversations.find(c => c.id === convId)) {
       convId = generateId();
       setConversations(prev => [{ id: convId!, title: userMsg.slice(0, 40), messages: [], createdAt: Date.now() }, ...prev]);
-      setActiveId(convId);
-      activeIdRef.current = convId;
+      setActiveId(convId); activeIdRef.current = convId;
     } else {
       setConversations(prev => prev.map(c => c.id === convId && c.messages.length === 0 ? { ...c, title: userMsg.slice(0, 40) } : c));
     }
     const finalConvId = convId!;
 
-    addMessageToConv(finalConvId, {
-      role: "user",
-      content: userMsg,
-      source: "text",
-      timestamp: Date.now(),
-      imageUrl: fileToSend?.type.startsWith('image/') ? `data:${fileToSend.type};base64,${fileToSend.data}` : undefined,
-      fileName: fileToSend?.name
-    });
+    addMessageToConv(finalConvId, { role: "user", content: userMsg, source: "text", timestamp: Date.now(), imageUrl: fileToSend?.type.startsWith('image/') ? `data:${fileToSend.type};base64,${fileToSend.data}` : undefined, fileName: fileToSend?.name });
 
     setLoading(true);
     try {
-      const res = await fetch(`${API}/chat`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({
-          message: userMsg,
-          cameraFrame: latestCameraFrameRef.current,
-          attachedFile: fileToSend
-        })
-      });
+      const res = await fetch(`${API}/chat`, { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` }, body: JSON.stringify({ message: userMsg, cameraFrame: latestCameraFrameRef.current, attachedFile: fileToSend }) });
       const data = await res.json();
       if (data.message && data.message !== 'On it.') {
         addMessageToConv(finalConvId, { role: "assistant", content: data.message, source: "text", timestamp: Date.now() });
-        // Auto-open links if JARVIS built something
-const urlMatch = data.message.match(/https:\/\/api\.heyjarvis\.me\/view\/[^\s)]+/);
-if (urlMatch) {
-  setTimeout(() => window.open(urlMatch[0], '_blank'), 500);
-}
-        // Speak response in user's browser
+        const urlMatch = data.message.match(/https:\/\/api\.heyjarvis\.me\/view\/[^\s)]+/);
+        if (urlMatch) setTimeout(() => window.open(urlMatch[0], '_blank'), 500);
         if (typeof window !== 'undefined' && window.speechSynthesis) {
           window.speechSynthesis.cancel();
           const utterance = new SpeechSynthesisUtterance(data.message.replace(/<[^>]*>/g, '').replace(/\*\*/g, '').replace(/\*/g, ''));
-          utterance.rate = 1.0;
-          utterance.pitch = 0.85;
-          utterance.volume = 1.0;
+          utterance.rate = 1.0; utterance.pitch = 0.85; utterance.volume = 1.0;
           window.speechSynthesis.speak(utterance);
         }
       }
@@ -467,19 +395,13 @@ if (urlMatch) {
   };
 
   const orbScale = 1 + (audioLevel / 255) * 0.4;
-  const orbBg = isListening ? "radial-gradient(circle at 40% 40%, #34d399, #059669)"
-    : isSpeaking ? "radial-gradient(circle at 40% 40%, #a78bfa, #6d28d9)"
-    : loading ? "radial-gradient(circle at 40% 40%, #a78bfa, #6d28d9)"
-    : "radial-gradient(circle at 40% 40%, #60a5fa, #1d4ed8)";
-  const orbGlow = isListening ? `0 0 ${20 + audioLevel / 4}px rgba(52,211,153,0.8)`
-    : isSpeaking ? "0 0 24px rgba(167,139,250,0.8)"
-    : loading ? "0 0 20px rgba(167,139,250,0.6)"
-    : "0 0 16px rgba(96,165,250,0.5)";
+  const orbBg = isListening ? "radial-gradient(circle at 40% 40%, #34d399, #059669)" : isSpeaking ? "radial-gradient(circle at 40% 40%, #a78bfa, #6d28d9)" : loading ? "radial-gradient(circle at 40% 40%, #a78bfa, #6d28d9)" : "radial-gradient(circle at 40% 40%, #60a5fa, #1d4ed8)";
+  const orbGlow = isListening ? `0 0 ${20 + audioLevel / 4}px rgba(52,211,153,0.8)` : isSpeaking ? "0 0 24px rgba(167,139,250,0.8)" : loading ? "0 0 20px rgba(167,139,250,0.6)" : "0 0 16px rgba(96,165,250,0.5)";
   const statusText = isListening ? "Listening..." : isSpeaking ? "Speaking..." : loading ? "Thinking..." : "Ready";
 
   if (!token) {
     return (
-      <div className="h-screen bg-[#060608] flex items-center justify-center p-4 overflow-hidden">
+      <div style={{ minHeight: '100dvh' }} className="bg-[#060608] flex items-center justify-center p-4">
         <div className="w-full max-w-sm bg-[rgba(8,8,12,0.97)] border border-white/10 rounded-2xl overflow-hidden shadow-2xl">
           <div className="px-8 pt-8 pb-6 text-center border-b border-white/5">
             <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-blue-700 mx-auto mb-4" style={{ boxShadow: "0 0 24px rgba(96,165,250,0.5)" }} />
@@ -492,9 +414,9 @@ if (urlMatch) {
               <button onClick={() => setAuthMode('signup')} className={`flex-1 py-2 rounded-xl text-sm font-medium transition-all ${authMode === 'signup' ? 'bg-blue-600 text-white' : 'bg-white/5 text-white/40 hover:text-white/60'}`}>Sign Up</button>
             </div>
             <div className="flex flex-col gap-3">
-              {authMode === 'signup' && <input value={authName} onChange={e => setAuthName(e.target.value)} placeholder="Your name" className="bg-white/5 border border-white/10 rounded-xl text-white text-sm px-4 py-3 outline-none placeholder:text-white/25 focus:border-blue-500/40 transition-all" />}
-              <input value={authEmail} onChange={e => setAuthEmail(e.target.value)} placeholder="Email" type="email" className="bg-white/5 border border-white/10 rounded-xl text-white text-sm px-4 py-3 outline-none placeholder:text-white/25 focus:border-blue-500/40 transition-all" />
-              <input value={authPassword} onChange={e => setAuthPassword(e.target.value)} placeholder="Password" type="password" onKeyDown={e => e.key === 'Enter' && handleAuth()} className="bg-white/5 border border-white/10 rounded-xl text-white text-sm px-4 py-3 outline-none placeholder:text-white/25 focus:border-blue-500/40 transition-all" />
+              {authMode === 'signup' && <input value={authName} onChange={e => setAuthName(e.target.value)} placeholder="Your name" style={{ fontSize: '16px' }} className="bg-white/5 border border-white/10 rounded-xl text-white px-4 py-3 outline-none placeholder:text-white/25 focus:border-blue-500/40 transition-all" />}
+              <input value={authEmail} onChange={e => setAuthEmail(e.target.value)} placeholder="Email" type="email" style={{ fontSize: '16px' }} className="bg-white/5 border border-white/10 rounded-xl text-white px-4 py-3 outline-none placeholder:text-white/25 focus:border-blue-500/40 transition-all" />
+              <input value={authPassword} onChange={e => setAuthPassword(e.target.value)} placeholder="Password" type="password" onKeyDown={e => e.key === 'Enter' && handleAuth()} style={{ fontSize: '16px' }} className="bg-white/5 border border-white/10 rounded-xl text-white px-4 py-3 outline-none placeholder:text-white/25 focus:border-blue-500/40 transition-all" />
               {authError && <div className="text-red-400 text-xs px-1">{authError}</div>}
               <button onClick={handleAuth} disabled={authLoading} className="w-full py-3 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 rounded-xl text-white text-sm font-medium transition-all mt-1">
                 {authLoading ? 'Loading...' : authMode === 'login' ? 'Sign In' : 'Create Account'}
@@ -507,76 +429,79 @@ if (urlMatch) {
   }
 
   return (
-    <div className="h-[100dvh] bg-[#060608] flex overflow-hidden" style={{ fontFamily: "-apple-system, 'SF Pro Display', sans-serif" }}>
-
+    <div
+      style={{ height: '100dvh', fontFamily: "-apple-system, 'SF Pro Display', sans-serif" }}
+      className="bg-[#060608] flex overflow-hidden"
+    >
+      {/* Sidebar overlay (mobile) */}
       {sidebarOpen && (
-        <div className="fixed inset-0 bg-black/60 z-30 md:hidden" onClick={() => setSidebarOpen(false)} />
+        <div className="fixed inset-0 bg-black/70 z-30 md:hidden" onClick={() => setSidebarOpen(false)} />
       )}
 
-      <div className={`
-  fixed md:relative z-40 md:z-auto
-  bottom-0 md:inset-y-0 left-0
-  ${sidebarOpen ? 'translate-y-0 md:translate-x-0' : 'translate-y-full md:-translate-x-full md:translate-y-0 md:translate-x-0'}
-  w-full md:w-64
-  max-h-[80vh] md:max-h-none md:h-screen
-  bg-[#0a0a0f] md:bg-[#060608]
-  rounded-t-3xl md:rounded-none
-  border-t md:border-t-0 md:border-r border-white/10
-  flex flex-col
-  transition-transform duration-300
-  overflow-hidden
-`}>
-        <div className="p-4 flex-shrink-0">
-          <div className="flex items-center justify-between mb-6 px-1">
-            <div className="flex items-center gap-2.5">
-              <div className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-400 to-blue-700" style={{ boxShadow: "0 0 12px rgba(96,165,250,0.5)" }} />
-              <span className="text-white text-sm font-semibold tracking-wide">JARVIS</span>
-            </div>
-            <button onClick={() => setSidebarOpen(false)} className="md:hidden text-white/30 hover:text-white/60 transition-all">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-              </svg>
-            </button>
+      {/* SIDEBAR — left panel desktop, slide-in on mobile */}
+      <div
+        className="fixed md:relative inset-y-0 left-0 z-40 md:z-auto flex flex-col bg-[#07070a] border-r border-white/5 transition-transform duration-300"
+        style={{
+          width: '260px',
+          transform: sidebarOpen ? 'translateX(0)' : 'translateX(-100%)',
+          height: '100dvh',
+        }}
+      >
+        {/* Sidebar header */}
+        <div className="flex items-center justify-between px-4 py-4 border-b border-white/5 flex-shrink-0">
+          <div className="flex items-center gap-2.5">
+            <div className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-400 to-blue-700" style={{ boxShadow: "0 0 12px rgba(96,165,250,0.5)" }} />
+            <span className="text-white text-sm font-semibold tracking-wide">JARVIS</span>
           </div>
+          <button onClick={() => setSidebarOpen(false)} className="w-8 h-8 flex items-center justify-center rounded-lg text-white/30 hover:text-white/60 hover:bg-white/5 transition-all">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
 
-          <button onClick={newConversation} className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/20 text-blue-300 text-xs font-medium transition-all mb-3">
+        {/* Sidebar actions */}
+        <div className="px-3 pt-3 pb-2 flex-shrink-0">
+          <button onClick={newConversation} className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/20 text-blue-300 text-xs font-medium transition-all mb-2">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
               <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
             </svg>
             New conversation
           </button>
-
           {typeof window !== 'undefined' && window.location.hostname === 'localhost' && (
-  <button onClick={toggleVoice} className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl border text-xs font-medium transition-all mb-2 ${voiceRunning ? 'bg-green-500/15 border-green-500/30 text-green-400' : 'bg-white/5 border-white/10 text-white/50 hover:text-white/70'}`}>
-    <div className={`w-2 h-2 rounded-full ${voiceRunning ? 'bg-green-400 animate-pulse' : 'bg-white/20'}`} />
-    {voiceRunning ? 'Voice active — stop' : 'Start voice'}
-  </button>
-)}
+            <button onClick={toggleVoice} className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl border text-xs font-medium transition-all mb-2 ${voiceRunning ? 'bg-green-500/15 border-green-500/30 text-green-400' : 'bg-white/5 border-white/10 text-white/50 hover:text-white/70'}`}>
+              <div className={`w-2 h-2 rounded-full ${voiceRunning ? 'bg-green-400 animate-pulse' : 'bg-white/20'}`} />
+              {voiceRunning ? 'Voice active — stop' : 'Start voice'}
+            </button>
+          )}
           <button
-  onClick={async () => {
-    const res = await fetch(`${API}/voice/spoken-updates`, { method: 'POST', headers: { 'Content-Type': 'application/json' } });
-    const data = await res.json();
-    setSpokenUpdates(data.enabled);
-  }}
-  className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl border text-xs font-medium transition-all ${spokenUpdates ? 'bg-purple-500/15 border-purple-500/30 text-purple-400' : 'bg-white/5 border-white/10 text-white/50 hover:text-white/70'}`}
->
-  <div className={`w-2 h-2 rounded-full ${spokenUpdates ? 'bg-purple-400 animate-pulse' : 'bg-white/20'}`} />
-  {spokenUpdates ? 'Spoken updates — on' : 'Spoken updates — off'}
-</button>
+            onClick={async () => {
+              const res = await fetch(`${API}/voice/spoken-updates`, { method: 'POST', headers: { 'Content-Type': 'application/json' } });
+              const data = await res.json();
+              setSpokenUpdates(data.enabled);
+            }}
+            className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl border text-xs font-medium transition-all ${spokenUpdates ? 'bg-purple-500/15 border-purple-500/30 text-purple-400' : 'bg-white/5 border-white/10 text-white/50 hover:text-white/70'}`}
+          >
+            <div className={`w-2 h-2 rounded-full ${spokenUpdates ? 'bg-purple-400 animate-pulse' : 'bg-white/20'}`} />
+            {spokenUpdates ? 'Spoken updates — on' : 'Spoken updates — off'}
+          </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto px-4 pb-4 min-h-0">
-          <div className="text-white/25 text-xs uppercase tracking-widest mb-2 px-1">Conversations</div>
+        {/* Conversations list */}
+        <div className="flex-1 overflow-y-auto px-3 py-2 min-h-0">
+          <div className="text-white/20 text-xs uppercase tracking-widest mb-2 px-1">Conversations</div>
           {conversations.length === 0 && <div className="text-white/20 text-xs px-1 py-2">No conversations yet</div>}
           {conversations.map(conv => (
-            <div key={conv.id}
+            <div
+              key={conv.id}
               className={`group flex items-center gap-2 px-3 py-2.5 rounded-xl mb-1 cursor-pointer transition-all ${conv.id === activeId ? 'bg-white/8 text-white/90' : 'text-white/40 hover:bg-white/5 hover:text-white/60'}`}
-              onClick={() => { setActiveId(conv.id); activeIdRef.current = conv.id; setSidebarOpen(false); }}>
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="flex-shrink-0 opacity-60">
+              onClick={() => { setActiveId(conv.id); activeIdRef.current = conv.id; setSidebarOpen(false); }}
+            >
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="flex-shrink-0 opacity-50">
                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
               </svg>
               <span className="text-xs flex-1 truncate">{conv.title}</span>
-              <button onClick={e => { e.stopPropagation(); deleteConversation(conv.id); }} className="opacity-0 group-hover:opacity-100 transition-opacity text-white/30 hover:text-red-400 p-1">
+              <button onClick={e => { e.stopPropagation(); deleteConversation(conv.id); }} className="opacity-0 group-hover:opacity-100 transition-opacity text-white/30 hover:text-red-400 p-1 flex-shrink-0">
                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
                 </svg>
@@ -585,7 +510,8 @@ if (urlMatch) {
           ))}
         </div>
 
-        <div className="p-4 border-t border-white/5 flex items-center gap-2.5 flex-shrink-0">
+        {/* User info */}
+        <div className="px-4 py-3 border-t border-white/5 flex items-center gap-2.5 flex-shrink-0">
           <div className="w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
             {userName.charAt(0).toUpperCase()}
           </div>
@@ -601,61 +527,62 @@ if (urlMatch) {
         </div>
       </div>
 
-      {/* Main */}
-      <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
+      {/* MAIN CONTENT */}
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden" style={{ height: '100dvh' }}>
 
         {/* Top bar */}
-        <div className="px-4 py-3 flex items-center gap-3 border-b border-white/5 flex-shrink-0">
-          <button onClick={() => setSidebarOpen(!sidebarOpen)} className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/5 transition-all text-white/30 hover:text-white/60 flex-shrink-0">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <div className="px-3 py-3 flex items-center gap-2 border-b border-white/5 flex-shrink-0 bg-[#060608]">
+          <button
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-white/5 transition-all text-white/40 hover:text-white/70 flex-shrink-0"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/>
             </svg>
           </button>
 
-          <div className="flex items-center gap-2.5 flex-1 min-w-0">
+          <div className="flex items-center gap-2 flex-1 min-w-0">
             <div className="w-6 h-6 rounded-full flex-shrink-0 transition-all duration-100" style={{ background: orbBg, boxShadow: orbGlow, transform: `scale(${orbScale})` }} />
             <div className="min-w-0">
-              <div className="text-white/80 text-sm font-medium leading-none">JARVIS</div>
+              <div className="text-white/85 text-sm font-medium leading-none">JARVIS</div>
               <div className="text-white/30 text-xs mt-0.5">{statusText}</div>
             </div>
           </div>
 
-          <div className="hidden sm:flex items-center gap-0.5 h-5 mr-1">
-            {[...Array(5)].map((_, i) => {
-              const h = isListening || audioLevel > 10 ? Math.max(3, (audioLevel / 255) * 20 * (0.4 + (i % 3) * 0.3)) : isSpeaking ? 4 + Math.abs(Math.sin(Date.now() / 200 + i)) * 12 : 3;
-              return <div key={i} className="w-0.5 rounded-full transition-all duration-75" style={{ height: `${h}px`, background: isListening ? '#34d399' : isSpeaking ? '#a78bfa' : 'rgba(255,255,255,0.15)' }} />;
-            })}
-          </div>
-
           {cameraActive && (
-            <div className="hidden sm:flex items-center gap-1.5 px-2 py-1 rounded-lg bg-white/5">
+            <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-white/5 flex-shrink-0">
               <div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
               <span className="text-white/30 text-xs">cam</span>
             </div>
           )}
 
-          <div className="sm:hidden">
-            {voiceRunning && <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />}
-          </div>
-          <button onClick={logout} className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/5 transition-all text-white/30 hover:text-white/60 flex-shrink-0" title="Sign out">
+          <button
+            onClick={logout}
+            className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-white/5 transition-all text-white/30 hover:text-white/60 flex-shrink-0"
+          >
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
               <polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
             </svg>
           </button>
-          <button onClick={() => { setShowUpdates(!showUpdates); if (!showUpdates) markAllRead(); }} className="relative w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/5 transition-all flex-shrink-0">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.35)" strokeWidth="2">
+
+          <button
+            onClick={() => { setShowUpdates(!showUpdates); if (!showUpdates) markAllRead(); }}
+            className="relative w-10 h-10 flex items-center justify-center rounded-xl hover:bg-white/5 transition-all flex-shrink-0"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.35)" strokeWidth="2">
               <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
               <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
             </svg>
             {unreadCount > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 bg-blue-500 rounded-full text-white flex items-center justify-center font-bold" style={{ fontSize: '9px' }}>{unreadCount}</span>
+              <span className="absolute top-1 right-1 w-3.5 h-3.5 bg-blue-500 rounded-full text-white flex items-center justify-center font-bold" style={{ fontSize: '9px' }}>{unreadCount}</span>
             )}
           </button>
         </div>
 
+        {/* Updates panel */}
         {showUpdates && (
-          <div className="absolute inset-0 md:inset-auto md:top-[53px] md:right-0 md:w-80 md:h-[calc(100vh-53px)] bg-[rgba(6,6,8,0.99)] border-l border-white/5 z-20 flex flex-col overflow-hidden">
+          <div className="absolute inset-0 md:inset-auto md:top-[53px] md:right-0 md:w-80 md:h-[calc(100dvh-53px)] bg-[rgba(6,6,8,0.99)] border-l border-white/5 z-20 flex flex-col overflow-hidden">
             <div className="flex-1 overflow-y-auto min-h-0">
               <div className="px-4 pt-4 pb-2">
                 <div className="flex items-center justify-between mb-3">
@@ -689,6 +616,7 @@ if (urlMatch) {
                         <div className="flex gap-2 mt-1">
                           <input value={check.followUp} onChange={e => setDailyChecks(prev => prev.map(c => c.id === check.id ? { ...c, followUp: e.target.value } : c))}
                             onKeyDown={e => e.key === 'Enter' && runFollowUp(check)} placeholder="Ask a follow-up..."
+                            style={{ fontSize: '16px' }}
                             className="flex-1 bg-white/5 border border-white/8 rounded-lg text-white text-xs px-3 py-2 outline-none placeholder:text-white/20 focus:border-blue-500/30 transition-all" />
                           <button onClick={() => runFollowUp(check)} className="px-3 py-2 bg-blue-600/40 hover:bg-blue-600/60 border border-blue-500/20 rounded-lg text-blue-300 text-xs transition-all">Ask</button>
                         </div>
@@ -699,7 +627,9 @@ if (urlMatch) {
                 ))}
                 <div className="flex gap-2 mt-3">
                   <input value={newCheckInput} onChange={e => setNewCheckInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && addDailyCheck()}
-                    placeholder="Check the weather every day..." className="flex-1 bg-white/5 border border-white/8 rounded-xl text-white text-xs px-3 py-2.5 outline-none placeholder:text-white/20 focus:border-blue-500/30 transition-all" />
+                    placeholder="Check the weather every day..."
+                    style={{ fontSize: '16px' }}
+                    className="flex-1 bg-white/5 border border-white/8 rounded-xl text-white text-xs px-3 py-2.5 outline-none placeholder:text-white/20 focus:border-blue-500/30 transition-all" />
                   <button onClick={addDailyCheck} disabled={!newCheckInput.trim()} className="px-3 py-2.5 bg-blue-600 hover:bg-blue-500 disabled:opacity-30 rounded-xl text-white text-xs transition-all font-medium">Add</button>
                 </div>
               </div>
@@ -718,215 +648,131 @@ if (urlMatch) {
           </div>
         )}
 
-        <div className="flex-1 overflow-y-auto px-4 py-5 flex flex-col gap-4 min-h-0 relative overscroll-none">
-  {/* VOICE BUBBLE — shown when voice is running */}
-  {voiceRunning && (
-    <div className="absolute inset-0 flex flex-col items-center justify-center z-10 bg-[#060608]">
-      {/* Outer glow rings */}
-      <div className="relative flex items-center justify-center mb-8">
-        {isListening && (
-          <>
-            <div className="absolute w-48 h-48 rounded-full animate-ping" style={{ background: 'rgba(52,211,153,0.08)', animationDuration: '2s' }} />
-            <div className="absolute w-36 h-36 rounded-full animate-ping" style={{ background: 'rgba(52,211,153,0.12)', animationDuration: '1.5s' }} />
-          </>
-        )}
-        {isSpeaking && (
-          <>
-            <div className="absolute w-48 h-48 rounded-full animate-ping" style={{ background: 'rgba(167,139,250,0.08)', animationDuration: '1.8s' }} />
-            <div className="absolute w-36 h-36 rounded-full animate-ping" style={{ background: 'rgba(167,139,250,0.12)', animationDuration: '1.2s' }} />
-          </>
-        )}
-        {/* Main orb */}
-        <div
-          className="w-28 h-28 rounded-full transition-all duration-100 cursor-pointer"
-          style={{
-            background: orbBg,
-            boxShadow: `${orbGlow}, inset 0 0 40px rgba(255,255,255,0.05)`,
-            transform: `scale(${1 + (audioLevel / 255) * 0.3})`
-          }}
-        />
-      </div>
+        {/* Messages area */}
+        <div className="flex-1 overflow-y-auto overscroll-contain" style={{ WebkitOverflowScrolling: 'touch' }}>
+          <div className="px-3 py-4 flex flex-col gap-3">
+            {voiceRunning && (
+              <div className="flex flex-col items-center justify-center py-16">
+                <div className="relative flex items-center justify-center mb-6">
+                  {isListening && (
+                    <>
+                      <div className="absolute w-40 h-40 rounded-full animate-ping" style={{ background: 'rgba(52,211,153,0.08)', animationDuration: '2s' }} />
+                      <div className="absolute w-28 h-28 rounded-full animate-ping" style={{ background: 'rgba(52,211,153,0.12)', animationDuration: '1.5s' }} />
+                    </>
+                  )}
+                  {isSpeaking && (
+                    <>
+                      <div className="absolute w-40 h-40 rounded-full animate-ping" style={{ background: 'rgba(167,139,250,0.08)', animationDuration: '1.8s' }} />
+                      <div className="absolute w-28 h-28 rounded-full animate-ping" style={{ background: 'rgba(167,139,250,0.12)', animationDuration: '1.2s' }} />
+                    </>
+                  )}
+                  <div className="w-24 h-24 rounded-full transition-all duration-100" style={{ background: orbBg, boxShadow: `${orbGlow}, inset 0 0 40px rgba(255,255,255,0.05)`, transform: `scale(${1 + (audioLevel / 255) * 0.3})` }} />
+                </div>
+                <div className="text-white/60 text-base font-medium mb-1">{statusText}</div>
+                <div className="flex items-center gap-1 h-6 mt-3">
+                  {[...Array(10)].map((_, i) => {
+                    const h = isListening || audioLevel > 10 ? Math.max(2, (audioLevel / 255) * 24 * (0.3 + Math.sin(i * 0.8) * 0.7)) : isSpeaking ? 3 + Math.abs(Math.sin(Date.now() / 150 + i * 0.6)) * 16 : 2;
+                    return <div key={i} className="w-1 rounded-full transition-all duration-75" style={{ height: `${h}px`, background: isListening ? '#34d399' : isSpeaking ? '#a78bfa' : 'rgba(255,255,255,0.1)' }} />;
+                  })}
+                </div>
+                <button onClick={() => setVoiceRunning(false)} className="mt-6 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl text-white/40 hover:text-white/60 text-xs transition-all">View chat</button>
+              </div>
+            )}
 
-      {/* Status */}
-      <div className="text-white/60 text-lg font-medium mb-1">{statusText}</div>
-      {isListening && <div className="text-white/25 text-sm">Listening for your voice</div>}
-      {isSpeaking && <div className="text-white/25 text-sm">Speaking...</div>}
-      {!isListening && !isSpeaking && !loading && <div className="text-white/25 text-sm">Say anything</div>}
+            {messages.length === 0 && !voiceRunning && (
+              <div className="flex flex-col items-center justify-center py-20 text-center px-4">
+                <div className="w-14 h-14 rounded-full mb-4 flex-shrink-0" style={{ background: orbBg, boxShadow: orbGlow }} />
+                <div className="text-white/60 text-lg font-medium mb-1">Good to see you, {userName}.</div>
+                <div className="text-white/25 text-sm">{cameraActive ? "I can see your camera feed." : "Ready to help."}</div>
+              </div>
+            )}
 
-      {/* Audio waveform */}
-      <div className="flex items-center gap-1 h-8 mt-4">
-        {[...Array(12)].map((_, i) => {
-          const h = isListening || audioLevel > 10
-            ? Math.max(3, (audioLevel / 255) * 32 * (0.3 + Math.sin(i * 0.8) * 0.7))
-            : isSpeaking
-            ? 4 + Math.abs(Math.sin(Date.now() / 150 + i * 0.6)) * 20
-            : 3;
-          return (
-            <div key={i} className="w-1 rounded-full transition-all duration-75"
-              style={{ height: `${h}px`, background: isListening ? '#34d399' : isSpeaking ? '#a78bfa' : 'rgba(255,255,255,0.1)' }} />
-          );
-        })}
-      </div>
+            {!voiceRunning && messages.map((msg, i) => (
+              <div key={i} className={`flex gap-2 ${msg.role === "user" ? "flex-row-reverse" : ""}`}>
+                {msg.role === "assistant" && (
+                  <div className="w-6 h-6 rounded-full flex-shrink-0 mt-1" style={{ background: orbBg, boxShadow: orbGlow }} />
+                )}
+                <div className={`max-w-[85%] px-4 py-3 rounded-2xl text-sm leading-relaxed ${msg.role === "assistant" ? "bg-white/5 border border-white/7 text-white/85 rounded-tl-sm" : "bg-blue-600 text-white rounded-tr-sm"}`}>
+                  {msg.source === "voice" && <div className="text-xs opacity-40 mb-1">{msg.role === "user" ? "voice" : "spoken"}</div>}
+                  {msg.fileName && !msg.imageUrl && (
+                    <div className="flex items-center gap-1.5 mb-2 opacity-70">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+                      <span className="text-xs">{msg.fileName}</span>
+                    </div>
+                  )}
+                  <span dangerouslySetInnerHTML={{ __html: formatMessage(msg.content) }} />
+                  {msg.imageUrl && <img src={msg.imageUrl} alt={msg.fileName || 'attachment'} className="mt-2 rounded-xl max-w-full" style={{ maxHeight: '200px', objectFit: 'contain' }} />}
+                </div>
+              </div>
+            ))}
 
-      {/* Show transcript if speaking */}
-      {messages.length > 0 && (
-        <div className="mt-6 max-w-sm text-center">
-          <div className="text-white/20 text-xs mb-2">Last message</div>
-          <div className="text-white/50 text-sm leading-relaxed line-clamp-3">
-            {messages[messages.length - 1]?.content}
+            {loading && !voiceRunning && (
+              <div className="flex gap-2">
+                <div className="w-6 h-6 rounded-full flex-shrink-0 mt-1" style={{ background: orbBg }} />
+                <div className="bg-white/5 border border-white/7 rounded-2xl rounded-tl-sm px-4 py-3">
+                  <div className="flex gap-1">
+                    {[0, 150, 300].map(delay => <span key={delay} className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: `${delay}ms` }} />)}
+                  </div>
+                </div>
+              </div>
+            )}
+            <div ref={bottomRef} />
           </div>
         </div>
-      )}
 
-      {/* View full chat button */}
-      <button
-        onClick={() => setVoiceRunning(false) /* just hides bubble, doesn't stop voice */}
-        className="mt-8 px-5 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl text-white/40 hover:text-white/60 text-xs transition-all"
-      >
-        View chat
-      </button>
-    </div>
-  )}
-
-  {messages.length === 0 && !voiceRunning ? (
-    <div className="flex-1 flex flex-col items-center justify-center text-center h-full px-4">
-      <div className="w-16 h-16 rounded-full mb-5 flex-shrink-0" style={{ background: orbBg, boxShadow: orbGlow }} />
-      <div className="text-white/60 text-xl font-medium mb-1">Good to see you, {userName}.</div>
-      <div className="text-white/25 text-sm mb-8">
-        {cameraActive ? "I can see your screen and your camera." : "I can see your screen and I'm always ready."}
-      </div>
-      <button onClick={toggleVoice} className="px-6 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl text-white/50 hover:text-white/70 text-sm transition-all flex items-center gap-2.5">
-        <div className="w-2 h-2 rounded-full bg-white/30" />
-        Start voice
-      </button>
-    </div>
-  ) : !voiceRunning ? (
-    messages.map((msg, i) => (
-      <div key={i} className={`flex gap-2.5 ${msg.role === "user" ? "flex-row-reverse" : ""}`}>
-        {msg.role === "assistant" && (
-          <div className="w-6 h-6 rounded-full flex-shrink-0 mt-1" style={{ background: orbBg, boxShadow: orbGlow }} />
-        )}
-        <div className={`max-w-[80%] md:max-w-[70%] px-4 py-3 rounded-2xl text-sm leading-relaxed ${
-          msg.role === "assistant" ? "bg-white/5 border border-white/7 text-white/85 rounded-tl-sm" : "bg-blue-600 text-white rounded-tr-sm"
-        }`}>
-          {msg.source === "voice" && <div className="text-xs opacity-40 mb-1">{msg.role === "user" ? "voice" : "spoken"}</div>}
-          {msg.fileName && !msg.imageUrl && (
-            <div className="flex items-center gap-1.5 mb-2 opacity-70">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
-              </svg>
-              <span className="text-xs">{msg.fileName}</span>
-            </div>
-          )}
-          <span dangerouslySetInnerHTML={{ __html: formatMessage(msg.content) }} />
-          {msg.imageUrl && (
-            <img src={msg.imageUrl} alt={msg.fileName || 'attachment'} className="mt-2 rounded-xl max-w-full" style={{ maxHeight: '300px', objectFit: 'contain' }} />
-          )}
-        </div>
-      </div>
-    ))
-  ) : null}
-  {loading && !voiceRunning && (
-    <div className="flex gap-2.5">
-      <div className="w-6 h-6 rounded-full flex-shrink-0 mt-1" style={{ background: orbBg }} />
-      <div className="bg-white/5 border border-white/7 rounded-2xl rounded-tl-sm px-4 py-3">
-        <div className="flex gap-1">
-          {[0, 150, 300].map(delay => <span key={delay} className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: `${delay}ms` }} />)}
-        </div>
-      </div>
-    </div>
-  )}
-  <div ref={bottomRef} />
-</div>
-
-{attachedFile && (
-          <div className="px-4 pt-2 flex-shrink-0">
+        {/* Attached file preview */}
+        {attachedFile && (
+          <div className="px-3 pt-2 flex-shrink-0 bg-[#060608]">
             <div className="flex items-center gap-2">
               {attachedFile.type.startsWith('image/') ? (
-                <img src={`data:${attachedFile.type};base64,${attachedFile.data}`} alt="preview" className="h-12 w-12 rounded-lg object-cover border border-white/10" />
+                <img src={`data:${attachedFile.type};base64,${attachedFile.data}`} alt="preview" className="h-10 w-10 rounded-lg object-cover border border-white/10" />
               ) : (
-                <div className="h-10 w-10 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
-                  </svg>
+                <div className="h-10 w-10 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center flex-shrink-0">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
                 </div>
               )}
               <span className="text-white/50 text-xs flex-1 truncate">{attachedFile.name}</span>
-              <button onClick={() => setAttachedFile(null)} className="text-white/30 hover:text-white/60 transition-all p-1">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-                </svg>
+              <button onClick={() => setAttachedFile(null)} className="text-white/30 hover:text-white/60 p-1.5">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
               </button>
             </div>
           </div>
         )}
 
-        <div className="px-4 pb-safe pb-4 pt-3 flex gap-2.5 border-t border-white/5 flex-shrink-0 sticky bottom-0 bg-[#060608]">
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*,.pdf,.txt,.js,.ts,.py,.md,.json,.csv,.doc,.docx"
-            onChange={handleFileAttach}
-            className="hidden"
-          />
-          <button
-  onClick={() => {
-  const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-  if (!SpeechRecognition) {
-    alert('Speech recognition not supported. Use Chrome or Edge.');
-    return;
-  }
-  alert('Starting recognition...');
-  const recognition = new SpeechRecognition();
-  recognition.lang = 'en-US';
-  recognition.interimResults = false;
-  recognition.maxAlternatives = 1;
-  setIsListening(true);
-  recognition.onstart = () => alert('Listening! Speak now.');
-  recognition.onresult = (e: any) => {
-    alert('Got result: ' + e.results[0][0].transcript);
-    setIsListening(false);
-    // ... rest of code
-  };
-  recognition.onerror = (e: any) => {
-    alert('Error: ' + e.error);
-    setIsListening(false);
-  };
-  recognition.onend = () => setIsListening(false);
-  recognition.start();
-}}
->
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
-    <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
-    <line x1="12" y1="19" x2="12" y2="23"/>
-    <line x1="8" y1="23" x2="16" y2="23"/>
-  </svg>
-</button>
-          <button
-            onClick={() => fileInputRef.current?.click()}
-            className="w-11 h-11 flex items-center justify-center rounded-xl hover:bg-white/5 transition-all flex-shrink-0 text-white/30 hover:text-white/60"
-            title="Attach file"
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
-            </svg>
-          </button>
-          <input
-            value={input}
-            onChange={e => setInput(e.target.value)}
-            onKeyDown={e => e.key === "Enter" && send()}
-            placeholder="Message JARVIS..."
-            disabled={loading}
-            className="flex-1 bg-white/5 border border-white/10 rounded-xl text-white text-sm px-4 py-3 outline-none placeholder:text-white/20 focus:border-blue-500/30 transition-all"
-style={{ fontSize: '16px' }}
-          />
-          <button onClick={send} disabled={loading || (!input.trim() && !attachedFile)}
-            className="w-11 h-11 bg-blue-600 hover:bg-blue-500 disabled:opacity-30 rounded-xl flex items-center justify-center transition-all flex-shrink-0">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
-              <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
-            </svg>
-          </button>
+        {/* Input bar — always visible, never moves */}
+        <div className="flex-shrink-0 bg-[#060608] border-t border-white/5 px-3 py-3">
+          <input ref={fileInputRef} type="file" accept="image/*,.pdf,.txt,.js,.ts,.py,.md,.json,.csv,.doc,.docx" onChange={handleFileAttach} className="hidden" />
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              className="w-11 h-11 flex items-center justify-center rounded-xl hover:bg-white/5 transition-all flex-shrink-0 text-white/30 hover:text-white/60"
+            >
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
+              </svg>
+            </button>
+            <input
+              value={input}
+              onChange={e => setInput(e.target.value)}
+              onKeyDown={e => e.key === "Enter" && !e.shiftKey && send()}
+              placeholder="Message JARVIS..."
+              disabled={loading}
+              autoComplete="off"
+              autoCorrect="off"
+              autoCapitalize="sentences"
+              style={{ fontSize: '16px' }}
+              className="flex-1 bg-white/5 border border-white/10 rounded-2xl text-white px-4 py-3 outline-none placeholder:text-white/25 focus:border-blue-500/40 transition-all min-w-0"
+            />
+            <button
+              onClick={send}
+              disabled={loading || (!input.trim() && !attachedFile)}
+              className="w-11 h-11 bg-blue-600 hover:bg-blue-500 disabled:opacity-30 rounded-xl flex items-center justify-center transition-all flex-shrink-0"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
+                <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
     </div>
