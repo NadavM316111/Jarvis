@@ -476,14 +476,14 @@ export default function Home() {
   </button>
   
   <a
-    href={`${API}/auth/google`}
-    target="_blank"
-    rel="noopener noreferrer"
-    className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl border text-xs font-medium transition-all mb-2 ${googleConnected ? 'bg-green-500/15 border-green-500/30 text-green-400' : 'bg-white/5 border-white/10 text-white/50 hover:text-white/70'}`}
-  >
-    <div className={`w-2 h-2 rounded-full ${googleConnected ? 'bg-green-400' : 'bg-white/20'}`} />
-    {googleConnected ? 'Gmail connected' : 'Connect Gmail'}
-  </a>
+    href={`${API}/auth/google?token=${token}`}
+  target="_blank"
+  rel="noopener noreferrer"
+  className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl border text-xs font-medium transition-all mb-2 ${googleConnected ? 'bg-green-500/15 border-green-500/30 text-green-400' : 'bg-white/5 border-white/10 text-white/50 hover:text-white/70'}`}
+>
+  <div className={`w-2 h-2 rounded-full ${googleConnected ? 'bg-green-400' : 'bg-white/20'}`} />
+  {googleConnected ? 'Gmail connected' : 'Connect Gmail'}
+</a>
   {typeof window !== 'undefined' && window.location.hostname === 'localhost' && (
     <button onClick={toggleVoice} className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl border text-xs font-medium transition-all mb-2 ${voiceRunning ? 'bg-green-500/15 border-green-500/30 text-green-400' : 'bg-white/5 border-white/10 text-white/50 hover:text-white/70'}`}>
       <div className={`w-2 h-2 rounded-full ${voiceRunning ? 'bg-green-400 animate-pulse' : 'bg-white/20'}`} />

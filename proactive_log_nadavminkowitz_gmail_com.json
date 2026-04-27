@@ -1,6 +1,13 @@
 {
   "updates": [
     {
+      "id": 1777292311017,
+      "message": "Morning Briefing: \n\n☀️ WEATHER: 71°F now, sunny today with high of 84°F. Beautiful week ahead.\n\n📧 EMAILS - URGENT:\n⚠️ GitGuardian detected PostgreSQL URI exposed in your Jarvis GitHub repo - needs immediate attention.\n\n📧 IMPORTANT:\n• Daniel Minkowitz invited you to ClickFlo dinner May 12th at 8pm at Abazu\n• Tom Kahan sent you a message (no subject)\n\n📅 CALENDAR:\n• Today: Clear schedule\n• Apr 30: Sunness Supper Club\n• May 3: SAT Exam (6 days away)\n\nHave a productive day, Nadav.",
+      "time": "8:18:31 AM",
+      "date": "4/27/2026",
+      "read": false
+    },
+    {
       "id": 1777291260268,
       "message": "Morning Briefing: \n\n📧 EMAIL HIGHLIGHTS:\n• 🚨 URGENT: GitGuardian detected PostgreSQL URI exposed in your Jarvis GitHub repo - security action needed\n• Daniel Minkowitz invited you to ClickFlo dinner May 12 @ 8pm at Abazu (unread)\n• Tom Kahan sent you an email (no subject/content)\n• Rest is promotional: Uber Eats, college ads, Instagram, Tubi\n\n📅 CALENDAR:\n• Today (Apr 27): No events scheduled\n• Coming up: Sunness Supper Club on April 30th\n\n🌤️ WEATHER (Fort Lauderdale):\nCurrently 70°F with 93% humidity. Today: Sunny, high 84°F. Tonight: Partly cloudy, low 72°F. Beautiful day ahead.\n\n⚡ ACTION ITEMS:\n1. Rotate the exposed PostgreSQL credentials in your Jarvis repo ASAP\n2. RSVP to Daniel's ClickFlo dinner invitation\n3. Check Tom Kahan's email - may need response",
       "time": "8:01:00 AM",
@@ -690,13 +697,6 @@
       "id": 1776967042695,
       "message": "Unrecognized person detected at computer",
       "time": "1:57:22 PM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776966907982,
-      "message": "Unrecognized person detected at computer",
-      "time": "1:55:07 PM",
       "date": "4/23/2026",
       "read": true
     }
