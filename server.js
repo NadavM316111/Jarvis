@@ -11,7 +11,8 @@ const fs = require('fs');
 const path = require('path');
 const https = require('https');
 const http = require('http');
-const { signup, login, verifyToken, loadUserMemory, saveUserMemory } = require('./auth');
+const { signup, login, verifyToken, loadUserMemory, saveUserMemory, saveConversation, loadConversations, deleteConversation } = require('./auth');
+
 
 const app = express();
 app.use(cors({ origin: true, credentials: true }));
@@ -1035,7 +1036,22 @@ app.get('/proactive-updates/latest-unspoken', (req, res) => {
 app.post('/proactive-updates/mark-spoken', (req, res) => {
   res.json({ ok: true });
 });
+// ============ CONVERSATIONS (Neon-persisted) ============
+app.get('/conversations', authMiddleware, async (req, res) => {
+  const convs = await loadConversations(req.user.userId);
+  res.json({ conversations: convs });
+});
 
+app.post('/conversations/:id', authMiddleware, async (req, res) => {
+  const { title, messages } = req.body;
+  await saveConversation(req.user.userId, req.params.id, title, messages);
+  res.json({ ok: true });
+});
+
+app.delete('/conversations/:id', authMiddleware, async (req, res) => {
+  await deleteConversation(req.params.id, req.user.userId);
+  res.json({ ok: true });
+});
 app.listen(3001, () => {
   console.log('\n╔════════════════════════════════════════╗');
   console.log('║       J.A.R.V.I.S. ONLINE              ║');
