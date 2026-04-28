@@ -31,7 +31,7 @@ app.use('/chat', chatLimiter);
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 const NADAV_USER_ID = 'nadavminkowitz_gmail_com';
-
+process.env.TWILIO_PHONE_NUMBER = '+15054776732';
 // ============ STATE ============
 const PROACTIVE_LOG_FILE = path.join(__dirname, 'proactive_log.json');
 const MODEL_CACHE_DIR = path.join(__dirname, 'model_cache');
