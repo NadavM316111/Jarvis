@@ -58,3 +58,16 @@ Tool: proactive_update {"message":"⚠️ EXAM IN PROGRESS — LockDownBrowser i
 [PROACTIVE BRAIN] Running for Nadav...
 [PROACTIVE] Error: Connection error.
 [VISION] Error: Connection error.
+
+[PROACTIVE BRAIN] Running for Nadav...
+Tool: web_search {"query":"Clickflo OR \"TROY Capital\" OR Sokr OR Sesami OR Bookly news April 2026"}
+Tool: web_search {"query":"Fort Lauderdale weather alert April 28 2026"}
+Tool: proactive_update {"message":"⚡ WEATHER ALERT — Fort Lauderdale: Storms returning this afternoon/evening with risks of damaging winds, hail, and a possible tornado. Pla
+[PROACTIVE nadavminkowitz_gmail_com] ⚡ WEATHER ALERT — Fort Lauderdale: Storms returning this afternoon/evening with risks of damaging winds, hail, and a possible tornado. Plan accordingly and secure anything outside before tonight.
+Tool: proactive_update {"message":"🔋 Battery at 56% and unplugged — you've been discharging since at least 10:42 AM. Plug in when you get a chance, Sir."}
+[PROACTIVE nadavminkowitz_gmail_com] 🔋 Battery at 56% and unplugged — you've been discharging since at least 10:42 AM. Plug in when you get a chance, Sir.
+[VISION] Error: Connection error.
+
+[PROACTIVE BRAIN] Running for Nadav...
+Tool: proactive_update {"message":"⚡ BATTERY CRITICAL — Sir, you're down to 39% and still unplugged. With the active storm alert in Fort Lauderdale, plug in now before you l
+[PROACTIVE nadavminkowitz_gmail_com] ⚡ BATTERY CRITICAL — Sir, you're down to 39% and still unplugged. With the active storm alert in Fort Lauderdale, plug in now before you lose power during a potential outage.

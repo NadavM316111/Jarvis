@@ -510,7 +510,7 @@ async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame
   'ALL websites served at: https://api.heyjarvis.me/view/filename.html',
   'HyperFlex studio: https://api.heyjarvis.me/hyperflex',
   'Design studio: https://api.heyjarvis.me/design',
-  'NEVER use localhost URLs for users — always use https://api.heyjarvis.me/...',
+  'NEVER use localhost URLs for users — always use https://api.heyjarvis.me/view/...',
   'web_search, browse_url, run_code, remember, proactive_update, search_3d_models all available.',
   'ENCODING: When writing HTML/CSS/JS with fs.writeFileSync, NEVER use emojis.',
   'MOBILE: All apps and websites must be fully mobile responsive. Use viewport meta tag, flexible layouts, touch-friendly buttons (min 44px), and test that it looks great on phone screens.',

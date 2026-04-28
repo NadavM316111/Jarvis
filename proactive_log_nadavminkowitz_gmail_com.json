@@ -1,6 +1,27 @@
 {
   "updates": [
     {
+      "id": 1777399200553,
+      "message": "⚡ BATTERY CRITICAL — Sir, you're down to 39% and still unplugged. With the active storm alert in Fort Lauderdale, plug in now before you lose power during a potential outage.",
+      "time": "2:00:00 PM",
+      "date": "4/28/2026",
+      "read": false
+    },
+    {
+      "id": 1777397406025,
+      "message": "🔋 Battery at 56% and unplugged — you've been discharging since at least 10:42 AM. Plug in when you get a chance, Sir.",
+      "time": "1:30:06 PM",
+      "date": "4/28/2026",
+      "read": false
+    },
+    {
+      "id": 1777397406024,
+      "message": "⚡ WEATHER ALERT — Fort Lauderdale: Storms returning this afternoon/evening with risks of damaging winds, hail, and a possible tornado. Plan accordingly and secure anything outside before tonight.",
+      "time": "1:30:06 PM",
+      "date": "4/28/2026",
+      "read": false
+    },
+    {
       "id": 1777391191361,
       "message": "⚠️ EXAM IN PROGRESS — LockDownBrowser is actively running on your machine, Sir. If you're mid-exam, stay focused and avoid switching windows.",
       "time": "11:46:31 AM",
@@ -676,27 +697,6 @@
       "id": 1776975399952,
       "message": "The answer is A \"To analyze the implications of the results of the experiment\" — the highlighted sentence discusses effects observed \"even weeks after\" exposure to the pro-diversity poster, which analyzes the broader implications of the experimental findings.",
       "time": "4:16:39 PM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776975149888,
-      "message": "The answer is A \"Refreshing heat\" — \"renovating\" in this 1818 context means renewing or restoring, and combined with \"warmth\" it describes heat that refreshes or revitalizes the narrator.",
-      "time": "4:12:29 PM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776974900619,
-      "message": "The answer is A \"spanning many dynasties\" because the passage describes a \"long royal progression\" from the 5th century Visigoths through the Reconquista to Ferdinand and Isabella, emphasizing the extensive timespan across multiple ruling families.",
-      "time": "4:08:20 PM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776972177728,
-      "message": "There's a factual error in your essay — Otto von Bismarck was the Prime Minister of Prussia, not Russia.",
-      "time": "3:22:57 PM",
       "date": "4/23/2026",
       "read": true
     }

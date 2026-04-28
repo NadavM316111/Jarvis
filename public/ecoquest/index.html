@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EcoQuest - Small Actions. Big Impact.</title>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Quicksand', sans-serif;
+      background: linear-gradient(135deg, #1a472a 0%, #2d5a3d 50%, #1e3a2f 100%);
+      min-height: 100vh;
+      color: #fff;
+      overflow-x: hidden;
+    }
+
+    /* Floating leaves animation */
+    .leaf {
+      position: fixed;
+      font-size: 24px;
+      opacity: 0.3;
+      animation: fall linear infinite;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    @keyframes fall {
+      0% {
+        transform: translateY(-100px) rotate(0deg);
+        opacity: 0.3;
+      }
+      100% {
+        transform: translateY(100vh) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Header */
+    header {
+      text-align: center;
+      padding: 40px 20px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 10px;
+    }
+
+    .logo-icon {
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, #4ade80, #22c55e);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 30px;
+      box-shadow: 0 4px 20px rgba(74, 222, 128, 0.4);
+    }
+
+    h1 {
+      font-size: 3rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #4ade80, #86efac);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .tagline {
+      font-size: 1.3rem;
+      color: #86efac;
+      margin-top: 10px;
+      font-weight: 500;
+    }
+
+    /* Stats Bar */
+    .stats-bar {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      margin: 30px 0;
+      flex-wrap: wrap;
+    }
+
+    .stat {
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(10px);
+      padding: 15px 30px;
+      border-radius: 15px;
+      text-align: center;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .stat-number {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #4ade80;
+    }
+
+    .stat-label {
+      font-size: 0.9rem;
+      color: #a7f3d0;
+    }
+
+    /* Level Progress */
+    .level-section {
+      background: rgba(255,255,255,0.08);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 25px;
+      margin: 20px 0;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .level-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .level-title {
+      font-size: 1.2rem;
+      color: #86efac;
+    }
+
+    .level-badge {
+      background: linear-gradient(135deg, #fbbf24, #f59e0b);
+      padding: 5px 15px;
+      border-radius: 20px;
+      font-weight: 600;
+      color: #1a472a;
+      font-size: 0.9rem;
+    }
+
+    .progress-bar {
+      background: rgba(0,0,0,0.3);
+      border-radius: 10px;
+      height: 20px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #4ade80, #22c55e);
+      border-radius: 10px;
+      transition: width 0.5s ease;
+      position: relative;
+    }
+
+    .progress-fill::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      animation: shimmer 2s infinite;
+    }
+
+    @keyframes shimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    .progress-text {
+      text-align: center;
+      margin-top: 10px;
+      color: #a7f3d0;
+      font-size: 0.9rem;
+    }
+
+    /* Today's Challenge */
+    .challenge-section {
+      background: linear-gradient(135deg, rgba(74,222,128,0.2), rgba(34,197,94,0.1));
+      backdrop-filter: blur(10px);
+      border-radius: 25px;
+      padding: 35px;
+      margin: 30px 0;
+      border: 2px solid rgba(74,222,128,0.3);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .challenge-section::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(74,222,128,0.1) 0%, transparent 70%);
+      animation: pulse 4s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.5; }
+      50% { transform: scale(1.1); opacity: 0.8; }
+    }
+
+    .challenge-label {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      color: #86efac;
+      margin-bottom: 15px;
+      position: relative;
+    }
+
+    .challenge-icon {
+      font-size: 4rem;
+      margin: 20px 0;
+      position: relative;
+    }
+
+    .challenge-text {
+      font-size: 1.8rem;
+      font-weight: 600;
+      margin: 20px 0;
+      position: relative;
+    }
+
+    .challenge-impact {
+      color: #a7f3d0;
+      font-size: 1rem;
+      margin-bottom: 25px;
+      position: relative;
+    }
+
+    .complete-btn {
+      background: linear-gradient(135deg, #4ade80, #22c55e);
+      border: none;
+      padding: 18px 50px;
+      font-size: 1.2rem;
+      font-weight: 600;
+      border-radius: 50px;
+      cursor: pointer;
+      color: #1a472a;
+      transition: all 0.3s ease;
+      position: relative;
+      font-family: 'Quicksand', sans-serif;
+      box-shadow: 0 4px 20px rgba(74,222,128,0.4);
+    }
+
+    .complete-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 30px rgba(74,222,128,0.5);
+    }
+
+    .complete-btn:disabled {
+      background: linear-gradient(135deg, #6b7280, #4b5563);
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .complete-btn.completed {
+      background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    }
+
+    .new-challenge-btn {
+      background: transparent;
+      border: 2px solid #4ade80;
+      padding: 12px 30px;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 50px;
+      cursor: pointer;
+      color: #4ade80;
+      transition: all 0.3s ease;
+      margin-top: 15px;
+      font-family: 'Quicksand', sans-serif;
+    }
+
+    .new-challenge-btn:hover {
+      background: rgba(74,222,128,0.1);
+    }
+
+    /* Badges Section */
+    .badges-section {
+      background: rgba(255,255,255,0.08);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 25px;
+      margin: 20px 0;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .section-title {
+      font-size: 1.3rem;
+      margin-bottom: 20px;
+      color: #86efac;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .badges-grid {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .badge {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    .badge.earned {
+      background: linear-gradient(135deg, #fbbf24, #f59e0b);
+      box-shadow: 0 4px 15px rgba(251,191,36,0.4);
+    }
+
+    .badge.locked {
+      background: rgba(0,0,0,0.3);
+      filter: grayscale(100%);
+      opacity: 0.5;
+    }
+
+    .badge:hover {
+      transform: scale(1.1);
+    }
+
+    .badge-tooltip {
+      position: absolute;
+      bottom: -30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.8);
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-size: 0.7rem;
+      white-space: nowrap;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+    }
+
+    .badge:hover .badge-tooltip {
+      opacity: 1;
+    }
+
+    /* Tips Section */
+    .tips-section {
+      background: rgba(255,255,255,0.08);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 25px;
+      margin: 20px 0;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .tips-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 15px;
+    }
+
+    .tip-card {
+      background: rgba(0,0,0,0.2);
+      border-radius: 15px;
+      padding: 20px;
+      display: flex;
+      align-items: flex-start;
+      gap: 15px;
+      transition: all 0.3s ease;
+      border: 1px solid transparent;
+    }
+
+    .tip-card:hover {
+      background: rgba(74,222,128,0.1);
+      border-color: rgba(74,222,128,0.3);
+      transform: translateY(-2px);
+    }
+
+    .tip-icon {
+      font-size: 1.5rem;
+      flex-shrink: 0;
+    }
+
+    .tip-text {
+      font-size: 0.95rem;
+      color: #d1fae5;
+      line-height: 1.5;
+    }
+
+    /* Mission Section */
+    .mission-section {
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 30px;
+      margin: 20px 0;
+      text-align: center;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .mission-text {
+      font-size: 1.1rem;
+      color: #d1fae5;
+      line-height: 1.8;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    /* Celebration Modal */
+    .celebration {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.8);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+
+    .celebration.show {
+      display: flex;
+    }
+
+    .celebration-content {
+      background: linear-gradient(135deg, #1a472a, #2d5a3d);
+      padding: 50px;
+      border-radius: 30px;
+      text-align: center;
+      animation: bounceIn 0.5s ease;
+      border: 2px solid #4ade80;
+    }
+
+    @keyframes bounceIn {
+      0% { transform: scale(0); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+
+    .celebration-icon {
+      font-size: 5rem;
+      margin-bottom: 20px;
+    }
+
+    .celebration-title {
+      font-size: 2rem;
+      color: #4ade80;
+      margin-bottom: 10px;
+    }
+
+    .celebration-points {
+      font-size: 1.5rem;
+      color: #fbbf24;
+      margin-bottom: 20px;
+    }
+
+    .celebration-close {
+      background: #4ade80;
+      border: none;
+      padding: 12px 30px;
+      border-radius: 25px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      color: #1a472a;
+      font-family: 'Quicksand', sans-serif;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 30px;
+      color: #6b9080;
+      font-size: 0.9rem;
+    }
+
+    /* Confetti */
+    .confetti {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      background: #4ade80;
+      animation: confetti-fall 3s ease-out forwards;
+      z-index: 101;
+      pointer-events: none;
+    }
+
+    @keyframes confetti-fall {
+      0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(100vh) rotate(720deg);
+        opacity: 0;
+      }
+    }
+
+    @media (max-width: 600px) {
+      h1 { font-size: 2rem; }
+      .challenge-text { font-size: 1.4rem; }
+      .stats-bar { gap: 15px; }
+      .stat { padding: 12px 20px; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Floating leaves background -->
+  <div id="leaves"></div>
+
+  <div class="container">
+    <header>
+      <div class="logo">
+        <div class="logo-icon">E</div>
+        <h1>EcoQuest</h1>
+      </div>
+      <p class="tagline">Small actions. Big impact.</p>
+    </header>
+
+    <!-- Stats Bar -->
+    <div class="stats-bar">
+      <div class="stat">
+        <div class="stat-number" id="total-points">0</div>
+        <div class="stat-label">Total Points</div>
+      </div>
+      <div class="stat">
+        <div class="stat-number" id="streak">0</div>
+        <div class="stat-label">Day Streak</div>
+      </div>
+      <div class="stat">
+        <div class="stat-number" id="completed">0</div>
+        <div class="stat-label">Challenges Done</div>
+      </div>
+    </div>
+
+    <!-- Level Progress -->
+    <div class="level-section">
+      <div class="level-header">
+        <span class="level-title">Level <span id="level">1</span> - <span id="level-name">Seedling</span></span>
+        <span class="level-badge" id="next-level">Next: Sprout</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+      </div>
+      <p class="progress-text"><span id="current-xp">0</span> / <span id="needed-xp">100</span> XP to next level</p>
+    </div>
+
+    <!-- Today's Challenge -->
+    <div class="challenge-section">
+      <div class="challenge-label">Today's Challenge</div>
+      <div class="challenge-icon" id="challenge-icon">E</div>
+      <h2 class="challenge-text" id="challenge-text">Loading challenge...</h2>
+      <p class="challenge-impact" id="challenge-impact">Loading impact...</p>
+      <button class="complete-btn" id="complete-btn" onclick="completeChallenge()">I Completed It!</button>
+      <br>
+      <button class="new-challenge-btn" onclick="newChallenge()">Try Different Challenge</button>
+    </div>
+
+    <!-- Badges -->
+    <div class="badges-section">
+      <h3 class="section-title">Your Badges</h3>
+      <div class="badges-grid" id="badges-grid">
+        <!-- Badges will be generated by JS -->
+      </div>
+    </div>
+
+    <!-- Conservation Tips -->
+    <div class="tips-section">
+      <h3 class="section-title">Conservation Tips</h3>
+      <div class="tips-grid">
+        <div class="tip-card">
+          <span class="tip-icon">W</span>
+          <span class="tip-text">Fix leaky faucets - a single drip can waste 20 gallons per day!</span>
+        </div>
+        <div class="tip-card">
+          <span class="tip-icon">L</span>
+          <span class="tip-text">Switch to LED bulbs - they use 75% less energy than incandescent.</span>
+        </div>
+        <div class="tip-card">
+          <span class="tip-icon">P</span>
+          <span class="tip-text">Unplug devices when not in use to avoid phantom energy drain.</span>
+        </div>
+        <div class="tip-card">
+          <span class="tip-icon">T</span>
+          <span class="tip-text">Use cold water for laundry - 90% of energy goes to heating water.</span>
+        </div>
+        <div class="tip-card">
+          <span class="tip-icon">B</span>
+          <span class="tip-text">Bring reusable bags - plastic bags take 1000 years to decompose.</span>
+        </div>
+        <div class="tip-card">
+          <span class="tip-icon">R</span>
+          <span class="tip-text">Recycle properly - one recycled can saves enough energy to run a TV for 3 hours.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mission -->
+    <div class="mission-section">
+      <h3 class="section-title" style="justify-content: center;">Our Mission</h3>
+      <p class="mission-text">
+        EcoQuest empowers individuals to make a difference through small, daily actions. 
+        Every light switch turned off, every reusable bottle filled, every short shower taken 
+        adds up to massive environmental impact. Together, we can protect our planet 
+        one challenge at a time. Join thousands of eco-warriors making sustainable choices every day!
+      </p>
+    </div>
+
+    <footer>
+      Made with care for our planet | EcoQuest 2026
+    </footer>
+  </div>
+
+  <!-- Celebration Modal -->
+  <div class="celebration" id="celebration">
+    <div class="celebration-content">
+      <div class="celebration-icon">T</div>
+      <h2 class="celebration-title">Amazing Work!</h2>
+      <p class="celebration-points">+<span id="earned-points">10</span> Points!</p>
+      <p style="color: #a7f3d0; margin-bottom: 20px;" id="celebration-message">You're making a difference!</p>
+      <button class="celebration-close" onclick="closeCelebration()">Keep Going!</button>
+    </div>
+  </div>
+
+  <script>
+    // Challenges data
+    const challenges = [
+      { icon: "L", text: "Turn off lights when leaving a room", impact: "Saves up to 0.1 kWh per hour!", points: 10, category: "energy" },
+      { icon: "S", text: "Take a 5-minute shower", impact: "Saves up to 25 gallons of water!", points: 15, category: "water" },
+      { icon: "B", text: "Use a reusable water bottle all day", impact: "Prevents 1 plastic bottle from landfill!", points: 10, category: "waste" },
+      { icon: "U", text: "Unplug chargers when not in use", impact: "Stops phantom energy drain!", points: 10, category: "energy" },
+      { icon: "W", text: "Walk or bike instead of driving", impact: "Zero emissions for this trip!", points: 20, category: "transport" },
+      { icon: "R", text: "Recycle all paper and plastic today", impact: "Saves resources and reduces landfill!", points: 15, category: "waste" },
+      { icon: "A", text: "Air dry your clothes instead of using dryer", impact: "Saves 3-4 kWh of energy!", points: 20, category: "energy" },
+      { icon: "M", text: "Eat a meat-free meal", impact: "Saves 1,800 gallons of water!", points: 15, category: "food" },
+      { icon: "C", text: "Use a reusable coffee cup", impact: "Prevents single-use cup waste!", points: 10, category: "waste" },
+      { icon: "T", text: "Set thermostat 2 degrees lower/higher", impact: "Reduces energy use by 5-10%!", points: 15, category: "energy" },
+      { icon: "F", text: "Turn off water while brushing teeth", impact: "Saves 8 gallons per day!", points: 10, category: "water" },
+      { icon: "P", text: "Use public transport today", impact: "Reduces carbon footprint significantly!", points: 20, category: "transport" },
+      { icon: "N", text: "Say no to single-use plastics", impact: "Keeps plastic out of oceans!", points: 15, category: "waste" },
+      { icon: "G", text: "Plant a seed or water a plant", impact: "Adds oxygen and life to the world!", points: 15, category: "nature" },
+      { icon: "H", text: "Use natural light instead of artificial", impact: "Zero energy for lighting!", points: 10, category: "energy" }
+    ];
+
+    // Badges
+    const badges = [
+      { icon: "S", name: "First Step", requirement: 1, desc: "Complete 1 challenge" },
+      { icon: "F", name: "High Five", requirement: 5, desc: "Complete 5 challenges" },
+      { icon: "T", name: "Perfect 10", requirement: 10, desc: "Complete 10 challenges" },
+      { icon: "M", name: "Eco Master", requirement: 25, desc: "Complete 25 challenges" },
+      { icon: "L", name: "Legend", requirement: 50, desc: "Complete 50 challenges" },
+      { icon: "C", name: "Century", requirement: 100, desc: "Complete 100 challenges" },
+      { icon: "W", name: "Week Warrior", requirement: 7, desc: "7-day streak", type: "streak" },
+      { icon: "O", name: "Month Hero", requirement: 30, desc: "30-day streak", type: "streak" }
+    ];
+
+    // Level names
+    const levels = [
+      { name: "Seedling", xp: 0 },
+      { name: "Sprout", xp: 100 },
+      { name: "Sapling", xp: 250 },
+      { name: "Tree", xp: 500 },
+      { name: "Forest", xp: 1000 },
+      { name: "Guardian", xp: 2000 },
+      { name: "Champion", xp: 5000 },
+      { name: "Legend", xp: 10000 }
+    ];
+
+    // State
+    let state = {
+      points: 0,
+      streak: 0,
+      completed: 0,
+      currentChallenge: 0,
+      lastCompleted: null,
+      completedToday: false,
+      xp: 0
+    };
+
+    // Load state
+    function loadState() {
+      const saved = localStorage.getItem('ecoquest-state');
+      if (saved) {
+        state = JSON.parse(saved);
+        
+        // Check if it's a new day
+        const today = new Date().toDateString();
+        if (state.lastCompleted !== today) {
+          state.completedToday = false;
+          // Check streak
+          const yesterday = new Date();
+          yesterday.setDate(yesterday.getDate() - 1);
+          if (state.lastCompleted !== yesterday.toDateString() && state.lastCompleted !== today) {
+            state.streak = 0;
+          }
+        }
+      }
+      updateUI();
+    }
+
+    // Save state
+    function saveState() {
+      localStorage.setItem('ecoquest-state', JSON.stringify(state));
+    }
+
+    // Update UI
+    function updateUI() {
+      document.getElementById('total-points').textContent = state.points;
+      document.getElementById('streak').textContent = state.streak;
+      document.getElementById('completed').textContent = state.completed;
+      
+      // Level calculation
+      let currentLevel = 0;
+      for (let i = levels.length - 1; i >= 0; i--) {
+        if (state.xp >= levels[i].xp) {
+          currentLevel = i;
+          break;
+        }
+      }
+      
+      const nextLevel = Math.min(currentLevel + 1, levels.length - 1);
+      const currentXP = state.xp - levels[currentLevel].xp;
+      const neededXP = levels[nextLevel].xp - levels[currentLevel].xp;
+      const progress = neededXP > 0 ? (currentXP / neededXP) * 100 : 100;
+      
+      document.getElementById('level').textContent = currentLevel + 1;
+      document.getElementById('level-name').textContent = levels[currentLevel].name;
+      document.getElementById('next-level').textContent = currentLevel < levels.length - 1 ? 'Next: ' + levels[nextLevel].name : 'MAX LEVEL!';
+      document.getElementById('progress-fill').style.width = progress + '%';
+      document.getElementById('current-xp').textContent = currentXP;
+      document.getElementById('needed-xp').textContent = neededXP;
+      
+      // Update challenge
+      const challenge = challenges[state.currentChallenge];
+      document.getElementById('challenge-icon').textContent = challenge.icon;
+      document.getElementById('challenge-text').textContent = challenge.text;
+      document.getElementById('challenge-impact').textContent = challenge.impact;
+      
+      // Button state
+      const btn = document.getElementById('complete-btn');
+      if (state.completedToday) {
+        btn.textContent = 'Completed Today!';
+        btn.classList.add('completed');
+        btn.disabled = true;
+      } else {
+        btn.textContent = 'I Completed It! (+' + challenge.points + ' pts)';
+        btn.classList.remove('completed');
+        btn.disabled = false;
+      }
+      
+      // Update badges
+      renderBadges();
+    }
+
+    // Render badges
+    function renderBadges() {
+      const grid = document.getElementById('badges-grid');
+      grid.innerHTML = '';
+      
+      badges.forEach(badge => {
+        const div = document.createElement('div');
+        const value = badge.type === 'streak' ? state.streak : state.completed;
+        const earned = value >= badge.requirement;
+        
+        div.className = 'badge ' + (earned ? 'earned' : 'locked');
+        div.innerHTML = badge.icon + '<span class="badge-tooltip">' + badge.name + ' - ' + badge.desc + '</span>';
+        grid.appendChild(div);
+      });
+    }
+
+    // Complete challenge
+    function completeChallenge() {
+      if (state.completedToday) return;
+      
+      const challenge = challenges[state.currentChallenge];
+      state.points += challenge.points;
+      state.xp += challenge.points;
+      state.completed++;
+      state.completedToday = true;
+      state.lastCompleted = new Date().toDateString();
+      state.streak++;
+      
+      // Show celebration
+      document.getElementById('earned-points').textContent = challenge.points;
+      document.getElementById('celebration-message').textContent = getRandomMessage();
+      document.getElementById('celebration').classList.add('show');
+      
+      // Confetti!
+      createConfetti();
+      
+      saveState();
+      updateUI();
+    }
+
+    // Random celebration messages
+    function getRandomMessage() {
+      const messages = [
+        "You're making a difference!",
+        "The planet thanks you!",
+        "Every action counts!",
+        "You're an eco-warrior!",
+        "Keep up the amazing work!",
+        "Small steps, big impact!",
+        "You're inspiring others!",
+        "Nature appreciates you!"
+      ];
+      return messages[Math.floor(Math.random() * messages.length)];
+    }
+
+    // Close celebration
+    function closeCelebration() {
+      document.getElementById('celebration').classList.remove('show');
+    }
+
+    // New challenge
+    function newChallenge() {
+      let newIndex;
+      do {
+        newIndex = Math.floor(Math.random() * challenges.length);
+      } while (newIndex === state.currentChallenge && challenges.length > 1);
+      
+      state.currentChallenge = newIndex;
+      saveState();
+      updateUI();
+    }
+
+    // Create confetti
+    function createConfetti() {
+      const colors = ['#4ade80', '#22c55e', '#fbbf24', '#86efac', '#a7f3d0'];
+      for (let i = 0; i < 50; i++) {
+        setTimeout(() => {
+          const confetti = document.createElement('div');
+          confetti.className = 'confetti';
+          confetti.style.left = Math.random() * 100 + 'vw';
+          confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+          confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+          document.body.appendChild(confetti);
+          setTimeout(() => confetti.remove(), 3000);
+        }, i * 30);
+      }
+    }
+
+    // Create floating leaves
+    function createLeaves() {
+      const container = document.getElementById('leaves');
+      const leafSymbols = ['L', 'l', '*'];
+      for (let i = 0; i < 15; i++) {
+        const leaf = document.createElement('div');
+        leaf.className = 'leaf';
+        leaf.textContent = leafSymbols[Math.floor(Math.random() * leafSymbols.length)];
+        leaf.style.left = Math.random() * 100 + 'vw';
+        leaf.style.animationDuration = (Math.random() * 10 + 10) + 's';
+        leaf.style.animationDelay = (Math.random() * 10) + 's';
+        container.appendChild(leaf);
+      }
+    }
+
+    // Initialize
+    loadState();
+    createLeaves();
+    
+    // Random challenge on first load
+    if (!localStorage.getItem('ecoquest-state')) {
+      state.currentChallenge = Math.floor(Math.random() * challenges.length);
+      saveState();
+      updateUI();
+    }
+  </script>
+</body>
+</html>
