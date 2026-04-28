@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Napoleon Bonaparte - Emperor of France</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+    <title>Napoleon Bonaparte | Emperor of the French</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -12,123 +12,268 @@
             box-sizing: border-box;
         }
 
-        body {
-            font-family: 'Lora', serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-            color: #f0e6d3;
-            min-height: 100vh;
+        :root {
+            --gold: #d4af37;
+            --gold-light: #f4e4ba;
+            --dark: #0a0a0a;
+            --darker: #050505;
+            --crimson: #8b0000;
         }
 
+        body {
+            background: var(--darker);
+            color: #fff;
+            font-family: 'Cormorant Garamond', serif;
+            overflow-x: hidden;
+        }
+
+        /* INTRO OVERLAY */
+        .intro-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--darker);
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            animation: fadeOutIntro 1s ease-out 6s forwards;
+        }
+
+        .intro-year {
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            color: var(--gold);
+            letter-spacing: 1rem;
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 0.5s forwards;
+        }
+
+        .intro-title {
+            font-family: 'Cinzel', serif;
+            font-size: 5rem;
+            font-weight: 700;
+            color: transparent;
+            -webkit-text-stroke: 2px var(--gold);
+            margin: 2rem 0;
+            opacity: 0;
+            animation: revealTitle 2s ease-out 1.5s forwards;
+        }
+
+        .intro-subtitle {
+            font-size: 1.8rem;
+            font-style: italic;
+            color: #666;
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 3s forwards;
+        }
+
+        .intro-line {
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            margin: 2rem 0;
+            animation: expandLine 2s ease-out 2s forwards;
+        }
+
+        @keyframes fadeInUp {
+            to { opacity: 1; transform: translateY(0); }
+            from { opacity: 0; transform: translateY(30px); }
+        }
+
+        @keyframes revealTitle {
+            0% { opacity: 0; letter-spacing: 2rem; }
+            100% { opacity: 1; letter-spacing: 0.5rem; -webkit-text-stroke: 0; color: var(--gold); }
+        }
+
+        @keyframes expandLine {
+            to { width: 300px; }
+        }
+
+        @keyframes fadeOutIntro {
+            to { opacity: 0; pointer-events: none; }
+        }
+
+        /* MAIN CONTENT */
+        .main-content {
+            opacity: 0;
+            animation: fadeIn 2s ease-out 6s forwards;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        /* HERO SECTION */
         .hero {
             height: 100vh;
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
-            text-align: center;
-            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), 
-                        url('https://upload.wikimedia.org/wikipedia/commons/5/50/Jacques-Louis_David_-_The_Emperor_Napoleon_in_His_Study_at_the_Tuileries_-_Google_Art_Project.jpg');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(ellipse at center, rgba(212, 175, 55, 0.1) 0%, transparent 70%),
+                linear-gradient(180deg, transparent 0%, var(--darker) 100%);
+        }
+
+        .hero-crown {
+            font-size: 4rem;
+            color: var(--gold);
+            margin-bottom: 2rem;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
         }
 
         .hero h1 {
             font-family: 'Cinzel', serif;
-            font-size: 5rem;
-            color: #d4af37;
-            text-shadow: 3px 3px 6px rgba(0,0,0,0.8);
-            margin-bottom: 1rem;
-            animation: fadeInDown 1.5s ease;
+            font-size: 6rem;
+            font-weight: 700;
+            text-align: center;
+            background: linear-gradient(180deg, var(--gold-light) 0%, var(--gold) 50%, #996515 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 80px rgba(212, 175, 55, 0.5);
         }
 
-        .hero p {
-            font-size: 1.8rem;
-            color: #f0e6d3;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
-            animation: fadeInUp 1.5s ease;
+        .hero-subtitle {
+            font-size: 2rem;
+            font-style: italic;
+            color: #888;
+            margin-top: 1rem;
+            letter-spacing: 0.5rem;
         }
 
-        @keyframes fadeInDown {
-            from { opacity: 0; transform: translateY(-50px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(50px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        nav {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            background: rgba(26, 26, 46, 0.95);
-            padding: 1rem 2rem;
-            z-index: 1000;
+        .scroll-indicator {
+            position: absolute;
+            bottom: 50px;
             display: flex;
-            justify-content: center;
-            gap: 3rem;
-            border-bottom: 2px solid #d4af37;
+            flex-direction: column;
+            align-items: center;
+            color: var(--gold);
+            animation: pulse 2s ease-in-out infinite;
         }
 
-        nav a {
-            color: #d4af37;
-            text-decoration: none;
+        .scroll-indicator span {
+            font-size: 0.9rem;
+            letter-spacing: 0.3rem;
+            margin-bottom: 1rem;
+        }
+
+        .scroll-arrow {
+            width: 30px;
+            height: 50px;
+            border: 2px solid var(--gold);
+            border-radius: 25px;
+            position: relative;
+        }
+
+        .scroll-arrow::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            background: var(--gold);
+            border-radius: 50%;
+            animation: scrollDown 2s ease-in-out infinite;
+        }
+
+        @keyframes scrollDown {
+            0%, 100% { top: 10px; opacity: 1; }
+            50% { top: 30px; opacity: 0.3; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* QUOTE SECTION */
+        .quote-section {
+            padding: 150px 10%;
+            text-align: center;
+            position: relative;
+            background: linear-gradient(180deg, var(--darker) 0%, var(--dark) 50%, var(--darker) 100%);
+        }
+
+        .quote-mark {
             font-family: 'Cinzel', serif;
-            font-size: 1.1rem;
-            transition: all 0.3s ease;
+            font-size: 15rem;
+            color: rgba(212, 175, 55, 0.1);
+            position: absolute;
+            top: 50px;
+            left: 50%;
+            transform: translateX(-50%);
         }
 
-        nav a:hover {
-            color: #fff;
-            text-shadow: 0 0 10px #d4af37;
+        .quote-text {
+            font-size: 3rem;
+            font-style: italic;
+            line-height: 1.8;
+            max-width: 900px;
+            margin: 0 auto;
+            color: #ddd;
+            position: relative;
+            z-index: 1;
         }
 
-        section {
-            padding: 5rem 10%;
+        .quote-author {
+            margin-top: 3rem;
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+            color: var(--gold);
+            letter-spacing: 0.3rem;
+        }
+
+        /* TIMELINE */
+        .timeline-section {
+            padding: 100px 5%;
+            position: relative;
         }
 
         .section-title {
             font-family: 'Cinzel', serif;
-            font-size: 3rem;
-            color: #d4af37;
+            font-size: 4rem;
             text-align: center;
-            margin-bottom: 3rem;
+            color: var(--gold);
+            margin-bottom: 100px;
             position: relative;
         }
 
         .section-title::after {
             content: '';
-            display: block;
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
             width: 100px;
             height: 3px;
-            background: #d4af37;
-            margin: 1rem auto;
-        }
-
-        .bio-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 3rem;
-            align-items: center;
-        }
-
-        .bio-image {
-            width: 100%;
-            border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            border: 3px solid #d4af37;
-        }
-
-        .bio-text {
-            font-size: 1.2rem;
-            line-height: 1.8;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
         }
 
         .timeline {
             position: relative;
-            max-width: 1000px;
+            max-width: 1200px;
             margin: 0 auto;
         }
 
@@ -137,332 +282,416 @@
             position: absolute;
             left: 50%;
             transform: translateX(-50%);
-            width: 4px;
+            width: 2px;
             height: 100%;
-            background: #d4af37;
+            background: linear-gradient(180deg, transparent, var(--gold), transparent);
         }
 
         .timeline-item {
-            padding: 2rem;
-            width: 45%;
-            background: rgba(255,255,255,0.05);
-            border-radius: 10px;
-            margin-bottom: 2rem;
-            border: 1px solid #d4af37;
+            display: flex;
+            justify-content: flex-end;
+            padding-right: 50%;
             position: relative;
-        }
-
-        .timeline-item:nth-child(odd) {
-            margin-left: 5%;
+            margin-bottom: 80px;
         }
 
         .timeline-item:nth-child(even) {
-            margin-left: 50%;
+            justify-content: flex-start;
+            padding-right: 0;
+            padding-left: 50%;
         }
 
-        .timeline-item h3 {
-            color: #d4af37;
-            font-family: 'Cinzel', serif;
-            margin-bottom: 0.5rem;
-        }
-
-        .gallery {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 2rem;
-        }
-
-        .gallery-item {
+        .timeline-content {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(10, 10, 10, 0.9) 100%);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            padding: 40px;
+            max-width: 450px;
             position: relative;
-            overflow: hidden;
-            border-radius: 10px;
-            border: 2px solid #d4af37;
-            transition: transform 0.3s ease;
+            transition: all 0.5s ease;
         }
 
-        .gallery-item:hover {
-            transform: scale(1.05);
+        .timeline-content:hover {
+            transform: scale(1.02);
+            border-color: var(--gold);
+            box-shadow: 0 0 50px rgba(212, 175, 55, 0.2);
         }
 
-        .gallery-item img {
-            width: 100%;
-            height: 300px;
-            object-fit: cover;
-        }
-
-        .gallery-item .caption {
-            position: absolute;
-            bottom: 0;
-            width: 100%;
-            background: rgba(0,0,0,0.8);
-            padding: 1rem;
-            text-align: center;
+        .timeline-year {
             font-family: 'Cinzel', serif;
-            color: #d4af37;
+            font-size: 3rem;
+            color: var(--gold);
+            margin-bottom: 1rem;
         }
 
-        .battles {
+        .timeline-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            color: var(--gold-light);
+            margin-bottom: 1rem;
+        }
+
+        .timeline-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #aaa;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 20px;
+            background: var(--gold);
+            border-radius: 50%;
+            border: 4px solid var(--darker);
+        }
+
+        /* BATTLES SECTION */
+        .battles-section {
+            padding: 150px 5%;
+            background: linear-gradient(180deg, var(--darker) 0%, rgba(139, 0, 0, 0.1) 50%, var(--darker) 100%);
+        }
+
+        .battles-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
         }
 
         .battle-card {
-            background: linear-gradient(135deg, rgba(212,175,55,0.1), rgba(255,255,255,0.05));
-            padding: 2rem;
-            border-radius: 15px;
-            border: 1px solid #d4af37;
-            transition: transform 0.3s ease;
+            background: linear-gradient(180deg, rgba(139, 0, 0, 0.2) 0%, var(--dark) 100%);
+            border: 1px solid rgba(139, 0, 0, 0.5);
+            padding: 50px 40px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.5s ease;
+        }
+
+        .battle-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, transparent, var(--crimson), transparent);
+            transform: scaleX(0);
+            transition: transform 0.5s ease;
+        }
+
+        .battle-card:hover::before {
+            transform: scaleX(1);
         }
 
         .battle-card:hover {
             transform: translateY(-10px);
+            box-shadow: 0 20px 60px rgba(139, 0, 0, 0.3);
         }
 
-        .battle-card h3 {
-            color: #d4af37;
+        .battle-year {
             font-family: 'Cinzel', serif;
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
+            font-size: 1rem;
+            color: var(--crimson);
+            letter-spacing: 0.3rem;
         }
 
-        .battle-card img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            border-radius: 10px;
-            margin-bottom: 1rem;
-        }
-
-        .quote-section {
-            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)),
-                        url('https://upload.wikimedia.org/wikipedia/commons/f/f4/Jacques-Louis_David_-_Napoleon_Crossing_the_Alps_-_Kunsthistorisches_Museum.jpg');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            text-align: center;
-            padding: 8rem 10%;
-        }
-
-        .quote {
+        .battle-name {
+            font-family: 'Cinzel', serif;
             font-size: 2rem;
-            font-style: italic;
-            color: #f0e6d3;
-            max-width: 800px;
-            margin: 0 auto;
+            color: #fff;
+            margin: 1rem 0;
         }
 
-        .quote-author {
-            color: #d4af37;
-            font-family: 'Cinzel', serif;
-            margin-top: 1rem;
-            font-size: 1.3rem;
+        .battle-result {
+            display: inline-block;
+            padding: 0.5rem 1.5rem;
+            background: rgba(212, 175, 55, 0.2);
+            color: var(--gold);
+            font-size: 0.9rem;
+            letter-spacing: 0.2rem;
+            margin-bottom: 1rem;
+        }
+
+        .battle-desc {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            color: #999;
+        }
+
+        /* LEGACY SECTION */
+        .legacy-section {
+            padding: 150px 10%;
+            text-align: center;
         }
 
         .legacy-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 2rem;
+            gap: 60px;
+            max-width: 1200px;
+            margin: 80px auto 0;
         }
 
         .legacy-item {
-            text-align: center;
-            padding: 2rem;
-            background: rgba(255,255,255,0.05);
-            border-radius: 15px;
-            border: 1px solid #d4af37;
+            padding: 40px;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            transition: all 0.5s ease;
         }
 
-        .legacy-item h3 {
-            color: #d4af37;
+        .legacy-item:hover {
+            border-color: var(--gold);
+            background: rgba(212, 175, 55, 0.05);
+        }
+
+        .legacy-number {
             font-family: 'Cinzel', serif;
+            font-size: 4rem;
+            color: var(--gold);
             margin-bottom: 1rem;
         }
 
-        .legacy-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
+        .legacy-label {
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+            color: #888;
+            letter-spacing: 0.2rem;
         }
 
-        footer {
-            background: #0a0a14;
+        /* FINAL QUOTE */
+        .final-section {
+            padding: 200px 10%;
             text-align: center;
-            padding: 2rem;
-            border-top: 2px solid #d4af37;
+            position: relative;
+        }
+
+        .final-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 1px;
+            height: 100px;
+            background: linear-gradient(180deg, transparent, var(--gold));
+        }
+
+        .final-quote {
+            font-size: 2.5rem;
+            font-style: italic;
+            line-height: 1.8;
+            color: #ddd;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .final-years {
+            font-family: 'Cinzel', serif;
+            font-size: 3rem;
+            color: var(--gold);
+            margin-top: 60px;
+            letter-spacing: 1rem;
+        }
+
+        /* FOOTER */
+        footer {
+            padding: 50px;
+            text-align: center;
+            border-top: 1px solid rgba(212, 175, 55, 0.2);
         }
 
         footer p {
-            color: #888;
+            color: #555;
+            font-size: 0.9rem;
+            letter-spacing: 0.2rem;
         }
 
+        /* RESPONSIVE */
         @media (max-width: 768px) {
-            .hero h1 { font-size: 2.5rem; }
-            .bio-grid, .gallery, .battles, .legacy-grid { grid-template-columns: 1fr; }
-            .timeline-item { width: 90%; margin-left: 5% !important; }
-            .timeline::before { left: 5%; }
+            .hero h1 { font-size: 3rem; }
+            .intro-title { font-size: 2.5rem; }
+            .quote-text { font-size: 1.8rem; }
+            .timeline-item, .timeline-item:nth-child(even) {
+                padding: 0 0 0 50px;
+                justify-content: flex-start;
+            }
+            .timeline::before { left: 20px; }
+            .timeline-dot { left: 20px; }
+            .legacy-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
-    <nav>
-        <a href="#home">Home</a>
-        <a href="#biography">Biography</a>
-        <a href="#timeline">Timeline</a>
-        <a href="#battles">Battles</a>
-        <a href="#gallery">Gallery</a>
-        <a href="#legacy">Legacy</a>
-    </nav>
+    <!-- CINEMATIC INTRO -->
+    <div class="intro-overlay">
+        <div class="intro-year">MDCCLXIX - MDCCCXXI</div>
+        <div class="intro-line"></div>
+        <h1 class="intro-title">NAPOLEON</h1>
+        <p class="intro-subtitle">The Man Who Conquered Europe</p>
+    </div>
 
-    <section class="hero" id="home">
-        <h1>Napoleon Bonaparte</h1>
-        <p>Emperor of the French (1804-1814, 1815)</p>
-    </section>
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+        <!-- HERO -->
+        <section class="hero">
+            <div class="hero-crown">&#9813;</div>
+            <h1>Napoleon Bonaparte</h1>
+            <p class="hero-subtitle">Emperor of the French</p>
+            <div class="scroll-indicator">
+                <span>DISCOVER</span>
+                <div class="scroll-arrow"></div>
+            </div>
+        </section>
 
-    <section id="biography">
-        <h2 class="section-title">Biography</h2>
-        <div class="bio-grid">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/6/6a/Jacques-Louis_David_-_The_Emperor_Napoleon_in_His_Study_at_the_Tuileries_-_Google_Art_Project_2.jpg" alt="Napoleon Portrait" class="bio-image">
-            <div class="bio-text">
-                <p>Napoleon Bonaparte (1769-1821) was a French military commander and political leader who rose to prominence during the French Revolution and led several successful campaigns during the Revolutionary Wars.</p>
-                <br>
-                <p>Born in Corsica shortly after its annexation by France, Napoleon was educated at military schools in France. He rapidly rose through the ranks of the military during the French Revolution and became Emperor of the French in 1804.</p>
-                <br>
-                <p>His military genius and political acumen reshaped the map of Europe and established lasting reforms in law, education, and government that continue to influence the modern world.</p>
-            </div>
-        </div>
-    </section>
+        <!-- OPENING QUOTE -->
+        <section class="quote-section">
+            <div class="quote-mark">"</div>
+            <p class="quote-text">Impossible is a word to be found only in the dictionary of fools.</p>
+            <p class="quote-author">- NAPOLEON BONAPARTE</p>
+        </section>
 
-    <section class="quote-section">
-        <p class="quote">"Impossible is a word to be found only in the dictionary of fools."</p>
-        <p class="quote-author">- Napoleon Bonaparte</p>
-    </section>
+        <!-- TIMELINE -->
+        <section class="timeline-section">
+            <h2 class="section-title">The Rise of an Emperor</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="timeline-year">1769</div>
+                        <h3 class="timeline-title">Birth in Corsica</h3>
+                        <p class="timeline-text">Born in Ajaccio, just one year after France acquired Corsica from Genoa. A child of revolution, destined for greatness.</p>
+                    </div>
+                    <div class="timeline-dot"></div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="timeline-year">1785</div>
+                        <h3 class="timeline-title">Military Commission</h3>
+                        <p class="timeline-text">Commissioned as a second lieutenant in the artillery. His mathematical genius and strategic mind immediately set him apart.</p>
+                    </div>
+                    <div class="timeline-dot"></div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="timeline-year">1799</div>
+                        <h3 class="timeline-title">Coup of 18 Brumaire</h3>
+                        <p class="timeline-text">Seized power in a dramatic coup, becoming First Consul of France. The Republic was his; the Empire would follow.</p>
+                    </div>
+                    <div class="timeline-dot"></div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="timeline-year">1804</div>
+                        <h3 class="timeline-title">Coronation as Emperor</h3>
+                        <p class="timeline-text">Crowned himself Emperor in Notre-Dame Cathedral, taking the crown from the Pope's hands. "I found the crown of France in the gutter, and I picked it up with my sword."</p>
+                    </div>
+                    <div class="timeline-dot"></div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="timeline-year">1812</div>
+                        <h3 class="timeline-title">Russian Campaign</h3>
+                        <p class="timeline-text">Led 600,000 men into Russia. The Grande Armee met its greatest challenge against the Russian winter and scorched earth tactics.</p>
+                    </div>
+                    <div class="timeline-dot"></div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="timeline-year">1821</div>
+                        <h3 class="timeline-title">Death on St. Helena</h3>
+                        <p class="timeline-text">Died in exile at 51, but his legend had only just begun. "I wished to found a European system, a European Code of Laws, a European Court of Appeal."</p>
+                    </div>
+                    <div class="timeline-dot"></div>
+                </div>
+            </div>
+        </section>
 
-    <section id="timeline">
-        <h2 class="section-title">Key Events</h2>
-        <div class="timeline">
-            <div class="timeline-item">
-                <h3>1769 - Birth</h3>
-                <p>Born on August 15 in Ajaccio, Corsica, just one year after the island was transferred to France from Genoa.</p>
+        <!-- BATTLES -->
+        <section class="battles-section">
+            <h2 class="section-title">Battles of Glory</h2>
+            <div class="battles-grid">
+                <div class="battle-card">
+                    <span class="battle-year">DECEMBER 2, 1805</span>
+                    <h3 class="battle-name">Austerlitz</h3>
+                    <span class="battle-result">DECISIVE VICTORY</span>
+                    <p class="battle-desc">The Battle of the Three Emperors. Napoleon's greatest tactical masterpiece, defeating the combined armies of Russia and Austria.</p>
+                </div>
+                <div class="battle-card">
+                    <span class="battle-year">OCTOBER 14, 1806</span>
+                    <h3 class="battle-name">Jena-Auerstedt</h3>
+                    <span class="battle-result">CRUSHING VICTORY</span>
+                    <p class="battle-desc">The Prussian army, heirs of Frederick the Great, destroyed in a single day. Berlin fell within weeks.</p>
+                </div>
+                <div class="battle-card">
+                    <span class="battle-year">JULY 5-6, 1809</span>
+                    <h3 class="battle-name">Wagram</h3>
+                    <span class="battle-result">STRATEGIC VICTORY</span>
+                    <p class="battle-desc">The largest battle in history at that time. 300,000 men clashed as Napoleon broke Austrian resistance.</p>
+                </div>
+                <div class="battle-card">
+                    <span class="battle-year">SEPTEMBER 7, 1812</span>
+                    <h3 class="battle-name">Borodino</h3>
+                    <span class="battle-result">PYRRHIC VICTORY</span>
+                    <p class="battle-desc">The bloodiest single day of the Napoleonic Wars. 70,000 casualties. Moscow lay open, but victory rang hollow.</p>
+                </div>
+                <div class="battle-card">
+                    <span class="battle-year">OCTOBER 16-19, 1813</span>
+                    <h3 class="battle-name">Leipzig</h3>
+                    <span class="battle-result">DEFEAT</span>
+                    <p class="battle-desc">The Battle of Nations. All of Europe united against one man. Even in defeat, he remained defiant.</p>
+                </div>
+                <div class="battle-card">
+                    <span class="battle-year">JUNE 18, 1815</span>
+                    <h3 class="battle-name">Waterloo</h3>
+                    <span class="battle-result">FINAL DEFEAT</span>
+                    <p class="battle-desc">The Hundred Days ended on Belgian soil. Wellington and Blucher prevailed, but the legend became immortal.</p>
+                </div>
             </div>
-            <div class="timeline-item">
-                <h3>1799 - Coup d'etat</h3>
-                <p>Napoleon seizes power in France through a coup, becoming First Consul and effectively ending the French Revolution.</p>
-            </div>
-            <div class="timeline-item">
-                <h3>1804 - Emperor</h3>
-                <p>Crowned Emperor of the French at Notre-Dame Cathedral in Paris, crowning himself in a dramatic ceremony.</p>
-            </div>
-            <div class="timeline-item">
-                <h3>1805 - Austerlitz</h3>
-                <p>Wins his greatest victory at the Battle of Austerlitz against Russia and Austria, cementing French dominance.</p>
-            </div>
-            <div class="timeline-item">
-                <h3>1812 - Russian Campaign</h3>
-                <p>The disastrous invasion of Russia marks the beginning of Napoleon's downfall, losing over 400,000 soldiers.</p>
-            </div>
-            <div class="timeline-item">
-                <h3>1815 - Waterloo</h3>
-                <p>Final defeat at the Battle of Waterloo ends the Napoleonic Wars and leads to his exile to Saint Helena.</p>
-            </div>
-            <div class="timeline-item">
-                <h3>1821 - Death</h3>
-                <p>Dies on May 5 on the island of Saint Helena at age 51, likely from stomach cancer.</p>
-            </div>
-        </div>
-    </section>
+        </section>
 
-    <section id="battles">
-        <h2 class="section-title">Famous Battles</h2>
-        <div class="battles">
-            <div class="battle-card">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/1/18/Gros%2C_Battle_of_the_Pyramids.jpg" alt="Battle of the Pyramids">
-                <h3>Battle of the Pyramids (1798)</h3>
-                <p>Napoleon's Egyptian campaign victory against the Mamluks, showcasing his tactical brilliance with the famous "divisional square" formation.</p>
+        <!-- LEGACY -->
+        <section class="legacy-section">
+            <h2 class="section-title">Eternal Legacy</h2>
+            <div class="legacy-grid">
+                <div class="legacy-item">
+                    <div class="legacy-number">60+</div>
+                    <div class="legacy-label">BATTLES FOUGHT</div>
+                </div>
+                <div class="legacy-item">
+                    <div class="legacy-number">53</div>
+                    <div class="legacy-label">MAJOR VICTORIES</div>
+                </div>
+                <div class="legacy-item">
+                    <div class="legacy-number">2M</div>
+                    <div class="legacy-label">SOLDIERS COMMANDED</div>
+                </div>
             </div>
-            <div class="battle-card">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/2/21/Schlacht_bei_Austerlitz.jpg" alt="Battle of Austerlitz">
-                <h3>Battle of Austerlitz (1805)</h3>
-                <p>The "Battle of the Three Emperors" - Napoleon's masterpiece victory against combined Russian and Austrian forces.</p>
-            </div>
-            <div class="battle-card">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/e/e1/Iena.jpg" alt="Battle of Jena">
-                <h3>Battle of Jena (1806)</h3>
-                <p>Decisive victory over Prussia that effectively destroyed the Prussian army and led to French occupation of Berlin.</p>
-            </div>
-            <div class="battle-card">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/d/da/Sadler%2C_Battle_of_Waterloo.jpg" alt="Battle of Waterloo">
-                <h3>Battle of Waterloo (1815)</h3>
-                <p>Napoleon's final battle and defeat by the Duke of Wellington and Prussian forces, ending his rule forever.</p>
-            </div>
-        </div>
-    </section>
+        </section>
 
-    <section id="gallery">
-        <h2 class="section-title">Gallery</h2>
-        <div class="gallery">
-            <div class="gallery-item">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/f/f4/Jacques-Louis_David_-_Napoleon_Crossing_the_Alps_-_Kunsthistorisches_Museum.jpg" alt="Napoleon Crossing the Alps">
-                <div class="caption">Crossing the Alps</div>
-            </div>
-            <div class="gallery-item">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/0/08/Jacques-Louis_David_-_The_Coronation_of_Napoleon_%281805-1807%29.jpg" alt="Coronation">
-                <div class="caption">The Coronation</div>
-            </div>
-            <div class="gallery-item">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/5/56/Napoleon_-_2.jpg" alt="Napoleon Portrait">
-                <div class="caption">Imperial Portrait</div>
-            </div>
-            <div class="gallery-item">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/9/9d/Jean-Baptiste_Isabey_-_Napoleon%27s_Farewell_to_the_Imperial_Guard_at_Fontainebleau.jpg" alt="Farewell at Fontainebleau">
-                <div class="caption">Farewell at Fontainebleau</div>
-            </div>
-            <div class="gallery-item">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/Jacques-Louis_David_007.jpg" alt="Napoleon on Throne">
-                <div class="caption">Emperor on His Throne</div>
-            </div>
-            <div class="gallery-item">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/6/63/Napoleontombeau.jpg" alt="Napoleon's Tomb">
-                <div class="caption">Tomb at Les Invalides</div>
-            </div>
-        </div>
-    </section>
+        <!-- FINAL QUOTE -->
+        <section class="final-section">
+            <p class="final-quote">"Death is nothing, but to live defeated and inglorious is to die daily."</p>
+            <p class="final-years">1769 - 1821</p>
+        </section>
 
-    <section id="legacy">
-        <h2 class="section-title">Lasting Legacy</h2>
-        <div class="legacy-grid">
-            <div class="legacy-item">
-                <div class="legacy-icon">&#9878;</div>
-                <h3>Napoleonic Code</h3>
-                <p>His civil code became the foundation for legal systems in over 40 countries worldwide, establishing principles of equality before the law.</p>
-            </div>
-            <div class="legacy-item">
-                <div class="legacy-icon">&#127979;</div>
-                <h3>Education Reform</h3>
-                <p>Established the lycee system and universities that modernized French education and influenced educational systems globally.</p>
-            </div>
-            <div class="legacy-item">
-                <div class="legacy-icon">&#127963;</div>
-                <h3>Infrastructure</h3>
-                <p>Built roads, bridges, and canals across Europe. Paris was transformed with new boulevards, monuments, and the Arc de Triomphe.</p>
-            </div>
-        </div>
-    </section>
-
-    <footer>
-        <p>Created for Nadav M. | Napoleon Bonaparte Historical Website</p>
-    </footer>
+        <!-- FOOTER -->
+        <footer>
+            <p>A TRIBUTE TO THE EMPEROR</p>
+        </footer>
+    </div>
 
     <script>
-        // Smooth scrolling
-        document.querySelectorAll('nav a').forEach(anchor => {
-            anchor.addEventListener('click', function(e) {
-                e.preventDefault();
-                const section = document.querySelector(this.getAttribute('href'));
-                section.scrollIntoView({ behavior: 'smooth' });
-            });
+        // Parallax and scroll animations
+        document.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const hero = document.querySelector('.hero');
+            if (hero) {
+                hero.style.transform = `translateY(${scrolled * 0.3}px)`;
+            }
         });
 
-        // Fade in animation on scroll
+        // Intersection Observer for fade-in animations
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -472,10 +701,10 @@
             });
         }, { threshold: 0.1 });
 
-        document.querySelectorAll('.timeline-item, .battle-card, .gallery-item, .legacy-item').forEach(el => {
+        document.querySelectorAll('.timeline-content, .battle-card, .legacy-item').forEach(el => {
             el.style.opacity = '0';
-            el.style.transform = 'translateY(30px)';
-            el.style.transition = 'all 0.6s ease';
+            el.style.transform = 'translateY(50px)';
+            el.style.transition = 'all 0.8s ease-out';
             observer.observe(el);
         });
     </script>

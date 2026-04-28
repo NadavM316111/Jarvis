@@ -480,6 +480,8 @@ async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame
       'CALENDAR: googleapis | credentials.json + token.json',
       'EMAIL: gmail.js sendEmail(to, subject, body)',
       'SMS: run_code with twilio client.messages.create({ to, from: process.env.TWILIO_PHONE_NUMBER, body })',
+      `TWILIO_PHONE_NUMBER is: ${process.env.TWILIO_PHONE_NUMBER} — ALWAYS use process.env.TWILIO_PHONE_NUMBER, never hardcode a number`,
+      'CRITICAL: After run_code, check if the output contains "Error" or "Exception" — if so, report the failure to the user, never claim success on a failed task.',
       'IPHONE NOTIFY: POST http://192.168.4.102:1234/notify',
       '',
       '═══ PROACTIVE ═══',

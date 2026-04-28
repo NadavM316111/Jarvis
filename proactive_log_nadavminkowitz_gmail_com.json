@@ -1,67 +1,158 @@
 {
   "updates": [
     {
+      "id": 1777329086111,
+      "message": "⚡ Battery at 31% and draining — plug in your charger, Nadav.",
+      "time": "6:31:26 PM",
+      "date": "4/27/2026",
+      "read": false
+    },
+    {
+      "id": 1777327260518,
+      "message": "Unrecognized person detected at computer",
+      "time": "6:01:00 PM",
+      "date": "4/27/2026",
+      "read": false
+    },
+    {
+      "id": 1777327260359,
+      "message": "Unrecognized person detected at computer",
+      "time": "6:01:00 PM",
+      "date": "4/27/2026",
+      "read": false
+    },
+    {
+      "id": 1777327186045,
+      "message": "Unrecognized person detected at computer",
+      "time": "5:59:46 PM",
+      "date": "4/27/2026",
+      "read": false
+    },
+    {
+      "id": 1777327185843,
+      "message": "Unrecognized person detected at computer",
+      "time": "5:59:45 PM",
+      "date": "4/27/2026",
+      "read": false
+    },
+    {
+      "id": 1777327155366,
+      "message": "Nadav detected at computer — neutral mood",
+      "time": "5:59:15 PM",
+      "date": "4/27/2026",
+      "read": false
+    },
+    {
+      "id": 1777327154886,
+      "message": "Nadav detected at computer — neutral mood",
+      "time": "5:59:14 PM",
+      "date": "4/27/2026",
+      "read": false
+    },
+    {
+      "id": 1777326469975,
+      "message": "Nadav has stepped away from the computer",
+      "time": "5:47:49 PM",
+      "date": "4/27/2026",
+      "read": false
+    },
+    {
+      "id": 1777326469788,
+      "message": "Nadav has stepped away from the computer",
+      "time": "5:47:49 PM",
+      "date": "4/27/2026",
+      "read": false
+    },
+    {
+      "id": 1777326090035,
+      "message": "Unrecognized person detected at computer",
+      "time": "5:41:30 PM",
+      "date": "4/27/2026",
+      "read": true
+    },
+    {
+      "id": 1777326089742,
+      "message": "Unrecognized person detected at computer",
+      "time": "5:41:29 PM",
+      "date": "4/27/2026",
+      "read": true
+    },
+    {
+      "id": 1777325959869,
+      "message": "Nadav detected at computer — neutral mood",
+      "time": "5:39:19 PM",
+      "date": "4/27/2026",
+      "read": true
+    },
+    {
+      "id": 1777325959855,
+      "message": "Nadav detected at computer — neutral mood",
+      "time": "5:39:19 PM",
+      "date": "4/27/2026",
+      "read": true
+    },
+    {
       "id": 1777293770954,
       "message": "Good morning Nadav. Your laptop battery is at 19% and not charging - you should plug in soon to avoid losing work.",
       "time": "8:42:50 AM",
       "date": "4/27/2026",
-      "read": false
+      "read": true
     },
     {
       "id": 1777293763914,
       "message": "Morning Briefing: \n\n📧 EMAIL HIGHLIGHTS:\n• URGENT - GitGuardian detected a PostgreSQL URI exposed in your Jarvis GitHub repo - needs immediate attention\n• Daniel Minkowitz invited you to ClickFlo dinner on May 12 at 8pm at Abazu\n• Tom Kahan sent you a message (empty subject/body - may be attachment)\n• Investopedia: Stock futures flat, Fed rate decision coming this week\n\n📅 TODAY'S CALENDAR:\n• 1:00 PM - Check phone for recent Clickflo news\n\n📅 UPCOMING:\n• Apr 30 - Sunness Supper Club\n• May 3 - SAT Exam (6 days away!)\n\n☀️ WEATHER:\nCurrently 71°F, sunny. High of 84°F today, low 72°F tonight. Perfect South Florida day ahead.",
       "time": "8:42:43 AM",
       "date": "4/27/2026",
-      "read": false
+      "read": true
     },
     {
       "id": 1777293228365,
       "message": "Battery at 32% and not plugged in - consider charging soon.",
       "time": "8:33:48 AM",
       "date": "4/27/2026",
-      "read": false
+      "read": true
     },
     {
       "id": 1777293187067,
       "message": "Morning Briefing: ☀️ WEATHER: 71°F now, high of 84°F, sunny and beautiful today. 📧 EMAILS - URGENT: GitGuardian detected a PostgreSQL URI exposed in your Jarvis GitHub repo - handle this ASAP. Also: Daniel Minkowitz invited you to ClickFlo dinner on May 12 at 8pm at Abazu, Tom Kahan sent you a message, and Investopedia reports stock futures flat ahead of Fed decision. 📅 CALENDAR: No events today. Upcoming: Sunness Supper Club on Thursday April 30, SAT Exam on Sunday May 3 (6 days away - study time!). Have a great Monday, sir.",
       "time": "8:33:07 AM",
       "date": "4/27/2026",
-      "read": false
+      "read": true
     },
     {
       "id": 1777292597476,
       "message": "Morning Briefing: ☀️ WEATHER: 84°F sunny today, beautiful week ahead. 📧 URGENT EMAIL: GitGuardian detected a PostgreSQL URI exposed in your Jarvis GitHub repo - action needed. Also, Daniel Minkowitz invited you to ClickFlo dinner May 12th at Abazu (8pm), and Tom Kahan sent you a blank email yesterday. 📅 CALENDAR: Clear today. Upcoming: Sunness Supper Club Apr 30, SAT Exam May 3 (6 days away - time to prep!). No fires, solid day ahead sir.",
       "time": "8:23:17 AM",
       "date": "4/27/2026",
-      "read": false
+      "read": true
     },
     {
       "id": 1777292311017,
       "message": "Morning Briefing: \n\n☀️ WEATHER: 71°F now, sunny today with high of 84°F. Beautiful week ahead.\n\n📧 EMAILS - URGENT:\n⚠️ GitGuardian detected PostgreSQL URI exposed in your Jarvis GitHub repo - needs immediate attention.\n\n📧 IMPORTANT:\n• Daniel Minkowitz invited you to ClickFlo dinner May 12th at 8pm at Abazu\n• Tom Kahan sent you a message (no subject)\n\n📅 CALENDAR:\n• Today: Clear schedule\n• Apr 30: Sunness Supper Club\n• May 3: SAT Exam (6 days away)\n\nHave a productive day, Nadav.",
       "time": "8:18:31 AM",
       "date": "4/27/2026",
-      "read": false
+      "read": true
     },
     {
       "id": 1777291260268,
       "message": "Morning Briefing: \n\n📧 EMAIL HIGHLIGHTS:\n• 🚨 URGENT: GitGuardian detected PostgreSQL URI exposed in your Jarvis GitHub repo - security action needed\n• Daniel Minkowitz invited you to ClickFlo dinner May 12 @ 8pm at Abazu (unread)\n• Tom Kahan sent you an email (no subject/content)\n• Rest is promotional: Uber Eats, college ads, Instagram, Tubi\n\n📅 CALENDAR:\n• Today (Apr 27): No events scheduled\n• Coming up: Sunness Supper Club on April 30th\n\n🌤️ WEATHER (Fort Lauderdale):\nCurrently 70°F with 93% humidity. Today: Sunny, high 84°F. Tonight: Partly cloudy, low 72°F. Beautiful day ahead.\n\n⚡ ACTION ITEMS:\n1. Rotate the exposed PostgreSQL credentials in your Jarvis repo ASAP\n2. RSVP to Daniel's ClickFlo dinner invitation\n3. Check Tom Kahan's email - may need response",
       "time": "8:01:00 AM",
       "date": "4/27/2026",
-      "read": false
+      "read": true
     },
     {
       "id": 1777246849075,
       "message": "Unrecognized person detected at computer",
       "time": "7:40:49 PM",
       "date": "4/26/2026",
-      "read": false
+      "read": true
     },
     {
       "id": 1777246794925,
       "message": "I've detected your .env.local file containing sensitive API keys is currently displayed on screen with all credentials visible - you may want to close this before it's captured or seen by anyone else.",
       "time": "7:39:54 PM",
       "date": "4/26/2026",
-      "read": false
+      "read": true
     },
     {
       "id": 1777246715843,
@@ -606,97 +697,6 @@
       "id": 1776970537823,
       "message": "The answer is B - \"Fickle\" - capricious means unpredictable or changeable, which is the opposite of predictable and synonymous with fickle.",
       "time": "2:55:37 PM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776970412472,
-      "message": "The answer is B - \"A mournful song for the dead\" - a dirge is a funeral lament, which fits the solemn context of the passage describing sounds from a church at nightfall.",
-      "time": "2:53:32 PM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776970037737,
-      "message": "You have a busy week ahead with multiple summatives - English formative tomorrow (4/24), Hebrew reading and Jewish law summatives on 4/27, World History DBQ on 4/27, PreCalc summative on 4/28, Chem summative on 4/30, and Hebrew and History summatives on 5/1.",
-      "time": "2:47:17 PM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776969250811,
-      "message": "You're on your sixth Wordle guess with only T confirmed in position 1 and E somewhere in the word - try \"TWEET\" which fits the confirmed letters and uses available letters from your keyboard.",
-      "time": "2:34:10 PM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776968342253,
-      "message": "Nadav detected at computer — neutral mood",
-      "time": "2:19:02 PM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776968332328,
-      "message": "Unrecognized person detected at computer",
-      "time": "2:18:52 PM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776968247039,
-      "message": "You appear to be struggling with your Zookeeper's Wife short answer question - the AI feedback suggests adding discussion of Morys representing lost innocence, plant replacement as cultural erasure, and beetles as rescue tools to strengthen your response.",
-      "time": "2:17:27 PM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776967938600,
-      "message": "Unrecognized person detected at computer",
-      "time": "2:12:18 PM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776967922353,
-      "message": "Unrecognized person detected at computer",
-      "time": "2:12:02 PM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776967871796,
-      "message": "Unrecognized person detected at computer",
-      "time": "2:11:11 PM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776967868468,
-      "message": "Nadav detected at computer — neutral mood",
-      "time": "2:11:08 PM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776967861857,
-      "message": "Unrecognized person detected at computer",
-      "time": "2:11:01 PM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776967608190,
-      "message": "Unrecognized person detected at computer",
-      "time": "2:06:48 PM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776967364194,
-      "message": "Nadav detected at computer — neutral mood",
-      "time": "2:02:44 PM",
       "date": "4/23/2026",
       "read": true
     }

@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital SAT Practice - Reading & Writing Module 1</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0a1628;
+            color: #ffffff;
+            min-height: 100vh;
+        }
+        
+        .header {
+            background: #1a2a4a;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #3b82f6;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #3b82f6;
+        }
+        
+        .timer {
+            background: #ef4444;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+        
+        .timer.warning {
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .progress-bar {
+            background: #1e3a5f;
+            height: 8px;
+            width: 100%;
+        }
+        
+        .progress-fill {
+            background: linear-gradient(90deg, #3b82f6, #60a5fa);
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+        
+        .main-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+        
+        .question-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 30px;
+            justify-content: center;
+        }
+        
+        .nav-btn {
+            width: 40px;
+            height: 40px;
+            border: 2px solid #3b82f6;
+            background: transparent;
+            color: #3b82f6;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+        
+        .nav-btn:hover {
+            background: #3b82f6;
+            color: white;
+        }
+        
+        .nav-btn.active {
+            background: #3b82f6;
+            color: white;
+        }
+        
+        .nav-btn.answered {
+            background: #10b981;
+            border-color: #10b981;
+            color: white;
+        }
+        
+        .nav-btn.correct {
+            background: #10b981;
+            border-color: #10b981;
+        }
+        
+        .nav-btn.incorrect {
+            background: #ef4444;
+            border-color: #ef4444;
+        }
+        
+        .question-card {
+            background: #1a2a4a;
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+        
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+        
+        .passage {
+            background: #0f1d32;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            line-height: 1.8;
+            border-left: 4px solid #3b82f6;
+        }
+        
+        .question-text {
+            font-size: 1.1rem;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+        
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .option {
+            background: #0f1d32;
+            border: 2px solid #2a3f5f;
+            padding: 15px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .option:hover {
+            border-color: #3b82f6;
+            background: #162840;
+        }
+        
+        .option.selected {
+            border-color: #3b82f6;
+            background: #1e3a5f;
+        }
+        
+        .option.correct {
+            border-color: #10b981;
+            background: #064e3b;
+        }
+        
+        .option.incorrect {
+            border-color: #ef4444;
+            background: #7f1d1d;
+        }
+        
+        .option-letter {
+            width: 35px;
+            height: 35px;
+            border: 2px solid #3b82f6;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        
+        .option.selected .option-letter {
+            background: #3b82f6;
+        }
+        
+        .option.correct .option-letter {
+            background: #10b981;
+            border-color: #10b981;
+        }
+        
+        .option.incorrect .option-letter {
+            background: #ef4444;
+            border-color: #ef4444;
+        }
+        
+        .btn-row {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 25px;
+            gap: 15px;
+        }
+        
+        .btn {
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+        }
+        
+        .btn-secondary {
+            background: #2a3f5f;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #3b5278;
+        }
+        
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #2563eb;
+        }
+        
+        .btn-check {
+            background: #f59e0b;
+            color: black;
+        }
+        
+        .btn-check:hover {
+            background: #d97706;
+        }
+        
+        .explanation {
+            background: #064e3b;
+            border: 2px solid #10b981;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .explanation.show {
+            display: block;
+        }
+        
+        .explanation h4 {
+            color: #10b981;
+            margin-bottom: 10px;
+        }
+        
+        .results-screen {
+            display: none;
+            text-align: center;
+            padding: 50px 20px;
+        }
+        
+        .results-screen.show {
+            display: block;
+        }
+        
+        .score-circle {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 30px;
+        }
+        
+        .score-number {
+            font-size: 3rem;
+            font-weight: bold;
+        }
+        
+        .score-label {
+            font-size: 1rem;
+            opacity: 0.8;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .stat-card {
+            background: #1a2a4a;
+            padding: 20px;
+            border-radius: 12px;
+        }
+        
+        .stat-card h3 {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+        
+        .stat-card .value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #3b82f6;
+        }
+        
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">Digital SAT Practice</div>
+        <div class="timer" id="timer">32:00</div>
+    </header>
+    
+    <div class="progress-bar">
+        <div class="progress-fill" id="progressFill" style="width: 3.7%"></div>
+    </div>
+    
+    <div class="main-container">
+        <div id="testArea">
+            <div class="question-nav" id="questionNav"></div>
+            <div class="question-card" id="questionCard"></div>
+            <div class="btn-row">
+                <button class="btn btn-secondary" id="prevBtn" onclick="prevQuestion()">Previous</button>
+                <button class="btn btn-check" id="checkBtn" onclick="checkAnswer()">Check Answer</button>
+                <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()">Next</button>
+            </div>
+        </div>
+        
+        <div class="results-screen" id="resultsScreen">
+            <h1>Module Complete!</h1>
+            <div class="score-circle">
+                <div class="score-number" id="finalScore">0/27</div>
+                <div class="score-label">Correct</div>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Craft & Structure</h3>
+                    <div class="value" id="craftScore">0/9</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Information & Ideas</h3>
+                    <div class="value" id="infoScore">0/9</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Standard English Conventions</h3>
+                    <div class="value" id="conventionsScore">0/9</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Time Remaining</h3>
+                    <div class="value" id="timeRemaining">0:00</div>
+                </div>
+            </div>
+            <button class="btn btn-primary" style="margin-top: 30px;" onclick="reviewAnswers()">Review Answers</button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            // CRAFT & STRUCTURE (9 questions)
+            {
+                id: 1,
+                type: "Craft & Structure",
+                passage: "The committee's report on environmental regulations has been described by supporters as comprehensive and forward-thinking. Critics, however, have characterized it as a thinly veiled attempt to appease industry lobbyists while offering only cosmetic changes to existing policy.",
+                question: "As used in the passage, 'thinly veiled' most nearly suggests that the critics believe the report's true intentions are:",
+                options: [
+                    "Completely hidden from public view",
+                    "Barely concealed beneath surface-level reforms",
+                    "Protected by legal confidentiality",
+                    "Difficult to understand without expertise"
+                ],
+                correct: 1,
+                explanation: "The phrase 'thinly veiled' means something is poorly hidden or barely concealed. The critics are suggesting that the report's real purpose (appeasing lobbyists) is obvious despite the appearance of reform. This matches option B."
+            },
+            {
+                id: 2,
+                type: "Craft & Structure",
+                passage: "Dr. Elena Vasquez had spent fifteen years studying coral reef ecosystems before publishing her findings. Her conclusions, while initially met with skepticism from marine biologists who favored traditional models, have since revolutionized our understanding of reef resilience. What was once considered a fringe theory is now standard curriculum in oceanography programs worldwide.",
+                question: "The author's use of the phrase 'fringe theory' primarily serves to:",
+                options: [
+                    "Criticize Dr. Vasquez's early methodology",
+                    "Emphasize the dramatic shift in scientific acceptance of her work",
+                    "Suggest that her findings remain controversial today",
+                    "Question the validity of oceanography programs"
+                ],
+                correct: 1,
+                explanation: "By contrasting 'fringe theory' with 'standard curriculum,' the author emphasizes how dramatically the scientific community's view of Dr. Vasquez's work has changed. This highlights the shift from rejection to acceptance."
+            },
+            {
+                id: 3,
+                type: "Craft & Structure",
+                passage: "The novelist's latest work has been praised for its unflinching portrayal of working-class struggles. Yet one cannot help but notice that the author, who summers in the Hamptons and winters in Aspen, has perhaps never missed a meal that wasn't by choice.",
+                question: "The author's tone in the second sentence is best described as:",
+                options: [
+                    "Genuinely admiring of the novelist's success",
+                    "Neutral and objectively informative",
+                    "Sarcastically critical of the novelist's authenticity",
+                    "Uncertain about the quality of the novel"
+                ],
+                correct: 2,
+                explanation: "The phrase 'one cannot help but notice' combined with the pointed details about wealth ('summers in the Hamptons') creates a sarcastic tone. The author is implying the novelist lacks authentic experience with working-class struggles."
+            },
+            {
+                id: 4,
+                type: "Craft & Structure",
+                passage: "First, the proposed highway would reduce commute times for suburban residents. Additionally, it would create thousands of construction jobs. Most significantly, however, the project would establish a critical evacuation route for coastal communities increasingly threatened by rising sea levels.",
+                question: "The structure of the passage primarily serves to:",
+                options: [
+                    "Present three unrelated benefits of equal importance",
+                    "Build toward the most compelling argument for the highway",
+                    "Contrast the economic and environmental impacts of the project",
+                    "Undermine the case for building the highway"
+                ],
+                correct: 1,
+                explanation: "The progression from 'First' to 'Additionally' to 'Most significantly' creates a building structure that saves the strongest argument (evacuation safety) for last. This is a deliberate rhetorical strategy."
+            },
+            {
+                id: 5,
+                type: "Craft & Structure",
+                passage: "The CEO announced record quarterly profits with characteristic enthusiasm, declaring it 'a triumph of innovation and teamwork.' Notably absent from her remarks was any mention of the 2,000 employees laid off in January to achieve those numbers.",
+                question: "The function of the second sentence is primarily to:",
+                options: [
+                    "Provide additional context that supports the CEO's claims",
+                    "Suggest an inconsistency between the celebration and its human cost",
+                    "Explain why the layoffs were necessary for profitability",
+                    "Express uncertainty about the accuracy of the profit figures"
+                ],
+                correct: 1,
+                explanation: "By noting what was 'absent' from the CEO's remarks, the author draws attention to the layoffs and implies a troubling disconnect between celebrating profits and ignoring the workers who lost jobs to create them."
+            },
+            {
+                id: 6,
+                type: "Craft & Structure",
+                passage: "Supporters of the bill argue it will streamline regulatory processes and reduce bureaucratic waste. Opponents counter that 'streamline' is merely a euphemism for eliminating the environmental protections that have safeguarded public health for decades.",
+                question: "As used by opponents in the passage, 'euphemism' most directly suggests that the word 'streamline':",
+                options: [
+                    "Accurately describes the bill's intended effect",
+                    "Is too technical for average voters to understand",
+                    "Disguises harmful policy changes with positive language",
+                    "Was chosen randomly by the bill's supporters"
+                ],
+                correct: 2,
+                explanation: "A euphemism is a mild or pleasant word used to disguise something unpleasant. The opponents are arguing that 'streamline' sounds positive but actually means eliminating important protections."
+            },
+            {
+                id: 7,
+                type: "Craft & Structure",
+                passage: "The museum's new exhibit on ancient Rome has been called 'immersive' and 'educational' by reviewers. Visitors, however, have noted that the experience consists primarily of standing in dimly lit rooms while a narrator drones through historical facts one might easily find on Wikipedia.",
+                question: "The author's description of the narrator as someone who 'drones' primarily conveys:",
+                options: [
+                    "Appreciation for the narrator's thorough approach",
+                    "A negative assessment of the exhibit's presentation style",
+                    "Uncertainty about the historical accuracy of the content",
+                    "Admiration for the exhibit's educational value"
+                ],
+                correct: 1,
+                explanation: "The word 'drones' has a negative connotation, suggesting boring, monotonous speech. Combined with the Wikipedia comparison, the author clearly finds the presentation dull and unimpressive."
+            },
+            {
+                id: 8,
+                type: "Craft & Structure",
+                passage: "Revolutionary movements throughout history share a common pattern: initial idealism, gradual institutionalization, and eventual resemblance to the very systems they sought to overthrow. The French Revolution promised liberty; it delivered the guillotine. The Russian Revolution promised equality; it delivered the gulag.",
+                question: "The author uses the examples of France and Russia primarily to:",
+                options: [
+                    "Argue that revolutions should be avoided entirely",
+                    "Illustrate the pattern of revolutionary movements described in the first sentence",
+                    "Compare the relative success of European political systems",
+                    "Suggest that liberty and equality are impossible to achieve"
+                ],
+                correct: 1,
+                explanation: "The author establishes a pattern in the first sentence, then provides France and Russia as concrete examples of that pattern (idealism leading to oppression). The examples serve to illustrate, not to make a broader argument against revolution."
+            },
+            {
+                id: 9,
+                type: "Craft & Structure",
+                passage: "The tech company's press release announced that users would enjoy 'enhanced privacy features' in the new update. Translation: the company would now collect less data only because recent legislation made their previous practices illegal.",
+                question: "The author's use of 'Translation:' primarily serves to:",
+                options: [
+                    "Provide a literal translation from another language",
+                    "Offer technical clarification for non-expert readers",
+                    "Reveal what the author sees as the real meaning behind corporate language",
+                    "Express genuine appreciation for the company's transparency"
+                ],
+                correct: 2,
+                explanation: "By saying 'Translation,' the author is sarcastically suggesting that the press release's positive framing hides a less flattering reality - the company only changed because the law forced them to."
+            },
+            // INFORMATION & IDEAS (9 questions)
+            {
+                id: 10,
+                type: "Information & Ideas",
+                passage: "A recent study of 3,000 high school students found that those who participated in extracurricular activities reported higher levels of life satisfaction than those who did not. The correlation held across income levels and geographic regions. Researchers noted, however, that the study did not establish whether activities caused happiness or whether happier students were simply more likely to join activities.",
+                question: "Based on the passage, which statement best represents the researchers' conclusion?",
+                options: [
+                    "Extracurricular activities definitively cause students to be happier",
+                    "Students should be required to participate in extracurricular activities",
+                    "A relationship exists between activities and satisfaction, but causation is unclear",
+                    "Income level is the primary factor determining student happiness"
+                ],
+                correct: 2,
+                explanation: "The passage explicitly states that the study found a correlation but 'did not establish' causation. The researchers are careful not to claim that activities cause happiness."
+            },
+            {
+                id: 11,
+                type: "Information & Ideas",
+                passage: "Honeybees communicate the location of food sources through a 'waggle dance,' in which the angle of the dance indicates direction relative to the sun, and the duration indicates distance. Researchers recently discovered that bees raised in isolation perform less precise dances than those raised in colonies, suggesting the behavior has both innate and learned components.",
+                question: "According to the passage, the discovery about isolated bees suggests that the waggle dance is:",
+                options: [
+                    "Entirely determined by genetic factors",
+                    "Completely learned through observation",
+                    "A combination of instinct and social learning",
+                    "Less effective than other forms of bee communication"
+                ],
+                correct: 2,
+                explanation: "The passage states the behavior has 'both innate and learned components.' Isolated bees can perform the dance (innate) but do so less precisely without colony experience (learned)."
+            },
+            {
+                id: 12,
+                type: "Information & Ideas",
+                passage: "The city council approved a new zoning ordinance permitting higher-density housing near transit stations. Proponents argue this will create affordable housing options and reduce car dependency. Opponents contend that increased density will strain existing infrastructure and alter neighborhood character. The ordinance takes effect in January, though several council members have already proposed amendments.",
+                question: "Which of the following claims is directly supported by information in the passage?",
+                options: [
+                    "The zoning ordinance will successfully create affordable housing",
+                    "Higher-density housing always reduces car dependency",
+                    "Some council members want to modify the ordinance before it takes effect",
+                    "Opponents of the ordinance are primarily motivated by economic concerns"
+                ],
+                correct: 2,
+                explanation: "The passage states that 'several council members have already proposed amendments,' directly supporting option C. The other options either represent opinions or make claims not supported by the text."
+            },
+            {
+                id: 13,
+                type: "Information & Ideas",
+                passage: "Between 1990 and 2020, the global literacy rate rose from 76% to 87%. During the same period, the number of out-of-school children dropped from 100 million to 59 million. Educational researchers attribute these gains primarily to increased government investment in primary education across developing nations, though they note that girls' enrollment rates, while improved, still lag behind boys' in many regions.",
+                question: "Based on the passage, which statement is most accurate?",
+                options: [
+                    "Gender parity in education has been fully achieved worldwide",
+                    "Literacy improvements have been accompanied by increased school enrollment",
+                    "Private investment was the main driver of educational progress",
+                    "Developed nations saw the largest gains in literacy rates"
+                ],
+                correct: 1,
+                explanation: "The passage describes both rising literacy rates and falling numbers of out-of-school children, showing these improvements occurred together. The passage contradicts options A and C, and doesn't support D."
+            },
+            {
+                id: 14,
+                type: "Information & Ideas",
+                passage: "A pharmaceutical company's clinical trial for a new migraine medication showed a 40% reduction in headache frequency among participants who received the drug, compared to a 25% reduction among those who received a placebo. While statistically significant, critics point out that the trial lasted only twelve weeks and excluded patients with other chronic conditions.",
+                question: "The critics mentioned in the passage are primarily concerned that:",
+                options: [
+                    "The medication is not effective at reducing migraines",
+                    "The trial's design may limit how broadly its findings apply",
+                    "Pharmaceutical companies should not conduct their own research",
+                    "The placebo effect was too strong in this study"
+                ],
+                correct: 1,
+                explanation: "The critics note the trial's short duration and exclusion of certain patients - these are concerns about the trial's design and whether results will apply to real-world patients over longer periods."
+            },
+            {
+                id: 15,
+                type: "Information & Ideas",
+                passage: "Archaeological evidence suggests that ancient Polynesian navigators sailed thousands of miles across the Pacific Ocean using only natural wayfinding techniques - observing stars, wave patterns, and bird behavior. Some historians initially doubted these accounts, arguing that such voyages would have been impossible without modern instruments. In 1976, the Hokule'a, a traditional double-hulled canoe, successfully sailed from Hawaii to Tahiti using only ancestral navigation methods, demonstrating that the techniques described in oral histories were indeed viable.",
+                question: "The voyage of the Hokule'a is presented in the passage primarily as:",
+                options: [
+                    "The first successful Pacific crossing in human history",
+                    "Evidence that contradicted skeptical historians",
+                    "Proof that modern instruments are unnecessary for all ocean travel",
+                    "A scientific experiment with inconclusive results"
+                ],
+                correct: 1,
+                explanation: "The passage presents the Hokule'a voyage as 'demonstrating that the techniques described in oral histories were indeed viable,' directly addressing historians who 'doubted these accounts.'"
+            },
+            {
+                id: 16,
+                type: "Information & Ideas",
+                passage: "Urban heat islands occur when cities experience significantly higher temperatures than surrounding rural areas, primarily due to concrete and asphalt absorbing and retaining heat. A study of 50 major cities found that neighborhoods with more tree cover experienced temperatures up to 5 degrees Fahrenheit cooler than those with minimal vegetation. However, the study also found that tree cover was unequally distributed, with lower-income neighborhoods having 30% fewer trees on average.",
+                question: "Based on the passage, which conclusion is best supported?",
+                options: [
+                    "Planting trees will completely eliminate urban heat islands",
+                    "Lower-income neighborhoods may be disproportionately affected by urban heat",
+                    "Rural areas should adopt urban development patterns",
+                    "Temperature differences between neighborhoods are not significant"
+                ],
+                correct: 1,
+                explanation: "The passage establishes that fewer trees means higher temperatures, and that lower-income neighborhoods have 30% fewer trees. Together, these facts support the conclusion that these neighborhoods face greater heat exposure."
+            },
+            {
+                id: 17,
+                type: "Information & Ideas",
+                passage: "The decline of monarch butterfly populations has been attributed to multiple factors: habitat loss due to agricultural expansion, pesticide use, and climate change affecting migration patterns. Conservation efforts have focused primarily on planting milkweed, the only plant on which monarchs lay their eggs. While milkweed plantings have increased by 30% since 2015, monarch populations have continued to decline, leading some researchers to conclude that habitat restoration alone is insufficient.",
+                question: "According to the passage, the continued decline in monarch populations despite increased milkweed suggests that:",
+                options: [
+                    "Milkweed is not actually necessary for monarch reproduction",
+                    "Conservation efforts began too recently to show results",
+                    "Other threats beyond habitat loss are contributing to the decline",
+                    "Agricultural expansion has completely stopped"
+                ],
+                correct: 2,
+                explanation: "The passage states that 'habitat restoration alone is insufficient,' implying that the other mentioned factors (pesticides, climate change) are also contributing to the decline."
+            },
+            {
+                id: 18,
+                type: "Information & Ideas",
+                passage: "Economists have long debated whether increasing the minimum wage reduces employment. A 2019 meta-analysis reviewed 55 studies conducted since 2000 and found no consensus: 28 studies found negative employment effects, 20 found no significant effect, and 7 found positive effects. The authors concluded that employment impacts likely depend on local economic conditions, the size of the wage increase, and which industries are affected.",
+                question: "The meta-analysis described in the passage best supports which statement?",
+                options: [
+                    "Minimum wage increases always reduce employment",
+                    "Minimum wage increases never affect employment levels",
+                    "The relationship between minimum wage and employment is complex and context-dependent",
+                    "Economists have reached a clear consensus on this issue"
+                ],
+                correct: 2,
+                explanation: "The passage explicitly states there was 'no consensus' and that impacts 'depend on local economic conditions' and other factors. This directly supports option C about complexity and context."
+            },
+            // STANDARD ENGLISH CONVENTIONS (9 questions)
+            {
+                id: 19,
+                type: "Standard English Conventions",
+                passage: "The research team, which included scientists from three different universities, ____ working on the project for over five years before publishing their findings.",
+                question: "Which choice completes the sentence correctly?",
+                options: [
+                    "was",
+                    "were",
+                    "has been",
+                    "had been"
+                ],
+                correct: 3,
+                explanation: "The sentence describes an action (working) that occurred before another past action (publishing). This requires past perfect tense ('had been'). The singular 'team' is the subject, not 'scientists.'"
+            },
+            {
+                id: 20,
+                type: "Standard English Conventions",
+                passage: "The novelist's early works, characterized by sparse prose and ambiguous endings, ____ her later novels, which featured elaborate descriptions and clear resolutions.",
+                question: "Which choice correctly completes the sentence?",
+                options: [
+                    "contrasts with",
+                    "contrast with",
+                    "contrasting with",
+                    "has contrasted with"
+                ],
+                correct: 1,
+                explanation: "The subject is 'works' (plural), so the verb must be plural: 'contrast.' The simple present tense correctly describes an ongoing characteristic of the works."
+            },
+            {
+                id: 21,
+                type: "Standard English Conventions",
+                passage: "After months of negotiation, the two companies finally reached an agreement; ____ would merge their operations while maintaining separate brand identities.",
+                question: "Which choice correctly completes the sentence?",
+                options: [
+                    "it",
+                    "they",
+                    "which",
+                    "that"
+                ],
+                correct: 1,
+                explanation: "The pronoun refers to 'two companies' (plural), so 'they' is correct. 'It' is singular, and 'which/that' would create a fragment or unclear reference."
+            },
+            {
+                id: 22,
+                type: "Standard English Conventions",
+                passage: "The museum's collection includes works by Monet, Renoir, ____ Degas, all of whom were leading figures in the Impressionist movement.",
+                question: "Which choice correctly completes the sentence?",
+                options: [
+                    "and",
+                    "and also",
+                    "as well as",
+                    "along with"
+                ],
+                correct: 0,
+                explanation: "In a simple series of three or more items, use commas and 'and' before the final item. 'And also' is redundant, while 'as well as' and 'along with' would change the meaning."
+            },
+            {
+                id: 23,
+                type: "Standard English Conventions",
+                passage: "Neither the president nor the board members ____ willing to accept responsibility for the company's financial losses.",
+                question: "Which choice correctly completes the sentence?",
+                options: [
+                    "was",
+                    "were",
+                    "is",
+                    "has been"
+                ],
+                correct: 1,
+                explanation: "With 'neither...nor,' the verb agrees with the closer subject. 'Board members' is plural and closer to the verb, so 'were' is correct. Past tense matches the context."
+            },
+            {
+                id: 24,
+                type: "Standard English Conventions",
+                passage: "The athlete's dedication to ____ training regimen impressed even the most demanding coaches.",
+                question: "Which choice correctly completes the sentence?",
+                options: [
+                    "her",
+                    "their",
+                    "its",
+                    "your"
+                ],
+                correct: 0,
+                explanation: "The singular noun 'athlete' requires a singular possessive pronoun. 'Her' is correct assuming the athlete is female (as implied by the singular antecedent). 'Their' could work if gender-neutral, but 'her' is the clearest choice given 'athlete's' is singular and possessive."
+            },
+            {
+                id: 25,
+                type: "Standard English Conventions",
+                passage: "The city council approved the budget ____ after considerable debate, several amendments were added to address community concerns.",
+                question: "Which choice correctly completes the sentence?",
+                options: [
+                    "however",
+                    "however,",
+                    "; however,",
+                    "but"
+                ],
+                correct: 2,
+                explanation: "This sentence contains two independent clauses. A semicolon before 'however' and a comma after it correctly joins them. Option A and B create comma splices, and D would need a comma before it."
+            },
+            {
+                id: 26,
+                type: "Standard English Conventions",
+                passage: "The professor asked the students to compare the themes in Shakespeare's tragedies ____ the themes in his comedies.",
+                question: "Which choice correctly completes the sentence?",
+                options: [
+                    "with",
+                    "to",
+                    "against",
+                    "and"
+                ],
+                correct: 1,
+                explanation: "'Compare...to' is used when examining similarities between things. 'Compare...with' emphasizes differences. In academic contexts examining themes, 'compare to' is standard and correct."
+            },
+            {
+                id: 27,
+                type: "Standard English Conventions",
+                passage: "Having completed all the required coursework, ____ the diploma was finally awarded to the graduate.",
+                question: "Which revision corrects the error in the sentence?",
+                options: [
+                    "the graduate was finally awarded the diploma.",
+                    "the diploma was finally given to the graduate.",
+                    "it was time for the graduate to receive the diploma.",
+                    "the awarding of the diploma finally occurred."
+                ],
+                correct: 0,
+                explanation: "This is a dangling modifier error. The phrase 'Having completed all the required coursework' must be followed by the person who completed it (the graduate), not 'the diploma.' Option A correctly places 'the graduate' as the subject."
+            }
+        ];
+
+        let currentQuestion = 0;
+        let answers = new Array(27).fill(null);
+        let checked = new Array(27).fill(false);
+        let timeRemaining = 32 * 60; // 32 minutes in seconds
+        let timerInterval;
+
+        function initTest() {
+            buildNav();
+            showQuestion(0);
+            startTimer();
+        }
+
+        function buildNav() {
+            const nav = document.getElementById('questionNav');
+            nav.innerHTML = '';
+            for (let i = 0; i < 27; i++) {
+                const btn = document.createElement('button');
+                btn.className = 'nav-btn' + (i === currentQuestion ? ' active' : '') + (answers[i] !== null ? ' answered' : '');
+                btn.textContent = i + 1;
+                btn.onclick = () => showQuestion(i);
+                nav.appendChild(btn);
+            }
+        }
+
+        function showQuestion(index) {
+            currentQuestion = index;
+            const q = questions[index];
+            const card = document.getElementById('questionCard');
+            
+            card.innerHTML = `
+                <div class="question-header">
+                    <span>Question ${index + 1} of 27</span>
+                    <span>${q.type}</span>
+                </div>
+                <div class="passage">${q.passage}</div>
+                <div class="question-text">${q.question}</div>
+                <div class="options">
+                    ${q.options.map((opt, i) => `
+                        <div class="option ${answers[index] === i ? 'selected' : ''} ${checked[index] ? (i === q.correct ? 'correct' : (answers[index] === i ? 'incorrect' : '')) : ''}" onclick="selectOption(${i})">
+                            <div class="option-letter">${['A', 'B', 'C', 'D'][i]}</div>
+                            <div>${opt}</div>
+                        </div>
+                    `).join('')}
+                </div>
+                <div class="explanation ${checked[index] ? 'show' : ''}" id="explanation">
+                    <h4>Explanation</h4>
+                    <p>${q.explanation}</p>
+                </div>
+            `;
+            
+            document.getElementById('progressFill').style.width = ((index + 1) / 27 * 100) + '%';
+            document.getElementById('prevBtn').disabled = index === 0;
+            document.getElementById('nextBtn').textContent = index === 26 ? 'Finish' : 'Next';
+            
+            buildNav();
+        }
+
+        function selectOption(optionIndex) {
+            if (checked[currentQuestion]) return;
+            answers[currentQuestion] = optionIndex;
+            showQuestion(currentQuestion);
+        }
+
+        function checkAnswer() {
+            if (answers[currentQuestion] === null) {
+                alert('Please select an answer first!');
+                return;
+            }
+            checked[currentQuestion] = true;
+            showQuestion(currentQuestion);
+            updateNavForChecked();
+        }
+
+        function updateNavForChecked() {
+            const nav = document.getElementById('questionNav');
+            const btns = nav.querySelectorAll('.nav-btn');
+            const q = questions[currentQuestion];
+            if (checked[currentQuestion]) {
+                if (answers[currentQuestion] === q.correct) {
+                    btns[currentQuestion].classList.add('correct');
+                } else {
+                    btns[currentQuestion].classList.add('incorrect');
+                }
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuestion > 0) {
+                showQuestion(currentQuestion - 1);
+            }
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < 26) {
+                showQuestion(currentQuestion + 1);
+            } else {
+                showResults();
+            }
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeRemaining--;
+                const mins = Math.floor(timeRemaining / 60);
+                const secs = timeRemaining % 60;
+                document.getElementById('timer').textContent = mins + ':' + (secs < 10 ? '0' : '') + secs;
+                
+                if (timeRemaining <= 300) {
+                    document.getElementById('timer').classList.add('warning');
+                }
+                
+                if (timeRemaining <= 0) {
+                    clearInterval(timerInterval);
+                    showResults();
+                }
+            }, 1000);
+        }
+
+        function showResults() {
+            clearInterval(timerInterval);
+            
+            let correct = 0;
+            let craftCorrect = 0, craftTotal = 0;
+            let infoCorrect = 0, infoTotal = 0;
+            let convCorrect = 0, convTotal = 0;
+            
+            questions.forEach((q, i) => {
+                if (answers[i] === q.correct) {
+                    correct++;
+                    if (q.type === "Craft & Structure") craftCorrect++;
+                    else if (q.type === "Information & Ideas") infoCorrect++;
+                    else convCorrect++;
+                }
+                if (q.type === "Craft & Structure") craftTotal++;
+                else if (q.type === "Information & Ideas") infoTotal++;
+                else convTotal++;
+            });
+            
+            document.getElementById('testArea').style.display = 'none';
+            document.getElementById('resultsScreen').classList.add('show');
+            document.getElementById('finalScore').textContent = correct + '/27';
+            document.getElementById('craftScore').textContent = craftCorrect + '/' + craftTotal;
+            document.getElementById('infoScore').textContent = infoCorrect + '/' + infoTotal;
+            document.getElementById('conventionsScore').textContent = convCorrect + '/' + convTotal;
+            
+            const mins = Math.floor(timeRemaining / 60);
+            const secs = timeRemaining % 60;
+            document.getElementById('timeRemaining').textContent = mins + ':' + (secs < 10 ? '0' : '') + secs;
+        }
+
+        function reviewAnswers() {
+            document.getElementById('resultsScreen').classList.remove('show');
+            document.getElementById('testArea').style.display = 'block';
+            showQuestion(0);
+        }
+
+        // Start test immediately
+        initTest();
+    </script>
+</body>
+</html>

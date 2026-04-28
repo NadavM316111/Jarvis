@@ -1,0 +1,138 @@
+﻿[
+  {
+    "id": 11, "module": "RW1", "domain": "Craft and Structure", "skill": "Words in Context",
+    "passage": "The scientist described her approach to the problem as empirical, insisting that each hypothesis be tested through direct observation and measurable data rather than theoretical modeling alone.",
+    "question": "As used in the passage, 'empirical' most nearly means:",
+    "choices": ["A) based on experiment and observation", "B) purely mathematical", "C) revolutionary in nature", "D) widely accepted by experts"],
+    "answer": "A",
+    "explanation": "The context clues 'direct observation' and 'measurable data' confirm that 'empirical' refers to knowledge derived from experiment and observation."
+  },
+  {
+    "id": 12, "module": "RW1", "domain": "Information and Ideas", "skill": "Inferences",
+    "passage": "When the city council proposed building a new highway through the Riverside neighborhood, residents flooded the next three council meetings. Letters to local newspapers ran 8 to 1 against the proposal. Within a month, the council quietly shelved the plan.",
+    "question": "What can most reasonably be inferred from the passage?",
+    "choices": ["A) The council believed the highway would improve traffic", "B) Community opposition influenced the council's decision to abandon the proposal", "C) Riverside residents preferred public transportation over highways", "D) The council lacked the budget to complete the highway project"],
+    "answer": "B",
+    "explanation": "The passage establishes strong community opposition (flooded meetings, 8-to-1 letters) immediately before the plan was shelved. The inference that opposition influenced the decision is directly supported."
+  },
+  {
+    "id": 13, "module": "RW1", "domain": "Craft and Structure", "skill": "Text Structure and Purpose",
+    "passage": "To understand why the Roman aqueducts remain an engineering marvel, one must first appreciate the constraints under which they were built. The Romans had no mechanized pumps, no modern surveying equipment, and no computerized calculations. Yet they moved water across hundreds of miles with remarkable precision.",
+    "question": "The author begins by describing the Romans' limitations primarily to:",
+    "choices": ["A) argue that modern engineers are superior to Roman ones", "B) make the achievement of the aqueducts seem more impressive by contrast", "C) explain why Roman aqueducts eventually fell into disrepair", "D) suggest that the aqueducts were built by more advanced civilizations"],
+    "answer": "B",
+    "explanation": "By establishing what the Romans lacked before stating what they accomplished, the author creates contrast that amplifies the impressiveness of the achievement."
+  },
+  {
+    "id": 14, "module": "RW1", "domain": "Expression of Ideas", "skill": "Transitions",
+    "passage": "Early jazz musicians often learned by listening to recordings and imitating established players. _______, formal music theory was rarely part of their training.",
+    "question": "Which transition word or phrase best fits the logical relationship between the sentences?",
+    "choices": ["A) Therefore", "B) Similarly", "C) Nevertheless", "D) In addition"],
+    "answer": "D",
+    "explanation": "The second sentence adds another characteristic of early jazz musicians' training (absence of formal theory), building on the first. 'In addition' signals this additive relationship."
+  },
+  {
+    "id": 15, "module": "RW1", "domain": "Standard English Conventions", "skill": "Boundaries",
+    "passage": "The philosopher argued that true happiness cannot be found in external possessions _______ it must be cultivated from within.",
+    "question": "Which choice correctly completes the sentence?",
+    "choices": ["A) possessions, but", "B) possessions but,", "C) possessions. But,", "D) possessions but"],
+    "answer": "A",
+    "explanation": "Two independent clauses joined by a coordinating conjunction (but) require a comma before the conjunction. Option A is correct."
+  },
+  {
+    "id": 16, "module": "RW1", "domain": "Information and Ideas", "skill": "Central Ideas and Details",
+    "passage": "Bioluminescence â€” the ability of living organisms to produce and emit light â€” serves a variety of functions across species. Deep-sea fish use it to lure prey in lightless environments. Fireflies deploy it in mating rituals. Some species of bacteria emit light as a byproduct of metabolic processes, though researchers debate whether this serves any adaptive purpose.",
+    "question": "Which statement best captures the main idea of the passage?",
+    "choices": ["A) Bioluminescence is found only in deep-sea environments", "B) The purpose of bioluminescence varies significantly across different organisms", "C) Bacteria are the most studied bioluminescent organisms", "D) Bioluminescence evolved primarily as a hunting mechanism"],
+    "answer": "B",
+    "explanation": "The passage presents three different functions across three different organisms, and even notes uncertainty in one case. The main idea is the variation in purpose across species."
+  },
+  {
+    "id": 17, "module": "RW1", "domain": "Craft and Structure", "skill": "Words in Context",
+    "passage": "The novel's ending was deliberately ambiguous, leaving readers to wrestle with questions the author refused to answer directly.",
+    "question": "As used in the passage, 'ambiguous' most nearly means:",
+    "choices": ["A) unsatisfying and poorly written", "B) open to multiple interpretations", "C) intentionally misleading", "D) structurally complex"],
+    "answer": "B",
+    "explanation": "The context â€” 'leaving readers to wrestle with questions' â€” indicates the ending does not have a single clear meaning, which is the definition of 'ambiguous.'"
+  },
+  {
+    "id": 18, "module": "RW1", "domain": "Standard English Conventions", "skill": "Form, Structure, and Sense",
+    "passage": "The data collected over ten years _______ a clear trend toward warmer average temperatures in the region.",
+    "question": "Which choice correctly completes the sentence?",
+    "choices": ["A) suggest", "B) suggests", "C) are suggesting", "D) have suggested"],
+    "answer": "B",
+    "explanation": "'Data' can be singular or plural in modern usage; here 'the data collected' functions as a singular collective noun referring to a single set, so 'suggests' is correct."
+  },
+  {
+    "id": 19, "module": "RW1", "domain": "Expression of Ideas", "skill": "Rhetorical Synthesis",
+    "passage": "A student is arguing that social media has negative effects on teenage mental health. Notes: (1) A 2022 study found teens who used social media more than 3 hours daily had significantly higher rates of anxiety. (2) Instagram's internal research showed the app made body image issues worse for teenage girls. (3) Many teenagers report feeling pressure to present a curated, perfect version of their lives online.",
+    "question": "Which sentence most effectively uses the notes to support the student's argument?",
+    "choices": ["A) Social media can be both harmful and beneficial depending on how it is used.", "B) Teenagers spend too much time on their phones instead of engaging in real-world activities.", "C) Research and user data both indicate that heavy social media use is linked to anxiety, poor body image, and social pressure among teenagers.", "D) Instagram is the most dangerous social media platform for young people."],
+    "answer": "C",
+    "explanation": "Option C synthesizes all three notes accurately â€” the study (anxiety), Instagram's research (body image), and teen reports (social pressure) â€” without overstating any single finding."
+  },
+  {
+    "id": 20, "module": "RW1", "domain": "Information and Ideas", "skill": "Command of Evidence - Textual",
+    "passage": "Historian Eric Foner argues that Reconstruction, the period following the Civil War, was not a failure imposed on the South but rather a genuine, if incomplete, attempt to build an interracial democracy. He points to the election of over 600 Black legislators during the period as evidence of meaningful, if temporary, political transformation.",
+    "question": "Which detail from the passage most directly supports Foner's characterization of Reconstruction as a genuine attempt at transformation?",
+    "choices": ["A) Reconstruction followed the Civil War", "B) Reconstruction is often described as a failure", "C) Over 600 Black legislators were elected during Reconstruction", "D) Foner is a professional historian"],
+    "answer": "C",
+    "explanation": "The election of 600+ Black legislators is the concrete evidence Foner himself cites to support his claim of meaningful political transformation."
+  },
+  {
+    "id": 21, "module": "RW1", "domain": "Craft and Structure", "skill": "Cross-Text Connections",
+    "passage": "Text 1: The reintroduction of wolves to Yellowstone in 1995 triggered a cascade of ecological changes. Wolf predation reduced elk overgrazing, which allowed riverbank vegetation to recover, stabilizing stream banks and improving water quality. Text 2: While the Yellowstone wolf reintroduction is often cited as a conservation success, some ecologists caution against using it as a universal model. Local conditions, prey availability, and human settlement patterns vary too significantly across regions to assume that reintroduction will produce the same outcomes elsewhere.",
+    "question": "Both texts discuss wolf reintroduction, but they differ in that Text 1 _______ while Text 2 _______.",
+    "choices": ["A) focuses on one specific case; warns against over-generalizing from that case", "B) argues wolves should be reintroduced globally; argues against wolf reintroduction", "C) presents scientific data; presents only anecdotal evidence", "D) supports conservation efforts; opposes all wildlife reintroduction programs"],
+    "answer": "A",
+    "explanation": "Text 1 describes one specific successful case (Yellowstone). Text 2 acknowledges that case but cautions against applying it universally. A correctly captures both."
+  },
+  {
+    "id": 22, "module": "RW1", "domain": "Standard English Conventions", "skill": "Punctuation",
+    "passage": "The architect's most celebrated design, a glass-and-steel tower in downtown Chicago _______ won the prestigious Pritzker Prize in 2018.",
+    "question": "Which choice correctly uses punctuation?",
+    "choices": ["A) Chicago, won", "B) Chicago won", "C) Chicago; won", "D) Chicago â€” won"],
+    "answer": "A",
+    "explanation": "The phrase 'a glass-and-steel tower in downtown Chicago' is a nonrestrictive appositive that must be set off by commas on both sides. The first comma appears after 'design,' and the second must appear after 'Chicago.'"
+  },
+  {
+    "id": 23, "module": "RW1", "domain": "Information and Ideas", "skill": "Inferences",
+    "passage": "In the 1980s, when compact discs were introduced, many recording industry executives predicted that vinyl records would become obsolete within a decade. Today, vinyl record sales have surpassed CD sales for the first time since 1987.",
+    "question": "What can be most reasonably inferred from the passage?",
+    "choices": ["A) CDs are no longer produced by major manufacturers", "B) The executives' prediction that vinyl would become obsolete proved incorrect", "C) Vinyl records are now preferred by all age groups equally", "D) Digital streaming has had no impact on physical media sales"],
+    "answer": "B",
+    "explanation": "If vinyl sales now surpass CD sales, the prediction that vinyl would become obsolete clearly did not come true. B is the most direct and supported inference."
+  },
+  {
+    "id": 24, "module": "RW1", "domain": "Expression of Ideas", "skill": "Transitions",
+    "passage": "Caffeine temporarily blocks adenosine receptors in the brain, reducing feelings of fatigue. _______, it does not eliminate the underlying need for sleep; the fatigue returns, often intensified, once the caffeine wears off.",
+    "question": "Which transition word best fits?",
+    "choices": ["A) Furthermore", "B) However", "C) Therefore", "D) Similarly"],
+    "answer": "B",
+    "explanation": "The second sentence contrasts with the first â€” caffeine reduces fatigue, BUT it doesn't eliminate the need for sleep. 'However' signals this contrast."
+  },
+  {
+    "id": 25, "module": "RW1", "domain": "Craft and Structure", "skill": "Text Structure and Purpose",
+    "passage": "In 1962, Rachel Carson's Silent Spring warned that widespread pesticide use was decimating bird populations. The chemical industry responded with a fierce public relations campaign, calling Carson unscientific and alarmist. A government commission subsequently reviewed the evidence and largely vindicated her findings.",
+    "question": "The author's inclusion of the government commission's findings primarily serves to:",
+    "choices": ["A) show that government agencies are more reliable than private scientists", "B) suggest that the chemical industry's campaign against Carson ultimately succeeded", "C) demonstrate that Carson's conclusions were supported despite industry opposition", "D) explain why pesticide use declined after 1962"],
+    "answer": "C",
+    "explanation": "After establishing industry opposition, the author shows the commission 'largely vindicated' Carson â€” making the inclusion of this detail serve to validate her work despite the pushback."
+  },
+  {
+    "id": 26, "module": "RW1", "domain": "Standard English Conventions", "skill": "Form, Structure, and Sense",
+    "passage": "Each of the proposed solutions _______ significant drawbacks that must be addressed before implementation.",
+    "question": "Which choice is grammatically correct?",
+    "choices": ["A) have", "B) has", "C) are having", "D) were having"],
+    "answer": "B",
+    "explanation": "'Each' is always singular, regardless of what follows. 'Each of the proposed solutions has' is correct."
+  },
+  {
+    "id": 27, "module": "RW1", "domain": "Craft and Structure", "skill": "Words in Context",
+    "passage": "The CEO's remarks at the shareholder meeting were notably circumspect, carefully avoiding any definitive statements about the company's financial outlook.",
+    "question": "As used in the passage, 'circumspect' most nearly means:",
+    "choices": ["A) confident and decisive", "B) dishonest and evasive", "C) cautious and guarded", "D) optimistic about the future"],
+    "answer": "C",
+    "explanation": "'Carefully avoiding any definitive statements' is the context clue. This matches 'cautious and guarded' â€” circumspect means being careful about what one says."
+  }
+]

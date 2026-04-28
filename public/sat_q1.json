@@ -1,0 +1,82 @@
+﻿[
+  {
+    "id": 1, "module": "RW1", "domain": "Craft and Structure", "skill": "Words in Context",
+    "passage": "Although the new policy was intended to streamline operations, critics argued that its implementation was so hasty that it created more confusion than it resolved. Several department heads described the rollout as chaotic, noting that employees had received little guidance on the new procedures.",
+    "question": "As used in the passage, the word 'streamline' most nearly means:",
+    "choices": ["A) complicate", "B) simplify and make more efficient", "C) eliminate entirely", "D) modernize through technology"],
+    "answer": "B",
+    "explanation": "In context, 'streamline' means to make a process simpler and more efficient. The contrast with 'confusion' and 'chaotic' confirms that streamlining was the intended positive goal."
+  },
+  {
+    "id": 2, "module": "RW1", "domain": "Craft and Structure", "skill": "Text Structure and Purpose",
+    "passage": "The documentary opens with sweeping aerial shots of pristine Arctic wilderness before cutting abruptly to footage of industrial drilling operations. No narration accompanies either sequence.",
+    "question": "The filmmaker's decision to juxtapose the two sequences without narration primarily serves to:",
+    "choices": ["A) inform viewers about Arctic geography", "B) allow viewers to draw their own conclusions about industrialization's impact", "C) argue that drilling operations are necessary for economic growth", "D) demonstrate the technical capabilities of modern filmmaking"],
+    "answer": "B",
+    "explanation": "The absence of narration is a deliberate authorial choice â€” by letting images speak for themselves, the filmmaker invites the viewer to interpret the contrast, rather than telling them what to think."
+  },
+  {
+    "id": 3, "module": "RW1", "domain": "Craft and Structure", "skill": "Cross-Text Connections",
+    "passage": "Text 1: Psychologist Carol Dweck argues that individuals with a growth mindset â€” the belief that abilities can be developed â€” consistently outperform those with a fixed mindset over time. Text 2: A 2023 meta-analysis examining 150 studies found only a weak correlation between mindset interventions and academic outcomes, suggesting the effects of growth mindset training may be overstated.",
+    "question": "Based on the texts, how would the author of Text 2 most likely respond to the claim made in Text 1?",
+    "choices": ["A) By agreeing that growth mindset is the most important factor in academic success", "B) By questioning whether the evidence for growth mindset's impact is as strong as claimed", "C) By arguing that fixed mindset students are inherently incapable of improvement", "D) By suggesting that Dweck's research methodology was fundamentally flawed"],
+    "answer": "B",
+    "explanation": "Text 2 presents data suggesting mindset effects are 'overstated,' which directly challenges Text 1's strong claim. The author of Text 2 would question the strength of evidence, not attack Dweck personally or dismiss improvement entirely."
+  },
+  {
+    "id": 4, "module": "RW1", "domain": "Information and Ideas", "skill": "Central Ideas and Details",
+    "passage": "For centuries, cartographers depicted Terra Australis â€” a hypothetical southern continent â€” on maps despite having no evidence of its existence. The landmass was considered a geographic necessity: theorists believed the northern landmasses had to be balanced by a southern equivalent to prevent the Earth from toppling. When explorers eventually reached Antarctica, the continent bore little resemblance to the imagined Terra Australis in size or location.",
+    "question": "Which statement best captures the central idea of the passage?",
+    "choices": ["A) Antarctica was discovered centuries before explorers reached it", "B) Cartographers in earlier centuries were generally unreliable", "C) A theoretical assumption led to the long-held belief in a southern continent that differed significantly from reality", "D) Geographic balance is a proven scientific principle that guided early exploration"],
+    "answer": "C",
+    "explanation": "The passage traces how an unproven theoretical belief (balance of landmasses) led cartographers to depict Terra Australis, and how reality differed from the assumption. Option C captures both the cause and the outcome."
+  },
+  {
+    "id": 5, "module": "RW1", "domain": "Information and Ideas", "skill": "Command of Evidence - Textual",
+    "passage": "Marine biologist Dr. Sylvia Earle has long contended that the ocean's health is inseparable from human wellbeing. She points to the fact that the ocean produces over half of the world's oxygen and absorbs roughly 30 percent of the carbon dioxide humans produce. Despite this, less than 10 percent of the global ocean is currently protected.",
+    "question": "Which finding from the passage most directly supports Earle's contention that ocean health affects human wellbeing?",
+    "choices": ["A) Less than 10 percent of the ocean is protected", "B) The ocean produces over half of the world's oxygen", "C) Earle has been studying marine biology for decades", "D) Carbon dioxide levels in the atmosphere are rising"],
+    "answer": "B",
+    "explanation": "Earle's claim is that ocean health is connected to human wellbeing. The fact that the ocean produces over half of our oxygen directly demonstrates that humans depend on the ocean to survive â€” making B the strongest evidence."
+  },
+  {
+    "id": 6, "module": "RW1", "domain": "Information and Ideas", "skill": "Command of Evidence - Quantitative",
+    "passage": "A study tracked reading comprehension scores for students in three groups: those who read on paper, those who read on tablets with e-ink displays, and those who read on backlit screens. After six weeks, paper readers scored an average of 84, e-ink readers scored 81, and backlit screen readers scored 73.",
+    "question": "A researcher claims that reading format significantly affects comprehension. Which piece of data from the study best supports this claim?",
+    "choices": ["A) E-ink and paper readers scored within 3 points of each other", "B) All three groups showed improvement over the six-week period", "C) Backlit screen readers scored 11 points lower than paper readers", "D) The study lasted exactly six weeks"],
+    "answer": "C",
+    "explanation": "An 11-point gap between paper and backlit screen readers is the largest difference in the data and most directly supports the claim that format 'significantly' affects scores."
+  },
+  {
+    "id": 7, "module": "RW1", "domain": "Expression of Ideas", "skill": "Rhetorical Synthesis",
+    "passage": "A student is writing a report on urban heat islands and wants to explain why cities are hotter than surrounding rural areas. The student has found the following notes: (1) Dark surfaces like asphalt absorb and retain heat. (2) Buildings block wind that would otherwise cool streets. (3) Air conditioning units expel heat outdoors. (4) Vegetation, which provides cooling shade, is scarce in urban areas.",
+    "question": "Which sentence most effectively synthesizes the notes to explain the urban heat island effect?",
+    "choices": ["A) Cities have more asphalt than rural areas, which makes them warmer.", "B) Urban areas are hotter because buildings are tall and close together.", "C) Heat-absorbing surfaces, reduced wind flow, expelled air conditioning heat, and lack of vegetation all contribute to elevated urban temperatures.", "D) The urban heat island effect is caused primarily by the absence of trees in city environments."],
+    "answer": "C",
+    "explanation": "Only C incorporates all four notes into a unified, accurate explanation. The others address only one or two factors and therefore fail to fully synthesize the notes."
+  },
+  {
+    "id": 8, "module": "RW1", "domain": "Standard English Conventions", "skill": "Boundaries",
+    "passage": "The expedition team had been traveling for three weeks _______ supplies were beginning to run low.",
+    "question": "Which choice completes the text with the most appropriate punctuation and/or conjunction?",
+    "choices": ["A) weeks, and their", "B) weeks their", "C) weeks. Their", "D) weeks; and their"],
+    "answer": "A",
+    "explanation": "Two independent clauses must be joined properly. A comma with a coordinating conjunction (and) correctly joins them. Option B is a comma splice error. Option C is technically correct but abrupt. Option D uses a semicolon before a coordinating conjunction incorrectly."
+  },
+  {
+    "id": 9, "module": "RW1", "domain": "Standard English Conventions", "skill": "Form, Structure, and Sense",
+    "passage": "Neither the lead researcher nor her assistants _______ able to replicate the original findings.",
+    "question": "Which choice correctly completes the sentence?",
+    "choices": ["A) was", "B) were", "C) are being", "D) have been"],
+    "answer": "B",
+    "explanation": "With 'neither...nor' constructions, the verb agrees with the noun closest to it. The closest noun is 'assistants' (plural), so 'were' is correct."
+  },
+  {
+    "id": 10, "module": "RW1", "domain": "Standard English Conventions", "skill": "Punctuation",
+    "passage": "The museum's newest exhibit features artifacts from three ancient civilizations _______ Mesopotamia, Egypt, and the Indus Valley.",
+    "question": "Which choice uses punctuation correctly?",
+    "choices": ["A) civilizations, Mesopotamia", "B) civilizations: Mesopotamia", "C) civilizations; Mesopotamia", "D) civilizations Mesopotamia"],
+    "answer": "B",
+    "explanation": "A colon is used to introduce a list or explanation that follows a complete independent clause. 'The museum's newest exhibit features artifacts from three ancient civilizations' is a complete clause, so a colon correctly introduces the list."
+  }
+]
