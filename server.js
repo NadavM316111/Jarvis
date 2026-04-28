@@ -527,6 +527,14 @@ async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame
 'NEON DB URL: postgresql://neondb_owner:npg_kT50YOCedwLf@ep-snowy-darkness-a4sa5ao8-pooler.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require',
 'For AI features in apps: call https://api.heyjarvis.me/ai-proxy with POST {prompt, system} — JARVIS will respond as AI inside the app.',
 '',
+'CRITICAL: All API routes must use @neondatabase/serverless neon tagged template literals, NEVER use pg Pool or pool.query — those are not available.',
+'CRITICAL: NEVER append routes directly to server.js. Instead:',
+'1. Create a separate file: C:/Users/nadav/jarvis-web/apps/appname.js',
+'2. Write all routes in that file using: module.exports = (app, sql) => { ... }',
+'3. In server.js, add ONE line before app.listen: require("./apps/appname")(app, chatSql)',
+'4. This keeps server.js clean and prevents duplicate variable errors.',
+'The apps/ folder is at C:/Users/nadav/jarvis-web/apps/',
+'When the app is complete always give the user the direct working URL as a clickable link.',
   '═══ GMAIL & CALENDAR ═══',
 'To read emails: use run_code with node:',
 'const { getRecentEmails } = require("./gmail_multi");',
@@ -603,9 +611,10 @@ async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame
   while (iterations < 25) {
     iterations++;
 
-    const isComplexTask = /build|website|html|code|program|script|3d model|generate image|luma|video|spreadsheet|presentation/i.test(userMessage);
+    const isComplexTask = /build|website|html|code|program|script|3d model|generate image|luma|video|spreadsheet|presentation|app|clone|platform|saas/i.test(userMessage);
     const response = await anthropic.messages.create({
       model: isComplexTask ? 'claude-opus-4-5' : 'claude-sonnet-4-6',
+
       max_tokens: isComplexTask ? 16000 : 4000,
       system: systemPrompt,
       tools,
@@ -1022,6 +1031,10 @@ app.get('/iphone-command', authMiddleware, (req, res) => {
 // ============ STUDIOS ============
 app.get('/hyperflex', (req, res) => res.sendFile(path.join(__dirname, 'hyperflex.html')));
 app.get('/design', (req, res) => res.sendFile(path.join(__dirname, 'design.html')));
+// Pulse App - Anonymous Confession App
+app.get('/pulse', (req, res) => res.sendFile(path.join(PUBLIC_DIR, 'pulse', 'index.html')));
+app.get('/pulse/', (req, res) => res.sendFile(path.join(PUBLIC_DIR, 'pulse', 'index.html')));
+app.use('/pulse', express.static(path.join(PUBLIC_DIR, 'pulse')));
 app.post('/design-command', async (req, res) => {
   const { command, systemPrompt, history } = req.body;
   try {

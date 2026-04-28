@@ -10,3 +10,16 @@
 
 [FACE] Starting face_monitor.py...
 [VISION] Continuous vision loop started
+
+[MORNING BRIEFING] Running...
+
+[PROACTIVE BRAIN] Running for Nadav...
+[DB] loadUserMemory error: Error connecting to database: TypeError: fetch failed
+[PROACTIVE] Error: Connection error.
+[VISION] Error: Connection error.
+[MORNING BRIEFING] Error: Connection error.
+[VISION] Error: Connection error.
+
+[PROACTIVE BRAIN] Running for Nadav...
+[VISION] Error: Connection error.
+[PROACTIVE] Error: Connection error.
