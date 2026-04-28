@@ -1,0 +1,12 @@
+◇ injected env (0) from .env.local // tip: ⌘ multiple files { path: ['.env.local', '.env'] }
+
+╔════════════════════════════════════════╗
+║       J.A.R.V.I.S. ONLINE              ║
+║       Port: 3001                       ║
+║       Multi-user: ENABLED              ║
+║       Vision loop: 30s startup         ║
+║       Face monitor: 10s startup        ║
+╚════════════════════════════════════════╝
+
+[FACE] Starting face_monitor.py...
+[VISION] Continuous vision loop started

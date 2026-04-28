@@ -228,7 +228,7 @@ async function executeCode(code, language = 'node', description = '') {
     if (language === 'python') cmd = `python -X utf8 "${tmpFile}"`;
     else if (language === 'powershell') cmd = `powershell -ExecutionPolicy Bypass -File "${tmpFile}"`;
     else if (language === 'bash') cmd = `bash "${tmpFile}"`;
-    else cmd = `node --experimental-require-module "${tmpFile}"`;
+    else cmd = `node --no-experimental-detect-module "${tmpFile}"`;
 
     const result = execSync(cmd, { timeout: 60000, cwd: __dirname }).toString();
     try { fs.unlinkSync(tmpFile); } catch {}
@@ -1138,6 +1138,236 @@ app.get('/auth/google/status', authMiddleware, async (req, res) => {
   const connected = await isConnected(req.user.userId);
   res.json({ connected });
 });
+
+// ===================== CHAT APP API =====================
+const { neon: chatNeon } = require('@neondatabase/serverless');
+const chatSql = chatNeon('postgresql://neondb_owner:npg_kT50YOCedwLf@ep-snowy-darkness-a4sa5ao8-pooler.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require');
+const cryptoMod = require('crypto');
+function chatHash(pass) { return cryptoMod.createHash('sha256').update(pass + 'chatapp_salt_2024').digest('hex'); }
+function convId(a, b) { return [a,b].sort().join('_'); }
+function genId() { return Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
+
+app.post('/chat-app/signup', async (req, res) => {
+  try {
+    const { name, phone, password } = req.body;
+    if (!name || !phone || !password) return res.json({ ok: false, error: 'Missing fields' });
+    if (password.length < 6) return res.json({ ok: false, error: 'Password too short' });
+    const cleanPhone = phone.replace(/\s/g,'');
+    const existing = await chatSql`SELECT id FROM chat_users WHERE phone = ${cleanPhone}`;
+    if (existing.length > 0) return res.json({ ok: false, error: 'Phone already registered' });
+    const id = genId();
+    await chatSql`INSERT INTO chat_users (id, name, phone, password_hash, online) VALUES (${id}, ${name}, ${cleanPhone}, ${chatHash(password)}, true)`;
+    res.json({ ok: true, user: { id, name, phone: cleanPhone } });
+  } catch(e) { res.json({ ok: false, error: e.message }); }
+});
+
+app.post('/chat-app/login', async (req, res) => {
+  try {
+    const { phone, password } = req.body;
+    const cleanPhone = phone.replace(/\s/g,'');
+    const users = await chatSql`SELECT id, name, phone FROM chat_users WHERE phone = ${cleanPhone} AND password_hash = ${chatHash(password)}`;
+    if (users.length === 0) return res.json({ ok: false, error: 'Wrong phone or password' });
+    await chatSql`UPDATE chat_users SET online = true, last_seen = NOW() WHERE id = ${users[0].id}`;
+    res.json({ ok: true, user: users[0] });
+  } catch(e) { res.json({ ok: false, error: e.message }); }
+});
+
+app.post('/chat-app/logout', async (req, res) => {
+  try {
+    const { userId } = req.body;
+    await chatSql`UPDATE chat_users SET online = false, last_seen = NOW() WHERE id = ${userId}`;
+    res.json({ ok: true });
+  } catch(e) { res.json({ ok: false, error: e.message }); }
+});
+
+app.get('/chat-app/users', async (req, res) => {
+  try {
+    const { q, myId } = req.query;
+    let users;
+    if (q && q.trim()) {
+      const search = '%' + q.toLowerCase() + '%';
+      users = await chatSql`SELECT id, name, phone, online, last_seen FROM chat_users WHERE id != ${myId || ''} AND LOWER(name) LIKE ${search} ORDER BY name LIMIT 20`;
+    } else {
+      users = await chatSql`SELECT id, name, phone, online, last_seen FROM chat_users WHERE id != ${myId || ''} ORDER BY name LIMIT 50`;
+    }
+    res.json({ ok: true, users });
+  } catch(e) { res.json({ ok: false, error: e.message }); }
+});
+
+app.post('/chat-app/send', async (req, res) => {
+  try {
+    const { senderId, receiverId, text } = req.body;
+    if (!senderId || !receiverId || !text) return res.json({ ok: false, error: 'Missing fields' });
+    const id = genId();
+    const cid = convId(senderId, receiverId);
+    await chatSql`INSERT INTO chat_messages (id, conversation_id, sender_id, receiver_id, text) VALUES (${id}, ${cid}, ${senderId}, ${receiverId}, ${text})`;
+    res.json({ ok: true, id, cid });
+  } catch(e) { res.json({ ok: false, error: e.message }); }
+});
+
+app.get('/chat-app/messages', async (req, res) => {
+  try {
+    const { userId, otherId, since } = req.query;
+    const cid = convId(userId, otherId);
+    let msgs;
+    if (since) {
+      msgs = await chatSql`SELECT * FROM chat_messages WHERE conversation_id = ${cid} AND sent_at > ${new Date(parseInt(since))} ORDER BY sent_at ASC LIMIT 200`;
+    } else {
+      msgs = await chatSql`SELECT * FROM chat_messages WHERE conversation_id = ${cid} ORDER BY sent_at ASC LIMIT 200`;
+    }
+    // Mark as read
+    await chatSql`UPDATE chat_messages SET read = true WHERE conversation_id = ${cid} AND receiver_id = ${userId} AND read = false`;
+    res.json({ ok: true, messages: msgs });
+  } catch(e) { res.json({ ok: false, error: e.message }); }
+});
+
+app.get('/chat-app/conversations', async (req, res) => {
+  try {
+    const { userId } = req.query;
+    // Get all unique people this user has chatted with
+    const convs = await chatSql`
+      SELECT DISTINCT ON (conversation_id)
+        m.conversation_id,
+        m.sender_id, m.receiver_id, m.text, m.sent_at, m.read,
+        CASE WHEN m.sender_id = ${userId} THEN m.receiver_id ELSE m.sender_id END as other_id
+      FROM chat_messages m
+      WHERE m.sender_id = ${userId} OR m.receiver_id = ${userId}
+      ORDER BY m.conversation_id, m.sent_at DESC
+    `;
+    // Get other user details
+    const result = [];
+    for (const c of convs) {
+      const other = await chatSql`SELECT id, name, phone, online, last_seen FROM chat_users WHERE id = ${c.other_id}`;
+      if (other.length > 0) {
+        const unread = await chatSql`SELECT COUNT(*) as cnt FROM chat_messages WHERE conversation_id = ${c.conversation_id} AND receiver_id = ${userId} AND read = false`;
+        result.push({ ...c, otherUser: other[0], unreadCount: parseInt(unread[0].cnt) });
+      }
+    }
+    // Sort by latest message
+    result.sort((a,b) => new Date(b.sent_at) - new Date(a.sent_at));
+    res.json({ ok: true, conversations: result });
+  } catch(e) { res.json({ ok: false, error: e.message }); }
+});
+
+app.get('/chat-app/poll', async (req, res) => {
+  try {
+    const { userId, since } = req.query;
+    const sinceDate = new Date(parseInt(since) || 0);
+    const msgs = await chatSql`SELECT m.*, u.name as sender_name FROM chat_messages m JOIN chat_users u ON u.id = m.sender_id WHERE m.receiver_id = ${userId} AND m.sent_at > ${sinceDate} ORDER BY m.sent_at ASC`;
+    res.json({ ok: true, messages: msgs });
+  } catch(e) { res.json({ ok: false, error: e.message }); }
+});
+
+app.get('/chat-app/user/:id', async (req, res) => {
+  try {
+    const users = await chatSql`SELECT id, name, phone, online, last_seen FROM chat_users WHERE id = ${req.params.id}`;
+    if (!users.length) return res.json({ ok: false, error: 'Not found' });
+    res.json({ ok: true, user: users[0] });
+  } catch(e) { res.json({ ok: false, error: e.message }); }
+});
+
+// ===================== END CHAT APP API =====================
+
+
+// ChatApp API
+app.use('/chatapp', require('./chatapp-api'));
+
+
+// ============ CHAT API ROUTES ============
+const { neon: chatNeon } = require('@neondatabase/serverless');
+const chatSql = chatNeon(process.env.DATABASE_URL || 'postgresql://neondb_owner:npg_kT50YOCedwLf@ep-snowy-darkness-a4sa5ao8-pooler.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require');
+
+// Heartbeat - update presence
+app.post('/chat/heartbeat', requireAuth, async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    await chatSql`
+      INSERT INTO chat_presence (user_id, last_seen, status)
+      VALUES (${userId}, NOW(), 'online')
+      ON CONFLICT (user_id) DO UPDATE SET last_seen = NOW(), status = 'online'
+    `;
+    res.json({ ok: true });
+  } catch (e) { res.json({ ok: false, error: e.message }); }
+});
+
+// Get all users (except self)
+app.get('/chat/users', requireAuth, async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const users = await chatSql`
+      SELECT u.id, u.name, u.email,
+        cp.last_seen, cp.status,
+        (SELECT message FROM chat_messages 
+         WHERE (sender_id = u.id AND receiver_id = ${userId}) 
+            OR (sender_id = ${userId} AND receiver_id = u.id)
+         ORDER BY created_at DESC LIMIT 1) as last_message,
+        (SELECT created_at FROM chat_messages 
+         WHERE (sender_id = u.id AND receiver_id = ${userId}) 
+            OR (sender_id = ${userId} AND receiver_id = u.id)
+         ORDER BY created_at DESC LIMIT 1) as last_message_time,
+        (SELECT COUNT(*) FROM chat_messages 
+         WHERE sender_id = u.id AND receiver_id = ${userId} AND read_at IS NULL) as unread_count
+      FROM users u
+      LEFT JOIN chat_presence cp ON cp.user_id = u.id
+      WHERE u.id != ${userId}
+      ORDER BY last_message_time DESC NULLS LAST, u.name ASC
+    `;
+    res.json({ users });
+  } catch (e) { res.json({ users: [], error: e.message }); }
+});
+
+// Get messages between two users
+app.get('/chat/messages/:otherId', requireAuth, async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const otherId = req.params.otherId;
+    const since = req.query.since || '1970-01-01';
+    
+    const messages = await chatSql`
+      SELECT id, sender_id, receiver_id, message, created_at, read_at
+      FROM chat_messages
+      WHERE ((sender_id = ${userId} AND receiver_id = ${otherId})
+          OR (sender_id = ${otherId} AND receiver_id = ${userId}))
+        AND created_at > ${since}::timestamp
+      ORDER BY created_at ASC
+      LIMIT 200
+    `;
+    
+    // Mark messages as read
+    await chatSql`
+      UPDATE chat_messages SET read_at = NOW()
+      WHERE sender_id = ${otherId} AND receiver_id = ${userId} AND read_at IS NULL
+    `;
+    
+    res.json({ messages });
+  } catch (e) { res.json({ messages: [], error: e.message }); }
+});
+
+// Send a message
+app.post('/chat/send', requireAuth, async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const { receiverId, message } = req.body;
+    if (!receiverId || !message) return res.status(400).json({ error: 'Missing fields' });
+    
+    const result = await chatSql`
+      INSERT INTO chat_messages (sender_id, receiver_id, message, created_at)
+      VALUES (${userId}, ${receiverId}, ${message}, NOW())
+      RETURNING id, sender_id, receiver_id, message, created_at
+    `;
+    res.json({ message: result[0] });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+// Get current user info
+app.get('/chat/me', requireAuth, async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const rows = await chatSql`SELECT id, name, email FROM users WHERE id = ${userId}`;
+    res.json({ user: rows[0] || null });
+  } catch (e) { res.json({ user: null }); }
+});
+
 app.listen(3001, () => {
   console.log('\n╔════════════════════════════════════════╗');
   console.log('║       J.A.R.V.I.S. ONLINE              ║');

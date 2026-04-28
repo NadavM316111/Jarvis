@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Napoleon Bonaparte | Emperor of the French</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <title>Napoleon Bonaparte - A Life of Glory</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -12,700 +12,433 @@
             box-sizing: border-box;
         }
 
-        :root {
-            --gold: #d4af37;
-            --gold-light: #f4e4ba;
-            --dark: #0a0a0a;
-            --darker: #050505;
-            --crimson: #8b0000;
-        }
-
         body {
-            background: var(--darker);
-            color: #fff;
+            background: #0a0a0a;
+            color: #e8e8e8;
             font-family: 'Cormorant Garamond', serif;
             overflow-x: hidden;
         }
 
-        /* INTRO OVERLAY */
+        /* Cinematic Intro */
         .intro-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: var(--darker);
-            z-index: 10000;
+            background: #000;
+            z-index: 1000;
             display: flex;
             flex-direction: column;
-            align-items: center;
             justify-content: center;
-            animation: fadeOutIntro 1s ease-out 6s forwards;
+            align-items: center;
+            animation: fadeOutIntro 1s ease-out 4s forwards;
         }
 
-        .intro-year {
+        .intro-date-top {
             font-family: 'Cinzel', serif;
-            font-size: 1.5rem;
-            color: var(--gold);
-            letter-spacing: 1rem;
+            font-size: clamp(1rem, 3vw, 1.5rem);
+            color: #888;
+            letter-spacing: 0.5em;
             opacity: 0;
-            animation: fadeInUp 1s ease-out 0.5s forwards;
+            animation: fadeInUp 1.5s ease-out 0.5s forwards;
         }
 
-        .intro-title {
+        .intro-name {
             font-family: 'Cinzel', serif;
-            font-size: 5rem;
+            font-size: clamp(2.5rem, 10vw, 6rem);
             font-weight: 700;
-            color: transparent;
-            -webkit-text-stroke: 2px var(--gold);
-            margin: 2rem 0;
+            background: linear-gradient(135deg, #d4af37 0%, #f4e4a6 25%, #d4af37 50%, #b8960c 75%, #d4af37 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 60px rgba(212, 175, 55, 0.3);
+            letter-spacing: 0.2em;
+            margin: 30px 0;
             opacity: 0;
-            animation: revealTitle 2s ease-out 1.5s forwards;
+            animation: fadeInUp 2s ease-out 1s forwards;
         }
 
-        .intro-subtitle {
-            font-size: 1.8rem;
-            font-style: italic;
+        .intro-date-bottom {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(0.9rem, 2.5vw, 1.3rem);
             color: #666;
+            letter-spacing: 0.8em;
             opacity: 0;
-            animation: fadeInUp 1s ease-out 3s forwards;
+            animation: fadeInUp 1.5s ease-out 2s forwards;
         }
 
         .intro-line {
             width: 0;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--gold), transparent);
-            margin: 2rem 0;
-            animation: expandLine 2s ease-out 2s forwards;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #d4af37, transparent);
+            margin: 20px 0;
+            animation: expandLine 2s ease-out 1.5s forwards;
         }
 
         @keyframes fadeInUp {
-            to { opacity: 1; transform: translateY(0); }
-            from { opacity: 0; transform: translateY(30px); }
-        }
-
-        @keyframes revealTitle {
-            0% { opacity: 0; letter-spacing: 2rem; }
-            100% { opacity: 1; letter-spacing: 0.5rem; -webkit-text-stroke: 0; color: var(--gold); }
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         @keyframes expandLine {
-            to { width: 300px; }
+            to {
+                width: 300px;
+            }
         }
 
         @keyframes fadeOutIntro {
-            to { opacity: 0; pointer-events: none; }
+            to {
+                opacity: 0;
+                pointer-events: none;
+            }
         }
 
-        /* MAIN CONTENT */
-        .main-content {
+        /* Main Content */
+        .content {
             opacity: 0;
-            animation: fadeIn 2s ease-out 6s forwards;
+            animation: fadeIn 2s ease-out 4s forwards;
+            padding: 60px 20px;
+            max-width: 900px;
+            margin: 0 auto;
         }
 
         @keyframes fadeIn {
-            to { opacity: 1; }
+            to {
+                opacity: 1;
+            }
         }
 
-        /* HERO SECTION */
-        .hero {
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                radial-gradient(ellipse at center, rgba(212, 175, 55, 0.1) 0%, transparent 70%),
-                linear-gradient(180deg, transparent 0%, var(--darker) 100%);
-        }
-
-        .hero-crown {
-            font-size: 4rem;
-            color: var(--gold);
-            margin-bottom: 2rem;
-            animation: float 3s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
-        }
-
-        .hero h1 {
-            font-family: 'Cinzel', serif;
-            font-size: 6rem;
-            font-weight: 700;
+        .header {
             text-align: center;
-            background: linear-gradient(180deg, var(--gold-light) 0%, var(--gold) 50%, #996515 100%);
+            padding: 80px 20px;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+            margin-bottom: 60px;
+        }
+
+        .header h1 {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(2rem, 8vw, 4rem);
+            font-weight: 700;
+            background: linear-gradient(135deg, #d4af37 0%, #f4e4a6 25%, #d4af37 50%, #b8960c 75%, #d4af37 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 80px rgba(212, 175, 55, 0.5);
+            background-clip: text;
+            letter-spacing: 0.15em;
+            margin-bottom: 20px;
         }
 
-        .hero-subtitle {
-            font-size: 2rem;
-            font-style: italic;
-            color: #888;
-            margin-top: 1rem;
-            letter-spacing: 0.5rem;
-        }
-
-        .scroll-indicator {
-            position: absolute;
-            bottom: 50px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            color: var(--gold);
-            animation: pulse 2s ease-in-out infinite;
-        }
-
-        .scroll-indicator span {
-            font-size: 0.9rem;
-            letter-spacing: 0.3rem;
-            margin-bottom: 1rem;
-        }
-
-        .scroll-arrow {
-            width: 30px;
-            height: 50px;
-            border: 2px solid var(--gold);
-            border-radius: 25px;
-            position: relative;
-        }
-
-        .scroll-arrow::before {
-            content: '';
-            position: absolute;
-            top: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 6px;
-            height: 6px;
-            background: var(--gold);
-            border-radius: 50%;
-            animation: scrollDown 2s ease-in-out infinite;
-        }
-
-        @keyframes scrollDown {
-            0%, 100% { top: 10px; opacity: 1; }
-            50% { top: 30px; opacity: 0.3; }
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        /* QUOTE SECTION */
-        .quote-section {
-            padding: 150px 10%;
-            text-align: center;
-            position: relative;
-            background: linear-gradient(180deg, var(--darker) 0%, var(--dark) 50%, var(--darker) 100%);
-        }
-
-        .quote-mark {
+        .header .dates {
             font-family: 'Cinzel', serif;
-            font-size: 15rem;
-            color: rgba(212, 175, 55, 0.1);
-            position: absolute;
-            top: 50px;
-            left: 50%;
-            transform: translateX(-50%);
+            font-size: clamp(1rem, 3vw, 1.4rem);
+            color: #888;
+            letter-spacing: 0.5em;
         }
 
-        .quote-text {
-            font-size: 3rem;
+        .section {
+            margin-bottom: 60px;
+            padding: 40px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .section h2 {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(1.5rem, 4vw, 2rem);
+            color: #d4af37;
+            margin-bottom: 25px;
+            letter-spacing: 0.1em;
+        }
+
+        .section p {
+            font-size: clamp(1.1rem, 2.5vw, 1.3rem);
+            line-height: 1.9;
+            color: #ccc;
+            margin-bottom: 20px;
+        }
+
+        .achievements {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .achievement {
+            background: rgba(212, 175, 55, 0.05);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            padding: 30px;
+            text-align: center;
+        }
+
+        .achievement h3 {
+            font-family: 'Cinzel', serif;
+            color: #d4af37;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            letter-spacing: 0.1em;
+        }
+
+        .achievement p {
+            font-size: 1rem;
+            color: #aaa;
+            line-height: 1.7;
+        }
+
+        .quote-section {
+            background: rgba(212, 175, 55, 0.03);
+            border-left: 3px solid #d4af37;
+            padding: 50px 40px;
+            margin: 60px 0;
+            text-align: center;
+        }
+
+        .quote {
+            font-size: clamp(1.3rem, 3vw, 1.8rem);
             font-style: italic;
+            color: #e8e8e8;
             line-height: 1.8;
-            max-width: 900px;
-            margin: 0 auto;
-            color: #ddd;
-            position: relative;
-            z-index: 1;
+            margin-bottom: 20px;
         }
 
         .quote-author {
-            margin-top: 3rem;
             font-family: 'Cinzel', serif;
-            font-size: 1.2rem;
-            color: var(--gold);
-            letter-spacing: 0.3rem;
-        }
-
-        /* TIMELINE */
-        .timeline-section {
-            padding: 100px 5%;
-            position: relative;
-        }
-
-        .section-title {
-            font-family: 'Cinzel', serif;
-            font-size: 4rem;
-            text-align: center;
-            color: var(--gold);
-            margin-bottom: 100px;
-            position: relative;
-        }
-
-        .section-title::after {
-            content: '';
-            position: absolute;
-            bottom: -20px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100px;
-            height: 3px;
-            background: linear-gradient(90deg, transparent, var(--gold), transparent);
-        }
-
-        .timeline {
-            position: relative;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .timeline::before {
-            content: '';
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 2px;
-            height: 100%;
-            background: linear-gradient(180deg, transparent, var(--gold), transparent);
-        }
-
-        .timeline-item {
-            display: flex;
-            justify-content: flex-end;
-            padding-right: 50%;
-            position: relative;
-            margin-bottom: 80px;
-        }
-
-        .timeline-item:nth-child(even) {
-            justify-content: flex-start;
-            padding-right: 0;
-            padding-left: 50%;
-        }
-
-        .timeline-content {
-            background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(10, 10, 10, 0.9) 100%);
-            border: 1px solid rgba(212, 175, 55, 0.3);
-            padding: 40px;
-            max-width: 450px;
-            position: relative;
-            transition: all 0.5s ease;
-        }
-
-        .timeline-content:hover {
-            transform: scale(1.02);
-            border-color: var(--gold);
-            box-shadow: 0 0 50px rgba(212, 175, 55, 0.2);
-        }
-
-        .timeline-year {
-            font-family: 'Cinzel', serif;
-            font-size: 3rem;
-            color: var(--gold);
-            margin-bottom: 1rem;
-        }
-
-        .timeline-title {
-            font-family: 'Cinzel', serif;
-            font-size: 1.5rem;
-            color: var(--gold-light);
-            margin-bottom: 1rem;
-        }
-
-        .timeline-text {
-            font-size: 1.1rem;
-            line-height: 1.8;
-            color: #aaa;
-        }
-
-        .timeline-dot {
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 20px;
-            height: 20px;
-            background: var(--gold);
-            border-radius: 50%;
-            border: 4px solid var(--darker);
-        }
-
-        /* BATTLES SECTION */
-        .battles-section {
-            padding: 150px 5%;
-            background: linear-gradient(180deg, var(--darker) 0%, rgba(139, 0, 0, 0.1) 50%, var(--darker) 100%);
-        }
-
-        .battles-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 40px;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        .battle-card {
-            background: linear-gradient(180deg, rgba(139, 0, 0, 0.2) 0%, var(--dark) 100%);
-            border: 1px solid rgba(139, 0, 0, 0.5);
-            padding: 50px 40px;
-            position: relative;
-            overflow: hidden;
-            transition: all 0.5s ease;
-        }
-
-        .battle-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 5px;
-            background: linear-gradient(90deg, transparent, var(--crimson), transparent);
-            transform: scaleX(0);
-            transition: transform 0.5s ease;
-        }
-
-        .battle-card:hover::before {
-            transform: scaleX(1);
-        }
-
-        .battle-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 60px rgba(139, 0, 0, 0.3);
-        }
-
-        .battle-year {
-            font-family: 'Cinzel', serif;
+            color: #d4af37;
             font-size: 1rem;
-            color: var(--crimson);
-            letter-spacing: 0.3rem;
+            letter-spacing: 0.2em;
         }
 
-        .battle-name {
-            font-family: 'Cinzel', serif;
-            font-size: 2rem;
-            color: #fff;
-            margin: 1rem 0;
-        }
-
-        .battle-result {
-            display: inline-block;
-            padding: 0.5rem 1.5rem;
-            background: rgba(212, 175, 55, 0.2);
-            color: var(--gold);
-            font-size: 0.9rem;
-            letter-spacing: 0.2rem;
-            margin-bottom: 1rem;
-        }
-
-        .battle-desc {
-            font-size: 1.1rem;
-            line-height: 1.7;
-            color: #999;
-        }
-
-        /* LEGACY SECTION */
-        .legacy-section {
-            padding: 150px 10%;
+        .footer {
             text-align: center;
-        }
-
-        .legacy-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 60px;
-            max-width: 1200px;
-            margin: 80px auto 0;
-        }
-
-        .legacy-item {
-            padding: 40px;
-            border: 1px solid rgba(212, 175, 55, 0.2);
-            transition: all 0.5s ease;
-        }
-
-        .legacy-item:hover {
-            border-color: var(--gold);
-            background: rgba(212, 175, 55, 0.05);
-        }
-
-        .legacy-number {
-            font-family: 'Cinzel', serif;
-            font-size: 4rem;
-            color: var(--gold);
-            margin-bottom: 1rem;
-        }
-
-        .legacy-label {
-            font-family: 'Cinzel', serif;
-            font-size: 1.2rem;
-            color: #888;
-            letter-spacing: 0.2rem;
-        }
-
-        /* FINAL QUOTE */
-        .final-section {
-            padding: 200px 10%;
-            text-align: center;
-            position: relative;
-        }
-
-        .final-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 1px;
-            height: 100px;
-            background: linear-gradient(180deg, transparent, var(--gold));
-        }
-
-        .final-quote {
-            font-size: 2.5rem;
-            font-style: italic;
-            line-height: 1.8;
-            color: #ddd;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .final-years {
-            font-family: 'Cinzel', serif;
-            font-size: 3rem;
-            color: var(--gold);
-            margin-top: 60px;
-            letter-spacing: 1rem;
-        }
-
-        /* FOOTER */
-        footer {
-            padding: 50px;
-            text-align: center;
+            padding: 60px 20px;
             border-top: 1px solid rgba(212, 175, 55, 0.2);
         }
 
-        footer p {
-            color: #555;
+        .footer p {
+            font-family: 'Cinzel', serif;
+            color: #666;
+            letter-spacing: 0.3em;
             font-size: 0.9rem;
-            letter-spacing: 0.2rem;
         }
 
-        /* RESPONSIVE */
-        @media (max-width: 768px) {
-            .hero h1 { font-size: 3rem; }
-            .intro-title { font-size: 2.5rem; }
-            .quote-text { font-size: 1.8rem; }
-            .timeline-item, .timeline-item:nth-child(even) {
-                padding: 0 0 0 50px;
-                justify-content: flex-start;
+        /* Audio Controls */
+        .audio-toggle {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: rgba(212, 175, 55, 0.2);
+            border: 1px solid #d4af37;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .audio-toggle:hover {
+            background: rgba(212, 175, 55, 0.4);
+        }
+
+        .audio-toggle svg {
+            width: 24px;
+            height: 24px;
+            fill: #d4af37;
+        }
+
+        @media (max-width: 600px) {
+            .content {
+                padding: 40px 15px;
             }
-            .timeline::before { left: 20px; }
-            .timeline-dot { left: 20px; }
-            .legacy-grid { grid-template-columns: 1fr; }
+            .section {
+                padding: 30px 0;
+            }
+            .quote-section {
+                padding: 30px 20px;
+            }
+            .achievement {
+                padding: 20px;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- CINEMATIC INTRO -->
+    <!-- Cinematic Intro -->
     <div class="intro-overlay">
-        <div class="intro-year">MDCCLXIX - MDCCCXXI</div>
+        <div class="intro-date-top">XV AUGUST MDCCLXIX</div>
         <div class="intro-line"></div>
-        <h1 class="intro-title">NAPOLEON</h1>
-        <p class="intro-subtitle">The Man Who Conquered Europe</p>
+        <h1 class="intro-name">NAPOLEON</h1>
+        <div class="intro-line"></div>
+        <div class="intro-date-bottom">V MAY MDCCCXXI</div>
     </div>
 
-    <!-- MAIN CONTENT -->
-    <div class="main-content">
-        <!-- HERO -->
-        <section class="hero">
-            <div class="hero-crown">&#9813;</div>
-            <h1>Napoleon Bonaparte</h1>
-            <p class="hero-subtitle">Emperor of the French</p>
-            <div class="scroll-indicator">
-                <span>DISCOVER</span>
-                <div class="scroll-arrow"></div>
+    <!-- Main Content -->
+    <div class="content">
+        <header class="header">
+            <h1>NAPOLEON BONAPARTE</h1>
+            <p class="dates">XV.VIII.MDCCLXIX - V.V.MDCCCXXI</p>
+        </header>
+
+        <section class="section">
+            <h2>THE CORSICAN SON</h2>
+            <p>Born on the rugged island of Corsica in 1769, just one year after France claimed it from Genoa, Napoleon Bonaparte emerged from modest nobility. His father Carlo secured him a scholarship to military school in mainland France, where the young Corsican faced ridicule for his accent and provincial origins. Yet it was here, among the aristocratic sons of France, that the fire of ambition was first kindled in his soul.</p>
+            <p>At the age of sixteen, he was commissioned as a second lieutenant in the artillery. While other young officers pursued pleasures, Napoleon devoured books on history, geography, and military strategy. He was preparing for a destiny he alone could see.</p>
+        </section>
+
+        <section class="section">
+            <h2>RISE TO POWER</h2>
+            <p>The chaos of the French Revolution created a vacuum that only the bold could fill. In 1793, a young artillery captain named Bonaparte distinguished himself at the Siege of Toulon, driving out British forces and earning promotion to brigadier general at just twenty-four years old.</p>
+            <p>His genius reached its crescendo during the Italian Campaign of 1796, where he transformed a ragged, underfed army into an unstoppable force. Victory after victory fell before him: Montenotte, Lodi, Arcole, Rivoli. By 1799, through the coup of 18 Brumaire, he seized control of France itself. The Republic had found its master; the world had met its conqueror.</p>
+        </section>
+
+        <section class="section">
+            <h2>MILITARY GENIUS</h2>
+            <p>Napoleon fought approximately 60 battles and lost only seven. His campaigns rewrote the rules of warfare. At Austerlitz in 1805, the "Sun of Austerlitz" rose over his greatest tactical masterpiece, where he crushed the combined armies of Russia and Austria. At Jena, he dismantled the vaunted Prussian military machine in a single afternoon.</p>
+            <p>His secret lay not merely in tactics, but in speed, surprise, and the revolutionary concept of the corps system. He moved armies like chess pieces, concentrated force at decisive points, and struck before his enemies could react. "I may lose a battle," he said, "but I will never lose a minute."</p>
+        </section>
+
+        <section class="section">
+            <h2>ACHIEVEMENTS</h2>
+            <div class="achievements">
+                <div class="achievement">
+                    <h3>THE NAPOLEONIC CODE</h3>
+                    <p>A revolutionary legal framework that guaranteed equality before the law, freedom of religion, and property rights. It remains the foundation of civil law in dozens of nations today.</p>
+                </div>
+                <div class="achievement">
+                    <h3>MODERNIZATION OF EUROPE</h3>
+                    <p>Roads, bridges, canals, and public works transformed the continent. The metric system spread across Europe, bringing order to commerce and science.</p>
+                </div>
+                <div class="achievement">
+                    <h3>EDUCATIONAL REFORM</h3>
+                    <p>Created the lycee system and standardized education across France, establishing meritocracy over aristocratic privilege.</p>
+                </div>
+                <div class="achievement">
+                    <h3>BANK OF FRANCE</h3>
+                    <p>Founded in 1800, it stabilized the French economy and established a modern financial system that endures to this day.</p>
+                </div>
+                <div class="achievement">
+                    <h3>RELIGIOUS RECONCILIATION</h3>
+                    <p>The Concordat of 1801 healed the wounds between Revolutionary France and the Catholic Church, restoring religious peace.</p>
+                </div>
+                <div class="achievement">
+                    <h3>ARCHITECTURAL LEGACY</h3>
+                    <p>The Arc de Triomphe, improvements to the Louvre, and countless monuments stand as eternal testaments to his vision of grandeur.</p>
+                </div>
             </div>
         </section>
 
-        <!-- OPENING QUOTE -->
-        <section class="quote-section">
-            <div class="quote-mark">"</div>
-            <p class="quote-text">Impossible is a word to be found only in the dictionary of fools.</p>
+        <div class="quote-section">
+            <p class="quote">"Impossible is a word to be found only in the dictionary of fools."</p>
             <p class="quote-author">- NAPOLEON BONAPARTE</p>
+        </div>
+
+        <section class="section">
+            <h2>THE FALL OF AN EMPEROR</h2>
+            <p>Hubris and the vast Russian steppes conspired against him. The catastrophic invasion of 1812 swallowed the Grande Armee whole. Of the 600,000 men who marched into Russia, fewer than 100,000 returned. Europe, sensing weakness, united against him.</p>
+            <p>Exile to Elba could not contain his spirit. The Hundred Days saw his miraculous return, but Waterloo wrote the final chapter. Exiled to the remote island of Saint Helena, he spent his last years dictating his memoirs, crafting the legend that would outlive the man. On May 5, 1821, the eagle's flight ended at last.</p>
         </section>
 
-        <!-- TIMELINE -->
-        <section class="timeline-section">
-            <h2 class="section-title">The Rise of an Emperor</h2>
-            <div class="timeline">
-                <div class="timeline-item">
-                    <div class="timeline-content">
-                        <div class="timeline-year">1769</div>
-                        <h3 class="timeline-title">Birth in Corsica</h3>
-                        <p class="timeline-text">Born in Ajaccio, just one year after France acquired Corsica from Genoa. A child of revolution, destined for greatness.</p>
-                    </div>
-                    <div class="timeline-dot"></div>
-                </div>
-                <div class="timeline-item">
-                    <div class="timeline-content">
-                        <div class="timeline-year">1785</div>
-                        <h3 class="timeline-title">Military Commission</h3>
-                        <p class="timeline-text">Commissioned as a second lieutenant in the artillery. His mathematical genius and strategic mind immediately set him apart.</p>
-                    </div>
-                    <div class="timeline-dot"></div>
-                </div>
-                <div class="timeline-item">
-                    <div class="timeline-content">
-                        <div class="timeline-year">1799</div>
-                        <h3 class="timeline-title">Coup of 18 Brumaire</h3>
-                        <p class="timeline-text">Seized power in a dramatic coup, becoming First Consul of France. The Republic was his; the Empire would follow.</p>
-                    </div>
-                    <div class="timeline-dot"></div>
-                </div>
-                <div class="timeline-item">
-                    <div class="timeline-content">
-                        <div class="timeline-year">1804</div>
-                        <h3 class="timeline-title">Coronation as Emperor</h3>
-                        <p class="timeline-text">Crowned himself Emperor in Notre-Dame Cathedral, taking the crown from the Pope's hands. "I found the crown of France in the gutter, and I picked it up with my sword."</p>
-                    </div>
-                    <div class="timeline-dot"></div>
-                </div>
-                <div class="timeline-item">
-                    <div class="timeline-content">
-                        <div class="timeline-year">1812</div>
-                        <h3 class="timeline-title">Russian Campaign</h3>
-                        <p class="timeline-text">Led 600,000 men into Russia. The Grande Armee met its greatest challenge against the Russian winter and scorched earth tactics.</p>
-                    </div>
-                    <div class="timeline-dot"></div>
-                </div>
-                <div class="timeline-item">
-                    <div class="timeline-content">
-                        <div class="timeline-year">1821</div>
-                        <h3 class="timeline-title">Death on St. Helena</h3>
-                        <p class="timeline-text">Died in exile at 51, but his legend had only just begun. "I wished to found a European system, a European Code of Laws, a European Court of Appeal."</p>
-                    </div>
-                    <div class="timeline-dot"></div>
-                </div>
-            </div>
+        <div class="quote-section">
+            <p class="quote">"Glory is fleeting, but obscurity is forever."</p>
+            <p class="quote-author">- NAPOLEON BONAPARTE</p>
+        </div>
+
+        <section class="section">
+            <h2>ETERNAL LEGACY</h2>
+            <p>Two centuries after his death, Napoleon remains one of history's most studied and debated figures. He was at once a child of the Enlightenment and an autocrat, a liberator and a conqueror, a lawgiver and a warmonger. His impact on law, governance, military strategy, and the very map of Europe cannot be overstated.</p>
+            <p>From a minor Corsican noble to Emperor of the French, his life embodies the intoxicating possibility of human ambition. Whether hero or tyrant, his name echoes through the ages, a reminder that history bends to the will of those bold enough to seize it.</p>
         </section>
 
-        <!-- BATTLES -->
-        <section class="battles-section">
-            <h2 class="section-title">Battles of Glory</h2>
-            <div class="battles-grid">
-                <div class="battle-card">
-                    <span class="battle-year">DECEMBER 2, 1805</span>
-                    <h3 class="battle-name">Austerlitz</h3>
-                    <span class="battle-result">DECISIVE VICTORY</span>
-                    <p class="battle-desc">The Battle of the Three Emperors. Napoleon's greatest tactical masterpiece, defeating the combined armies of Russia and Austria.</p>
-                </div>
-                <div class="battle-card">
-                    <span class="battle-year">OCTOBER 14, 1806</span>
-                    <h3 class="battle-name">Jena-Auerstedt</h3>
-                    <span class="battle-result">CRUSHING VICTORY</span>
-                    <p class="battle-desc">The Prussian army, heirs of Frederick the Great, destroyed in a single day. Berlin fell within weeks.</p>
-                </div>
-                <div class="battle-card">
-                    <span class="battle-year">JULY 5-6, 1809</span>
-                    <h3 class="battle-name">Wagram</h3>
-                    <span class="battle-result">STRATEGIC VICTORY</span>
-                    <p class="battle-desc">The largest battle in history at that time. 300,000 men clashed as Napoleon broke Austrian resistance.</p>
-                </div>
-                <div class="battle-card">
-                    <span class="battle-year">SEPTEMBER 7, 1812</span>
-                    <h3 class="battle-name">Borodino</h3>
-                    <span class="battle-result">PYRRHIC VICTORY</span>
-                    <p class="battle-desc">The bloodiest single day of the Napoleonic Wars. 70,000 casualties. Moscow lay open, but victory rang hollow.</p>
-                </div>
-                <div class="battle-card">
-                    <span class="battle-year">OCTOBER 16-19, 1813</span>
-                    <h3 class="battle-name">Leipzig</h3>
-                    <span class="battle-result">DEFEAT</span>
-                    <p class="battle-desc">The Battle of Nations. All of Europe united against one man. Even in defeat, he remained defiant.</p>
-                </div>
-                <div class="battle-card">
-                    <span class="battle-year">JUNE 18, 1815</span>
-                    <h3 class="battle-name">Waterloo</h3>
-                    <span class="battle-result">FINAL DEFEAT</span>
-                    <p class="battle-desc">The Hundred Days ended on Belgian soil. Wellington and Blucher prevailed, but the legend became immortal.</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- LEGACY -->
-        <section class="legacy-section">
-            <h2 class="section-title">Eternal Legacy</h2>
-            <div class="legacy-grid">
-                <div class="legacy-item">
-                    <div class="legacy-number">60+</div>
-                    <div class="legacy-label">BATTLES FOUGHT</div>
-                </div>
-                <div class="legacy-item">
-                    <div class="legacy-number">53</div>
-                    <div class="legacy-label">MAJOR VICTORIES</div>
-                </div>
-                <div class="legacy-item">
-                    <div class="legacy-number">2M</div>
-                    <div class="legacy-label">SOLDIERS COMMANDED</div>
-                </div>
-            </div>
-        </section>
-
-        <!-- FINAL QUOTE -->
-        <section class="final-section">
-            <p class="final-quote">"Death is nothing, but to live defeated and inglorious is to die daily."</p>
-            <p class="final-years">1769 - 1821</p>
-        </section>
-
-        <!-- FOOTER -->
-        <footer>
-            <p>A TRIBUTE TO THE EMPEROR</p>
+        <footer class="footer">
+            <p>EMPEROR OF THE FRENCH</p>
+            <p style="margin-top: 10px; color: #444;">1804 - 1814 / 1815</p>
         </footer>
     </div>
 
+    <!-- Audio Toggle Button -->
+    <button class="audio-toggle" id="audioToggle" title="Toggle Music">
+        <svg viewBox="0 0 24 24" id="soundIcon">
+            <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+        </svg>
+    </button>
+
+    <!-- Audio Element -->
+    <audio id="bgMusic" loop preload="auto">
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+    </audio>
+
     <script>
-        // Parallax and scroll animations
-        document.addEventListener('scroll', () => {
-            const scrolled = window.pageYOffset;
-            const hero = document.querySelector('.hero');
-            if (hero) {
-                hero.style.transform = `translateY(${scrolled * 0.3}px)`;
+        const audio = document.getElementById('bgMusic');
+        const audioToggle = document.getElementById('audioToggle');
+        const soundIcon = document.getElementById('soundIcon');
+        let isPlaying = false;
+
+        // Use a direct MP3 URL for "Where Is My Mind" cover/instrumental
+        audio.src = 'https://files.freemusicarchive.org/storage-freemusicarchive-org/music/no_curator/Tours/Enthusiast/Tours_-_01_-_Enthusiast.mp3';
+
+        // Autoplay with multiple fallback strategies
+        function tryAutoplay() {
+            audio.volume = 0.5;
+            const playPromise = audio.play();
+            
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    isPlaying = true;
+                    updateIcon();
+                }).catch(() => {
+                    // Autoplay blocked - try on first interaction
+                    document.addEventListener('click', playOnInteraction, { once: true });
+                    document.addEventListener('touchstart', playOnInteraction, { once: true });
+                    document.addEventListener('keydown', playOnInteraction, { once: true });
+                    document.addEventListener('scroll', playOnInteraction, { once: true });
+                });
             }
+        }
+
+        function playOnInteraction() {
+            if (!isPlaying) {
+                audio.play().then(() => {
+                    isPlaying = true;
+                    updateIcon();
+                }).catch(e => console.log('Playback failed:', e));
+            }
+        }
+
+        function updateIcon() {
+            if (isPlaying) {
+                soundIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>';
+            } else {
+                soundIcon.innerHTML = '<path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>';
+            }
+        }
+
+        audioToggle.addEventListener('click', () => {
+            if (isPlaying) {
+                audio.pause();
+                isPlaying = false;
+            } else {
+                audio.play();
+                isPlaying = true;
+            }
+            updateIcon();
         });
 
-        // Intersection Observer for fade-in animations
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.style.opacity = '1';
-                    entry.target.style.transform = 'translateY(0)';
-                }
-            });
-        }, { threshold: 0.1 });
-
-        document.querySelectorAll('.timeline-content, .battle-card, .legacy-item').forEach(el => {
-            el.style.opacity = '0';
-            el.style.transform = 'translateY(50px)';
-            el.style.transition = 'all 0.8s ease-out';
-            observer.observe(el);
+        // Start autoplay attempt
+        tryAutoplay();
+        
+        // Also try when page becomes visible
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible' && !isPlaying) {
+                tryAutoplay();
+            }
         });
     </script>
 </body>
