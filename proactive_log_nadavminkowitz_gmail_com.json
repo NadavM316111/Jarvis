@@ -1,6 +1,48 @@
 {
   "updates": [
     {
+      "id": 1777386260801,
+      "message": "Sir, your .env.local file containing all your API keys and secrets is currently open and visible - I'd recommend closing this sensitive file, especially since you just pushed to GitHub.",
+      "time": "10:24:20 AM",
+      "date": "4/28/2026",
+      "read": false
+    },
+    {
+      "id": 1777386020238,
+      "message": "Sir, your CineVault HTML file write is failing with a TypeError - the \"data\" argument is undefined, meaning the HTML content variable is empty when you're trying to write it to the file.",
+      "time": "10:20:20 AM",
+      "date": "4/28/2026",
+      "read": false
+    },
+    {
+      "id": 1777385766262,
+      "message": "Sir, there's a new SyntaxError in your Node.js code - \"await is only valid in async functions\" - the CineVault database tables creation is failing because you're using await outside of an async function.",
+      "time": "10:16:06 AM",
+      "date": "4/28/2026",
+      "read": false
+    },
+    {
+      "id": 1777385573714,
+      "message": "🔒 Bookly Security Alert: Two CVEs were recently patched in Bookly (CVE-2026-5513 & CVE-2026-2519). If you're running Bookly on any WordPress site, make sure you're on the latest version (27.2+) to stay protected.",
+      "time": "10:12:53 AM",
+      "date": "4/28/2026",
+      "read": false
+    },
+    {
+      "id": 1777385263429,
+      "message": "Sir, I see you're viewing the Posnack School lunch menu for this week - today is Monday 04/27, and the menu shows Chicken Pho Soup and various other options available for lunch.",
+      "time": "10:07:43 AM",
+      "date": "4/28/2026",
+      "read": false
+    },
+    {
+      "id": 1777385135473,
+      "message": "Sir, your Node.js server failed to start due to an express-rate-limit ValidationError regarding IPv6 key generation - the application crashed at server.js line 20.",
+      "time": "10:05:35 AM",
+      "date": "4/28/2026",
+      "read": false
+    },
+    {
       "id": 1777329086111,
       "message": "⚡ Battery at 31% and draining — plug in your charger, Nadav.",
       "time": "6:31:26 PM",
@@ -655,48 +697,6 @@
       "id": 1776971421532,
       "message": "The answer is A \", in contrast,\" because you need a comma before the transitional phrase to properly separate it from the previous independent clause, and a comma after to set off the parenthetical transition before continuing the sentence.",
       "time": "3:10:21 PM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776971296049,
-      "message": "The answer is A \"Specifically,\" because the sentence about white storks provides a specific example to support the general claim that modern tracking reveals migration is more complex than previously thought.",
-      "time": "3:08:16 PM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776971170766,
-      "message": "You're on SAT question 25 about logical transitions - the answer is A \"Consequently\" because the sentence describes a result (Hippocrates being praised for separating philosophy from medicine) that follows from the previous statement about philosophers speculating but not practicing medicine as a craft.",
-      "time": "3:06:10 PM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776971044850,
-      "message": "The answer is C - Public Health Epidemiology - looking at the chart, you need to add publications (dark gray) and patent applications (black) for each area, and Public Health Epidemiology has the lowest combined total with approximately 5 publications and 3 patent applications.",
-      "time": "3:04:04 PM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776970916939,
-      "message": "You're on SAT question 14 about Miss Dolly Darling's transformation in demeanor - the claim mentions a \"transformation,\" so look for the quote that shows a change or contrast in her behavior, which appears to be Option B starting with \"Although she pretended to be so merry\" since it suggests a contrast between her outward appearance and inner state.",
-      "time": "3:01:56 PM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776970788689,
-      "message": "You're on SAT question 11 about carbon monoxide levels - the passage discusses comparing Newark, NJ and New York, NY, so look at the table data showing their pollution differences on the same dates to find the answer that demonstrates the \"localized nature\" of the smog event.",
-      "time": "2:59:48 PM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776970537823,
-      "message": "The answer is B - \"Fickle\" - capricious means unpredictable or changeable, which is the opposite of predictable and synonymous with fickle.",
-      "time": "2:55:37 PM",
       "date": "4/23/2026",
       "read": true
     }

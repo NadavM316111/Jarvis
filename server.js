@@ -1036,6 +1036,7 @@ app.get('/design', (req, res) => res.sendFile(path.join(__dirname, 'design.html'
 app.get('/pulse', (req, res) => res.sendFile(path.join(PUBLIC_DIR, 'pulse', 'index.html')));
 app.get('/pulse/', (req, res) => res.sendFile(path.join(PUBLIC_DIR, 'pulse', 'index.html')));
 app.use('/pulse', express.static(path.join(PUBLIC_DIR, 'pulse')));
+app.use('/cinevault', express.static(path.join(PUBLIC_DIR, 'cinevault')));
 app.post('/design-command', async (req, res) => {
   const { command, systemPrompt, history } = req.body;
   try {
@@ -1317,6 +1318,8 @@ app.post('/ai-proxy', async (req, res) => {
 // ===================== END CHAT APP API =====================
 
 require("./apps/ranked")(app, chatSql);
+
+require("./apps/cinevault")(app, chatSql);
 
 app.listen(3001, () => {
   console.log('\n╔════════════════════════════════════════╗');

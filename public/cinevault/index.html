@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CineVault</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+
+  <!-- INTRO OVERLAY -->
+  <div id="intro" class="intro-overlay">
+    <div class="intro-content">
+      <div class="intro-vault-icon">
+        <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="60" cy="60" r="55" stroke="#c9a84c" stroke-width="2" class="ring ring1"/>
+          <circle cx="60" cy="60" r="42" stroke="#c9a84c" stroke-width="1.5" opacity="0.6" class="ring ring2"/>
+          <circle cx="60" cy="60" r="28" stroke="#c9a84c" stroke-width="1" opacity="0.4" class="ring ring3"/>
+          <circle cx="60" cy="60" r="12" fill="#c9a84c" class="center-dot"/>
+          <line x1="60" y1="5" x2="60" y2="35" stroke="#c9a84c" stroke-width="2" class="spoke"/>
+          <line x1="60" y1="85" x2="60" y2="115" stroke="#c9a84c" stroke-width="2" class="spoke"/>
+          <line x1="5" y1="60" x2="35" y2="60" stroke="#c9a84c" stroke-width="2" class="spoke"/>
+          <line x1="85" y1="60" x2="115" y2="60" stroke="#c9a84c" stroke-width="2" class="spoke"/>
+        </svg>
+      </div>
+      <div class="intro-title">CINEVAULT</div>
+      <div class="intro-tagline">Your World of Cinema</div>
+      <div class="intro-bar"><div class="intro-bar-fill"></div></div>
+    </div>
+  </div>
+
+  <!-- HEADER -->
+  <header class="header" id="header">
+    <div class="header-left">
+      <div class="logo" onclick="showPage('home')">
+        <span class="logo-icon">
+          <svg viewBox="0 0 32 32" fill="none" width="28" height="28">
+            <circle cx="16" cy="16" r="14" stroke="#c9a84c" stroke-width="1.5"/>
+            <circle cx="16" cy="16" r="8" stroke="#c9a84c" stroke-width="1"/>
+            <circle cx="16" cy="16" r="3" fill="#c9a84c"/>
+            <line x1="16" y1="2" x2="16" y2="9" stroke="#c9a84c" stroke-width="1.5"/>
+            <line x1="16" y1="23" x2="16" y2="30" stroke="#c9a84c" stroke-width="1.5"/>
+            <line x1="2" y1="16" x2="9" y2="16" stroke="#c9a84c" stroke-width="1.5"/>
+            <line x1="23" y1="16" x2="30" y2="16" stroke="#c9a84c" stroke-width="1.5"/>
+          </svg>
+        </span>
+        <span class="logo-text">CINEVAULT</span>
+      </div>
+      <nav class="nav">
+        <a onclick="showPage('home')" class="nav-link active" id="nav-home">Home</a>
+        <a onclick="showPage('watchlist')" class="nav-link" id="nav-watchlist">My List</a>
+      </nav>
+    </div>
+    <div class="header-right">
+      <div class="search-wrap">
+        <input type="text" id="search-input" class="search-input" placeholder="Search movies..." oninput="handleSearch(this.value)"/>
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <div id="search-results" class="search-dropdown"></div>
+      </div>
+      <div id="user-section" class="user-section" style="display:none">
+        <div class="user-avatar" id="user-avatar">N</div>
+        <span class="user-name" id="user-name">User</span>
+        <button class="btn-logout" onclick="logout()">Sign Out</button>
+      </div>
+      <button class="btn-auth" id="btn-auth" onclick="openModal('login')">Sign In</button>
+    </div>
+  </header>
+
+  <!-- HOME PAGE -->
+  <div id="page-home" class="page active">
+
+    <!-- HERO -->
+    <section class="hero" id="hero">
+      <div class="hero-bg" id="hero-bg"></div>
+      <div class="hero-overlay"></div>
+      <div class="hero-content" id="hero-content">
+        <div class="hero-badge">TRENDING NOW</div>
+        <h1 class="hero-title" id="hero-title">Loading...</h1>
+        <p class="hero-desc" id="hero-desc"></p>
+        <div class="hero-meta" id="hero-meta"></div>
+        <div class="hero-actions">
+          <button class="btn-primary" id="hero-watch-btn">
+            <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M8 5v14l11-7z"/></svg>
+            Watch Trailer
+          </button>
+          <button class="btn-secondary" id="hero-list-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add to List
+          </button>
+        </div>
+      </div>
+      <div class="hero-scroll-hint">
+        <div class="scroll-line"></div>
+        <span>SCROLL</span>
+      </div>
+    </section>
+
+    <!-- GENRE FILTER -->
+    <section class="genre-section">
+      <div class="genre-scroll" id="genre-scroll">
+        <button class="genre-pill active" data-id="" onclick="filterGenre(this, '')">All</button>
+      </div>
+    </section>
+
+    <!-- TRENDING -->
+    <section class="movie-section" id="section-trending">
+      <div class="section-header">
+        <h2 class="section-title">Trending This Week</h2>
+        <div class="section-line"></div>
+      </div>
+      <div class="movies-row" id="row-trending"></div>
+    </section>
+
+    <!-- NOW PLAYING -->
+    <section class="movie-section" id="section-nowplaying">
+      <div class="section-header">
+        <h2 class="section-title">Now Playing</h2>
+        <div class="section-line"></div>
+      </div>
+      <div class="movies-row" id="row-nowplaying"></div>
+    </section>
+
+    <!-- TOP RATED -->
+    <section class="movie-section" id="section-toprated">
+      <div class="section-header">
+        <h2 class="section-title">Top Rated</h2>
+        <div class="section-line"></div>
+      </div>
+      <div class="movies-row" id="row-toprated"></div>
+    </section>
+
+    <!-- GENRE RESULTS -->
+    <section class="movie-section" id="section-genre" style="display:none">
+      <div class="section-header">
+        <h2 class="section-title" id="genre-section-title">Genre</h2>
+        <div class="section-line"></div>
+      </div>
+      <div class="movies-grid" id="grid-genre"></div>
+    </section>
+
+  </div>
+
+  <!-- WATCHLIST PAGE -->
+  <div id="page-watchlist" class="page">
+    <div class="page-header-bg"></div>
+    <div class="page-container">
+      <h1 class="page-title">My Watchlist</h1>
+      <div class="movies-grid" id="grid-watchlist"></div>
+      <div id="watchlist-empty" class="empty-state" style="display:none">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="1" width="64" height="64"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+        <p>Your watchlist is empty.</p>
+        <button class="btn-primary" onclick="showPage('home')">Browse Movies</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DETAIL PAGE -->
+  <div id="page-detail" class="page">
+    <div class="detail-hero" id="detail-hero">
+      <div class="detail-hero-bg" id="detail-bg"></div>
+      <div class="detail-hero-overlay"></div>
+      <button class="btn-back" onclick="goBack()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><polyline points="15 18 9 12 15 6"/></svg>
+        Back
+      </button>
+    </div>
+    <div class="detail-content" id="detail-content"></div>
+  </div>
+
+  <!-- AUTH MODAL -->
+  <div id="auth-modal" class="modal-overlay" onclick="closeModalOutside(event)">
+    <div class="modal">
+      <button class="modal-close" onclick="closeModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div class="modal-logo">CINEVAULT</div>
+      <div class="modal-tabs">
+        <button class="modal-tab active" id="tab-login" onclick="switchTab('login')">Sign In</button>
+        <button class="modal-tab" id="tab-register" onclick="switchTab('register')">Sign Up</button>
+      </div>
+      <!-- Login Form -->
+      <form id="form-login" class="auth-form" onsubmit="submitLogin(event)">
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="login-email" placeholder="you@example.com" required/>
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="login-password" placeholder="Your password" required/>
+        </div>
+        <div class="form-error" id="login-error"></div>
+        <button type="submit" class="btn-full">Sign In</button>
+        <p class="form-switch">No account? <a onclick="switchTab('register')">Sign Up</a></p>
+      </form>
+      <!-- Register Form -->
+      <form id="form-register" class="auth-form" style="display:none" onsubmit="submitRegister(event)">
+        <div class="form-group">
+          <label>Username</label>
+          <input type="text" id="reg-username" placeholder="YourName" required/>
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="reg-email" placeholder="you@example.com" required/>
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="reg-password" placeholder="Create a password" required/>
+        </div>
+        <div class="form-error" id="reg-error"></div>
+        <button type="submit" class="btn-full">Create Account</button>
+        <p class="form-switch">Have an account? <a onclick="switchTab('login')">Sign In</a></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- TRAILER MODAL -->
+  <div id="trailer-modal" class="modal-overlay" onclick="closeTrailer(event)">
+    <div class="trailer-box">
+      <button class="trailer-close" onclick="closeTrailerBtn()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div class="trailer-frame" id="trailer-frame"></div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
