@@ -520,9 +520,10 @@ async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame
 'ALWAYS break it into steps and use these markers in your response:',
 '  [PROGRESS:25%]Creating database tables...[/PROGRESS] — shows a progress bar in chat',
 '  [CONTINUE_BUTTON:continue building the API routes] — shows a clickable Continue button',
-'Step 1: Create Neon DB tables with run_code node. End response with [PROGRESS:25%]Database ready[/PROGRESS][CONTINUE_BUTTON:continue building the API routes]',
-'Step 2: Add Express routes to server.js with fs.appendFileSync, then pm2 restart jarvis. End with [PROGRESS:60%]Backend ready[/PROGRESS][CONTINUE_BUTTON:continue building the frontend]',
-'Step 3: Build the HTML/JS/CSS frontend saved to public/. End with [PROGRESS:100%]App complete[/PROGRESS]',
+'Step 1: Create Neon DB tables with run_code node. STOP after this. End response with [PROGRESS:25%]Database ready[/PROGRESS][CONTINUE_BUTTON:continue building the API routes]',
+'Step 2: Create C:/Users/nadav/jarvis-web/apps/appname.js using module.exports = (app, sql) => { ... } pattern. Add require line to server.js before app.listen. pm2 restart jarvis. STOP after this. End with [PROGRESS:60%]Backend ready[/PROGRESS][CONTINUE_BUTTON:continue building the frontend]',
+'Step 3: Build frontend HTML/JS/CSS to public/appname/index.html. Serve it at https://api.heyjarvis.me/appname/. STOP after this. End with [PROGRESS:100%]App complete — live at https://api.heyjarvis.me/appname/[/PROGRESS]',
+'CRITICAL: Do ONE step at a time. STOP and wait for the user to click Continue before doing the next step. Never skip steps.',
 'You CAN create .js .css .json files in addition to .html — save them all to C:/Users/nadav/jarvis-web/public/appname/filename.ext',
 'NEON DB URL: postgresql://neondb_owner:npg_kT50YOCedwLf@ep-snowy-darkness-a4sa5ao8-pooler.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require',
 'For AI features in apps: call https://api.heyjarvis.me/ai-proxy with POST {prompt, system} — JARVIS will respond as AI inside the app.',
@@ -1314,6 +1315,8 @@ app.post('/ai-proxy', async (req, res) => {
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 // ===================== END CHAT APP API =====================
+
+require("./apps/ranked")(app, chatSql);
 
 app.listen(3001, () => {
   console.log('\n╔════════════════════════════════════════╗');

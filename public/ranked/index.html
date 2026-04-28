@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RANKED - Community Hype Rankings</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    :root {
+      --bg: #0a0a0f;
+      --card: #14141f;
+      --card-hover: #1a1a2e;
+      --border: #2a2a3e;
+      --text: #ffffff;
+      --text-muted: #8888aa;
+      --accent: #6366f1;
+      --up: #22c55e;
+      --down: #ef4444;
+      --gold: #fbbf24;
+      --silver: #94a3b8;
+      --bronze: #d97706;
+    }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    
+    .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+    
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 0;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 30px;
+    }
+    
+    .logo {
+      font-size: 2rem;
+      font-weight: 900;
+      background: linear-gradient(135deg, #6366f1, #a855f7, #ec4899);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -1px;
+    }
+    
+    .search-box {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .search-box input {
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 12px 20px;
+      border-radius: 30px;
+      color: var(--text);
+      font-size: 0.95rem;
+      width: 280px;
+      outline: none;
+      transition: all 0.3s;
+    }
+    
+    .search-box input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+    }
+    
+    .add-btn {
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      border: none;
+      padding: 12px 24px;
+      border-radius: 30px;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    
+    .add-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(99, 102, 241, 0.4);
+    }
+    
+    .categories {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 30px;
+    }
+    
+    .cat-btn {
+      background: var(--card);
+      border: 2px solid var(--border);
+      padding: 12px 24px;
+      border-radius: 50px;
+      color: var(--text);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .cat-btn:hover { border-color: var(--accent); }
+    .cat-btn.active {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+    
+    .cat-icon { font-size: 1.2rem; }
+    
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 30px;
+    }
+    
+    @media (max-width: 900px) {
+      .main-grid { grid-template-columns: 1fr; }
+      .sidebar { order: -1; }
+    }
+    
+    .section-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    .items-list { display: flex; flex-direction: column; gap: 12px; }
+    
+    .item-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      transition: all 0.3s;
+    }
+    
+    .item-card:hover {
+      background: var(--card-hover);
+      transform: translateX(5px);
+    }
+    
+    .rank {
+      font-size: 1.5rem;
+      font-weight: 800;
+      width: 50px;
+      text-align: center;
+      color: var(--text-muted);
+    }
+    
+    .rank.gold { color: var(--gold); }
+    .rank.silver { color: var(--silver); }
+    .rank.bronze { color: var(--bronze); }
+    
+    .item-info { flex: 1; }
+    .item-name { font-size: 1.1rem; font-weight: 600; margin-bottom: 4px; }
+    .item-desc { font-size: 0.85rem; color: var(--text-muted); }
+    
+    .vote-section { display: flex; align-items: center; gap: 8px; }
+    
+    .vote-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      font-size: 1.2rem;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .vote-btn.up {
+      background: rgba(34, 197, 94, 0.1);
+      color: var(--up);
+    }
+    .vote-btn.up:hover, .vote-btn.up.active {
+      background: var(--up);
+      color: white;
+    }
+    
+    .vote-btn.down {
+      background: rgba(239, 68, 68, 0.1);
+      color: var(--down);
+    }
+    .vote-btn.down:hover, .vote-btn.down.active {
+      background: var(--down);
+      color: white;
+    }
+    
+    .hype-score {
+      font-size: 1.3rem;
+      font-weight: 800;
+      min-width: 60px;
+      text-align: center;
+    }
+    
+    .hype-score.positive { color: var(--up); }
+    .hype-score.negative { color: var(--down); }
+    
+    .sidebar-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    
+    .trending-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .trending-item:last-child { border-bottom: none; }
+    
+    .trending-rank {
+      font-weight: 800;
+      color: var(--accent);
+      width: 24px;
+    }
+    
+    .trending-info { flex: 1; }
+    .trending-name { font-weight: 600; font-size: 0.95rem; }
+    .trending-cat {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    
+    .trending-score {
+      font-weight: 700;
+      color: var(--up);
+    }
+    
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.8);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    
+    .modal-overlay.active { display: flex; }
+    
+    .modal {
+      background: var(--card);
+      border-radius: 20px;
+      padding: 30px;
+      width: 90%;
+      max-width: 450px;
+      border: 1px solid var(--border);
+    }
+    
+    .modal h2 {
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+    }
+    
+    .form-group { margin-bottom: 16px; }
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--text-muted);
+    }
+    
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 12px 16px;
+      border-radius: 10px;
+      color: var(--text);
+      font-size: 1rem;
+      outline: none;
+    }
+    
+    .form-group input:focus, .form-group select:focus {
+      border-color: var(--accent);
+    }
+    
+    .modal-btns {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+    }
+    
+    .modal-btns button {
+      flex: 1;
+      padding: 14px;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+    }
+    
+    .btn-cancel {
+      background: var(--border);
+      color: var(--text);
+    }
+    
+    .btn-submit {
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      color: white;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-muted);
+    }
+    
+    .empty-state h3 { font-size: 1.3rem; margin-bottom: 8px; color: var(--text); }
+    
+    .sort-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    
+    .sort-tab {
+      background: transparent;
+      border: none;
+      padding: 8px 16px;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-weight: 500;
+      border-radius: 8px;
+      transition: all 0.2s;
+    }
+    
+    .sort-tab:hover { color: var(--text); }
+    .sort-tab.active {
+      background: var(--accent);
+      color: white;
+    }
+    
+    .pulse { animation: pulse 2s infinite; }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    
+    .live-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(239, 68, 68, 0.2);
+      color: #ef4444;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      background: #ef4444;
+      border-radius: 50%;
+      animation: pulse 1s infinite;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo">RANKED</div>
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Search anything...">
+        <button class="add-btn" onclick="openModal()">+ Submit</button>
+      </div>
+    </header>
+    
+    <div class="categories" id="categoriesContainer">
+      <!-- Categories loaded dynamically -->
+    </div>
+    
+    <div class="main-grid">
+      <main>
+        <div class="sort-tabs">
+          <button class="sort-tab active" data-sort="hype">Top Ranked</button>
+          <button class="sort-tab" data-sort="new">Newest</button>
+          <button class="sort-tab" data-sort="controversial">Controversial</button>
+        </div>
+        <div class="items-list" id="itemsList">
+          <!-- Items loaded dynamically -->
+        </div>
+      </main>
+      
+      <aside class="sidebar">
+        <div class="sidebar-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <div class="section-title" style="margin: 0;">Trending Now</div>
+            <div class="live-badge"><div class="live-dot"></div> LIVE</div>
+          </div>
+          <div id="trendingList">
+            <!-- Trending loaded dynamically -->
+          </div>
+        </div>
+        
+        <div class="sidebar-card">
+          <div class="section-title">How It Works</div>
+          <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.6;">
+            Submit anything - songs, movies, foods, people - and let the community decide what's hot. Upvote what you love, downvote what you don't. Rankings update in real-time!
+          </p>
+        </div>
+      </aside>
+    </div>
+  </div>
+  
+  <!-- Add Modal -->
+  <div class="modal-overlay" id="modal">
+    <div class="modal">
+      <h2>Submit to RANKED</h2>
+      <div class="form-group">
+        <label>Category</label>
+        <select id="modalCategory"></select>
+      </div>
+      <div class="form-group">
+        <label>Name</label>
+        <input type="text" id="modalName" placeholder="e.g., Bohemian Rhapsody">
+      </div>
+      <div class="form-group">
+        <label>Description (optional)</label>
+        <input type="text" id="modalDesc" placeholder="e.g., Queen - 1975">
+      </div>
+      <div class="modal-btns">
+        <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+        <button class="btn-submit" onclick="submitItem()">Submit</button>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    const API = '/api/ranked';
+    let categories = [];
+    let currentCategory = null;
+    let currentSort = 'hype';
+    let myVotes = {};
+    let voterId = localStorage.getItem('ranked_voter_id');
+    
+    if (!voterId) {
+      voterId = 'voter_' + Math.random().toString(36).substr(2, 12);
+      localStorage.setItem('ranked_voter_id', voterId);
+    }
+    
+    async function init() {
+      await loadCategories();
+      await loadMyVotes();
+      await loadTrending();
+      
+      // Auto-refresh every 5 seconds
+      setInterval(() => {
+        if (currentCategory) loadItems(currentCategory);
+        loadTrending();
+      }, 5000);
+    }
+    
+    async function loadCategories() {
+      const res = await fetch(API + '/categories');
+      categories = await res.json();
+      
+      const container = document.getElementById('categoriesContainer');
+      container.innerHTML = categories.map((cat, i) => 
+        '<button class="cat-btn ' + (i === 0 ? 'active' : '') + '" data-id="' + cat.id + '" style="--cat-color: ' + cat.color + '">' +
+          '<span class="cat-icon">' + cat.icon + '</span>' + cat.name +
+        '</button>'
+      ).join('');
+      
+      container.querySelectorAll('.cat-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          container.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          loadItems(btn.dataset.id);
+        });
+      });
+      
+      // Populate modal select
+      document.getElementById('modalCategory').innerHTML = categories.map(cat =>
+        '<option value="' + cat.id + '">' + cat.icon + ' ' + cat.name + '</option>'
+      ).join('');
+      
+      // Load first category
+      if (categories.length > 0) {
+        loadItems(categories[0].id);
+      }
+    }
+    
+    async function loadItems(categoryId) {
+      currentCategory = categoryId;
+      const res = await fetch(API + '/items/' + categoryId + '?sort=' + currentSort);
+      const items = await res.json();
+      
+      const container = document.getElementById('itemsList');
+      
+      if (items.length === 0) {
+        container.innerHTML = '<div class="empty-state"><h3>No items yet</h3><p>Be the first to submit something!</p></div>';
+        return;
+      }
+      
+      container.innerHTML = items.map((item, i) => {
+        const rankClass = i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : '';
+        const scoreClass = item.hype_score >= 0 ? 'positive' : 'negative';
+        const myVote = myVotes[item.id] || null;
+        
+        return '<div class="item-card" data-id="' + item.id + '">' +
+          '<div class="rank ' + rankClass + '">#' + (i + 1) + '</div>' +
+          '<div class="item-info">' +
+            '<div class="item-name">' + escapeHtml(item.name) + '</div>' +
+            '<div class="item-desc">' + escapeHtml(item.description || '') + '</div>' +
+          '</div>' +
+          '<div class="vote-section">' +
+            '<button class="vote-btn up ' + (myVote === 'up' ? 'active' : '') + '" onclick="vote(' + item.id + ', \'up\')">+</button>' +
+            '<div class="hype-score ' + scoreClass + '">' + item.hype_score + '</div>' +
+            '<button class="vote-btn down ' + (myVote === 'down' ? 'active' : '') + '" onclick="vote(' + item.id + ', \'down\')">-</button>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+    }
+    
+    async function loadTrending() {
+      const res = await fetch(API + '/trending');
+      const items = await res.json();
+      
+      document.getElementById('trendingList').innerHTML = items.map((item, i) =>
+        '<div class="trending-item">' +
+          '<div class="trending-rank">' + (i + 1) + '</div>' +
+          '<div class="trending-info">' +
+            '<div class="trending-name">' + escapeHtml(item.name) + '</div>' +
+            '<div class="trending-cat">' + item.category_icon + ' ' + item.category_name + '</div>' +
+          '</div>' +
+          '<div class="trending-score">+' + item.hype_score + '</div>' +
+        '</div>'
+      ).join('');
+    }
+    
+    async function loadMyVotes() {
+      const res = await fetch(API + '/myvotes/' + voterId);
+      myVotes = await res.json();
+    }
+    
+    async function vote(itemId, voteType) {
+      const res = await fetch(API + '/vote', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ item_id: itemId, vote_type: voteType, voter_id: voterId })
+      });
+      
+      const item = await res.json();
+      
+      // Update local vote state
+      if (myVotes[itemId] === voteType) {
+        delete myVotes[itemId];
+      } else {
+        myVotes[itemId] = voteType;
+      }
+      
+      // Update UI
+      const card = document.querySelector('.item-card[data-id="' + itemId + '"]');
+      if (card) {
+        const score = card.querySelector('.hype-score');
+        score.textContent = item.hype_score;
+        score.className = 'hype-score ' + (item.hype_score >= 0 ? 'positive' : 'negative');
+        
+        card.querySelector('.vote-btn.up').classList.toggle('active', myVotes[itemId] === 'up');
+        card.querySelector('.vote-btn.down').classList.toggle('active', myVotes[itemId] === 'down');
+      }
+    }
+    
+    function openModal() {
+      document.getElementById('modal').classList.add('active');
+    }
+    
+    function closeModal() {
+      document.getElementById('modal').classList.remove('active');
+      document.getElementById('modalName').value = '';
+      document.getElementById('modalDesc').value = '';
+    }
+    
+    async function submitItem() {
+      const category_id = document.getElementById('modalCategory').value;
+      const name = document.getElementById('modalName').value.trim();
+      const description = document.getElementById('modalDesc').value.trim();
+      
+      if (!name) {
+        alert('Please enter a name');
+        return;
+      }
+      
+      await fetch(API + '/items', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ category_id, name, description })
+      });
+      
+      closeModal();
+      
+      // Switch to that category and reload
+      document.querySelectorAll('.cat-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.id === category_id);
+      });
+      loadItems(category_id);
+    }
+    
+    // Sort tabs
+    document.querySelectorAll('.sort-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.sort-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        currentSort = tab.dataset.sort;
+        if (currentCategory) loadItems(currentCategory);
+      });
+    });
+    
+    // Search
+    let searchTimeout;
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+      clearTimeout(searchTimeout);
+      const q = e.target.value.trim();
+      
+      if (!q) {
+        if (currentCategory) loadItems(currentCategory);
+        return;
+      }
+      
+      searchTimeout = setTimeout(async () => {
+        const res = await fetch(API + '/search?q=' + encodeURIComponent(q));
+        const items = await res.json();
+        
+        const container = document.getElementById('itemsList');
+        
+        if (items.length === 0) {
+          container.innerHTML = '<div class="empty-state"><h3>No results</h3><p>Try a different search term</p></div>';
+          return;
+        }
+        
+        container.innerHTML = items.map((item, i) => {
+          const scoreClass = item.hype_score >= 0 ? 'positive' : 'negative';
+          const myVote = myVotes[item.id] || null;
+          
+          return '<div class="item-card" data-id="' + item.id + '">' +
+            '<div class="rank" style="font-size: 1.5rem;">' + item.category_icon + '</div>' +
+            '<div class="item-info">' +
+              '<div class="item-name">' + escapeHtml(item.name) + '</div>' +
+              '<div class="item-desc">' + escapeHtml(item.category_name) + (item.description ? ' - ' + escapeHtml(item.description) : '') + '</div>' +
+            '</div>' +
+            '<div class="vote-section">' +
+              '<button class="vote-btn up ' + (myVote === 'up' ? 'active' : '') + '" onclick="vote(' + item.id + ', \'up\')">+</button>' +
+              '<div class="hype-score ' + scoreClass + '">' + item.hype_score + '</div>' +
+              '<button class="vote-btn down ' + (myVote === 'down' ? 'active' : '') + '" onclick="vote(' + item.id + ', \'down\')">-</button>' +
+            '</div>' +
+          '</div>';
+        }).join('');
+      }, 300);
+    });
+    
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+    
+    // Close modal on overlay click
+    document.getElementById('modal').addEventListener('click', (e) => {
+      if (e.target.id === 'modal') closeModal();
+    });
+    
+    init();
+  </script>
+</body>
+</html>
