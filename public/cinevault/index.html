@@ -1,230 +1,1522 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>CineVault</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="styles.css"/>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CineVault - Premium Movie Discovery</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-red: #e50914;
+            --dark-red: #b20710;
+            --black: #000000;
+            --dark-gray: #141414;
+            --medium-gray: #1f1f1f;
+            --light-gray: #2a2a2a;
+            --text-white: #ffffff;
+            --text-gray: #b3b3b3;
+            --gold: #f5c518;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--dark-gray);
+            color: var(--text-white);
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* ============ CINEMATIC INTRO ============ */
+        #intro-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: var(--black);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .intro-logo {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .intro-letters {
+            display: flex;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 120px;
+            letter-spacing: 15px;
+            overflow: hidden;
+        }
+
+        .intro-letters span {
+            display: inline-block;
+            opacity: 0;
+            transform: translateY(100px) rotateX(90deg);
+            color: var(--primary-red);
+            text-shadow: 0 0 20px rgba(229, 9, 20, 0.8),
+                         0 0 40px rgba(229, 9, 20, 0.6),
+                         0 0 60px rgba(229, 9, 20, 0.4);
+            animation: letterReveal 0.6s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+        }
+
+        .intro-letters span:nth-child(1) { animation-delay: 0.5s; }
+        .intro-letters span:nth-child(2) { animation-delay: 0.6s; }
+        .intro-letters span:nth-child(3) { animation-delay: 0.7s; }
+        .intro-letters span:nth-child(4) { animation-delay: 0.8s; }
+        .intro-letters span:nth-child(5) { animation-delay: 0.9s; }
+        .intro-letters span:nth-child(6) { animation-delay: 1.0s; }
+        .intro-letters span:nth-child(7) { animation-delay: 1.1s; }
+        .intro-letters span:nth-child(8) { animation-delay: 1.2s; }
+        .intro-letters span:nth-child(9) { animation-delay: 1.3s; }
+
+        @keyframes letterReveal {
+            to {
+                opacity: 1;
+                transform: translateY(0) rotateX(0);
+            }
+        }
+
+        .intro-tagline {
+            font-size: 18px;
+            letter-spacing: 20px;
+            text-transform: uppercase;
+            color: var(--text-gray);
+            opacity: 0;
+            margin-top: 20px;
+            animation: fadeIn 1s ease forwards 2s;
+        }
+
+        .intro-bar {
+            width: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--primary-red), transparent);
+            margin-top: 30px;
+            animation: barExpand 1.5s ease forwards 1.8s;
+        }
+
+        @keyframes barExpand {
+            to { width: 400px; }
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        .intro-fade-out {
+            animation: introFadeOut 1s ease forwards;
+        }
+
+        @keyframes introFadeOut {
+            to {
+                opacity: 0;
+                visibility: hidden;
+            }
+        }
+
+        /* Red sweep effect */
+        .red-sweep {
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(229, 9, 20, 0.3), transparent);
+            animation: sweep 2s ease-in-out infinite;
+            animation-delay: 2.5s;
+        }
+
+        @keyframes sweep {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        /* ============ MAIN APP ============ */
+        #main-app {
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+
+        #main-app.visible {
+            opacity: 1;
+        }
+
+        /* ============ NAVBAR ============ */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background: linear-gradient(180deg, rgba(0,0,0,0.9) 0%, transparent 100%);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 50px;
+            z-index: 1000;
+            transition: background 0.3s ease;
+        }
+
+        .navbar.scrolled {
+            background: rgba(0,0,0,0.95);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.5);
+        }
+
+        .nav-logo {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 42px;
+            color: var(--primary-red);
+            letter-spacing: 3px;
+            text-shadow: 0 0 10px rgba(229, 9, 20, 0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-logo:hover {
+            text-shadow: 0 0 20px rgba(229, 9, 20, 0.8);
+            transform: scale(1.05);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--text-gray);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--text-white);
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary-red);
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after, .nav-link.active::after {
+            width: 100%;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .search-box {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-input {
+            width: 0;
+            padding: 10px 15px;
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-white);
+            font-size: 14px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 4px;
+        }
+
+        .search-input.active {
+            width: 250px;
+            background: rgba(0,0,0,0.8);
+            border-color: var(--text-gray);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-red);
+        }
+
+        .search-btn {
+            background: none;
+            border: none;
+            color: var(--text-white);
+            font-size: 20px;
+            cursor: pointer;
+            padding: 10px;
+            transition: color 0.3s ease;
+        }
+
+        .search-btn:hover {
+            color: var(--primary-red);
+        }
+
+        .user-menu {
+            position: relative;
+        }
+
+        .user-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 4px;
+            background: linear-gradient(135deg, var(--primary-red), var(--dark-red));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .user-avatar:hover {
+            transform: scale(1.1);
+        }
+
+        .user-dropdown {
+            position: absolute;
+            top: 50px;
+            right: 0;
+            background: rgba(20,20,20,0.98);
+            border: 1px solid var(--light-gray);
+            border-radius: 4px;
+            min-width: 180px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+
+        .user-menu:hover .user-dropdown {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+        }
+
+        .dropdown-item:hover {
+            background: var(--light-gray);
+        }
+
+        .dropdown-item i {
+            width: 20px;
+            color: var(--text-gray);
+        }
+
+        /* ============ HERO SECTION ============ */
+        .hero {
+            height: 90vh;
+            position: relative;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .hero-backdrop {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center top;
+            transition: opacity 1s ease;
+        }
+
+        .hero-gradient {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.6) 50%, transparent 100%),
+                        linear-gradient(0deg, var(--dark-gray) 0%, transparent 30%);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 10;
+            padding: 0 50px;
+            max-width: 650px;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--primary-red);
+            padding: 6px 15px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+        }
+
+        .hero-title {
+            font-size: 64px;
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.5);
+        }
+
+        .hero-meta {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .hero-rating {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: var(--gold);
+            font-weight: 600;
+        }
+
+        .hero-year, .hero-runtime {
+            color: var(--text-gray);
+        }
+
+        .hero-genres {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .hero-genre {
+            padding: 5px 12px;
+            border: 1px solid var(--text-gray);
+            border-radius: 20px;
+            font-size: 12px;
+            color: var(--text-gray);
+        }
+
+        .hero-overview {
+            font-size: 16px;
+            line-height: 1.7;
+            color: var(--text-gray);
+            margin-bottom: 30px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 15px 35px;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: var(--primary-red);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--dark-red);
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(229, 9, 20, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        /* Hero slider dots */
+        .hero-dots {
+            position: absolute;
+            bottom: 100px;
+            right: 50px;
+            display: flex;
+            gap: 10px;
+            z-index: 20;
+        }
+
+        .hero-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .hero-dot.active {
+            background: var(--primary-red);
+            transform: scale(1.2);
+        }
+
+        /* ============ SECTIONS ============ */
+        .section {
+            padding: 50px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--primary-red);
+            border-radius: 2px;
+        }
+
+        .see-all {
+            color: var(--text-gray);
+            font-size: 14px;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .see-all:hover {
+            color: var(--primary-red);
+        }
+
+        /* ============ MOVIE GRID ============ */
+        .movie-row {
+            display: flex;
+            gap: 15px;
+            overflow-x: auto;
+            padding-bottom: 20px;
+            scroll-behavior: smooth;
+        }
+
+        .movie-row::-webkit-scrollbar {
+            height: 5px;
+        }
+
+        .movie-row::-webkit-scrollbar-track {
+            background: var(--light-gray);
+            border-radius: 10px;
+        }
+
+        .movie-row::-webkit-scrollbar-thumb {
+            background: var(--primary-red);
+            border-radius: 10px;
+        }
+
+        .movie-card {
+            flex: 0 0 200px;
+            cursor: pointer;
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .movie-card:hover {
+            transform: scale(1.08);
+            z-index: 10;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+        }
+
+        .movie-poster {
+            width: 100%;
+            aspect-ratio: 2/3;
+            object-fit: cover;
+            display: block;
+        }
+
+        .movie-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(0deg, rgba(0,0,0,0.95) 0%, transparent 50%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 15px;
+        }
+
+        .movie-card:hover .movie-overlay {
+            opacity: 1;
+        }
+
+        .movie-card-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .movie-card-meta {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 12px;
+            color: var(--text-gray);
+        }
+
+        .movie-card-rating {
+            color: var(--gold);
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .movie-card-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .card-action-btn {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            border: 1px solid rgba(255,255,255,0.3);
+            background: rgba(0,0,0,0.6);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .card-action-btn:hover {
+            background: var(--primary-red);
+            border-color: var(--primary-red);
+            transform: scale(1.1);
+        }
+
+        .card-action-btn.play-btn {
+            background: var(--primary-red);
+            border-color: var(--primary-red);
+        }
+
+        /* ============ GENRE FILTERS ============ */
+        .genre-filters {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            padding: 20px 50px;
+            background: linear-gradient(180deg, var(--dark-gray) 0%, transparent 100%);
+        }
+
+        .genre-btn {
+            padding: 10px 25px;
+            background: var(--medium-gray);
+            border: 1px solid var(--light-gray);
+            border-radius: 25px;
+            color: var(--text-gray);
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .genre-btn:hover, .genre-btn.active {
+            background: var(--primary-red);
+            border-color: var(--primary-red);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(229, 9, 20, 0.3);
+        }
+
+        /* ============ MOVIE MODAL ============ */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 50px;
+            backdrop-filter: blur(10px);
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--medium-gray);
+            border-radius: 10px;
+            max-width: 1000px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            animation: modalIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes modalIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9) translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.6);
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            z-index: 10;
+            transition: all 0.3s ease;
+        }
+
+        .modal-close:hover {
+            background: var(--primary-red);
+            transform: rotate(90deg);
+        }
+
+        .modal-trailer {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: black;
+        }
+
+        .modal-trailer iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .modal-content {
+            padding: 30px;
+        }
+
+        .modal-title {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .modal-meta {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .modal-rating {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(245, 197, 24, 0.2);
+            padding: 8px 15px;
+            border-radius: 4px;
+            color: var(--gold);
+            font-weight: 600;
+        }
+
+        .modal-year, .modal-runtime {
+            color: var(--text-gray);
+            font-size: 14px;
+        }
+
+        .modal-genres {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .modal-genre {
+            padding: 6px 15px;
+            background: var(--light-gray);
+            border-radius: 20px;
+            font-size: 13px;
+        }
+
+        .modal-overview {
+            font-size: 16px;
+            line-height: 1.8;
+            color: var(--text-gray);
+            margin-bottom: 25px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        /* ============ AUTH MODAL ============ */
+        .auth-modal {
+            background: var(--medium-gray);
+            border-radius: 10px;
+            padding: 50px;
+            max-width: 450px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .auth-logo {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 48px;
+            color: var(--primary-red);
+            margin-bottom: 10px;
+        }
+
+        .auth-title {
+            font-size: 28px;
+            margin-bottom: 30px;
+        }
+
+        .auth-input {
+            width: 100%;
+            padding: 15px 20px;
+            background: var(--light-gray);
+            border: 1px solid transparent;
+            border-radius: 4px;
+            color: white;
+            font-size: 16px;
+            margin-bottom: 15px;
+            transition: border-color 0.3s ease;
+        }
+
+        .auth-input:focus {
+            outline: none;
+            border-color: var(--primary-red);
+        }
+
+        .auth-btn {
+            width: 100%;
+            padding: 15px;
+            background: var(--primary-red);
+            border: none;
+            border-radius: 4px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .auth-btn:hover {
+            background: var(--dark-red);
+        }
+
+        .auth-switch {
+            margin-top: 25px;
+            color: var(--text-gray);
+            font-size: 14px;
+        }
+
+        .auth-switch a {
+            color: var(--primary-red);
+            cursor: pointer;
+        }
+
+        .auth-switch a:hover {
+            text-decoration: underline;
+        }
+
+        /* ============ LOADING ============ */
+        .loading-skeleton {
+            background: linear-gradient(90deg, var(--light-gray) 25%, var(--medium-gray) 50%, var(--light-gray) 75%);
+            background-size: 200% 100%;
+            animation: skeleton 1.5s infinite;
+            border-radius: 8px;
+        }
+
+        @keyframes skeleton {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* ============ TOAST NOTIFICATIONS ============ */
+        .toast-container {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 3000;
+        }
+
+        .toast {
+            background: var(--medium-gray);
+            border-left: 4px solid var(--primary-red);
+            padding: 15px 25px;
+            border-radius: 4px;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: toastIn 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+        }
+
+        @keyframes toastIn {
+            from {
+                opacity: 0;
+                transform: translateX(100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* ============ RESPONSIVE ============ */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 0 20px;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .hero-content {
+                padding: 0 20px;
+            }
+
+            .hero-title {
+                font-size: 36px;
+            }
+
+            .section {
+                padding: 30px 20px;
+            }
+
+            .intro-letters {
+                font-size: 60px;
+            }
+
+            .genre-filters {
+                padding: 20px;
+            }
+        }
+    </style>
 </head>
 <body>
-
-  <!-- INTRO OVERLAY -->
-  <div id="intro" class="intro-overlay">
-    <div class="intro-content">
-      <div class="intro-vault-icon">
-        <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="60" cy="60" r="55" stroke="#c9a84c" stroke-width="2" class="ring ring1"/>
-          <circle cx="60" cy="60" r="42" stroke="#c9a84c" stroke-width="1.5" opacity="0.6" class="ring ring2"/>
-          <circle cx="60" cy="60" r="28" stroke="#c9a84c" stroke-width="1" opacity="0.4" class="ring ring3"/>
-          <circle cx="60" cy="60" r="12" fill="#c9a84c" class="center-dot"/>
-          <line x1="60" y1="5" x2="60" y2="35" stroke="#c9a84c" stroke-width="2" class="spoke"/>
-          <line x1="60" y1="85" x2="60" y2="115" stroke="#c9a84c" stroke-width="2" class="spoke"/>
-          <line x1="5" y1="60" x2="35" y2="60" stroke="#c9a84c" stroke-width="2" class="spoke"/>
-          <line x1="85" y1="60" x2="115" y2="60" stroke="#c9a84c" stroke-width="2" class="spoke"/>
-        </svg>
-      </div>
-      <div class="intro-title">CINEVAULT</div>
-      <div class="intro-tagline">Your World of Cinema</div>
-      <div class="intro-bar"><div class="intro-bar-fill"></div></div>
-    </div>
-  </div>
-
-  <!-- HEADER -->
-  <header class="header" id="header">
-    <div class="header-left">
-      <div class="logo" onclick="showPage('home')">
-        <span class="logo-icon">
-          <svg viewBox="0 0 32 32" fill="none" width="28" height="28">
-            <circle cx="16" cy="16" r="14" stroke="#c9a84c" stroke-width="1.5"/>
-            <circle cx="16" cy="16" r="8" stroke="#c9a84c" stroke-width="1"/>
-            <circle cx="16" cy="16" r="3" fill="#c9a84c"/>
-            <line x1="16" y1="2" x2="16" y2="9" stroke="#c9a84c" stroke-width="1.5"/>
-            <line x1="16" y1="23" x2="16" y2="30" stroke="#c9a84c" stroke-width="1.5"/>
-            <line x1="2" y1="16" x2="9" y2="16" stroke="#c9a84c" stroke-width="1.5"/>
-            <line x1="23" y1="16" x2="30" y2="16" stroke="#c9a84c" stroke-width="1.5"/>
-          </svg>
-        </span>
-        <span class="logo-text">CINEVAULT</span>
-      </div>
-      <nav class="nav">
-        <a onclick="showPage('home')" class="nav-link active" id="nav-home">Home</a>
-        <a onclick="showPage('watchlist')" class="nav-link" id="nav-watchlist">My List</a>
-      </nav>
-    </div>
-    <div class="header-right">
-      <div class="search-wrap">
-        <input type="text" id="search-input" class="search-input" placeholder="Search movies..." oninput="handleSearch(this.value)"/>
-        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <div id="search-results" class="search-dropdown"></div>
-      </div>
-      <div id="user-section" class="user-section" style="display:none">
-        <div class="user-avatar" id="user-avatar">N</div>
-        <span class="user-name" id="user-name">User</span>
-        <button class="btn-logout" onclick="logout()">Sign Out</button>
-      </div>
-      <button class="btn-auth" id="btn-auth" onclick="openModal('login')">Sign In</button>
-    </div>
-  </header>
-
-  <!-- HOME PAGE -->
-  <div id="page-home" class="page active">
-
-    <!-- HERO -->
-    <section class="hero" id="hero">
-      <div class="hero-bg" id="hero-bg"></div>
-      <div class="hero-overlay"></div>
-      <div class="hero-content" id="hero-content">
-        <div class="hero-badge">TRENDING NOW</div>
-        <h1 class="hero-title" id="hero-title">Loading...</h1>
-        <p class="hero-desc" id="hero-desc"></p>
-        <div class="hero-meta" id="hero-meta"></div>
-        <div class="hero-actions">
-          <button class="btn-primary" id="hero-watch-btn">
-            <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M8 5v14l11-7z"/></svg>
-            Watch Trailer
-          </button>
-          <button class="btn-secondary" id="hero-list-btn">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Add to List
-          </button>
+    <!-- CINEMATIC INTRO -->
+    <div id="intro-overlay">
+        <div class="intro-logo">
+            <div class="red-sweep"></div>
+            <div class="intro-letters">
+                <span>C</span>
+                <span>I</span>
+                <span>N</span>
+                <span>E</span>
+                <span>V</span>
+                <span>A</span>
+                <span>U</span>
+                <span>L</span>
+                <span>T</span>
+            </div>
+            <div class="intro-tagline">PREMIUM CINEMA EXPERIENCE</div>
+            <div class="intro-bar"></div>
         </div>
-      </div>
-      <div class="hero-scroll-hint">
-        <div class="scroll-line"></div>
-        <span>SCROLL</span>
-      </div>
-    </section>
-
-    <!-- GENRE FILTER -->
-    <section class="genre-section">
-      <div class="genre-scroll" id="genre-scroll">
-        <button class="genre-pill active" data-id="" onclick="filterGenre(this, '')">All</button>
-      </div>
-    </section>
-
-    <!-- TRENDING -->
-    <section class="movie-section" id="section-trending">
-      <div class="section-header">
-        <h2 class="section-title">Trending This Week</h2>
-        <div class="section-line"></div>
-      </div>
-      <div class="movies-row" id="row-trending"></div>
-    </section>
-
-    <!-- NOW PLAYING -->
-    <section class="movie-section" id="section-nowplaying">
-      <div class="section-header">
-        <h2 class="section-title">Now Playing</h2>
-        <div class="section-line"></div>
-      </div>
-      <div class="movies-row" id="row-nowplaying"></div>
-    </section>
-
-    <!-- TOP RATED -->
-    <section class="movie-section" id="section-toprated">
-      <div class="section-header">
-        <h2 class="section-title">Top Rated</h2>
-        <div class="section-line"></div>
-      </div>
-      <div class="movies-row" id="row-toprated"></div>
-    </section>
-
-    <!-- GENRE RESULTS -->
-    <section class="movie-section" id="section-genre" style="display:none">
-      <div class="section-header">
-        <h2 class="section-title" id="genre-section-title">Genre</h2>
-        <div class="section-line"></div>
-      </div>
-      <div class="movies-grid" id="grid-genre"></div>
-    </section>
-
-  </div>
-
-  <!-- WATCHLIST PAGE -->
-  <div id="page-watchlist" class="page">
-    <div class="page-header-bg"></div>
-    <div class="page-container">
-      <h1 class="page-title">My Watchlist</h1>
-      <div class="movies-grid" id="grid-watchlist"></div>
-      <div id="watchlist-empty" class="empty-state" style="display:none">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="1" width="64" height="64"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
-        <p>Your watchlist is empty.</p>
-        <button class="btn-primary" onclick="showPage('home')">Browse Movies</button>
-      </div>
     </div>
-  </div>
 
-  <!-- DETAIL PAGE -->
-  <div id="page-detail" class="page">
-    <div class="detail-hero" id="detail-hero">
-      <div class="detail-hero-bg" id="detail-bg"></div>
-      <div class="detail-hero-overlay"></div>
-      <button class="btn-back" onclick="goBack()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><polyline points="15 18 9 12 15 6"/></svg>
-        Back
-      </button>
+    <!-- MAIN APP -->
+    <div id="main-app">
+        <!-- NAVBAR -->
+        <nav class="navbar">
+            <div class="nav-logo">CINEVAULT</div>
+            <div class="nav-links">
+                <a href="#" class="nav-link active" data-page="home">Home</a>
+                <a href="#" class="nav-link" data-page="movies">Movies</a>
+                <a href="#" class="nav-link" data-page="tv">TV Shows</a>
+                <a href="#" class="nav-link" data-page="watchlist">My Watchlist</a>
+            </div>
+            <div class="nav-right">
+                <div class="search-box">
+                    <input type="text" class="search-input" id="searchInput" placeholder="Search movies...">
+                    <button class="search-btn" id="searchBtn"><i class="fas fa-search"></i></button>
+                </div>
+                <div class="user-menu">
+                    <div class="user-avatar" id="userAvatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="user-dropdown" id="userDropdown">
+                        <div class="dropdown-item" id="loginBtn"><i class="fas fa-sign-in-alt"></i> Sign In</div>
+                        <div class="dropdown-item" id="signupBtn"><i class="fas fa-user-plus"></i> Sign Up</div>
+                    </div>
+                    <div class="user-dropdown" id="loggedInDropdown" style="display:none;">
+                        <div class="dropdown-item"><i class="fas fa-user"></i> <span id="userName">Profile</span></div>
+                        <div class="dropdown-item" data-page="watchlist"><i class="fas fa-bookmark"></i> Watchlist</div>
+                        <div class="dropdown-item" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Sign Out</div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- HERO -->
+        <section class="hero" id="heroSection">
+            <div class="hero-backdrop" id="heroBackdrop"></div>
+            <div class="hero-gradient"></div>
+            <div class="hero-content" id="heroContent">
+                <!-- Content loaded dynamically -->
+            </div>
+            <div class="hero-dots" id="heroDots"></div>
+        </section>
+
+        <!-- GENRE FILTERS -->
+        <div class="genre-filters" id="genreFilters">
+            <button class="genre-btn active" data-id="all">All</button>
+            <button class="genre-btn" data-id="28">Action</button>
+            <button class="genre-btn" data-id="35">Comedy</button>
+            <button class="genre-btn" data-id="18">Drama</button>
+            <button class="genre-btn" data-id="27">Horror</button>
+            <button class="genre-btn" data-id="878">Sci-Fi</button>
+            <button class="genre-btn" data-id="53">Thriller</button>
+            <button class="genre-btn" data-id="10749">Romance</button>
+            <button class="genre-btn" data-id="16">Animation</button>
+        </div>
+
+        <!-- TRENDING -->
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">Trending Now</h2>
+                <span class="see-all">See All <i class="fas fa-chevron-right"></i></span>
+            </div>
+            <div class="movie-row" id="trendingRow"></div>
+        </section>
+
+        <!-- POPULAR -->
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">Popular Movies</h2>
+                <span class="see-all">See All <i class="fas fa-chevron-right"></i></span>
+            </div>
+            <div class="movie-row" id="popularRow"></div>
+        </section>
+
+        <!-- TOP RATED -->
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">Top Rated</h2>
+                <span class="see-all">See All <i class="fas fa-chevron-right"></i></span>
+            </div>
+            <div class="movie-row" id="topRatedRow"></div>
+        </section>
+
+        <!-- UPCOMING -->
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">Coming Soon</h2>
+                <span class="see-all">See All <i class="fas fa-chevron-right"></i></span>
+            </div>
+            <div class="movie-row" id="upcomingRow"></div>
+        </section>
+
+        <!-- WATCHLIST SECTION (hidden by default) -->
+        <section class="section" id="watchlistSection" style="display:none;">
+            <div class="section-header">
+                <h2 class="section-title">My Watchlist</h2>
+            </div>
+            <div class="movie-row" id="watchlistRow"></div>
+        </section>
+
+        <!-- SEARCH RESULTS (hidden by default) -->
+        <section class="section" id="searchSection" style="display:none;">
+            <div class="section-header">
+                <h2 class="section-title" id="searchTitle">Search Results</h2>
+            </div>
+            <div class="movie-row" id="searchRow"></div>
+        </section>
     </div>
-    <div class="detail-content" id="detail-content"></div>
-  </div>
 
-  <!-- AUTH MODAL -->
-  <div id="auth-modal" class="modal-overlay" onclick="closeModalOutside(event)">
-    <div class="modal">
-      <button class="modal-close" onclick="closeModal()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
-      <div class="modal-logo">CINEVAULT</div>
-      <div class="modal-tabs">
-        <button class="modal-tab active" id="tab-login" onclick="switchTab('login')">Sign In</button>
-        <button class="modal-tab" id="tab-register" onclick="switchTab('register')">Sign Up</button>
-      </div>
-      <!-- Login Form -->
-      <form id="form-login" class="auth-form" onsubmit="submitLogin(event)">
-        <div class="form-group">
-          <label>Email</label>
-          <input type="email" id="login-email" placeholder="you@example.com" required/>
+    <!-- MOVIE DETAIL MODAL -->
+    <div class="modal-overlay" id="movieModal">
+        <div class="modal">
+            <button class="modal-close" id="modalClose"><i class="fas fa-times"></i></button>
+            <div class="modal-trailer" id="modalTrailer"></div>
+            <div class="modal-content" id="modalContent"></div>
         </div>
-        <div class="form-group">
-          <label>Password</label>
-          <input type="password" id="login-password" placeholder="Your password" required/>
-        </div>
-        <div class="form-error" id="login-error"></div>
-        <button type="submit" class="btn-full">Sign In</button>
-        <p class="form-switch">No account? <a onclick="switchTab('register')">Sign Up</a></p>
-      </form>
-      <!-- Register Form -->
-      <form id="form-register" class="auth-form" style="display:none" onsubmit="submitRegister(event)">
-        <div class="form-group">
-          <label>Username</label>
-          <input type="text" id="reg-username" placeholder="YourName" required/>
-        </div>
-        <div class="form-group">
-          <label>Email</label>
-          <input type="email" id="reg-email" placeholder="you@example.com" required/>
-        </div>
-        <div class="form-group">
-          <label>Password</label>
-          <input type="password" id="reg-password" placeholder="Create a password" required/>
-        </div>
-        <div class="form-error" id="reg-error"></div>
-        <button type="submit" class="btn-full">Create Account</button>
-        <p class="form-switch">Have an account? <a onclick="switchTab('login')">Sign In</a></p>
-      </form>
     </div>
-  </div>
 
-  <!-- TRAILER MODAL -->
-  <div id="trailer-modal" class="modal-overlay" onclick="closeTrailer(event)">
-    <div class="trailer-box">
-      <button class="trailer-close" onclick="closeTrailerBtn()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
-      <div class="trailer-frame" id="trailer-frame"></div>
+    <!-- AUTH MODAL -->
+    <div class="modal-overlay" id="authModal">
+        <div class="auth-modal">
+            <div class="auth-logo">CINEVAULT</div>
+            <h2 class="auth-title" id="authTitle">Sign In</h2>
+            <form id="authForm">
+                <input type="text" class="auth-input" id="authUsername" placeholder="Username" required>
+                <input type="email" class="auth-input" id="authEmail" placeholder="Email" style="display:none;">
+                <input type="password" class="auth-input" id="authPassword" placeholder="Password" required>
+                <button type="submit" class="auth-btn" id="authSubmit">Sign In</button>
+            </form>
+            <p class="auth-switch" id="authSwitch">
+                Don't have an account? <a id="authToggle">Sign Up</a>
+            </p>
+        </div>
     </div>
-  </div>
 
-  <script src="app.js"></script>
+    <!-- TOAST -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        const API_BASE = '/api/cinevault';
+        const TMDB_IMG = 'https://image.tmdb.org/t/p';
+        let currentUser = null;
+        let heroMovies = [];
+        let heroIndex = 0;
+        let isLoginMode = true;
+
+        // ============ INTRO ============
+        setTimeout(() => {
+            document.getElementById('intro-overlay').classList.add('intro-fade-out');
+            document.getElementById('main-app').classList.add('visible');
+        }, 4000);
+
+        // ============ NAVBAR SCROLL ============
+        window.addEventListener('scroll', () => {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // ============ SEARCH ============
+        const searchBtn = document.getElementById('searchBtn');
+        const searchInput = document.getElementById('searchInput');
+
+        searchBtn.addEventListener('click', () => {
+            searchInput.classList.toggle('active');
+            if (searchInput.classList.contains('active')) {
+                searchInput.focus();
+            }
+        });
+
+        searchInput.addEventListener('keypress', async (e) => {
+            if (e.key === 'Enter' && searchInput.value.trim()) {
+                await searchMovies(searchInput.value.trim());
+            }
+        });
+
+        async function searchMovies(query) {
+            showToast('Searching...');
+            const res = await fetch(API_BASE + '/tmdb/search/movie?query=' + encodeURIComponent(query));
+            const data = await res.json();
+            renderMovieRow('searchRow', data.results || []);
+            document.getElementById('searchTitle').textContent = 'Results for "' + query + '"';
+            document.getElementById('searchSection').style.display = 'block';
+            document.getElementById('searchSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // ============ FETCH MOVIES ============
+        async function fetchMovies(endpoint) {
+            try {
+                const res = await fetch(API_BASE + '/tmdb' + endpoint);
+                const data = await res.json();
+                return data.results || [];
+            } catch (err) {
+                console.error('Fetch error:', err);
+                return [];
+            }
+        }
+
+        async function loadAllMovies() {
+            const [trending, popular, topRated, upcoming] = await Promise.all([
+                fetchMovies('/trending/movie/week'),
+                fetchMovies('/movie/popular'),
+                fetchMovies('/movie/top_rated'),
+                fetchMovies('/movie/upcoming')
+            ]);
+
+            heroMovies = trending.slice(0, 5);
+            renderHero();
+            renderMovieRow('trendingRow', trending);
+            renderMovieRow('popularRow', popular);
+            renderMovieRow('topRatedRow', topRated);
+            renderMovieRow('upcomingRow', upcoming);
+        }
+
+        // ============ RENDER HERO ============
+        function renderHero() {
+            if (!heroMovies.length) return;
+            const movie = heroMovies[heroIndex];
+            
+            document.getElementById('heroBackdrop').style.backgroundImage = 
+                'url(' + TMDB_IMG + '/original' + movie.backdrop_path + ')';
+
+            document.getElementById('heroContent').innerHTML = 
+                '<div class="hero-badge"><i class="fas fa-fire"></i> TRENDING #' + (heroIndex + 1) + '</div>' +
+                '<h1 class="hero-title">' + (movie.title || movie.name) + '</h1>' +
+                '<div class="hero-meta">' +
+                    '<span class="hero-rating"><i class="fas fa-star"></i> ' + movie.vote_average.toFixed(1) + '</span>' +
+                    '<span class="hero-year">' + (movie.release_date || '').slice(0, 4) + '</span>' +
+                '</div>' +
+                '<p class="hero-overview">' + movie.overview + '</p>' +
+                '<div class="hero-buttons">' +
+                    '<button class="btn btn-primary" onclick="openMovieModal(' + movie.id + ')"><i class="fas fa-play"></i> Watch Trailer</button>' +
+                    '<button class="btn btn-secondary" onclick="addToWatchlist(' + movie.id + ')"><i class="fas fa-plus"></i> Watchlist</button>' +
+                '</div>';
+
+            // Dots
+            let dotsHtml = '';
+            heroMovies.forEach((_, i) => {
+                dotsHtml += '<div class="hero-dot' + (i === heroIndex ? ' active' : '') + '" onclick="setHeroIndex(' + i + ')"></div>';
+            });
+            document.getElementById('heroDots').innerHTML = dotsHtml;
+        }
+
+        function setHeroIndex(i) {
+            heroIndex = i;
+            renderHero();
+        }
+
+        // Auto rotate hero
+        setInterval(() => {
+            heroIndex = (heroIndex + 1) % heroMovies.length;
+            renderHero();
+        }, 8000);
+
+        // ============ RENDER MOVIE ROW ============
+        function renderMovieRow(containerId, movies) {
+            const container = document.getElementById(containerId);
+            if (!movies.length) {
+                container.innerHTML = '<p style="color: var(--text-gray);">No movies found</p>';
+                return;
+            }
+
+            container.innerHTML = movies.map(movie => 
+                '<div class="movie-card" onclick="openMovieModal(' + movie.id + ')">' +
+                    '<img class="movie-poster" src="' + (movie.poster_path ? TMDB_IMG + '/w500' + movie.poster_path : 'https://via.placeholder.com/200x300?text=No+Image') + '" alt="' + (movie.title || movie.name) + '">' +
+                    '<div class="movie-overlay">' +
+                        '<div class="movie-card-title">' + (movie.title || movie.name) + '</div>' +
+                        '<div class="movie-card-meta">' +
+                            '<span class="movie-card-rating"><i class="fas fa-star"></i> ' + (movie.vote_average || 0).toFixed(1) + '</span>' +
+                            '<span>' + ((movie.release_date || '').slice(0, 4) || 'N/A') + '</span>' +
+                        '</div>' +
+                        '<div class="movie-card-actions">' +
+                            '<button class="card-action-btn play-btn"><i class="fas fa-play"></i></button>' +
+                            '<button class="card-action-btn" onclick="event.stopPropagation(); addToWatchlist(' + movie.id + ')"><i class="fas fa-plus"></i></button>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>'
+            ).join('');
+        }
+
+        // ============ MOVIE MODAL ============
+        async function openMovieModal(movieId) {
+            const modal = document.getElementById('movieModal');
+            modal.classList.add('active');
+
+            // Fetch movie details
+            const res = await fetch(API_BASE + '/tmdb/movie/' + movieId + '?append_to_response=videos');
+            const movie = await res.json();
+
+            // Find trailer
+            let trailerHtml = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-gray);">No trailer available</div>';
+            if (movie.videos && movie.videos.results) {
+                const trailer = movie.videos.results.find(v => v.type === 'Trailer' && v.site === 'YouTube');
+                if (trailer) {
+                    trailerHtml = '<iframe src="https://www.youtube.com/embed/' + trailer.key + '?autoplay=1&mute=1" allowfullscreen allow="autoplay"></iframe>';
+                }
+            }
+            document.getElementById('modalTrailer').innerHTML = trailerHtml;
+
+            // Genres
+            const genres = (movie.genres || []).map(g => '<span class="modal-genre">' + g.name + '</span>').join('');
+
+            // Runtime
+            const hours = Math.floor((movie.runtime || 0) / 60);
+            const mins = (movie.runtime || 0) % 60;
+            const runtime = movie.runtime ? hours + 'h ' + mins + 'm' : 'N/A';
+
+            document.getElementById('modalContent').innerHTML = 
+                '<h1 class="modal-title">' + movie.title + '</h1>' +
+                '<div class="modal-meta">' +
+                    '<div class="modal-rating"><i class="fas fa-star"></i> ' + (movie.vote_average || 0).toFixed(1) + ' / 10</div>' +
+                    '<span class="modal-year">' + (movie.release_date || '').slice(0, 4) + '</span>' +
+                    '<span class="modal-runtime"><i class="fas fa-clock"></i> ' + runtime + '</span>' +
+                '</div>' +
+                '<div class="modal-genres">' + genres + '</div>' +
+                '<p class="modal-overview">' + (movie.overview || 'No overview available.') + '</p>' +
+                '<div class="modal-actions">' +
+                    '<button class="btn btn-primary" onclick="addToWatchlist(' + movie.id + ')"><i class="fas fa-plus"></i> Add to Watchlist</button>' +
+                    '<button class="btn btn-secondary" onclick="closeModal()"><i class="fas fa-times"></i> Close</button>' +
+                '</div>';
+        }
+
+        function closeModal() {
+            document.getElementById('movieModal').classList.remove('active');
+            document.getElementById('modalTrailer').innerHTML = '';
+        }
+
+        document.getElementById('modalClose').addEventListener('click', closeModal);
+        document.getElementById('movieModal').addEventListener('click', (e) => {
+            if (e.target.id === 'movieModal') closeModal();
+        });
+
+        // ============ WATCHLIST ============
+        async function addToWatchlist(movieId) {
+            if (!currentUser) {
+                showToast('Please sign in to add to watchlist', 'warning');
+                document.getElementById('authModal').classList.add('active');
+                return;
+            }
+
+            try {
+                const res = await fetch(API_BASE + '/watchlist', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user_id: currentUser.id, movie_id: movieId })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    showToast('Added to watchlist!', 'success');
+                } else {
+                    showToast(data.error || 'Failed to add', 'error');
+                }
+            } catch (err) {
+                showToast('Error adding to watchlist', 'error');
+            }
+        }
+
+        async function loadWatchlist() {
+            if (!currentUser) return;
+            try {
+                const res = await fetch(API_BASE + '/watchlist/' + currentUser.id);
+                const items = await res.json();
+                
+                // Fetch movie details for each
+                const movies = await Promise.all(items.map(async item => {
+                    const r = await fetch(API_BASE + '/tmdb/movie/' + item.movie_id);
+                    return r.json();
+                }));
+
+                renderMovieRow('watchlistRow', movies);
+            } catch (err) {
+                console.error('Watchlist error:', err);
+            }
+        }
+
+        // ============ AUTH ============
+        document.getElementById('loginBtn').addEventListener('click', () => {
+            isLoginMode = true;
+            updateAuthModal();
+            document.getElementById('authModal').classList.add('active');
+        });
+
+        document.getElementById('signupBtn').addEventListener('click', () => {
+            isLoginMode = false;
+            updateAuthModal();
+            document.getElementById('authModal').classList.add('active');
+        });
+
+        document.getElementById('authToggle').addEventListener('click', () => {
+            isLoginMode = !isLoginMode;
+            updateAuthModal();
+        });
+
+        function updateAuthModal() {
+            document.getElementById('authTitle').textContent = isLoginMode ? 'Sign In' : 'Create Account';
+            document.getElementById('authSubmit').textContent = isLoginMode ? 'Sign In' : 'Sign Up';
+            document.getElementById('authEmail').style.display = isLoginMode ? 'none' : 'block';
+            document.getElementById('authSwitch').innerHTML = isLoginMode 
+                ? 'Don\'t have an account? <a id="authToggle">Sign Up</a>'
+                : 'Already have an account? <a id="authToggle">Sign In</a>';
+            document.getElementById('authToggle').addEventListener('click', () => {
+                isLoginMode = !isLoginMode;
+                updateAuthModal();
+            });
+        }
+
+        document.getElementById('authForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('authUsername').value;
+            const password = document.getElementById('authPassword').value;
+            const email = document.getElementById('authEmail').value;
+
+            const endpoint = isLoginMode ? '/login' : '/signup';
+            const body = isLoginMode ? { username, password } : { username, email, password };
+
+            try {
+                const res = await fetch(API_BASE + endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+                const data = await res.json();
+
+                if (res.ok) {
+                    currentUser = data.user || data;
+                    localStorage.setItem('cinevault_user', JSON.stringify(currentUser));
+                    document.getElementById('authModal').classList.remove('active');
+                    updateUserUI();
+                    showToast('Welcome, ' + currentUser.username + '!', 'success');
+                    loadWatchlist();
+                } else {
+                    showToast(data.error || 'Authentication failed', 'error');
+                }
+            } catch (err) {
+                showToast('Connection error', 'error');
+            }
+        });
+
+        document.getElementById('authModal').addEventListener('click', (e) => {
+            if (e.target.id === 'authModal') {
+                document.getElementById('authModal').classList.remove('active');
+            }
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            currentUser = null;
+            localStorage.removeItem('cinevault_user');
+            updateUserUI();
+            showToast('Signed out successfully');
+        });
+
+        function updateUserUI() {
+            if (currentUser) {
+                document.getElementById('userDropdown').style.display = 'none';
+                document.getElementById('loggedInDropdown').style.display = 'block';
+                document.getElementById('userName').textContent = currentUser.username;
+                document.getElementById('userAvatar').innerHTML = currentUser.username.charAt(0).toUpperCase();
+            } else {
+                document.getElementById('userDropdown').style.display = 'block';
+                document.getElementById('loggedInDropdown').style.display = 'none';
+                document.getElementById('userAvatar').innerHTML = '<i class="fas fa-user"></i>';
+            }
+        }
+
+        // ============ GENRE FILTER ============
+        document.querySelectorAll('.genre-btn').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                document.querySelectorAll('.genre-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                const genreId = btn.dataset.id;
+                if (genreId === 'all') {
+                    loadAllMovies();
+                } else {
+                    const movies = await fetchMovies('/discover/movie?with_genres=' + genreId);
+                    renderMovieRow('trendingRow', movies.slice(0, 10));
+                    renderMovieRow('popularRow', movies.slice(10, 20));
+                }
+            });
+        });
+
+        // ============ NAV LINKS ============
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
+
+                const page = link.dataset.page;
+                if (page === 'watchlist') {
+                    if (!currentUser) {
+                        showToast('Please sign in to view watchlist');
+                        document.getElementById('authModal').classList.add('active');
+                        return;
+                    }
+                    document.getElementById('watchlistSection').style.display = 'block';
+                    document.getElementById('watchlistSection').scrollIntoView({ behavior: 'smooth' });
+                    loadWatchlist();
+                }
+            });
+        });
+
+        // ============ TOAST ============
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            
+            let icon = 'fa-info-circle';
+            if (type === 'success') icon = 'fa-check-circle';
+            if (type === 'error') icon = 'fa-exclamation-circle';
+            if (type === 'warning') icon = 'fa-exclamation-triangle';
+
+            toast.innerHTML = '<i class="fas ' + icon + '" style="color:var(--primary-red)"></i> ' + message;
+            container.appendChild(toast);
+
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        // ============ INIT ============
+        const savedUser = localStorage.getItem('cinevault_user');
+        if (savedUser) {
+            currentUser = JSON.parse(savedUser);
+            updateUserUI();
+        }
+
+        loadAllMovies();
+    </script>
 </body>
 </html>

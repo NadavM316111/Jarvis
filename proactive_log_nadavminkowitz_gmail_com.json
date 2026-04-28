@@ -1,6 +1,20 @@
 {
   "updates": [
     {
+      "id": 1777386636653,
+      "message": "Sir, the JARVIS server connection has been lost - there's a \"Cannot connect to JARVIS server\" error displayed at the bottom of the terminal.",
+      "time": "10:30:36 AM",
+      "date": "4/28/2026",
+      "read": false
+    },
+    {
+      "id": 1777386387242,
+      "message": "Sir, your Anthropic API credit balance is depleted - the API is returning an error that you need to go to Plans & Billing to upgrade or purchase credits before you can continue using it.",
+      "time": "10:26:27 AM",
+      "date": "4/28/2026",
+      "read": false
+    },
+    {
       "id": 1777386260801,
       "message": "Sir, your .env.local file containing all your API keys and secrets is currently open and visible - I'd recommend closing this sensitive file, especially since you just pushed to GitHub.",
       "time": "10:24:20 AM",
@@ -683,20 +697,6 @@
       "id": 1776971678161,
       "message": "The answer is A \"Notably,\" because the sentence is emphasizing the importance of renewable energy options in addressing climate change, which continues and highlights the previous point rather than showing contrast or consequence.",
       "time": "3:14:38 PM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776971550987,
-      "message": "The system marked D \"Nonetheless\" as correct, but the explanation visible says it \"introduces a contradiction, which isn't present\" — this appears to be an error in the practice test, and the better answer would likely be C \"By contrast\" since the passage shifts from discussing the region to discussing the channel's name.",
-      "time": "3:12:30 PM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776971421532,
-      "message": "The answer is A \", in contrast,\" because you need a comma before the transitional phrase to properly separate it from the previous independent clause, and a comma after to set off the parenthetical transition before continuing the sentence.",
-      "time": "3:10:21 PM",
       "date": "4/23/2026",
       "read": true
     }

@@ -521,7 +521,7 @@ async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame
 '  [PROGRESS:25%]Creating database tables...[/PROGRESS] — shows a progress bar in chat',
 '  [CONTINUE_BUTTON:continue building the API routes] — shows a clickable Continue button',
 'Step 1: Create Neon DB tables with run_code node. STOP after this. End response with [PROGRESS:25%]Database ready[/PROGRESS][CONTINUE_BUTTON:continue building the API routes]',
-'Step 2: Create C:/Users/nadav/jarvis-web/apps/appname.js using module.exports = (app, sql) => { ... } pattern. Add require line to server.js before app.listen. pm2 restart jarvis. STOP after this. End with [PROGRESS:60%]Backend ready[/PROGRESS][CONTINUE_BUTTON:continue building the frontend]',
+'Step 2: Create C:/Users/nadav/jarvis-web/apps/appname.js using module.exports = (app, sql) => { ... } pattern. Add ONE require line to server.js before app.listen: require("./apps/appname")(app, chatSql). pm2 restart jarvis. STOP after this. End with [PROGRESS:60%]Backend ready[/PROGRESS][CONTINUE_BUTTON:continue building the frontend]',
 'Step 3: Build frontend HTML/JS/CSS to public/appname/index.html. Serve it at https://api.heyjarvis.me/appname/. STOP after this. End with [PROGRESS:100%]App complete — live at https://api.heyjarvis.me/appname/[/PROGRESS]',
 'CRITICAL: Do ONE step at a time. STOP and wait for the user to click Continue before doing the next step. Never skip steps.',
 'You CAN create .js .css .json files in addition to .html — save them all to C:/Users/nadav/jarvis-web/public/appname/filename.ext',
@@ -1035,8 +1035,11 @@ app.get('/design', (req, res) => res.sendFile(path.join(__dirname, 'design.html'
 // Pulse App - Anonymous Confession App
 app.get('/pulse', (req, res) => res.sendFile(path.join(PUBLIC_DIR, 'pulse', 'index.html')));
 app.get('/pulse/', (req, res) => res.sendFile(path.join(PUBLIC_DIR, 'pulse', 'index.html')));
+app.get('/cinevault', (req, res) => res.sendFile(path.join(PUBLIC_DIR, 'cinevault', 'index.html')));
+app.get('/cinevault/', (req, res) => res.sendFile(path.join(PUBLIC_DIR, 'cinevault', 'index.html')));
 app.use('/pulse', express.static(path.join(PUBLIC_DIR, 'pulse')));
 app.use('/cinevault', express.static(path.join(PUBLIC_DIR, 'cinevault')));
+// cinevault static moved to apps/cinevault.js
 app.post('/design-command', async (req, res) => {
   const { command, systemPrompt, history } = req.body;
   try {
@@ -1320,6 +1323,7 @@ app.post('/ai-proxy', async (req, res) => {
 require("./apps/ranked")(app, chatSql);
 
 require("./apps/cinevault")(app, chatSql);
+
 
 app.listen(3001, () => {
   console.log('\n╔════════════════════════════════════════╗');

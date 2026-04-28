@@ -1,595 +1,616 @@
-
-// CineVault - Movie Discovery App
-const API_BASE = '/cinevault/api';
-const IMG_BASE = 'https://image.tmdb.org/t/p';
+// CineVault - Premium Movie Discovery App
+const API_BASE = 'https://api.heyjarvis.me/cinevault';
+const IMG_BASE = 'https://image.tmdb.org/t/p/';
 
 // State
 let currentUser = null;
-let authToken = localStorage.getItem('cinevault_token');
-let watchlistIds = new Set();
-let genres = [];
+let watchlist = [];
+let currentHeroMovie = null;
+let allGenres = [];
+let currentSection = 'home';
 
-// DOM Elements
-const introOverlay = document.getElementById('intro-overlay');
-const homePage = document.getElementById('home-page');
-const detailPage = document.getElementById('detail-page');
-const watchlistPage = document.getElementById('watchlist-page');
-const authModal = document.getElementById('auth-modal');
+// Genre mapping
+const genres = [
+    { id: 28, name: 'Action' },
+    { id: 12, name: 'Adventure' },
+    { id: 16, name: 'Animation' },
+    { id: 35, name: 'Comedy' },
+    { id: 80, name: 'Crime' },
+    { id: 99, name: 'Documentary' },
+    { id: 18, name: 'Drama' },
+    { id: 10751, name: 'Family' },
+    { id: 14, name: 'Fantasy' },
+    { id: 36, name: 'History' },
+    { id: 27, name: 'Horror' },
+    { id: 10402, name: 'Music' },
+    { id: 9648, name: 'Mystery' },
+    { id: 10749, name: 'Romance' },
+    { id: 878, name: 'Sci-Fi' },
+    { id: 53, name: 'Thriller' },
+    { id: 10752, name: 'War' },
+    { id: 37, name: 'Western' }
+];
 
-// ============ INITIALIZATION ============
-document.addEventListener('DOMContentLoaded', async () => {
-  // Show intro animation
-  setTimeout(() => {
-    introOverlay.classList.add('hidden');
-  }, 3500);
-
-  // Check auth
-  if (authToken) {
-    await checkAuth();
-  }
-  updateAuthUI();
-
-  // Load initial data
-  await loadGenres();
-  await loadHeroMovie();
-  await loadTrending();
-  await loadNowPlaying();
-  await loadTopRated();
-  await loadUpcoming();
-
-  // Header scroll effect
-  window.addEventListener('scroll', () => {
-    document.querySelector('.header').classList.toggle('scrolled', window.scrollY > 50);
-  });
-
-  // Search functionality
-  setupSearch();
+// Initialize app
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+        checkAuth();
+        loadGenres();
+    }, 3500); // Wait for intro animation
 });
 
-// ============ AUTH FUNCTIONS ============
-async function checkAuth() {
-  try {
-    const res = await fetch(API_BASE + '/me', {
-      headers: { 'Authorization': 'Bearer ' + authToken }
-    });
-    if (res.ok) {
-      const data = await res.json();
-      currentUser = data.user;
-      await loadWatchlistIds();
+// Auth check
+function checkAuth() {
+    const stored = localStorage.getItem('cinevault_user');
+    if (stored) {
+        currentUser = JSON.parse(stored);
+        showMainApp();
+        loadWatchlist();
     } else {
-      logout();
+        document.getElementById('main-app').classList.remove('hidden');
+        showAuthModal();
     }
-  } catch (err) {
-    console.error('Auth check failed:', err);
-  }
 }
 
-function updateAuthUI() {
-  const authBtn = document.getElementById('auth-btn');
-  const userSection = document.getElementById('user-section');
-  
-  if (currentUser) {
-    authBtn.style.display = 'none';
-    userSection.style.display = 'flex';
-    document.getElementById('user-initial').textContent = currentUser.username.charAt(0).toUpperCase();
-  } else {
-    authBtn.style.display = 'block';
-    userSection.style.display = 'none';
-  }
+// Auth Modal
+function showAuthModal() {
+    document.getElementById('auth-modal').classList.remove('hidden');
 }
 
-function showAuthModal(mode = 'login') {
-  authModal.classList.add('show');
-  document.getElementById('auth-mode').value = mode;
-  document.getElementById('auth-title').textContent = mode === 'login' ? 'Sign In' : 'Create Account';
-  document.getElementById('auth-submit-btn').textContent = mode === 'login' ? 'Sign In' : 'Sign Up';
-  document.getElementById('username-group').style.display = mode === 'signup' ? 'block' : 'none';
-  document.getElementById('auth-switch').innerHTML = mode === 'login' 
-    ? 'New to CineVault? <a onclick="showAuthModal(\'signup\')">Sign up now</a>'
-    : 'Already have an account? <a onclick="showAuthModal(\'login\')">Sign in</a>';
-  document.getElementById('auth-error').classList.remove('show');
+function closeAuthModal() {
+    document.getElementById('auth-modal').classList.add('hidden');
 }
 
-function hideAuthModal() {
-  authModal.classList.remove('show');
+let isSignup = false;
+
+function toggleAuthMode(e) {
+    e.preventDefault();
+    isSignup = !isSignup;
+    
+    document.getElementById('auth-title').textContent = isSignup ? 'Create Account' : 'Sign In';
+    document.getElementById('auth-subtitle').textContent = isSignup ? 'Join the CineVault experience' : 'Welcome back to CineVault';
+    document.getElementById('auth-btn-text').textContent = isSignup ? 'Create Account' : 'Sign In';
+    document.getElementById('signup-fields').classList.toggle('hidden', !isSignup);
+    document.getElementById('switch-text').textContent = isSignup ? 'Already have an account?' : 'New to CineVault?';
+    document.getElementById('switch-link').textContent = isSignup ? 'Sign In' : 'Create Account';
+    document.getElementById('auth-error').classList.add('hidden');
 }
 
-async function handleAuth(e) {
-  e.preventDefault();
-  const mode = document.getElementById('auth-mode').value;
-  const email = document.getElementById('auth-email').value;
-  const password = document.getElementById('auth-password').value;
-  const username = document.getElementById('auth-username').value;
-
-  const errorEl = document.getElementById('auth-error');
-
-  try {
-    const endpoint = mode === 'login' ? '/login' : '/signup';
-    const body = mode === 'login' ? { email, password } : { email, username, password };
-
-    const res = await fetch(API_BASE + endpoint, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
-    });
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      errorEl.textContent = data.error || 'Authentication failed';
-      errorEl.classList.add('show');
-      return;
+// Auth form submit
+document.getElementById('auth-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const email = document.getElementById('auth-email').value;
+    const password = document.getElementById('auth-password').value;
+    const name = document.getElementById('auth-name')?.value || '';
+    
+    const endpoint = isSignup ? '/signup' : '/login';
+    const body = isSignup ? { email, password, name } : { email, password };
+    
+    try {
+        const res = await fetch(API_BASE + endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+        });
+        
+        const data = await res.json();
+        
+        if (!res.ok) {
+            showAuthError(data.error || 'Authentication failed');
+            return;
+        }
+        
+        currentUser = data.user;
+        localStorage.setItem('cinevault_user', JSON.stringify(currentUser));
+        closeAuthModal();
+        showMainApp();
+        loadWatchlist();
+        
+    } catch (err) {
+        showAuthError('Connection failed. Please try again.');
     }
+});
 
-    authToken = data.token;
-    currentUser = data.user;
-    localStorage.setItem('cinevault_token', authToken);
-    await loadWatchlistIds();
-    updateAuthUI();
-    hideAuthModal();
-  } catch (err) {
-    errorEl.textContent = 'Connection error. Please try again.';
-    errorEl.classList.add('show');
-  }
+function showAuthError(msg) {
+    const errEl = document.getElementById('auth-error');
+    errEl.textContent = msg;
+    errEl.classList.remove('hidden');
+}
+
+function showMainApp() {
+    document.getElementById('main-app').classList.remove('hidden');
+    
+    if (currentUser) {
+        document.getElementById('user-initial').textContent = currentUser.name?.charAt(0).toUpperCase() || currentUser.email.charAt(0).toUpperCase();
+        document.getElementById('dropdown-name').textContent = currentUser.name || 'User';
+        document.getElementById('dropdown-email').textContent = currentUser.email;
+    }
+    
+    loadHomePage();
 }
 
 function logout() {
-  fetch(API_BASE + '/logout', {
-    method: 'POST',
-    headers: { 'Authorization': 'Bearer ' + authToken }
-  });
-  authToken = null;
-  currentUser = null;
-  watchlistIds.clear();
-  localStorage.removeItem('cinevault_token');
-  updateAuthUI();
-  showHome();
+    currentUser = null;
+    watchlist = [];
+    localStorage.removeItem('cinevault_user');
+    location.reload();
 }
 
-function toggleUserMenu() {
-  document.getElementById('user-menu').classList.toggle('show');
-}
+// User dropdown toggle
+document.getElementById('user-btn').addEventListener('click', () => {
+    const dropdown = document.getElementById('user-dropdown');
+    dropdown.classList.toggle('hidden');
+});
 
-// ============ DATA LOADING ============
-async function loadGenres() {
-  try {
-    const res = await fetch(API_BASE + '/genres');
-    const data = await res.json();
-    genres = data.genres || [];
-    renderGenreFilters();
-  } catch (err) {
-    console.error('Failed to load genres:', err);
-  }
-}
-
-async function loadHeroMovie() {
-  try {
-    const res = await fetch(API_BASE + '/trending');
-    const data = await res.json();
-    if (data.results && data.results.length > 0) {
-      const movie = data.results[0];
-      renderHero(movie);
-    }
-  } catch (err) {
-    console.error('Failed to load hero:', err);
-  }
-}
-
-async function loadTrending() {
-  try {
-    const res = await fetch(API_BASE + '/trending');
-    const data = await res.json();
-    renderMovieRow('trending-row', data.results || []);
-  } catch (err) {
-    console.error('Failed to load trending:', err);
-  }
-}
-
-async function loadNowPlaying() {
-  try {
-    const res = await fetch(API_BASE + '/now-playing');
-    const data = await res.json();
-    renderMovieRow('now-playing-row', data.results || []);
-  } catch (err) {
-    console.error('Failed to load now playing:', err);
-  }
-}
-
-async function loadTopRated() {
-  try {
-    const res = await fetch(API_BASE + '/top-rated');
-    const data = await res.json();
-    renderMovieRow('top-rated-row', data.results || []);
-  } catch (err) {
-    console.error('Failed to load top rated:', err);
-  }
-}
-
-async function loadUpcoming() {
-  try {
-    const res = await fetch(API_BASE + '/upcoming');
-    const data = await res.json();
-    renderMovieRow('upcoming-row', data.results || []);
-  } catch (err) {
-    console.error('Failed to load upcoming:', err);
-  }
-}
-
-async function loadWatchlistIds() {
-  if (!authToken) return;
-  try {
-    const res = await fetch(API_BASE + '/watchlist', {
-      headers: { 'Authorization': 'Bearer ' + authToken }
-    });
-    const data = await res.json();
-    watchlistIds = new Set((data.watchlist || []).map(m => m.movie_id));
-  } catch (err) {
-    console.error('Failed to load watchlist:', err);
-  }
-}
-
-// ============ RENDERING ============
-function renderHero(movie) {
-  const hero = document.getElementById('hero');
-  hero.innerHTML = `
-    <div class="hero-backdrop" style="background-image: url('${IMG_BASE}/original${movie.backdrop_path}')"></div>
-    <div class="hero-content">
-      <h1 class="hero-title">${movie.title}</h1>
-      <div class="hero-meta">
-        <span class="hero-rating">&#9733; ${movie.vote_average?.toFixed(1)}</span>
-        <span class="hero-year">${movie.release_date?.split('-')[0]}</span>
-      </div>
-      <p class="hero-overview">${movie.overview}</p>
-      <div class="hero-buttons">
-        <button class="btn-play" onclick="showMovieDetail(${movie.id})">
-          &#9658; Watch Trailer
-        </button>
-        <button class="btn-info" onclick="showMovieDetail(${movie.id})">
-          &#8505; More Info
-        </button>
-      </div>
-    </div>
-  `;
-}
-
-function renderMovieRow(containerId, movies) {
-  const container = document.getElementById(containerId);
-  container.innerHTML = movies.map(movie => createMovieCard(movie)).join('');
-}
-
-function createMovieCard(movie) {
-  const isInWatchlist = watchlistIds.has(movie.id);
-  return `
-    <div class="movie-card" onclick="showMovieDetail(${movie.id})">
-      <div class="movie-poster">
-        <img src="${movie.poster_path ? IMG_BASE + '/w342' + movie.poster_path : 'https://via.placeholder.com/200x300?text=No+Image'}" 
-             alt="${movie.title}" loading="lazy">
-      </div>
-      <div class="movie-info">
-        <div class="movie-title-small">${movie.title}</div>
-        <div class="movie-rating-small">&#9733; ${movie.vote_average?.toFixed(1)}</div>
-        <div class="movie-actions">
-          <button class="movie-action-btn ${isInWatchlist ? 'active' : ''}" 
-                  onclick="event.stopPropagation(); toggleWatchlist(${movie.id}, '${encodeURIComponent(movie.title)}', '${movie.poster_path}', '${movie.backdrop_path}', '${encodeURIComponent(movie.overview || '')}', '${movie.release_date}', ${movie.vote_average})"
-                  title="Add to Watchlist">
-            ${isInWatchlist ? '&#10003;' : '+'}
-          </button>
-        </div>
-      </div>
-    </div>
-  `;
-}
-
-function renderGenreFilters() {
-  const container = document.getElementById('genre-filters');
-  container.innerHTML = '<button class="genre-chip active" data-genre="">All</button>' +
-    genres.map(g => `<button class="genre-chip" data-genre="${g.id}">${g.name}</button>`).join('');
-  
-  container.addEventListener('click', async (e) => {
-    if (e.target.classList.contains('genre-chip')) {
-      document.querySelectorAll('.genre-chip').forEach(c => c.classList.remove('active'));
-      e.target.classList.add('active');
-      const genreId = e.target.dataset.genre;
-      await filterByGenre(genreId);
-    }
-  });
-}
-
-async function filterByGenre(genreId) {
-  try {
-    const url = genreId ? API_BASE + '/discover?genre=' + genreId : API_BASE + '/popular';
-    const res = await fetch(url);
-    const data = await res.json();
-    renderMovieRow('trending-row', data.results || []);
-  } catch (err) {
-    console.error('Filter failed:', err);
-  }
-}
-
-// ============ SEARCH ============
-function setupSearch() {
-  const searchIcon = document.getElementById('search-icon');
-  const searchInput = document.getElementById('search-input');
-  let searchTimeout;
-
-  searchIcon.addEventListener('click', () => {
-    searchInput.classList.toggle('active');
-    if (searchInput.classList.contains('active')) {
-      searchInput.focus();
-    }
-  });
-
-  searchInput.addEventListener('input', (e) => {
-    clearTimeout(searchTimeout);
-    searchTimeout = setTimeout(() => searchMovies(e.target.value), 500);
-  });
-
-  searchInput.addEventListener('blur', () => {
-    if (!searchInput.value) {
-      searchInput.classList.remove('active');
-    }
-  });
-}
-
-async function searchMovies(query) {
-  if (!query.trim()) {
-    await loadTrending();
-    return;
-  }
-  
-  try {
-    const res = await fetch(API_BASE + '/search?q=' + encodeURIComponent(query));
-    const data = await res.json();
-    renderMovieRow('trending-row', data.results || []);
-  } catch (err) {
-    console.error('Search failed:', err);
-  }
-}
-
-// ============ MOVIE DETAIL ============
-async function showMovieDetail(movieId) {
-  try {
-    const res = await fetch(API_BASE + '/movie/' + movieId);
-    const movie = await res.json();
-    
-    // Check watchlist status
-    let inWatchlist = false;
-    if (authToken) {
-      const checkRes = await fetch(API_BASE + '/watchlist/check/' + movieId, {
-        headers: { 'Authorization': 'Bearer ' + authToken }
-      });
-      const checkData = await checkRes.json();
-      inWatchlist = checkData.inWatchlist;
-    }
-
-    // Find trailer
-    const trailer = movie.videos?.results?.find(v => v.type === 'Trailer' && v.site === 'YouTube');
-
-    detailPage.innerHTML = `
-      <div class="detail-backdrop" style="background-image: url('${IMG_BASE}/original${movie.backdrop_path}')"></div>
-      <div class="detail-content">
-        <button class="back-btn" onclick="showHome()">&#8592; Back to Browse</button>
-        <div class="detail-header">
-          <div class="detail-poster">
-            <img src="${movie.poster_path ? IMG_BASE + '/w500' + movie.poster_path : 'https://via.placeholder.com/300x450?text=No+Image'}" alt="${movie.title}">
-          </div>
-          <div class="detail-info">
-            <h1 class="detail-title">${movie.title}</h1>
-            <div class="detail-meta">
-              <span class="detail-rating">&#9733; ${movie.vote_average?.toFixed(1)}</span>
-              <span class="detail-year">${movie.release_date?.split('-')[0]}</span>
-              <span class="detail-runtime">${movie.runtime} min</span>
-            </div>
-            <div class="detail-genres">
-              ${(movie.genres || []).map(g => `<span class="detail-genre">${g.name}</span>`).join('')}
-            </div>
-            <p class="detail-overview">${movie.overview}</p>
-            <div class="detail-buttons">
-              ${trailer ? `<button class="btn-play" onclick="document.getElementById('trailer-frame').scrollIntoView({behavior: 'smooth'})">&#9658; Watch Trailer</button>` : ''}
-              <button class="btn-watchlist ${inWatchlist ? 'active' : ''}" id="detail-watchlist-btn"
-                      onclick="toggleDetailWatchlist(${movie.id}, '${encodeURIComponent(movie.title)}', '${movie.poster_path}', '${movie.backdrop_path}', '${encodeURIComponent(movie.overview || '')}', '${movie.release_date}', ${movie.vote_average})">
-                ${inWatchlist ? '&#10003; In Watchlist' : '+ Add to Watchlist'}
-              </button>
-            </div>
-          </div>
-        </div>
-
-        ${trailer ? `
-        <div class="trailer-section">
-          <h2 class="section-title">Trailer</h2>
-          <div class="trailer-container" id="trailer-frame">
-            <iframe src="https://www.youtube.com/embed/${trailer.key}?rel=0" allowfullscreen></iframe>
-          </div>
-        </div>
-        ` : ''}
-
-        ${movie.credits?.cast?.length ? `
-        <div class="cast-section">
-          <h2 class="section-title">Top Cast</h2>
-          <div class="cast-row">
-            ${movie.credits.cast.slice(0, 10).map(actor => `
-              <div class="cast-card">
-                <div class="cast-photo">
-                  <img src="${actor.profile_path ? IMG_BASE + '/w185' + actor.profile_path : 'https://via.placeholder.com/100x100?text=No+Photo'}" alt="${actor.name}">
-                </div>
-                <div class="cast-name">${actor.name}</div>
-                <div class="cast-character">${actor.character}</div>
-              </div>
-            `).join('')}
-          </div>
-        </div>
-        ` : ''}
-
-        ${movie.similar?.results?.length ? `
-        <div class="content-section">
-          <h2 class="section-title">Similar Movies</h2>
-          <div class="movie-row">
-            ${movie.similar.results.slice(0, 10).map(m => createMovieCard(m)).join('')}
-          </div>
-        </div>
-        ` : ''}
-      </div>
-    `;
-
-    homePage.style.display = 'none';
-    watchlistPage.classList.remove('active');
-    detailPage.classList.add('active');
-    window.scrollTo(0, 0);
-  } catch (err) {
-    console.error('Failed to load movie details:', err);
-  }
-}
-
-function showHome() {
-  detailPage.classList.remove('active');
-  watchlistPage.classList.remove('active');
-  homePage.style.display = 'block';
-  window.scrollTo(0, 0);
-}
-
-// ============ WATCHLIST ============
-async function toggleWatchlist(movieId, title, poster, backdrop, overview, releaseDate, rating) {
-  if (!authToken) {
-    showAuthModal('login');
-    return;
-  }
-
-  try {
-    if (watchlistIds.has(movieId)) {
-      await fetch(API_BASE + '/watchlist/' + movieId, {
-        method: 'DELETE',
-        headers: { 'Authorization': 'Bearer ' + authToken }
-      });
-      watchlistIds.delete(movieId);
-    } else {
-      await fetch(API_BASE + '/watchlist', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + authToken
-        },
-        body: JSON.stringify({
-          movie_id: movieId,
-          movie_title: decodeURIComponent(title),
-          poster_path: poster,
-          backdrop_path: backdrop,
-          overview: decodeURIComponent(overview),
-          release_date: releaseDate,
-          vote_average: rating
-        })
-      });
-      watchlistIds.add(movieId);
-    }
-    
-    // Refresh rows
-    await loadTrending();
-    await loadNowPlaying();
-    await loadTopRated();
-    await loadUpcoming();
-  } catch (err) {
-    console.error('Watchlist toggle failed:', err);
-  }
-}
-
-async function toggleDetailWatchlist(movieId, title, poster, backdrop, overview, releaseDate, rating) {
-  if (!authToken) {
-    showAuthModal('login');
-    return;
-  }
-
-  const btn = document.getElementById('detail-watchlist-btn');
-  const isInWatchlist = watchlistIds.has(movieId);
-
-  try {
-    if (isInWatchlist) {
-      await fetch(API_BASE + '/watchlist/' + movieId, {
-        method: 'DELETE',
-        headers: { 'Authorization': 'Bearer ' + authToken }
-      });
-      watchlistIds.delete(movieId);
-      btn.classList.remove('active');
-      btn.innerHTML = '+ Add to Watchlist';
-    } else {
-      await fetch(API_BASE + '/watchlist', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + authToken
-        },
-        body: JSON.stringify({
-          movie_id: movieId,
-          movie_title: decodeURIComponent(title),
-          poster_path: poster,
-          backdrop_path: backdrop,
-          overview: decodeURIComponent(overview),
-          release_date: releaseDate,
-          vote_average: rating
-        })
-      });
-      watchlistIds.add(movieId);
-      btn.classList.add('active');
-      btn.innerHTML = '&#10003; In Watchlist';
-    }
-  } catch (err) {
-    console.error('Watchlist toggle failed:', err);
-  }
-}
-
-async function showWatchlist() {
-  if (!authToken) {
-    showAuthModal('login');
-    return;
-  }
-
-  try {
-    const res = await fetch(API_BASE + '/watchlist', {
-      headers: { 'Authorization': 'Bearer ' + authToken }
-    });
-    const data = await res.json();
-    const watchlist = data.watchlist || [];
-
-    watchlistPage.innerHTML = `
-      <button class="back-btn" onclick="showHome()">&#8592; Back to Browse</button>
-      <div class="watchlist-header">
-        <h1 class="watchlist-title">My Watchlist</h1>
-        <p class="watchlist-count">${watchlist.length} ${watchlist.length === 1 ? 'movie' : 'movies'}</p>
-      </div>
-      ${watchlist.length === 0 ? `
-        <div class="watchlist-empty">
-          <div class="watchlist-empty-icon">&#127916;</div>
-          <h3>Your watchlist is empty</h3>
-          <p>Start adding movies you want to watch!</p>
-        </div>
-      ` : `
-        <div class="movie-grid">
-          ${watchlist.map(movie => `
-            <div class="movie-card" onclick="showMovieDetail(${movie.movie_id})">
-              <div class="movie-poster">
-                <img src="${movie.poster_path ? IMG_BASE + '/w342' + movie.poster_path : 'https://via.placeholder.com/200x300?text=No+Image'}" 
-                     alt="${movie.movie_title}" loading="lazy">
-              </div>
-              <div class="movie-info" style="opacity: 1; transform: none;">
-                <div class="movie-title-small">${movie.movie_title}</div>
-                <div class="movie-rating-small">&#9733; ${parseFloat(movie.vote_average).toFixed(1)}</div>
-              </div>
-            </div>
-          `).join('')}
-        </div>
-      `}
-    `;
-
-    homePage.style.display = 'none';
-    detailPage.classList.remove('active');
-    watchlistPage.classList.add('active');
-    window.scrollTo(0, 0);
-  } catch (err) {
-    console.error('Failed to load watchlist:', err);
-  }
-}
-
-// Close user menu when clicking outside
+// Close dropdown on outside click
 document.addEventListener('click', (e) => {
-  if (!e.target.closest('#user-section')) {
-    document.getElementById('user-menu')?.classList.remove('show');
-  }
+    if (!e.target.closest('.user-menu')) {
+        document.getElementById('user-dropdown').classList.add('hidden');
+    }
+});
+
+// Load genres
+function loadGenres() {
+    const scroll = document.getElementById('genre-scroll');
+    scroll.innerHTML = genres.map(g => 
+        `<button class="genre-pill" data-id="${g.id}" onclick="filterByGenre(${g.id}, '${g.name}')">${g.name}</button>`
+    ).join('');
+}
+
+// Navigation
+document.querySelectorAll('.nav-link').forEach(link => {
+    link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const section = link.dataset.section;
+        switchSection(section);
+    });
+});
+
+function switchSection(section) {
+    currentSection = section;
+    
+    // Update nav active state
+    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+    document.querySelector(`[data-section="${section}"]`)?.classList.add('active');
+    
+    // Show/hide sections
+    document.getElementById('hero-section').classList.toggle('hidden', section === 'watchlist');
+    document.getElementById('genre-section').classList.toggle('hidden', section === 'watchlist');
+    document.getElementById('trending-section').classList.toggle('hidden', section !== 'home');
+    document.getElementById('toprated-section').classList.toggle('hidden', section !== 'home');
+    document.getElementById('upcoming-section').classList.toggle('hidden', section !== 'home');
+    document.getElementById('search-section').classList.add('hidden');
+    document.getElementById('genre-section-content')?.classList.add('hidden');
+    document.getElementById('watchlist-section').classList.toggle('hidden', section !== 'watchlist');
+    
+    if (section === 'watchlist') {
+        displayWatchlist();
+    } else if (section === 'movies') {
+        loadMoviesPage();
+    }
+}
+
+function goHome() {
+    switchSection('home');
+}
+
+// Load home page
+async function loadHomePage() {
+    try {
+        // Load trending for hero
+        const trendingRes = await fetch(API_BASE + '/movies/trending');
+        const trending = await trendingRes.json();
+        
+        if (trending.results?.length) {
+            setHeroMovie(trending.results[0]);
+            renderMovieRow('trending-row', trending.results);
+        }
+        
+        // Load top rated
+        const topRatedRes = await fetch(API_BASE + '/movies/top_rated');
+        const topRated = await topRatedRes.json();
+        if (topRated.results) {
+            renderMovieRow('toprated-row', topRated.results);
+        }
+        
+        // Load upcoming
+        const upcomingRes = await fetch(API_BASE + '/movies/upcoming');
+        const upcoming = await upcomingRes.json();
+        if (upcoming.results) {
+            renderMovieRow('upcoming-row', upcoming.results);
+        }
+        
+    } catch (err) {
+        console.error('Failed to load movies:', err);
+    }
+}
+
+function loadMoviesPage() {
+    // Show all sections when on movies page
+    document.getElementById('trending-section').classList.remove('hidden');
+    document.getElementById('toprated-section').classList.remove('hidden');
+    document.getElementById('upcoming-section').classList.remove('hidden');
+}
+
+// Set hero movie
+function setHeroMovie(movie) {
+    currentHeroMovie = movie;
+    
+    document.getElementById('hero-backdrop').style.backgroundImage = 
+        movie.backdrop_path ? `url(${IMG_BASE}original${movie.backdrop_path})` : 'none';
+    document.getElementById('hero-title').textContent = movie.title || movie.name;
+    document.getElementById('hero-overview').textContent = movie.overview;
+    document.getElementById('hero-rating').innerHTML = `<span style="color: #D4AF37;">&#9733;</span> ${movie.vote_average?.toFixed(1) || 'N/A'}`;
+    document.getElementById('hero-year').textContent = (movie.release_date || movie.first_air_date || '').split('-')[0];
+    
+    updateHeroWatchlistBtn();
+}
+
+function updateHeroWatchlistBtn() {
+    const btn = document.getElementById('hero-watchlist-btn');
+    const inList = watchlist.some(w => w.movie_id === currentHeroMovie?.id);
+    
+    if (inList) {
+        btn.innerHTML = `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> In Watchlist`;
+        btn.classList.add('in-watchlist');
+    } else {
+        btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg> Add to Watchlist`;
+        btn.classList.remove('in-watchlist');
+    }
+}
+
+async function toggleHeroWatchlist() {
+    if (!currentUser) {
+        showAuthModal();
+        return;
+    }
+    await toggleWatchlist(currentHeroMovie);
+    updateHeroWatchlistBtn();
+}
+
+async function playHeroTrailer() {
+    if (currentHeroMovie) {
+        openMovieDetail(currentHeroMovie);
+    }
+}
+
+// Render movie row
+function renderMovieRow(containerId, movies) {
+    const container = document.getElementById(containerId);
+    container.innerHTML = movies.map(movie => createMovieCard(movie)).join('');
+}
+
+// Render movie grid
+function renderMovieGrid(containerId, movies) {
+    const container = document.getElementById(containerId);
+    container.innerHTML = movies.map(movie => createMovieCard(movie)).join('');
+}
+
+// Create movie card
+function createMovieCard(movie) {
+    const inWatchlist = watchlist.some(w => w.movie_id === movie.id);
+    const posterUrl = movie.poster_path 
+        ? `${IMG_BASE}w342${movie.poster_path}`
+        : 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 450"><rect fill="%231a1a1a" width="300" height="450"/><text x="150" y="225" fill="%23666" text-anchor="middle" font-family="sans-serif">No Image</text></svg>';
+    
+    return `
+        <div class="movie-card" onclick="openMovieDetail(${JSON.stringify(movie).replace(/"/g, '&quot;')})">
+            <img src="${posterUrl}" alt="${movie.title || movie.name}" loading="lazy">
+            <div class="movie-card-actions">
+                <button class="card-action-btn ${inWatchlist ? 'in-watchlist' : ''}" 
+                        onclick="event.stopPropagation(); toggleWatchlistCard(${movie.id}, this)"
+                        title="${inWatchlist ? 'Remove from Watchlist' : 'Add to Watchlist'}">
+                    <svg viewBox="0 0 24 24" fill="${inWatchlist ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2">
+                        ${inWatchlist 
+                            ? '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>'
+                            : '<path d="M12 5v14M5 12h14"/>'
+                        }
+                    </svg>
+                </button>
+            </div>
+            <div class="movie-card-overlay">
+                <div class="movie-card-title">${movie.title || movie.name}</div>
+                <div class="movie-card-meta">
+                    <span class="movie-card-rating">&#9733; ${movie.vote_average?.toFixed(1) || 'N/A'}</span>
+                    <span>${(movie.release_date || movie.first_air_date || '').split('-')[0]}</span>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+// Movie detail modal
+async function openMovieDetail(movie) {
+    const modal = document.getElementById('movie-modal');
+    const container = document.getElementById('movie-detail-container');
+    
+    // Fetch movie details with videos
+    let trailerKey = null;
+    try {
+        const res = await fetch(`${API_BASE}/movies/${movie.id}`);
+        const details = await res.json();
+        
+        if (details.videos?.results) {
+            const trailer = details.videos.results.find(v => v.type === 'Trailer' && v.site === 'YouTube');
+            if (trailer) trailerKey = trailer.key;
+        }
+        
+        // Merge details
+        movie = { ...movie, ...details };
+    } catch (err) {
+        console.error('Failed to fetch movie details:', err);
+    }
+    
+    const inWatchlist = watchlist.some(w => w.movie_id === movie.id);
+    const backdropUrl = movie.backdrop_path ? `${IMG_BASE}original${movie.backdrop_path}` : '';
+    const posterUrl = movie.poster_path ? `${IMG_BASE}w342${movie.poster_path}` : '';
+    
+    const movieGenres = movie.genres || genres.filter(g => movie.genre_ids?.includes(g.id));
+    
+    container.innerHTML = `
+        <div class="movie-detail-backdrop" style="background-image: url('${backdropUrl}')"></div>
+        <div class="movie-detail-info">
+            <div class="movie-detail-header">
+                <img src="${posterUrl}" alt="${movie.title}" class="movie-detail-poster">
+                <div class="movie-detail-text">
+                    <h1>${movie.title || movie.name}</h1>
+                    <div class="movie-detail-meta">
+                        <span><span class="rating-star">&#9733;</span> ${movie.vote_average?.toFixed(1) || 'N/A'}</span>
+                        <span>${(movie.release_date || '').split('-')[0]}</span>
+                        <span>${movie.runtime ? movie.runtime + ' min' : ''}</span>
+                    </div>
+                    <div class="movie-detail-genres">
+                        ${movieGenres.map(g => `<span class="genre-tag">${g.name}</span>`).join('')}
+                    </div>
+                </div>
+            </div>
+            <p class="movie-detail-overview">${movie.overview || 'No overview available.'}</p>
+            <div class="movie-detail-actions">
+                <button class="btn-primary" id="detail-watchlist-btn" onclick="toggleWatchlistDetail(${movie.id})">
+                    ${inWatchlist 
+                        ? '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> In Watchlist'
+                        : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg> Add to Watchlist'
+                    }
+                </button>
+            </div>
+            <div class="trailer-container">
+                ${trailerKey 
+                    ? `<iframe src="https://www.youtube.com/embed/${trailerKey}?rel=0&modestbranding=1" allowfullscreen></iframe>`
+                    : '<div class="no-trailer">No trailer available</div>'
+                }
+            </div>
+        </div>
+    `;
+    
+    // Store for watchlist toggle
+    container.dataset.movie = JSON.stringify(movie);
+    
+    modal.classList.remove('hidden');
+}
+
+function closeMovieModal() {
+    document.getElementById('movie-modal').classList.add('hidden');
+}
+
+// Watchlist functions
+async function loadWatchlist() {
+    if (!currentUser) return;
+    
+    try {
+        const res = await fetch(`${API_BASE}/watchlist/${currentUser.id}`);
+        watchlist = await res.json();
+    } catch (err) {
+        console.error('Failed to load watchlist:', err);
+        watchlist = [];
+    }
+}
+
+async function toggleWatchlist(movie) {
+    if (!currentUser) {
+        showAuthModal();
+        return;
+    }
+    
+    const inList = watchlist.some(w => w.movie_id === movie.id);
+    
+    try {
+        if (inList) {
+            await fetch(`${API_BASE}/watchlist/${currentUser.id}/${movie.id}`, { method: 'DELETE' });
+            watchlist = watchlist.filter(w => w.movie_id !== movie.id);
+        } else {
+            await fetch(`${API_BASE}/watchlist`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    user_id: currentUser.id,
+                    movie_id: movie.id,
+                    title: movie.title || movie.name,
+                    poster_path: movie.poster_path,
+                    vote_average: movie.vote_average,
+                    release_date: movie.release_date || movie.first_air_date
+                })
+            });
+            watchlist.push({
+                movie_id: movie.id,
+                title: movie.title || movie.name,
+                poster_path: movie.poster_path,
+                vote_average: movie.vote_average,
+                release_date: movie.release_date || movie.first_air_date
+            });
+        }
+    } catch (err) {
+        console.error('Failed to update watchlist:', err);
+    }
+}
+
+async function toggleWatchlistCard(movieId, btn) {
+    if (!currentUser) {
+        showAuthModal();
+        return;
+    }
+    
+    const inList = watchlist.some(w => w.movie_id === movieId);
+    
+    // Find movie data from existing cards or fetch it
+    let movie = { id: movieId };
+    const card = btn.closest('.movie-card');
+    if (card) {
+        const img = card.querySelector('img');
+        const title = card.querySelector('.movie-card-title')?.textContent;
+        movie = {
+            id: movieId,
+            title: title,
+            poster_path: img?.src.includes('image.tmdb.org') ? img.src.split('/w342')[1] : null,
+            vote_average: parseFloat(card.querySelector('.movie-card-rating')?.textContent.replace('\u2605 ', '')) || 0
+        };
+    }
+    
+    await toggleWatchlist(movie);
+    
+    // Update button appearance
+    btn.classList.toggle('in-watchlist');
+    btn.innerHTML = btn.classList.contains('in-watchlist')
+        ? '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>'
+        : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>';
+}
+
+async function toggleWatchlistDetail(movieId) {
+    if (!currentUser) {
+        showAuthModal();
+        return;
+    }
+    
+    const container = document.getElementById('movie-detail-container');
+    const movie = JSON.parse(container.dataset.movie);
+    
+    await toggleWatchlist(movie);
+    
+    const btn = document.getElementById('detail-watchlist-btn');
+    const inList = watchlist.some(w => w.movie_id === movieId);
+    
+    btn.innerHTML = inList
+        ? '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> In Watchlist'
+        : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg> Add to Watchlist';
+}
+
+function displayWatchlist() {
+    const grid = document.getElementById('watchlist-grid');
+    const emptyMsg = document.getElementById('watchlist-empty');
+    
+    if (watchlist.length === 0) {
+        grid.innerHTML = '';
+        emptyMsg.classList.remove('hidden');
+        return;
+    }
+    
+    emptyMsg.classList.add('hidden');
+    
+    // Convert watchlist items to movie format for card rendering
+    const movies = watchlist.map(w => ({
+        id: w.movie_id,
+        title: w.title,
+        poster_path: w.poster_path,
+        vote_average: w.vote_average,
+        release_date: w.release_date
+    }));
+    
+    renderMovieGrid('watchlist-grid', movies);
+}
+
+// Search
+let searchTimeout;
+
+document.getElementById('search-input').addEventListener('input', (e) => {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+        if (e.target.value.trim()) {
+            searchMovies();
+        }
+    }, 500);
+});
+
+document.getElementById('search-input').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        searchMovies();
+    }
+});
+
+async function searchMovies() {
+    const query = document.getElementById('search-input').value.trim();
+    if (!query) return;
+    
+    try {
+        const res = await fetch(`${API_BASE}/movies/search?q=${encodeURIComponent(query)}`);
+        const data = await res.json();
+        
+        // Show search results
+        document.getElementById('trending-section').classList.add('hidden');
+        document.getElementById('toprated-section').classList.add('hidden');
+        document.getElementById('upcoming-section').classList.add('hidden');
+        document.getElementById('watchlist-section').classList.add('hidden');
+        document.getElementById('genre-section').classList.add('hidden');
+        document.getElementById('search-section').classList.remove('hidden');
+        
+        if (data.results?.length) {
+            renderMovieGrid('search-results', data.results);
+        } else {
+            document.getElementById('search-results').innerHTML = '<p class="empty-message">No movies found</p>';
+        }
+        
+    } catch (err) {
+        console.error('Search failed:', err);
+    }
+}
+
+// Genre filter
+async function filterByGenre(genreId, genreName) {
+    // Update active state
+    document.querySelectorAll('.genre-pill').forEach(p => p.classList.remove('active'));
+    document.querySelector(`[data-id="${genreId}"]`)?.classList.add('active');
+    
+    try {
+        const res = await fetch(`${API_BASE}/movies/genre/${genreId}`);
+        const data = await res.json();
+        
+        // Show genre results
+        document.getElementById('trending-section').classList.add('hidden');
+        document.getElementById('toprated-section').classList.add('hidden');
+        document.getElementById('upcoming-section').classList.add('hidden');
+        document.getElementById('watchlist-section').classList.add('hidden');
+        document.getElementById('search-section').classList.add('hidden');
+        document.getElementById('genre-section').classList.remove('hidden');
+        
+        document.getElementById('genre-name').textContent = genreName;
+        
+        if (data.results?.length) {
+            renderMovieGrid('genre-results', data.results);
+        } else {
+            document.getElementById('genre-results').innerHTML = '<p class="empty-message">No movies found in this genre</p>';
+        }
+        
+    } catch (err) {
+        console.error('Genre filter failed:', err);
+    }
+}
+
+// Close modals on escape
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        closeMovieModal();
+        closeAuthModal();
+    }
+});
+
+// Close modal on backdrop click
+document.getElementById('movie-modal').addEventListener('click', (e) => {
+    if (e.target === document.getElementById('movie-modal')) {
+        closeMovieModal();
+    }
+});
+
+document.getElementById('auth-modal').addEventListener('click', (e) => {
+    if (e.target === document.getElementById('auth-modal')) {
+        closeAuthModal();
+    }
 });
