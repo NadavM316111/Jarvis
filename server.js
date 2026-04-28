@@ -228,7 +228,7 @@ async function executeCode(code, language = 'node', description = '') {
     if (language === 'python') cmd = `python -X utf8 "${tmpFile}"`;
     else if (language === 'powershell') cmd = `powershell -ExecutionPolicy Bypass -File "${tmpFile}"`;
     else if (language === 'bash') cmd = `bash "${tmpFile}"`;
-    else cmd = `node "${tmpFile}"`;
+    else cmd = `node --experimental-require-module "${tmpFile}"`;
 
     const result = execSync(cmd, { timeout: 60000, cwd: __dirname }).toString();
     try { fs.unlinkSync(tmpFile); } catch {}
