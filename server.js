@@ -370,7 +370,7 @@ async function executeAction(action) {
       try { const { sendEmail } = require('./gmail'); await sendEmail(parts[0]?.trim(), parts[1]?.trim(), parts.slice(2).join('|').trim()); } catch (e) { console.log('Email failed:', e.message); }
       break;
     }
-    case 'RUN': exec(action.value); await new Promise(r => setTimeout(r, 1000)); break;
+    case 'RUN': exec(action.value, { windowsHide: true }); await new Promise(r => setTimeout(r, 1000)); break;
     default: console.log('Unknown action:', action.type);
   }
 }
@@ -495,6 +495,12 @@ async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame
       `node_modules: ${process.cwd()}\\node_modules`,
       `Working dir: ${process.cwd()}`,
       `Credentials: .env.local | Google: credentials.json + token.json`,
+      '',
+'═══ SERVER MANAGEMENT ═══',
+'To restart the server after adding new routes: use run_code powershell: pm2 restart jarvis',
+'ALWAYS restart the server after modifying server.js so new routes take effect.',
+'To check server status: pm2 status',
+'To view logs: pm2 logs jarvis --lines 20',
     ] : [
   '',
   '═══ CAPABILITIES ═══',
@@ -508,6 +514,19 @@ async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame
   'web_search, browse_url, run_code, remember, proactive_update, search_3d_models all available.',
   'ENCODING: When writing HTML/CSS/JS with fs.writeFileSync, NEVER use emojis.',
   '',
+  '',
+'═══ BUILDING FULL-STACK APPS ═══',
+'When building a complex app (Instagram clone, marketplace, SaaS, etc.) with database + backend + frontend:',
+'ALWAYS break it into steps and use these markers in your response:',
+'  [PROGRESS:25%]Creating database tables...[/PROGRESS] — shows a progress bar in chat',
+'  [CONTINUE_BUTTON:continue building the API routes] — shows a clickable Continue button',
+'Step 1: Create Neon DB tables with run_code node. End response with [PROGRESS:25%]Database ready[/PROGRESS][CONTINUE_BUTTON:continue building the API routes]',
+'Step 2: Add Express routes to server.js with fs.appendFileSync, then pm2 restart jarvis. End with [PROGRESS:60%]Backend ready[/PROGRESS][CONTINUE_BUTTON:continue building the frontend]',
+'Step 3: Build the HTML/JS/CSS frontend saved to public/. End with [PROGRESS:100%]App complete[/PROGRESS]',
+'You CAN create .js .css .json files in addition to .html — save them all to C:/Users/nadav/jarvis-web/public/appname/filename.ext',
+'NEON DB URL: postgresql://neondb_owner:npg_kT50YOCedwLf@ep-snowy-darkness-a4sa5ao8-pooler.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require',
+'For AI features in apps: call https://api.heyjarvis.me/ai-proxy with POST {prompt, system} — JARVIS will respond as AI inside the app.',
+'',
   '═══ GMAIL & CALENDAR ═══',
 'To read emails: use run_code with node:',
 'const { getRecentEmails } = require("./gmail_multi");',
@@ -1269,7 +1288,18 @@ app.get('/chat-app/user/:id', async (req, res) => {
     res.json({ ok: true, user: users[0] });
   } catch(e) { res.json({ ok: false, error: e.message }); }
 });
-
+// ============ AI PROXY (for apps built by JARVIS) ============
+app.post('/ai-proxy', async (req, res) => {
+  try {
+    const { prompt, system } = req.body;
+    const response = await anthropic.messages.create({
+      model: 'claude-sonnet-4-6', max_tokens: 1000,
+      system: system || 'You are a helpful AI assistant.',
+      messages: [{ role: 'user', content: prompt }]
+    });
+    res.json({ response: response.content[0].text });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
 // ===================== END CHAT APP API =====================
 
 app.listen(3001, () => {

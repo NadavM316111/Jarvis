@@ -36,12 +36,60 @@ interface DailyCheck {
 
 function formatMessage(text: string) {
   return text
+    .replace(/\[PROGRESS:\d+%\].*?\[\/PROGRESS\]/g, '')
+    .replace(/\[CONTINUE_BUTTON:.*?\]/g, '')
     .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
     .replace(/\*(.*?)\*/g, '<em>$1</em>')
     .replace(/#{1,3} (.*?)(\n|$)/g, '<strong>$1</strong><br/>')
     .replace(/^- (.*?)$/gm, '• $1')
     .replace(/\n/g, '<br/>')
     .replace(/(https?:\/\/[^\s<"]+)/g, '<a href="$1" target="_blank" rel="noopener noreferrer" style="color:#60a5fa;text-decoration:underline;word-break:break-all;">$1</a>');
+}
+
+function renderMessageExtras(content: string, onContinue: (prompt: string) => void) {
+  const extras: React.ReactNode[] = [];
+  
+  // Progress bar: [PROGRESS:45%]Building routes...[/PROGRESS]
+  const progressMatch = content.match(/\[PROGRESS:(\d+)%\](.*?)\[\/PROGRESS\]/);
+  if (progressMatch) {
+    const pct = parseInt(progressMatch[1]);
+    const label = progressMatch[2].trim();
+    extras.push(
+      <div key="progress" style={{ marginTop: '10px' }}>
+        <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', marginBottom: '4px' }}>{label}</div>
+        <div style={{ height: '3px', background: 'rgba(255,255,255,0.08)', borderRadius: '999px', overflow: 'hidden' }}>
+          <div style={{ height: '100%', width: `${pct}%`, background: 'linear-gradient(90deg, #3b82f6, #60a5fa)', borderRadius: '999px', transition: 'width 0.5s ease' }} />
+        </div>
+      </div>
+    );
+  }
+
+  // Continue button: [CONTINUE_BUTTON:continue building the frontend]
+  const continueMatch = content.match(/\[CONTINUE_BUTTON:(.*?)\]/);
+  if (continueMatch) {
+    const prompt = continueMatch[1].trim();
+    extras.push(
+      <button
+        key="continue"
+        onClick={() => onContinue(prompt)}
+        style={{
+          marginTop: '12px', display: 'flex', alignItems: 'center', gap: '6px',
+          padding: '8px 14px', borderRadius: '10px', fontSize: '12px', fontWeight: 500,
+          background: 'rgba(59,130,246,0.15)', border: '1px solid rgba(59,130,246,0.35)',
+          color: '#60a5fa', cursor: 'pointer', transition: 'all 0.15s'
+        }}
+        onMouseOver={e => (e.currentTarget.style.background = 'rgba(59,130,246,0.25)')}
+        onMouseOut={e => (e.currentTarget.style.background = 'rgba(59,130,246,0.15)')}
+      >
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+          <polygon points="5 3 19 12 5 21 5 3"/>
+        </svg>
+        Continue
+      </button>
+    );
+  }
+
+  return extras.length > 0 ? <div>{extras}</div> : null;
 }
 
 function generateId() {
@@ -758,7 +806,11 @@ if (ytMatch) { const w = window.open(ytMatch[0], '_blank'); if (w) w.focus(); }
                     </div>
                   )}
                   <span dangerouslySetInnerHTML={{ __html: formatMessage(msg.content) }} />
-                  {msg.imageUrl && <img src={msg.imageUrl} alt={msg.fileName || 'attachment'} className="mt-2 rounded-xl max-w-full" style={{ maxHeight: '200px', objectFit: 'contain' }} />}
+{msg.imageUrl && <img src={msg.imageUrl} alt={msg.fileName || 'attachment'} className="mt-2 rounded-xl max-w-full" style={{ maxHeight: '200px', objectFit: 'contain' }} />}
+{msg.role === 'assistant' && renderMessageExtras(msg.content, (prompt) => {
+  setInput(prompt);
+  setTimeout(() => send(), 50);
+})}
                 </div>
               </div>
             ))}
