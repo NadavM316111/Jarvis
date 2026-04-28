@@ -11,7 +11,7 @@ const PUBLIC_DIR = pathModule.join(__dirname, '..', 'public');
 module.exports = (app, sql) => {
 
   // ---- TMDB PROXY (API routes FIRST before static) ----
-  app.get('/cinevault/tmdb/*', async (req, res) => {
+  app.get('/cinevault/tmdb/*path', async (req, res) => {
     try {
       const endpoint = req.params[0];
       const queryString = Object.keys(req.query).map(k => k + '=' + encodeURIComponent(req.query[k])).join('&');

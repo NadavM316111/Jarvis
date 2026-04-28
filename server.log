@@ -36,3 +36,9 @@ Tool: proactive_update {"message":"🔒 Bookly Security Alert: Two CVEs were rec
 [PROACTIVE nadavminkowitz_gmail_com] Sir, there's a new SyntaxError in your Node.js code - "await is only valid in async functions" - the CineVault database tables creation is failing because you're using await outside of an async function.
 [PROACTIVE nadavminkowitz_gmail_com] Sir, your CineVault HTML file write is failing with a TypeError - the "data" argument is undefined, meaning the HTML content variable is empty when you're trying to write it to the file.
 [PROACTIVE nadavminkowitz_gmail_com] Sir, your .env.local file containing all your API keys and secrets is currently open and visible - I'd recommend closing this sensitive file, especially since you just pushed to GitHub.
+[PROACTIVE nadavminkowitz_gmail_com] Sir, your Anthropic API credit balance is depleted - the API is returning an error that you need to go to Plans & Billing to upgrade or purchase credits before you can continue using it.
+[PROACTIVE nadavminkowitz_gmail_com] Sir, the JARVIS server connection has been lost - there's a "Cannot connect to JARVIS server" error displayed at the bottom of the terminal.
+
+[PROACTIVE BRAIN] Running for Nadav...
+Tool: web_search {"query":"Fort Lauderdale weather alert April 28 2026"}
+Tool: web_search {"query":"Clickflo OR \"TROY Capital\" OR Sokr OR Sesami OR Bookly news April 2026"}
