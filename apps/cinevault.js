@@ -1,29 +1,78 @@
-
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const express = require('express');
 const pathModule = require('path');
 
 const JWT_SECRET = 'cinevault_secret_2024_luxury_cinema';
-const TMDB_TOKEN = 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI4YjJmMjkxNmQ4MGZhZjk2ZWVjYWY3MWJjZDIyYzFkYSIsIm5iZiI6MTcyMDEwNzA4NC40MTY1MTUsInN1YiI6IjY2ODdkMjlkNzM0NTEyNmFhYTNhNjI0MCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.z9TbzNT8hWxeJNMxmjE_9MflLWKJ9gJlFpvSuI5VaL4';
+const TMDB_API_KEY = '8cf43ad9c085135b9479ad5cf6bbcbda';
 const PUBLIC_DIR = pathModule.join(__dirname, '..', 'public');
 
 module.exports = (app, sql) => {
 
-  // ---- TMDB PROXY (API routes FIRST before static) ----
-  app.get('/cinevault/tmdb/*path', async (req, res) => {
+  // ---- MOVIE ROUTES (no auth required) ----
+  app.get('/cinevault/movies/trending', async (req, res) => {
     try {
-      const endpoint = req.params[0];
-      const queryString = Object.keys(req.query).map(k => k + '=' + encodeURIComponent(req.query[k])).join('&');
-      const url = 'https://api.themoviedb.org/3/' + endpoint + (queryString ? '?' + queryString : '');
-      console.log('[CineVault TMDB]', url);
-      const response = await fetch(url, {
-        headers: { 'Authorization': 'Bearer ' + TMDB_TOKEN, 'Content-Type': 'application/json' }
-      });
+      const response = await fetch('https://api.themoviedb.org/3/trending/movie/week?api_key=' + TMDB_API_KEY);
       const data = await response.json();
       res.json(data);
     } catch (err) {
-      console.error('[CineVault TMDB Error]', err.message);
+      console.error('[CineVault] Trending error:', err.message);
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.get('/cinevault/movies/top_rated', async (req, res) => {
+    try {
+      const response = await fetch('https://api.themoviedb.org/3/movie/top_rated?api_key=' + TMDB_API_KEY);
+      const data = await response.json();
+      res.json(data);
+    } catch (err) {
+      console.error('[CineVault] Top rated error:', err.message);
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.get('/cinevault/movies/upcoming', async (req, res) => {
+    try {
+      const response = await fetch('https://api.themoviedb.org/3/movie/upcoming?api_key=' + TMDB_API_KEY);
+      const data = await response.json();
+      res.json(data);
+    } catch (err) {
+      console.error('[CineVault] Upcoming error:', err.message);
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.get('/cinevault/movies/search', async (req, res) => {
+    try {
+      const query = req.query.query || '';
+      const response = await fetch('https://api.themoviedb.org/3/search/movie?api_key=' + TMDB_API_KEY + '&query=' + encodeURIComponent(query));
+      const data = await response.json();
+      res.json(data);
+    } catch (err) {
+      console.error('[CineVault] Search error:', err.message);
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.get('/cinevault/movies/genre/:genreId', async (req, res) => {
+    try {
+      const response = await fetch('https://api.themoviedb.org/3/discover/movie?api_key=' + TMDB_API_KEY + '&with_genres=' + req.params.genreId);
+      const data = await response.json();
+      res.json(data);
+    } catch (err) {
+      console.error('[CineVault] Genre error:', err.message);
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.get('/cinevault/movies/:id', async (req, res) => {
+    try {
+      const response = await fetch('https://api.themoviedb.org/3/movie/' + req.params.id + '?api_key=' + TMDB_API_KEY + '&append_to_response=videos,credits,similar');
+      const data = await response.json();
+      res.json(data);
+    } catch (err) {
+      console.error('[CineVault] Movie detail error:', err.message);
       res.status(500).json({ error: err.message });
     }
   });
@@ -104,15 +153,10 @@ module.exports = (app, sql) => {
 
   app.get('/cinevault/api/watchlist/check/:movieId', verifyToken, async (req, res) => {
     try {
-      const result = await sql`SELECT id FROM cinevault_watchlist WHERE user_id = ${req.userId} AND movie_id = ${parseInt(req.params.movieId)}`;
+      const result = await sql`SELECT 1 FROM cinevault_watchlist WHERE user_id = ${req.userId} AND movie_id = ${parseInt(req.params.movieId)}`;
       res.json({ inWatchlist: result.length > 0 });
     } catch (err) { res.status(500).json({ error: err.message }); }
   });
 
-  // ---- STATIC (LAST, after all API routes) ----
-  app.get('/cinevault', (req, res) => res.sendFile(pathModule.join(PUBLIC_DIR, 'cinevault', 'index.html')));
-  app.get('/cinevault/', (req, res) => res.sendFile(pathModule.join(PUBLIC_DIR, 'cinevault', 'index.html')));
-  app.use('/cinevault', express.static(pathModule.join(PUBLIC_DIR, 'cinevault')));
-
-  console.log('[CineVault] Routes loaded - TMDB proxy + auth + watchlist + static');
+  console.log('[CineVault] Movie routes loaded - no auth required for browsing!');
 };

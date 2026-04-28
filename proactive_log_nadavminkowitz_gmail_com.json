@@ -1,6 +1,13 @@
 {
   "updates": [
     {
+      "id": 1777391191361,
+      "message": "⚠️ EXAM IN PROGRESS — LockDownBrowser is actively running on your machine, Sir. If you're mid-exam, stay focused and avoid switching windows.",
+      "time": "11:46:31 AM",
+      "date": "4/28/2026",
+      "read": false
+    },
+    {
       "id": 1777386636653,
       "message": "Sir, the JARVIS server connection has been lost - there's a \"Cannot connect to JARVIS server\" error displayed at the bottom of the terminal.",
       "time": "10:30:36 AM",
@@ -690,13 +697,6 @@
       "id": 1776972177728,
       "message": "There's a factual error in your essay — Otto von Bismarck was the Prime Minister of Prussia, not Russia.",
       "time": "3:22:57 PM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776971678161,
-      "message": "The answer is A \"Notably,\" because the sentence is emphasizing the importance of renewable energy options in addressing climate change, which continues and highlights the previous point rather than showing contrast or consequence.",
-      "time": "3:14:38 PM",
       "date": "4/23/2026",
       "read": true
     }

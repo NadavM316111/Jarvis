@@ -513,7 +513,7 @@ async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame
   'NEVER use localhost URLs for users — always use https://api.heyjarvis.me/...',
   'web_search, browse_url, run_code, remember, proactive_update, search_3d_models all available.',
   'ENCODING: When writing HTML/CSS/JS with fs.writeFileSync, NEVER use emojis.',
-  '',
+  'MOBILE: All apps and websites must be fully mobile responsive. Use viewport meta tag, flexible layouts, touch-friendly buttons (min 44px), and test that it looks great on phone screens.',
   '',
 '═══ BUILDING FULL-STACK APPS ═══',
 'When building a complex app (Instagram clone, marketplace, SaaS, etc.) with database + backend + frontend:',
@@ -1035,10 +1035,10 @@ app.get('/design', (req, res) => res.sendFile(path.join(__dirname, 'design.html'
 // Pulse App - Anonymous Confession App
 app.get('/pulse', (req, res) => res.sendFile(path.join(PUBLIC_DIR, 'pulse', 'index.html')));
 app.get('/pulse/', (req, res) => res.sendFile(path.join(PUBLIC_DIR, 'pulse', 'index.html')));
-app.get('/cinevault', (req, res) => res.sendFile(path.join(PUBLIC_DIR, 'cinevault', 'index.html')));
-app.get('/cinevault/', (req, res) => res.sendFile(path.join(PUBLIC_DIR, 'cinevault', 'index.html')));
+// cinevault routes moved to apps/cinevault.js
+
 app.use('/pulse', express.static(path.join(PUBLIC_DIR, 'pulse')));
-app.use('/cinevault', express.static(path.join(PUBLIC_DIR, 'cinevault')));
+
 // cinevault static moved to apps/cinevault.js
 app.post('/design-command', async (req, res) => {
   const { command, systemPrompt, history } = req.body;

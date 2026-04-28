@@ -155,6 +155,10 @@
             opacity: 1;
         }
 
+        #main-app.visible {
+            opacity: 1;
+        }
+
         /* ============ NAVBAR ============ */
         .navbar {
             position: fixed;
@@ -1126,7 +1130,7 @@
     <div class="toast-container" id="toastContainer"></div>
 
     <script>
-        const API_BASE = '/api/cinevault';
+        const API_BASE = '/cinevault';
         const TMDB_IMG = 'https://image.tmdb.org/t/p';
         let currentUser = null;
         let heroMovies = [];
@@ -1135,9 +1139,11 @@
 
         // ============ INTRO ============
         setTimeout(() => {
-            document.getElementById('intro-overlay').classList.add('intro-fade-out');
-            document.getElementById('main-app').classList.add('visible');
-        }, 4000);
+            const overlay = document.getElementById('intro-overlay');
+            const mainApp = document.getElementById('main-app');
+            if (overlay) overlay.classList.add('intro-fade-out');
+            if (mainApp) mainApp.classList.add('visible');
+        }, 500);
 
         // ============ NAVBAR SCROLL ============
         window.addEventListener('scroll', () => {
@@ -1168,7 +1174,7 @@
 
         async function searchMovies(query) {
             showToast('Searching...');
-            const res = await fetch(API_BASE + '/tmdb/search/movie?query=' + encodeURIComponent(query));
+            const res = await fetch(API_BASE + '/movies/search?query=' + encodeURIComponent(query));
             const data = await res.json();
             renderMovieRow('searchRow', data.results || []);
             document.getElementById('searchTitle').textContent = 'Results for "' + query + '"';
@@ -1179,7 +1185,7 @@
         // ============ FETCH MOVIES ============
         async function fetchMovies(endpoint) {
             try {
-                const res = await fetch(API_BASE + '/tmdb' + endpoint);
+                const res = await fetch(API_BASE + endpoint);
                 const data = await res.json();
                 return data.results || [];
             } catch (err) {
@@ -1189,12 +1195,12 @@
         }
 
         async function loadAllMovies() {
-            const [trending, popular, topRated, upcoming] = await Promise.all([
-                fetchMovies('/trending/movie/week'),
-                fetchMovies('/movie/popular'),
-                fetchMovies('/movie/top_rated'),
-                fetchMovies('/movie/upcoming')
+            const [trending, topRated, upcoming] = await Promise.all([
+                fetchMovies('/movies/trending'),
+                fetchMovies('/movies/top_rated'),
+                fetchMovies('/movies/upcoming')
             ]);
+            const popular = trending;
 
             heroMovies = trending.slice(0, 5);
             renderHero();
@@ -1276,7 +1282,7 @@
             modal.classList.add('active');
 
             // Fetch movie details
-            const res = await fetch(API_BASE + '/tmdb/movie/' + movieId + '?append_to_response=videos');
+            const res = await fetch(API_BASE + '/movies/' + movieId + '?append_to_response=videos');
             const movie = await res.json();
 
             // Find trailer
@@ -1355,7 +1361,7 @@
                 
                 // Fetch movie details for each
                 const movies = await Promise.all(items.map(async item => {
-                    const r = await fetch(API_BASE + '/tmdb/movie/' + item.movie_id);
+                    const r = await fetch(API_BASE + '/movies/' + item.movie_id);
                     return r.json();
                 }));
 
@@ -1464,7 +1470,7 @@
                 if (genreId === 'all') {
                     loadAllMovies();
                 } else {
-                    const movies = await fetchMovies('/discover/movie?with_genres=' + genreId);
+                    const movies = await fetchMovies('/movies/genre/' + genreId);
                     renderMovieRow('trendingRow', movies.slice(0, 10));
                     renderMovieRow('popularRow', movies.slice(10, 20));
                 }

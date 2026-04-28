@@ -33,23 +33,19 @@ const genres = [
 
 // Initialize app
 document.addEventListener('DOMContentLoaded', () => {
-    setTimeout(() => {
-        checkAuth();
-        loadGenres();
-    }, 3500); // Wait for intro animation
+    checkAuth();
+    loadGenres();
 });
 
-// Auth check
+// Auth check - NO SIGN IN REQUIRED, movies load automatically
 function checkAuth() {
     const stored = localStorage.getItem('cinevault_user');
     if (stored) {
         currentUser = JSON.parse(stored);
-        showMainApp();
         loadWatchlist();
-    } else {
-        document.getElementById('main-app').classList.remove('hidden');
-        showAuthModal();
     }
+    // Always show main app and load movies - no auth required!
+    showMainApp();
 }
 
 // Auth Modal
@@ -138,10 +134,13 @@ function logout() {
 }
 
 // User dropdown toggle
-document.getElementById('user-btn').addEventListener('click', () => {
-    const dropdown = document.getElementById('user-dropdown');
-    dropdown.classList.toggle('hidden');
-});
+const userBtn = document.getElementById('user-btn');
+if (userBtn) {
+    userBtn.addEventListener('click', () => {
+        const dropdown = document.getElementById('user-dropdown');
+        if (dropdown) dropdown.classList.toggle('hidden');
+    });
+}
 
 // Close dropdown on outside click
 document.addEventListener('click', (e) => {
@@ -541,7 +540,7 @@ async function searchMovies() {
     if (!query) return;
     
     try {
-        const res = await fetch(`${API_BASE}/movies/search?q=${encodeURIComponent(query)}`);
+        const res = await fetch(`${API_BASE}/movies/search?query=${encodeURIComponent(query)}`);
         const data = await res.json();
         
         // Show search results
