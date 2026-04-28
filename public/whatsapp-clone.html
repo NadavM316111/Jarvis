@@ -3,18 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChatApp - WhatsApp Clone</title>
+    <title>ChatApp - Real-time Messaging</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #111b21; color: #e9edef; height: 100vh; overflow: hidden; }
         
         .app-container { display: flex; height: 100vh; max-width: 1600px; margin: 0 auto; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
         
+        /* Login Screen */
+        .login-screen { display: flex; align-items: center; justify-content: center; height: 100vh; width: 100%; background: linear-gradient(135deg, #111b21 0%, #1a2e35 100%); }
+        .login-box { background: #202c33; padding: 40px; border-radius: 16px; width: 360px; text-align: center; }
+        .login-box h1 { color: #00a884; margin-bottom: 8px; font-size: 28px; }
+        .login-box p { color: #8696a0; margin-bottom: 24px; font-size: 14px; }
+        .login-box input { width: 100%; padding: 14px 16px; margin-bottom: 12px; border-radius: 8px; border: 1px solid #2a373f; background: #111b21; color: #e9edef; font-size: 15px; }
+        .login-box input::placeholder { color: #8696a0; }
+        .login-box input:focus { outline: none; border-color: #00a884; }
+        .login-box button { width: 100%; padding: 14px; border-radius: 8px; border: none; background: #00a884; color: #111b21; font-size: 16px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+        .login-box button:hover { background: #00c49a; }
+        .login-box .switch-mode { color: #00a884; margin-top: 16px; cursor: pointer; font-size: 14px; }
+        .login-error { color: #f15c6d; font-size: 13px; margin-bottom: 12px; display: none; }
+        
         /* Sidebar */
         .sidebar { width: 400px; background: #111b21; border-right: 1px solid #2a373f; display: flex; flex-direction: column; }
         .sidebar-header { padding: 16px; background: #202c33; display: flex; justify-content: space-between; align-items: center; }
         .sidebar-header h2 { color: #00a884; font-size: 20px; }
+        .user-info { display: flex; align-items: center; gap: 10px; }
         .user-avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #00a884, #00d4aa); display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        .logout-btn { background: none; border: none; color: #8696a0; cursor: pointer; font-size: 12px; }
+        .logout-btn:hover { color: #f15c6d; }
         
         .search-box { padding: 8px 12px; background: #111b21; }
         .search-box input { width: 100%; padding: 10px 32px 10px 12px; border-radius: 8px; border: none; background: #202c33; color: #e9edef; font-size: 14px; }
@@ -29,7 +45,10 @@
         .chat-preview { color: #8696a0; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 250px; }
         .chat-meta { text-align: right; }
         .chat-time { color: #8696a0; font-size: 12px; }
-        .unread-badge { background: #00a884; color: #111b21; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; margin-top: 4px; margin-left: auto; }
+        .unread-badge { background: #00a884; color: #111b21; border-radius: 50%; min-width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; margin-top: 4px; margin-left: auto; padding: 0 6px; }
+        
+        .no-chats { padding: 40px; text-align: center; color: #8696a0; }
+        .no-chats h3 { margin-bottom: 8px; color: #e9edef; }
         
         /* Main Chat Area */
         .chat-main { flex: 1; display: flex; flex-direction: column; background: #0b141a; }
@@ -37,10 +56,12 @@
         .chat-header-avatar { width: 40px; height: 40px; border-radius: 50%; margin-right: 12px; display: flex; align-items: center; justify-content: center; font-weight: bold; }
         .chat-header-info h3 { font-size: 16px; font-weight: 500; }
         .chat-header-info p { color: #00a884; font-size: 13px; }
-        .header-actions { margin-left: auto; display: flex; gap: 20px; }
-        .header-actions button { background: none; border: none; color: #aebac1; cursor: pointer; font-size: 18px; }
         
-        .messages-container { flex: 1; overflow-y: auto; padding: 20px; background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect fill="%230b141a"/><circle cx="20" cy="20" r="1" fill="%231a2a33" opacity="0.5"/><circle cx="60" cy="40" r="1" fill="%231a2a33" opacity="0.5"/><circle cx="80" cy="80" r="1" fill="%231a2a33" opacity="0.5"/></svg>'); }
+        .no-chat-selected { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #8696a0; }
+        .no-chat-selected .icon { font-size: 64px; margin-bottom: 16px; opacity: 0.5; }
+        .no-chat-selected h3 { color: #e9edef; margin-bottom: 8px; }
+        
+        .messages-container { flex: 1; overflow-y: auto; padding: 20px; }
         
         .message { max-width: 65%; margin-bottom: 4px; display: flex; flex-direction: column; }
         .message.sent { margin-left: auto; align-items: flex-end; }
@@ -58,227 +79,569 @@
         
         /* Message Input */
         .message-input-area { padding: 12px 16px; background: #202c33; display: flex; align-items: center; gap: 12px; }
-        .input-actions { display: flex; gap: 8px; }
-        .input-actions button { background: none; border: none; color: #8696a0; cursor: pointer; font-size: 20px; padding: 8px; }
         .message-input { flex: 1; padding: 10px 16px; border-radius: 8px; border: none; background: #2a3942; color: #e9edef; font-size: 15px; }
         .message-input::placeholder { color: #8696a0; }
-        .send-btn { background: none; border: none; color: #8696a0; cursor: pointer; font-size: 24px; padding: 8px; transition: color 0.2s; }
-        .send-btn:hover { color: #00a884; }
+        .message-input:focus { outline: none; }
+        .send-btn { background: #00a884; border: none; color: #111b21; cursor: pointer; font-size: 18px; padding: 10px 16px; border-radius: 8px; font-weight: bold; transition: background 0.2s; }
+        .send-btn:hover { background: #00c49a; }
+        .send-btn:disabled { background: #2a3942; cursor: not-allowed; }
         
-        /* Status indicator */
+        /* Connection status */
         .status-bar { padding: 8px 16px; background: #00a884; color: #111b21; text-align: center; font-size: 13px; font-weight: 500; }
-        
-        /* Typing indicator */
-        .typing-indicator { display: none; padding: 8px 12px; background: #202c33; border-radius: 8px; margin-bottom: 8px; max-width: 80px; }
-        .typing-indicator.show { display: flex; gap: 4px; align-items: center; }
-        .typing-dot { width: 8px; height: 8px; background: #8696a0; border-radius: 50%; animation: typing 1.4s infinite; }
-        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
-        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
-        @keyframes typing { 0%, 60%, 100% { transform: translateY(0); } 30% { transform: translateY(-4px); } }
+        .status-bar.error { background: #f15c6d; color: white; }
+        .status-bar.connecting { background: #f0b429; }
         
         /* Mobile responsive */
         @media (max-width: 768px) {
-            .sidebar { width: 100%; position: absolute; z-index: 10; display: none; }
-            .sidebar.show { display: flex; }
+            .sidebar { width: 100%; position: absolute; z-index: 10; }
+            .sidebar.hide-mobile { display: none; }
             .chat-main { width: 100%; }
+            .back-btn { display: block !important; }
         }
+        .back-btn { display: none; background: none; border: none; color: #00a884; font-size: 20px; margin-right: 10px; cursor: pointer; }
     </style>
 </head>
 <body>
-    <div class="app-container">
-        <!-- Sidebar -->
-        <div class="sidebar">
+    <!-- Login Screen -->
+    <div class="login-screen" id="loginScreen">
+        <div class="login-box">
+            <h1>ChatApp</h1>
+            <p>Real-time messaging powered by JARVIS</p>
+            <div class="login-error" id="loginError"></div>
+            <input type="text" id="nameInput" placeholder="Your name" style="display: none;">
+            <input type="email" id="emailInput" placeholder="Email address">
+            <input type="password" id="passwordInput" placeholder="Password">
+            <button id="authBtn" onclick="handleAuth()">Login</button>
+            <p class="switch-mode" id="switchMode" onclick="toggleAuthMode()">Need an account? Sign up</p>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div class="app-container" id="appContainer" style="display: none;">
+        <div class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <h2>ChatApp</h2>
-                <div class="user-avatar">N</div>
+                <div class="user-info">
+                    <div class="user-avatar" id="myAvatar">?</div>
+                    <button class="logout-btn" onclick="logout()">Logout</button>
+                </div>
             </div>
             <div class="search-box">
-                <input type="text" placeholder="Search or start new chat" id="searchInput">
+                <input type="text" placeholder="Search users..." id="searchInput" oninput="filterUsers()">
             </div>
-            <div class="chat-list" id="chatList"></div>
+            <div class="chat-list" id="chatList">
+                <div class="no-chats">
+                    <h3>No conversations yet</h3>
+                    <p>Start chatting with other users!</p>
+                </div>
+            </div>
         </div>
         
-        <!-- Main Chat -->
-        <div class="chat-main">
-            <div class="status-bar">Connected - Messages sync instantly</div>
-            <div class="chat-header" id="chatHeader">
-                <div class="chat-header-avatar" id="headerAvatar" style="background: linear-gradient(135deg, #6366f1, #8b5cf6);">S</div>
-                <div class="chat-header-info">
-                    <h3 id="headerName">Sarah</h3>
-                    <p id="headerStatus">online</p>
-                </div>
-                <div class="header-actions">
-                    <button title="Video call">V</button>
-                    <button title="Voice call">C</button>
-                    <button title="More">...</button>
-                </div>
+        <div class="chat-main" id="chatMain">
+            <div class="no-chat-selected" id="noChatSelected">
+                <div class="icon">&#128172;</div>
+                <h3>Select a conversation</h3>
+                <p>Choose a user from the list to start chatting</p>
             </div>
-            <div class="messages-container" id="messagesContainer">
-                <div class="date-divider"><span>Today</span></div>
-            </div>
-            <div class="message-input-area">
-                <div class="input-actions">
-                    <button title="Emoji">:)</button>
-                    <button title="Attach">+</button>
+            
+            <div id="chatArea" style="display: none; flex-direction: column; height: 100%;">
+                <div class="status-bar" id="statusBar">Connected - Messages sync every second</div>
+                <div class="chat-header">
+                    <button class="back-btn" onclick="closeChat()">&#8592;</button>
+                    <div class="chat-header-avatar" id="headerAvatar">?</div>
+                    <div class="chat-header-info">
+                        <h3 id="headerName">User</h3>
+                        <p id="headerStatus">online</p>
+                    </div>
                 </div>
-                <input type="text" class="message-input" id="messageInput" placeholder="Type a message">
-                <button class="send-btn" id="sendBtn" title="Send">></button>
+                <div class="messages-container" id="messagesContainer"></div>
+                <div class="message-input-area">
+                    <input type="text" class="message-input" id="messageInput" placeholder="Type a message..." onkeypress="handleKeyPress(event)">
+                    <button class="send-btn" id="sendBtn" onclick="sendMessage()">Send</button>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Chat data
-        const chats = [
-            { id: 1, name: 'Sarah', avatar: 'S', color: '#6366f1', lastMsg: 'Hey! How are you?', time: '10:30 PM', unread: 2, online: true },
-            { id: 2, name: 'Dev Team', avatar: 'D', color: '#00a884', lastMsg: 'Build deployed successfully', time: '9:45 PM', unread: 0, online: true },
-            { id: 3, name: 'Mom', avatar: 'M', color: '#f59e0b', lastMsg: 'Call me when you can', time: '8:20 PM', unread: 1, online: false },
-            { id: 4, name: 'Alex', avatar: 'A', color: '#ef4444', lastMsg: 'See you tomorrow!', time: '7:15 PM', unread: 0, online: true },
-            { id: 5, name: 'Work Group', avatar: 'W', color: '#8b5cf6', lastMsg: 'Meeting at 3pm', time: '6:00 PM', unread: 5, online: true },
+        const API_BASE = 'https://api.heyjarvis.me';
+        let token = localStorage.getItem('jarvis_token');
+        let currentUser = null;
+        let selectedUserId = null;
+        let allUsers = [];
+        let conversations = {};
+        let unreadCounts = {};
+        let lastPollTimestamp = Date.now() - 60000;
+        let pollInterval = null;
+        let isSignupMode = false;
+        
+        // Color palette for avatars
+        const avatarColors = [
+            'linear-gradient(135deg, #6366f1, #8b5cf6)',
+            'linear-gradient(135deg, #f59e0b, #ef4444)',
+            'linear-gradient(135deg, #10b981, #059669)',
+            'linear-gradient(135deg, #3b82f6, #1d4ed8)',
+            'linear-gradient(135deg, #ec4899, #be185d)',
+            'linear-gradient(135deg, #8b5cf6, #6366f1)',
+            'linear-gradient(135deg, #14b8a6, #0891b2)'
         ];
-
-        const messageHistory = {
-            1: [
-                { text: 'Hey! How are you?', sent: false, time: '10:30 PM' },
-            ],
-            2: [
-                { text: 'Build deployed successfully', sent: false, time: '9:45 PM' },
-                { text: 'Great work team!', sent: true, time: '9:46 PM' },
-            ],
-            3: [
-                { text: 'Call me when you can', sent: false, time: '8:20 PM' },
-            ],
-            4: [
-                { text: 'Want to grab lunch tomorrow?', sent: false, time: '7:10 PM' },
-                { text: 'See you tomorrow!', sent: false, time: '7:15 PM' },
-            ],
-            5: [
-                { text: 'Meeting at 3pm', sent: false, time: '6:00 PM' },
-            ],
-        };
-
-        const autoReplies = [
-            "That's awesome!",
-            "Haha, nice one!",
-            "I totally agree with you",
-            "Let me think about that...",
-            "Sounds good to me!",
-            "Can you tell me more?",
-            "That's really interesting",
-            "I'll get back to you on that",
-            "Perfect, thanks!",
-            "No way! Really?",
-        ];
-
-        let currentChatId = 1;
-
-        // Render chat list
-        function renderChatList() {
-            const chatList = document.getElementById('chatList');
-            chatList.innerHTML = chats.map(chat => `
-                <div class="chat-item ${chat.id === currentChatId ? 'active' : ''}" onclick="selectChat(${chat.id})">
-                    <div class="chat-avatar" style="background: linear-gradient(135deg, ${chat.color}, ${chat.color}dd);">${chat.avatar}</div>
-                    <div class="chat-info">
-                        <div class="chat-name">${chat.name}</div>
-                        <div class="chat-preview">${chat.lastMsg}</div>
-                    </div>
-                    <div class="chat-meta">
-                        <div class="chat-time">${chat.time}</div>
-                        ${chat.unread > 0 ? `<div class="unread-badge">${chat.unread}</div>` : ''}
-                    </div>
-                </div>
-            `).join('');
+        
+        function getAvatarColor(id) {
+            let hash = 0;
+            for (let i = 0; i < id.length; i++) hash = id.charCodeAt(i) + ((hash << 5) - hash);
+            return avatarColors[Math.abs(hash) % avatarColors.length];
         }
-
-        // Select chat
-        function selectChat(id) {
-            currentChatId = id;
-            const chat = chats.find(c => c.id === id);
-            
-            // Clear unread
-            chat.unread = 0;
-            
-            // Update header
-            document.getElementById('headerAvatar').textContent = chat.avatar;
-            document.getElementById('headerAvatar').style.background = `linear-gradient(135deg, ${chat.color}, ${chat.color}dd)`;
-            document.getElementById('headerName').textContent = chat.name;
-            document.getElementById('headerStatus').textContent = chat.online ? 'online' : 'last seen today';
-            
-            renderChatList();
-            renderMessages();
+        
+        function getInitials(name) {
+            return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
         }
-
-        // Render messages
-        function renderMessages() {
-            const container = document.getElementById('messagesContainer');
-            const messages = messageHistory[currentChatId] || [];
-            
-            container.innerHTML = '<div class="date-divider"><span>Today</span></div>' + 
-                messages.map(msg => `
-                    <div class="message ${msg.sent ? 'sent' : 'received'}">
-                        <div class="message-bubble">
-                            <div class="message-text">${msg.text}</div>
-                        </div>
-                        <div class="message-time">
-                            ${msg.time}
-                            ${msg.sent ? '<span class="check-marks">vv</span>' : ''}
-                        </div>
-                    </div>
-                `).join('');
-            
-            container.scrollTop = container.scrollHeight;
+        
+        // Auth functions
+        function toggleAuthMode() {
+            isSignupMode = !isSignupMode;
+            document.getElementById('nameInput').style.display = isSignupMode ? 'block' : 'none';
+            document.getElementById('authBtn').textContent = isSignupMode ? 'Sign Up' : 'Login';
+            document.getElementById('switchMode').textContent = isSignupMode ? 'Already have an account? Login' : 'Need an account? Sign up';
+            document.getElementById('loginError').style.display = 'none';
         }
-
-        // Send message
-        function sendMessage() {
-            const input = document.getElementById('messageInput');
-            const text = input.value.trim();
-            if (!text) return;
-
-            const now = new Date();
-            const time = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
-
-            // Add sent message
-            if (!messageHistory[currentChatId]) messageHistory[currentChatId] = [];
-            messageHistory[currentChatId].push({ text, sent: true, time });
-
-            // Update chat preview
-            const chat = chats.find(c => c.id === currentChatId);
-            chat.lastMsg = text;
-            chat.time = time;
-
-            input.value = '';
-            renderChatList();
-            renderMessages();
-
-            // Simulate typing and reply
-            if (chat.online) {
-                document.getElementById('headerStatus').textContent = 'typing...';
+        
+        async function handleAuth() {
+            const email = document.getElementById('emailInput').value.trim();
+            const password = document.getElementById('passwordInput').value;
+            const name = document.getElementById('nameInput').value.trim();
+            const errorEl = document.getElementById('loginError');
+            
+            if (!email || !password || (isSignupMode && !name)) {
+                errorEl.textContent = 'Please fill in all fields';
+                errorEl.style.display = 'block';
+                return;
+            }
+            
+            try {
+                const endpoint = isSignupMode ? '/auth/signup' : '/auth/login';
+                const body = isSignupMode ? { email, password, name } : { email, password };
                 
-                setTimeout(() => {
-                    const reply = autoReplies[Math.floor(Math.random() * autoReplies.length)];
-                    const replyTime = new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
-                    
-                    messageHistory[currentChatId].push({ text: reply, sent: false, time: replyTime });
-                    chat.lastMsg = reply;
-                    chat.time = replyTime;
-                    
-                    document.getElementById('headerStatus').textContent = 'online';
-                    renderChatList();
-                    renderMessages();
-                }, 1500 + Math.random() * 2000);
+                const res = await fetch(API_BASE + endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+                
+                const data = await res.json();
+                
+                if (data.error) {
+                    errorEl.textContent = data.error;
+                    errorEl.style.display = 'block';
+                    return;
+                }
+                
+                token = data.token;
+                localStorage.setItem('jarvis_token', token);
+                currentUser = { userId: data.userId, name: data.name, email };
+                initApp();
+            } catch (e) {
+                errorEl.textContent = 'Connection error. Please try again.';
+                errorEl.style.display = 'block';
             }
         }
-
-        // Event listeners
-        document.getElementById('sendBtn').addEventListener('click', sendMessage);
-        document.getElementById('messageInput').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') sendMessage();
-        });
-
-        // Initialize
-        renderChatList();
-        renderMessages();
+        
+        function logout() {
+            localStorage.removeItem('jarvis_token');
+            token = null;
+            currentUser = null;
+            if (pollInterval) clearInterval(pollInterval);
+            document.getElementById('loginScreen').style.display = 'flex';
+            document.getElementById('appContainer').style.display = 'none';
+        }
+        
+        // Initialize app
+        async function initApp() {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('appContainer').style.display = 'flex';
+            document.getElementById('myAvatar').textContent = getInitials(currentUser.name);
+            
+            await loadUsers();
+            await loadUnreadCounts();
+            await loadConversations();
+            startPolling();
+        }
+        
+        // Load all users
+        async function loadUsers() {
+            try {
+                const res = await fetch(API_BASE + '/chat/users', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                const data = await res.json();
+                allUsers = data.users || [];
+                renderUserList();
+            } catch (e) {
+                console.error('Failed to load users:', e);
+            }
+        }
+        
+        // Load unread counts
+        async function loadUnreadCounts() {
+            try {
+                const res = await fetch(API_BASE + '/chat/unread', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                const data = await res.json();
+                unreadCounts = {};
+                (data.unread || []).forEach(u => {
+                    unreadCounts[u.sender_id] = parseInt(u.count);
+                });
+            } catch (e) {
+                console.error('Failed to load unread:', e);
+            }
+        }
+        
+        // Load conversation previews
+        async function loadConversations() {
+            try {
+                const res = await fetch(API_BASE + '/chat/conversations', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                const data = await res.json();
+                conversations = {};
+                (data.conversations || []).forEach(c => {
+                    conversations[c.other_user] = {
+                        lastMessage: c.message,
+                        time: new Date(c.created_at),
+                        name: c.name
+                    };
+                });
+                renderUserList();
+            } catch (e) {
+                console.error('Failed to load conversations:', e);
+            }
+        }
+        
+        // Render user/conversation list
+        function renderUserList() {
+            const container = document.getElementById('chatList');
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            
+            // Combine users with conversation data
+            let items = allUsers.map(u => ({
+                ...u,
+                lastMessage: conversations[u.id]?.lastMessage || null,
+                lastTime: conversations[u.id]?.time || null,
+                unread: unreadCounts[u.id] || 0
+            }));
+            
+            // Sort: users with conversations first, then by time
+            items.sort((a, b) => {
+                if (a.lastTime && !b.lastTime) return -1;
+                if (!a.lastTime && b.lastTime) return 1;
+                if (a.lastTime && b.lastTime) return b.lastTime - a.lastTime;
+                return a.name.localeCompare(b.name);
+            });
+            
+            // Filter by search
+            if (searchTerm) {
+                items = items.filter(u => 
+                    u.name.toLowerCase().includes(searchTerm) || 
+                    u.email.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            if (items.length === 0) {
+                container.innerHTML = '<div class="no-chats"><h3>No users found</h3><p>Try a different search</p></div>';
+                return;
+            }
+            
+            container.innerHTML = items.map(u => {
+                const initials = getInitials(u.name);
+                const color = getAvatarColor(u.id);
+                const preview = u.lastMessage ? (u.lastMessage.length > 35 ? u.lastMessage.slice(0,35) + '...' : u.lastMessage) : 'Start a conversation';
+                const time = u.lastTime ? formatTime(u.lastTime) : '';
+                const isActive = u.id === selectedUserId;
+                
+                return `
+                    <div class="chat-item ${isActive ? 'active' : ''}" onclick="selectUser('${u.id}', '${u.name.replace(/'/g, "\\'")}')">
+                        <div class="chat-avatar" style="background: ${color}">${initials}</div>
+                        <div class="chat-info">
+                            <div class="chat-name">${u.name}</div>
+                            <div class="chat-preview">${preview}</div>
+                        </div>
+                        <div class="chat-meta">
+                            <div class="chat-time">${time}</div>
+                            ${u.unread > 0 ? `<div class="unread-badge">${u.unread}</div>` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function filterUsers() {
+            renderUserList();
+        }
+        
+        function formatTime(date) {
+            const d = new Date(date);
+            const now = new Date();
+            const diff = now - d;
+            
+            if (diff < 86400000 && d.getDate() === now.getDate()) {
+                return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            } else if (diff < 604800000) {
+                return d.toLocaleDateString([], { weekday: 'short' });
+            } else {
+                return d.toLocaleDateString([], { month: 'short', day: 'numeric' });
+            }
+        }
+        
+        // Select a user to chat with
+        async function selectUser(userId, userName) {
+            selectedUserId = userId;
+            
+            // Update UI
+            document.getElementById('noChatSelected').style.display = 'none';
+            document.getElementById('chatArea').style.display = 'flex';
+            document.getElementById('headerName').textContent = userName;
+            document.getElementById('headerAvatar').textContent = getInitials(userName);
+            document.getElementById('headerAvatar').style.background = getAvatarColor(userId);
+            document.getElementById('messageInput').focus();
+            
+            // Mobile: hide sidebar
+            document.getElementById('sidebar').classList.add('hide-mobile');
+            
+            // Clear unread for this user
+            unreadCounts[userId] = 0;
+            renderUserList();
+            
+            // Load messages
+            await loadMessages(userId);
+        }
+        
+        function closeChat() {
+            selectedUserId = null;
+            document.getElementById('noChatSelected').style.display = 'flex';
+            document.getElementById('chatArea').style.display = 'none';
+            document.getElementById('sidebar').classList.remove('hide-mobile');
+            renderUserList();
+        }
+        
+        // Load messages for a conversation
+        async function loadMessages(userId) {
+            const container = document.getElementById('messagesContainer');
+            container.innerHTML = '<div style="text-align:center;padding:20px;color:#8696a0">Loading messages...</div>';
+            
+            try {
+                const res = await fetch(API_BASE + '/chat/messages/' + userId, {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                const data = await res.json();
+                renderMessages(data.messages || []);
+            } catch (e) {
+                container.innerHTML = '<div style="text-align:center;padding:20px;color:#f15c6d">Failed to load messages</div>';
+            }
+        }
+        
+        // Render messages
+        function renderMessages(messages) {
+            const container = document.getElementById('messagesContainer');
+            
+            if (messages.length === 0) {
+                container.innerHTML = '<div style="text-align:center;padding:40px;color:#8696a0">No messages yet. Say hi!</div>';
+                return;
+            }
+            
+            let html = '';
+            let lastDate = null;
+            
+            messages.forEach(msg => {
+                const date = new Date(msg.created_at);
+                const dateStr = date.toLocaleDateString();
+                
+                if (dateStr !== lastDate) {
+                    html += `<div class="date-divider"><span>${formatDateDivider(date)}</span></div>`;
+                    lastDate = dateStr;
+                }
+                
+                const isSent = msg.sender_id === currentUser.userId;
+                const time = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                
+                html += `
+                    <div class="message ${isSent ? 'sent' : 'received'}">
+                        <div class="message-bubble">
+                            <div class="message-text">${escapeHtml(msg.message)}</div>
+                        </div>
+                        <div class="message-time">
+                            ${time}
+                            ${isSent ? '<span class="check-marks">' + (msg.read ? '&#10003;&#10003;' : '&#10003;') + '</span>' : ''}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+            container.scrollTop = container.scrollHeight;
+        }
+        
+        function formatDateDivider(date) {
+            const now = new Date();
+            const diff = now - date;
+            
+            if (date.toDateString() === now.toDateString()) return 'Today';
+            if (diff < 86400000 * 2) return 'Yesterday';
+            return date.toLocaleDateString([], { weekday: 'long', month: 'short', day: 'numeric' });
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        // Send a message
+        async function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            
+            if (!message || !selectedUserId) return;
+            
+            input.value = '';
+            document.getElementById('sendBtn').disabled = true;
+            
+            try {
+                const res = await fetch(API_BASE + '/chat/messages', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ recipientId: selectedUserId, message })
+                });
+                
+                const data = await res.json();
+                
+                if (data.message) {
+                    // Add to UI immediately
+                    appendMessage(data.message);
+                    
+                    // Update conversation preview
+                    conversations[selectedUserId] = {
+                        lastMessage: message,
+                        time: new Date(),
+                        name: document.getElementById('headerName').textContent
+                    };
+                    renderUserList();
+                }
+            } catch (e) {
+                console.error('Failed to send:', e);
+                alert('Failed to send message');
+            }
+            
+            document.getElementById('sendBtn').disabled = false;
+            input.focus();
+        }
+        
+        function appendMessage(msg) {
+            const container = document.getElementById('messagesContainer');
+            const noMessages = container.querySelector('div[style*="No messages"]');
+            if (noMessages) container.innerHTML = '';
+            
+            const isSent = msg.sender_id === currentUser.userId;
+            const time = new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            
+            const div = document.createElement('div');
+            div.className = 'message ' + (isSent ? 'sent' : 'received');
+            div.innerHTML = `
+                <div class="message-bubble">
+                    <div class="message-text">${escapeHtml(msg.message)}</div>
+                </div>
+                <div class="message-time">
+                    ${time}
+                    ${isSent ? '<span class="check-marks">&#10003;</span>' : ''}
+                </div>
+            `;
+            
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+        }
+        
+        function handleKeyPress(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        }
+        
+        // Polling for new messages
+        function startPolling() {
+            if (pollInterval) clearInterval(pollInterval);
+            
+            pollInterval = setInterval(async () => {
+                try {
+                    const res = await fetch(API_BASE + '/chat/poll?since=' + lastPollTimestamp, {
+                        headers: { 'Authorization': 'Bearer ' + token }
+                    });
+                    const data = await res.json();
+                    
+                    if (data.timestamp) lastPollTimestamp = data.timestamp;
+                    
+                    if (data.messages && data.messages.length > 0) {
+                        data.messages.forEach(msg => {
+                            // If from current chat, append
+                            if (msg.sender_id === selectedUserId) {
+                                appendMessage(msg);
+                            } else {
+                                // Update unread count
+                                unreadCounts[msg.sender_id] = (unreadCounts[msg.sender_id] || 0) + 1;
+                            }
+                            
+                            // Update conversation preview
+                            conversations[msg.sender_id] = {
+                                lastMessage: msg.message,
+                                time: new Date(msg.created_at),
+                                name: allUsers.find(u => u.id === msg.sender_id)?.name || 'User'
+                            };
+                        });
+                        
+                        renderUserList();
+                    }
+                    
+                    // Update status bar
+                    document.getElementById('statusBar').textContent = 'Connected - Last sync: ' + new Date().toLocaleTimeString();
+                    document.getElementById('statusBar').className = 'status-bar';
+                } catch (e) {
+                    document.getElementById('statusBar').textContent = 'Connection error - Retrying...';
+                    document.getElementById('statusBar').className = 'status-bar error';
+                }
+            }, 1000); // Poll every second
+        }
+        
+        // Check if already logged in
+        async function checkAuth() {
+            if (!token) {
+                document.getElementById('loginScreen').style.display = 'flex';
+                return;
+            }
+            
+            try {
+                // Verify token by making a request
+                const res = await fetch(API_BASE + '/chat/users', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                
+                if (res.status === 401) {
+                    logout();
+                    return;
+                }
+                
+                // Decode token to get user info
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                currentUser = { userId: payload.userId, name: payload.name, email: payload.email };
+                initApp();
+            } catch (e) {
+                logout();
+            }
+        }
+        
+        // Start
+        checkAuth();
     </script>
 </body>
 </html>
