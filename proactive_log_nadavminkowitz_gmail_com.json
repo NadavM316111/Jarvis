@@ -1,6 +1,447 @@
 {
   "updates": [
     {
+      "id": 1777637316614,
+      "message": "🔋 CRITICAL: Your laptop battery is at 14% and appears to be on AC power (BatteryStatus: 2). If it's not actually charging, plug in immediately — you're close to shutting down.",
+      "time": "8:08:36 AM",
+      "date": "5/1/2026",
+      "read": false
+    },
+    {
+      "id": 1777637311550,
+      "message": "⚡ WEATHER ALERT — There's an active thunderstorm in Fort Lauderdale right now (73°F). The NWS also flags widespread rainfall incoming this weekend with potential localized flooding. Plan accordingly if you're heading out today.",
+      "time": "8:08:31 AM",
+      "date": "5/1/2026",
+      "read": false
+    },
+    {
+      "id": 1777637274151,
+      "message": "🌅 MORNING BRIEFING — Friday, May 1, 2026 | 8:07 AM\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n⚠️ URGENT — EMAIL ALERTS\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n🔴 DigitalOcean PAYMENT FAILED (3 emails!)\n   → Card ending in 1940 was declined. $12.00 overdue balance from April invoice. If not resolved, your servers may be suspended. ACTION REQUIRED: Update billing at digitalocean.com/billing\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n📬 OTHER INBOX HIGHLIGHTS (10 unread)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n• Shopify — \"Extend your trial for just $1\" — Your trial is ending, keep building without interruption.\n• Ubisoft — Account update requested (state of residence).\n• NYT Games — Bonus crossword puzzle with Jeff Tweedy of Wilco.\n• Facebook — 25 notifications pending.\n• Oxford/Emory, Simon & Schuster, Emergent.sh — Newsletters/promos, low priority.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n📅 CALENDAR — THIS WEEK & NEXT\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n📝 SAT Exam → Sunday, May 3 (2 days away!)\n🎸 Rockville Music Festival → Wednesday, May 6\n🏨 Courtyard Marriott Daytona Beach → May 6–10 (hotel stay)\n🎤 Welcome to Rockville 2026 → May 7–8\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n🌤️ WEATHER — Fort Lauderdale\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nToday: ☀️ Partly sunny, High 89°F / Low 76°F — Beautiful day!\nTonight: Clear and warm.\n⚠️ Air Quality: POOR — Dust & Dander Very High, Tree Pollen High. Limit outdoor time if sensitive.\nWeekend Watch: Thunderstorms expected late Saturday night through Sunday — heads up for SAT exam day (Sun May 3).\nTravel (May 6–8, Daytona): Showers and storms mid-week. Pack a rain jacket for Rockville!\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n🔥 TOP PRIORITIES TODAY\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n1. Fix DigitalOcean payment ($12 overdue — servers at risk)\n2. Prep for SAT this Sunday (storms expected that day)\n3. Pack for Daytona/Rockville — departing Wednesday",
+      "time": "8:07:54 AM",
+      "date": "5/1/2026",
+      "read": false
+    },
+    {
+      "id": 1777550444330,
+      "message": "🌅 MORNING BRIEFING — Thursday, April 30, 2026\n\n☀️ WEATHER — FORT LAUDERDALE\nToday: Mostly Sunny, High 87°F / Low 71°F. Light south winds 5–10 mph. Beautiful day ahead. ⚠️ Heads up: Rain & T-storms arriving Sunday (70% chance) through Monday.\n\n📧 EMAIL — 10 UNREAD (Key Highlights)\n🔴 URGENT — Google Security Alert: heyjarvis.me was granted access to your Google Account. If you didn't authorize this, act immediately.\n⚠️ ACTION NEEDED — Shopify: Your free trial ends TOMORROW (May 1). Decide whether to subscribe or cancel.\n📬 Clerk (emily@clerk.com): New CLI + Directory Sync (SCIM) features now GA — worth checking if you're building with Clerk.\n📬 DigitalOcean Newsletter: April 2026 product updates & tutorials.\n📭 Low Priority: Facebook notifications, Pace University Open House invite, Expo team invite, Instagram activity, Uber Eats promo.\n\n📅 CALENDAR — UPCOMING EVENTS\n• 📝 SAT Exam — Sunday, May 3rd\n• 🎸 Rockville (music festival) — May 6th–7th\n• 🏨 Stay: Courtyard by Marriott Daytona Beach Speedway/Airport — May 6–10\n• 🎸 Welcome to Rockville 2026 — May 7–8 (You're going!)\n\n⚡ TOP PRIORITIES TODAY:\n1. Investigate the Google Security Alert — verify heyjarvis.me access is intentional.\n2. Decide on Shopify trial before it expires tomorrow.\n3. SAT is in 3 days — are you prepared?\n\nHave a great Thursday, Nadav. ⚡",
+      "time": "8:00:44 AM",
+      "date": "4/30/2026",
+      "read": false
+    },
+    {
+      "id": 1777506524991,
+      "message": "⚡ Battery at 27% and discharging — plug in soon, Nadav.",
+      "time": "7:48:44 PM",
+      "date": "4/29/2026",
+      "read": false
+    },
+    {
+      "id": 1777485744078,
+      "message": "⚡ Battery at 15% and discharging — plug in now before it dies.",
+      "time": "2:02:24 PM",
+      "date": "4/29/2026",
+      "read": false
+    },
+    {
+      "id": 1777473909196,
+      "message": "🌡️ HEAT ALERT — Fort Lauderdale: Near-record warmth is building this week. Temps hit 90°F+ starting Thursday, and smoke from a nearby fire may drift into metro areas tonight as winds shift southwest. No rain in sight — dry and hot through the weekend.",
+      "time": "10:45:09 AM",
+      "date": "4/29/2026",
+      "read": false
+    },
+    {
+      "id": 1777470297869,
+      "message": "⚡ Battery at 21% and draining — plug in soon.",
+      "time": "9:44:57 AM",
+      "date": "4/29/2026",
+      "read": false
+    },
+    {
+      "id": 1777470297236,
+      "message": "🔋 Battery Alert: Down to 21% — make sure your charger is properly connected.",
+      "time": "9:44:57 AM",
+      "date": "4/29/2026",
+      "read": false
+    },
+    {
+      "id": 1777466139311,
+      "message": "⚡ JARVIS MORNING BRIEF — 8:35 AM\n\n☀️ WEATHER: Clear and sunny today, high of 84°F. Looking good through Friday (87°F). Heads up — Saturday hits 91°F with gusty winds up to 23mph, and Sunday brings a 70% chance of thunderstorms. Plan any outdoor activity before the weekend.\n\n📊 PROJECTS: No significant news detected this morning for Clickflo, TROY Capital, Sokr, Sesami, or Bookly. All quiet on the front.\n\n🔋 Note: Your laptop is at 59% battery — worth plugging in soon.",
+      "time": "8:35:39 AM",
+      "date": "4/29/2026",
+      "read": false
+    },
+    {
+      "id": 1777466126605,
+      "message": "☀️ Good morning, Sir. No weather alerts in Fort Lauderdale today — just warming temps ahead. Battery is at 59% and unplugged — plug in now before it drains like yesterday. No project news on any of your ventures. Clean start to the day.",
+      "time": "8:35:26 AM",
+      "date": "4/29/2026",
+      "read": false
+    },
+    {
+      "id": 1777435607263,
+      "message": "Sir, it's now past midnight and you're still having ChatGPT write your essay—you've been at this for at least 4 minutes despite my warnings, and you need to stop and get some sleep.",
+      "time": "12:06:47 AM",
+      "date": "4/29/2026",
+      "read": false
+    },
+    {
+      "id": 1777435481839,
+      "message": "Sir, you're still actively refining AI-generated essay content at 12:04 AM—this remains academic dishonesty, and you need sleep before school in a few hours.",
+      "time": "12:04:41 AM",
+      "date": "4/29/2026",
+      "read": false
+    },
+    {
+      "id": 1777435357756,
+      "message": "Sir, you're continuing to have ChatGPT write your essay conclusion and asking it to refine the content further - this is academic dishonesty, and at 12:02 AM you should be sleeping before school tomorrow.",
+      "time": "12:02:37 AM",
+      "date": "4/29/2026",
+      "read": false
+    },
+    {
+      "id": 1777434617717,
+      "message": "Sir, I notice you're using ChatGPT to generate essay content for what appears to be a rhetorical analysis assignment on The Zookeeper's Wife - I'd caution against submitting AI-generated work as your own.",
+      "time": "11:50:17 PM",
+      "date": "4/28/2026",
+      "read": false
+    },
+    {
+      "id": 1777434369752,
+      "message": "Sir, the deadline to submit your retake request for The Zookeeper's Wife Chapters 8-15 was Sunday 4/26 at 11:59pm - you've missed it by two days, and the summative assessment was scheduled for today, 4/28.",
+      "time": "11:46:09 PM",
+      "date": "4/28/2026",
+      "read": false
+    },
+    {
+      "id": 1777433628449,
+      "message": "Sir, your .env.local file containing all your API keys and secrets is currently open and visible on screen - I'd recommend closing this sensitive file, especially since you just pushed to GitHub.",
+      "time": "11:33:48 PM",
+      "date": "4/28/2026",
+      "read": false
+    },
+    {
+      "id": 1777433503980,
+      "message": "Sir, your JARVIS server connection appears to be down - every message is returning \"Cannot connect to JARVIS server\" errors, which explains why I'm not responding on your live site.",
+      "time": "11:31:43 PM",
+      "date": "4/28/2026",
+      "read": false
+    },
+    {
+      "id": 1777431776067,
+      "message": "Sir, you have a React runtime error on your localhost:3000/info page - objects with keys {label, href} are being rendered directly as React children instead of being properly mapped to JSX elements.",
+      "time": "11:02:56 PM",
+      "date": "4/28/2026",
+      "read": false
+    },
+    {
+      "id": 1777413471698,
+      "message": "Sir, this is Question 21 - a surface area problem where two identical rectangular prisms with height 90 cm, square base with surface area K cm², are glued together resulting in surface area (92/47)K cm², and you need to find the side length of the square base.",
+      "time": "5:57:51 PM",
+      "date": "4/28/2026",
+      "read": false
+    },
+    {
+      "id": 1777413363304,
+      "message": "⚠️ Battery at 16% and unplugged — plug in now, Sir. Also flagging Bluebook is running, likely another exam session.",
+      "time": "5:56:03 PM",
+      "date": "4/28/2026",
+      "read": false
+    },
+    {
+      "id": 1777413345254,
+      "message": "Sir, you're on Question 18 now - this is a function transformation problem where g(x) = f(x + 4), so if f(x) = a/(x+b), then g(x) = a/((x+4)+b), and looking at the graph which appears to have a vertical asymptote around x = -4, the answer is C: g(x) = 6/(x+8).",
+      "time": "5:55:45 PM",
+      "date": "4/28/2026",
+      "read": false
+    },
+    {
+      "id": 1777413219708,
+      "message": "Sir, this is a systems of equations problem - for exactly one distinct real solution, substitute y = -1.5 into the parabola equation: -1.5 = x² + 8x + a, which means the discriminant must equal zero, so 64 - 4(1)(1.5 + a) = 0, giving a = 14.5.",
+      "time": "5:53:39 PM",
+      "date": "4/28/2026",
+      "read": false
+    },
+    {
+      "id": 1777413093211,
+      "message": "Sir, for this factoring problem with 4x² + bx - 45 = (hx + k)(x + j), expanding gives h = 4 (since the x² coefficient is 4), and we need kj = -45 with hj + k = b, so 45/h must be an integer, making option C the correct answer.",
+      "time": "5:51:33 PM",
+      "date": "4/28/2026",
+      "read": false
+    },
+    {
+      "id": 1777412840992,
+      "message": "Sir, you're now on Question 11 - for the equation 2(kx - n) = -28/15·x - 36/19 to have no solution, the coefficients of x must be equal while the constants differ, so 2k = -28/15, meaning k = -14/15.",
+      "time": "5:47:20 PM",
+      "date": "4/28/2026",
+      "read": false
+    },
+    {
+      "id": 1777412715000,
+      "message": "Sir, this is a density-volume-mass problem - the cube has volume 0.90³ = 0.729 cubic meters, multiplied by density 807 kg/m³ gives approximately 588 kg, making option A the correct answer.",
+      "time": "5:45:15 PM",
+      "date": "4/28/2026",
+      "read": false
+    },
+    {
+      "id": 1777412463330,
+      "message": "Sir, you've selected option C (24/7) which appears correct - the line passes through points (0, 12) and (14, 0), giving a slope of -6/7, and using point-slope form with y = 4 yields d = 24/7 ≈ 3.43 as confirmed by your calculator.",
+      "time": "5:41:03 PM",
+      "date": "4/28/2026",
+      "read": false
+    },
+    {
+      "id": 1777412337258,
+      "message": "Sir, you're on Question 3 - the scatterplot shows a negative linear relationship, and the line of best fit appears to have a y-intercept around 13-14 and a negative slope of approximately -0.8, making option A (y = 13.5 + 0.8x) likely incorrect since it shows a positive slope - look for an equation with a negative slope.",
+      "time": "5:38:57 PM",
+      "date": "4/28/2026",
+      "read": false
+    },
+    {
+      "id": 1777412211155,
+      "message": "Sir, your answer of 59 appears incorrect - the x-intercept should be 59/9 (approximately 6.56), not 59.",
+      "time": "5:36:51 PM",
+      "date": "4/28/2026",
+      "read": false
+    },
+    {
+      "id": 1777412087074,
+      "message": "Sir, you're on Question 22 - the graph of 9x - 10y = 19 translated down 4 units becomes 9x - 10y = 59, and setting y = 0 gives x = 59/9, so the x-coordinate of the x-intercept is 59/9 or approximately 6.56.",
+      "time": "5:34:47 PM",
+      "date": "4/28/2026",
+      "read": false
+    },
+    {
+      "id": 1777411962008,
+      "message": "Sir, you're on Question 19 - this is a geometric sequence where the first term is 9 and each term is 4 times the previous, so w = 9(4^(n-1)), making the answer D.",
+      "time": "5:32:42 PM",
+      "date": "4/28/2026",
+      "read": false
+    },
+    {
+      "id": 1777411837666,
+      "message": "Sir, you're on Question 16 - this asks for an equivalent expression to the 7th root of x^9 × y^9, which simplifies to (xy)^(9/7), making the answer B.",
+      "time": "5:30:37 PM",
+      "date": "4/28/2026",
+      "read": false
+    },
+    {
+      "id": 1777411709833,
+      "message": "Sir, you're on Question 14 - this is an exponential growth problem where bacteria double every 3 hours, so after 15 hours (5 doubling periods), 300,000 × 2^5 = 300,000 × 32 = 9,600,000, making the answer D.",
+      "time": "5:28:29 PM",
+      "date": "4/28/2026",
+      "read": false
+    },
+    {
+      "id": 1777411584693,
+      "message": "Sir, you're on Question 11 - this linear function problem asks for the value of m, and using the table data with f(x) = mx - 28, you can solve by plugging in any point: 82 = m(10) - 28, so m = 110/10 = 11.",
+      "time": "5:26:24 PM",
+      "date": "4/28/2026",
+      "read": false
+    },
+    {
+      "id": 1777411562936,
+      "message": "⚡ Battery at 37% and draining — you were at 56% just 30 minutes ago unplugged. Plug in soon, Sir.",
+      "time": "5:26:02 PM",
+      "date": "4/28/2026",
+      "read": false
+    },
+    {
+      "id": 1777411458951,
+      "message": "Sir, you're on Question 8 - this is asking about the rate of gasoline consumption, and since the coefficient -0.05 represents gallons used per mile driven, the answer is A (0.05 gallons per mile).",
+      "time": "5:24:18 PM",
+      "date": "4/28/2026",
+      "read": false
+    },
+    {
+      "id": 1777411333601,
+      "message": "Sir, you're on Question 3 of the practice test - this is a similar triangles problem where corresponding angles are equal, so since P corresponds to S and angle Q is 18°, angle T would be 18°, making the answer B (72°) since angle S corresponds to angle P which equals 90° - 18° = 72°.",
+      "time": "5:22:13 PM",
+      "date": "4/28/2026",
+      "read": false
+    },
+    {
+      "id": 1777411207225,
+      "message": "Sir, you're on a practice test break with 8 minutes 54 seconds remaining - I notice you've stepped away from the device, and I'll be here when you're ready to resume testing.",
+      "time": "5:20:07 PM",
+      "date": "4/28/2026",
+      "read": false
+    },
+    {
+      "id": 1777410957100,
+      "message": "Sir, this is a generalization question about comet orbits - the answer is D, as it makes a generalization that orbits may change over time and supports it with the specific example of 81P/Wild, effectively using all the relevant information from the notes.",
+      "time": "5:15:57 PM",
+      "date": "4/28/2026",
+      "read": false
+    },
+    {
+      "id": 1777410832721,
+      "message": "Sir, this is a transition question - the answer is C \"however,\" as the passage contrasts Hammurabi's many achievements during his reign with what he is mainly remembered for today, indicating a contrast rather than a continuation or example.",
+      "time": "5:13:52 PM",
+      "date": "4/28/2026",
+      "read": false
+    },
+    {
+      "id": 1777410707119,
+      "message": "Sir, this is a subject-verb agreement question - the answer is C \"have enhanced\" since the subject \"scholars' understanding\" requires a plural verb to match with the plural noun \"scholars\" in the possessive construction, and the sentence describes an ongoing state of enhanced understanding.",
+      "time": "5:11:47 PM",
+      "date": "4/28/2026",
+      "read": false
+    },
+    {
+      "id": 1777410582545,
+      "message": "Sir, this is a punctuation question about the golden orb-weaver spider passage - the answer is A \"prey, rather,\" as it correctly uses a comma after \"prey\" to set off the parenthetical phrase \"rather\" before continuing the sentence.",
+      "time": "5:09:42 PM",
+      "date": "4/28/2026",
+      "read": false
+    },
+    {
+      "id": 1777410456656,
+      "message": "Sir, for this question about supporting the journalist's claim that Enwezor showed how African artists' work fits into global modern art history, the answer is B - the exhibition *Postwar* brought African artists together with major figures from other countries like Andy Warhol and David Siqueiros, directly demonstrating this global contextualization.",
+      "time": "5:07:36 PM",
+      "date": "4/28/2026",
+      "read": false
+    },
+    {
+      "id": 1777410330152,
+      "message": "Sir, this question asks which finding would weaken the astronomers' claim that planets are composed of the same materials as their host stars - the answer is C, since evidence that rocky planets contain considerably higher amounts of iron than their host stars would directly contradict the claim of compositional similarity.",
+      "time": "5:05:30 PM",
+      "date": "4/28/2026",
+      "read": false
+    },
+    {
+      "id": 1777410080401,
+      "message": "Sir, for this data interpretation question, the answer is A - Dark Cloud acted in 35 films compared to Lillian St. Cyr's 66, which accurately uses the table data to support the passage's point about minimum counts.",
+      "time": "5:01:20 PM",
+      "date": "4/28/2026",
+      "read": false
+    },
+    {
+      "id": 1777409954834,
+      "message": "Sir, for this question about the underlined sentence's function, the correct answer is C - the sentence describes the methodology by explaining how the team compared over 29,000 annual earnings forecasts to actual reported earnings, which is the research method, not the results or findings.",
+      "time": "4:59:14 PM",
+      "date": "4/28/2026",
+      "read": false
+    },
+    {
+      "id": 1777409829197,
+      "message": "Sir, for this Jane Eyre question, the answer is A - the text contrasts Jane going about her day \"tranquilly\" while internally experiencing \"vague suggestions\" about quitting Thornfield, clearly showing the contrast between her outward calmness and internal restlessness.",
+      "time": "4:57:09 PM",
+      "date": "4/28/2026",
+      "read": false
+    },
+    {
+      "id": 1777409704503,
+      "message": "Sir, for this vocabulary question, the answer is C \"foster\" - the passage describes how witnessing helpful acts encourages more prosocial behavior, and \"foster\" means to encourage or promote development.",
+      "time": "4:55:04 PM",
+      "date": "4/28/2026",
+      "read": false
+    },
+    {
+      "id": 1777408467080,
+      "message": "Sir, this is a practice SAT question about Mars helicopters - the correct answer is A, as the text explicitly states Mars's atmosphere is only one percent as dense as Earth's, meaning the air wouldn't provide enough resistance for standard helicopter blades.",
+      "time": "4:34:27 PM",
+      "date": "4/28/2026",
+      "read": false
+    },
+    {
+      "id": 1777408217364,
+      "message": "Sir, I notice you're logging into Bluebook - this appears to be for a standardized test, and your LockDown Browser is also installed on your desktop if that's required for your exam.",
+      "time": "4:30:17 PM",
+      "date": "4/28/2026",
+      "read": false
+    },
+    {
+      "id": 1777404351233,
+      "message": "Sir, the API server is now back online and showing an npm warning about using `--omit=dev` instead of `config production`, but this is just a deprecation warning and not a critical error - your service appears to be running normally.",
+      "time": "3:25:51 PM",
+      "date": "4/28/2026",
+      "read": false
+    },
+    {
+      "id": 1777403981019,
+      "message": "Sir, the api.heyjarvis.me server is experiencing a 502 Bad Gateway error - the host is down, so you'll need to wait a few minutes before trying to access your assignment again.",
+      "time": "3:19:41 PM",
+      "date": "4/28/2026",
+      "read": false
+    },
+    {
+      "id": 1777403857024,
+      "message": "Sir, you've added the `.getCost()` method calls, but there's still a syntax error - `total+=inventory[i].getCost;` is missing the parentheses and should be `total+=inventory[i].getCost();`.",
+      "time": "3:17:37 PM",
+      "date": "4/28/2026",
+      "read": false
+    },
+    {
+      "id": 1777403360046,
+      "message": "Sir, I see you're back on question 2 and there's still an error in your code - line `if (inventory[i] >= lower && inventory[i] <= upper)` should be comparing `inventory[i].getCost()` to lower and upper, not the inventory item itself.",
+      "time": "3:09:20 PM",
+      "date": "4/28/2026",
+      "read": false
+    },
+    {
+      "id": 1777403111937,
+      "message": "Sir, you've navigated back to question 1 of 2, the sumPath problem - I see you're viewing the getNextLoc helper method and the example grid showing the path that should sum to 19.",
+      "time": "3:05:11 PM",
+      "date": "4/28/2026",
+      "read": false
+    },
+    {
+      "id": 1777402988032,
+      "message": "Sir, there's a critical error in your sumPath code - the while condition checks `grid[row]` and `grid[col]` values instead of checking if `row` and `col` are within bounds, and `count+=num` tries to add a Location object instead of `grid[row][col]`.",
+      "time": "3:03:08 PM",
+      "date": "4/28/2026",
+      "read": false
+    },
+    {
+      "id": 1777402863246,
+      "message": "Sir, I notice there are errors in your code - you're using `grid[i]` instead of accessing the item's cost method, and your comparison should use `>=` and `<=` for inclusive bounds, plus you need to increment count and return the average at the end.",
+      "time": "3:01:03 PM",
+      "date": "4/28/2026",
+      "read": false
+    },
+    {
+      "id": 1777402685433,
+      "message": "Sir, you've moved to question 2 of 2 - this one asks you to implement the averageWithinRange method that calculates the average cost of available inventory items within a specified price range.",
+      "time": "2:58:05 PM",
+      "date": "4/28/2026",
+      "read": false
+    },
+    {
+      "id": 1777402116028,
+      "message": "Sir, you've moved to question 1 of 2 - this one asks you to implement the sumPath method that computes the sum of all values on a path through the grid, building on the getNextLoc method from part (a).",
+      "time": "2:48:36 PM",
+      "date": "4/28/2026",
+      "read": false
+    },
+    {
+      "id": 1777401745455,
+      "message": "Sir, you're working on an AP Computer Science practice exam question about implementing a getNextLoc method for a GridPath class - this appears to be a free-response coding question.",
+      "time": "2:42:25 PM",
+      "date": "4/28/2026",
+      "read": false
+    },
+    {
+      "id": 1777401000293,
+      "message": "🔋 CRITICAL: Battery at 11% and still unplugged — plug in NOW or you're about to lose everything, Sir.",
+      "time": "2:30:00 PM",
+      "date": "4/28/2026",
+      "read": false
+    },
+    {
+      "id": 1777400170831,
+      "message": "Sir, the Railway build for your Jarvis project has failed - you'll need to check the build logs to identify and resolve the deployment error.",
+      "time": "2:16:10 PM",
+      "date": "4/28/2026",
+      "read": false
+    },
+    {
+      "id": 1777400044725,
+      "message": "Sir, I notice you have three saved payment cards visible in a popup on Railway's billing page - you may want to close this sensitive financial information, and I see your trial has expired with only $3.47 in credits remaining.",
+      "time": "2:14:04 PM",
+      "date": "4/28/2026",
+      "read": false
+    },
+    {
       "id": 1777399200553,
       "message": "⚡ BATTERY CRITICAL — Sir, you're down to 39% and still unplugged. With the active storm alert in Fort Lauderdale, plug in now before you lose power during a potential outage.",
       "time": "2:00:00 PM",
@@ -257,447 +698,6 @@
       "message": "Nadav detected at computer — neutral mood",
       "time": "7:38:12 PM",
       "date": "4/26/2026",
-      "read": true
-    },
-    {
-      "id": 1777178432838,
-      "message": "Sir, you're setting up two-factor authentication for your Alpaca trading account, and I notice the QR code containing your TOTP secret is visible on screen while no one is detected at the camera - this is sensitive security information that should be scanned promptly and not left exposed.",
-      "time": "12:40:32 AM",
-      "date": "4/26/2026",
-      "read": true
-    },
-    {
-      "id": 1777177567980,
-      "message": "Sir, your Alpaca API credentials are currently displayed on screen with your email address visible in the API Key ID field - I'd recommend caution as this is sensitive brokerage authentication information.",
-      "time": "12:26:07 AM",
-      "date": "4/26/2026",
-      "read": true
-    },
-    {
-      "id": 1777175524544,
-      "message": "Sir, you have a 500 error on your POST /api/troy endpoint that needs attention - the request is failing with a server error.",
-      "time": "11:52:04 PM",
-      "date": "4/25/2026",
-      "read": true
-    },
-    {
-      "id": 1777173163728,
-      "message": "Sir, your payment is processing for $10.00 in OpenAI API credits, and I should note that your credit card details ending in 2444 are currently visible on screen while no one is detected at the camera.",
-      "time": "11:12:43 PM",
-      "date": "4/25/2026",
-      "read": true
-    },
-    {
-      "id": 1777172664934,
-      "message": "Sir, I notice your .env.local file containing sensitive API keys and secrets is currently visible on screen - you may want to be cautious about screen sharing or recording while these credentials are exposed.",
-      "time": "11:04:24 PM",
-      "date": "4/25/2026",
-      "read": true
-    },
-    {
-      "id": 1777171477154,
-      "message": "Battery critical at 22% and discharging — plug in soon to avoid shutdown.",
-      "time": "10:44:37 PM",
-      "date": "4/25/2026",
-      "read": true
-    },
-    {
-      "id": 1777168955957,
-      "message": "Nadav has stepped away from the computer",
-      "time": "10:02:35 PM",
-      "date": "4/25/2026",
-      "read": true
-    },
-    {
-      "id": 1777166865232,
-      "message": "Nadav detected at computer — neutral mood",
-      "time": "9:27:45 PM",
-      "date": "4/25/2026",
-      "read": true
-    },
-    {
-      "id": 1777166489027,
-      "message": "Nadav has stepped away from the computer",
-      "time": "9:21:29 PM",
-      "date": "4/25/2026",
-      "read": true
-    },
-    {
-      "id": 1777166276069,
-      "message": "Unknown has stepped away from the computer",
-      "time": "9:17:56 PM",
-      "date": "4/25/2026",
-      "read": true
-    },
-    {
-      "id": 1777166212437,
-      "message": "Evening briefing: Battery at 27% - plug in soon. Weather shows 14% chance of severe thunderstorms tonight in Fort Lauderdale, nothing extreme. No significant news on your monitored projects today.",
-      "time": "9:16:52 PM",
-      "date": "4/25/2026",
-      "read": true
-    },
-    {
-      "id": 1777166196080,
-      "message": "Unrecognized person detected at computer",
-      "time": "9:16:36 PM",
-      "date": "4/25/2026",
-      "read": true
-    },
-    {
-      "id": 1777166175967,
-      "message": "Nadav detected at computer — neutral mood",
-      "time": "9:16:15 PM",
-      "date": "4/25/2026",
-      "read": true
-    },
-    {
-      "id": 1777163301887,
-      "message": "Unknown has stepped away from the computer",
-      "time": "8:28:21 PM",
-      "date": "4/25/2026",
-      "read": true
-    },
-    {
-      "id": 1777163136583,
-      "message": "Unrecognized person detected at computer",
-      "time": "8:25:36 PM",
-      "date": "4/25/2026",
-      "read": true
-    },
-    {
-      "id": 1777162888783,
-      "message": "Nadav has stepped away from the computer",
-      "time": "8:21:28 PM",
-      "date": "4/25/2026",
-      "read": true
-    },
-    {
-      "id": 1777162758091,
-      "message": "Nadav detected at computer — neutral mood",
-      "time": "8:19:18 PM",
-      "date": "4/25/2026",
-      "read": true
-    },
-    {
-      "id": 1777162568380,
-      "message": "Nadav has stepped away from the computer",
-      "time": "8:16:08 PM",
-      "date": "4/25/2026",
-      "read": true
-    },
-    {
-      "id": 1777162469856,
-      "message": "Nadav has stepped away from the computer",
-      "time": "8:14:29 PM",
-      "date": "4/25/2026",
-      "read": true
-    },
-    {
-      "id": 1777162231124,
-      "message": "Unrecognized person detected at computer",
-      "time": "8:10:31 PM",
-      "date": "4/25/2026",
-      "read": true
-    },
-    {
-      "id": 1777162227809,
-      "message": "Nadav detected at computer — neutral mood",
-      "time": "8:10:27 PM",
-      "date": "4/25/2026",
-      "read": true
-    },
-    {
-      "id": 1777162207764,
-      "message": "Unrecognized person detected at computer",
-      "time": "8:10:07 PM",
-      "date": "4/25/2026",
-      "read": true
-    },
-    {
-      "id": 1777034403993,
-      "message": "Nadav detected at computer — neutral mood",
-      "time": "8:40:03 AM",
-      "date": "4/24/2026",
-      "read": true
-    },
-    {
-      "id": 1777034207495,
-      "message": "Unrecognized person detected at computer",
-      "time": "8:36:47 AM",
-      "date": "4/24/2026",
-      "read": true
-    },
-    {
-      "id": 1777034187090,
-      "message": "Unrecognized person detected at computer",
-      "time": "8:36:27 AM",
-      "date": "4/24/2026",
-      "read": true
-    },
-    {
-      "id": 1777034082996,
-      "message": "Unrecognized person detected at computer",
-      "time": "8:34:42 AM",
-      "date": "4/24/2026",
-      "read": true
-    },
-    {
-      "id": 1777034036898,
-      "message": "Unrecognized person detected at computer",
-      "time": "8:33:56 AM",
-      "date": "4/24/2026",
-      "read": true
-    },
-    {
-      "id": 1777034026312,
-      "message": "Nadav detected at computer — neutral mood",
-      "time": "8:33:46 AM",
-      "date": "4/24/2026",
-      "read": true
-    },
-    {
-      "id": 1777034012748,
-      "message": "Unrecognized person detected at computer",
-      "time": "8:33:32 AM",
-      "date": "4/24/2026",
-      "read": true
-    },
-    {
-      "id": 1777033075798,
-      "message": "Morning Briefing for Thursday, April 24, 2026:\n\n☀️ WEATHER: 79°F today with chance of afternoon thunderstorms (30% around 2-3pm). Currently 74°F and overcast. Clearing tonight, 70°F low.\n\n📧 EMAILS (Notable):\n• Northwestern Admissions — \"Join Us: Arts at Northwestern\" (college outreach)\n• Investopedia — Markets down, software stocks sank, oil surged\n• Ubisoft — Account update required by April 30th (action needed)\n• Rest: newsletters and social notifications\n\n📅 CALENDAR: No events scheduled today or this week. Clear runway.\n\n⚡ ACTION ITEMS:\n1. AP Lang exam prep — stay focused (exam coming up)\n2. Post your daily Phoenix Party content\n3. Update Ubisoft account before April 30th\n\nYou're clear for the day, sir. Make it count.",
-      "time": "8:17:55 AM",
-      "date": "4/24/2026",
-      "read": true
-    },
-    {
-      "id": 1777033011442,
-      "message": "Nadav detected at computer — neutral mood",
-      "time": "8:16:51 AM",
-      "date": "4/24/2026",
-      "read": true
-    },
-    {
-      "id": 1776997759133,
-      "message": "It's 10:30 PM, sir — English formative tomorrow on chapters 8-15. You crushed the MCQ practice, but hit those SAQ questions before bed. Also, did the Phoenix Party post go live?",
-      "time": "10:29:19 PM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776995655635,
-      "message": "Quick reminder, sir — did the Phoenix Party post go out? Also, tomorrow's English formative on chapters 8-15 awaits. You nailed the MCQ prep, just review those two SAQ questions before bed.",
-      "time": "9:54:15 PM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776983425571,
-      "message": "Evening summary: You survived the day, battery's at 95%, and you're finally free. Two things on deck — post that Phoenix Party chart to TikTok and Instagram tonight like you planned, and tomorrow's English formative on chapters 8-15 is coming (but you're prepped with that 15/15). Go make some noise.",
-      "time": "6:30:25 PM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776981380198,
-      "message": "The question asks which word describes a narrative style that \"prioritized the cataloging of objects over psychological depth\" — the answer is B (inventory-like), as it directly captures the idea of systematic listing over emotional exploration.",
-      "time": "5:56:20 PM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776981253397,
-      "message": "You're working on an SAT question about text structure — the passage contrasts a modern assumption (maps as navigational tools) with the ancient reality (cosmographies blending geography with mythology), then explains the mapmakers' worldview, which matches answer B.",
-      "time": "5:54:13 PM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776981128039,
-      "message": "The sentence describes prose that conveys complex emotions through \"simple, spare language,\" which means the answer is C (incisive) — meaning clear and sharp — since turgid, verbose, and convoluted all suggest overly complicated writing, the opposite of what's being praised.",
-      "time": "5:52:08 PM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776981002367,
-      "message": "You're working on a bioluminescence reading comprehension question — the text states counter-illumination involves \"matching the faint light coming from above,\" which directly supports answer A about mimicking light filtering down from higher ocean levels.",
-      "time": "5:50:02 PM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776980753963,
-      "message": "You're working on a curved grading problem — using midpoints (64.5, 74.5, 84.5, 94.5) with frequencies (3, 5, 12, 18), the class mean is about 86, so half of (100 - 86) = 7 points will be added, which is answer B.",
-      "time": "5:45:53 PM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776980505056,
-      "message": "You're working on a right triangle trig problem — since angle B is the right angle and tan C = 12/5, that means opposite/adjacent = 12/5, so the sides are 5, 12, and hypotenuse 13, making cos A = adjacent/hypotenuse = 5/13, which is answer A.",
-      "time": "5:41:45 PM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776980380004,
-      "message": "You're working on a quadratic discriminant problem — for -2z² + kz - 50 = 0 to have no real solutions, the discriminant k² - 4(-2)(-50) < 0, so k² < 400, meaning k < 20, and since k is a positive integer, the largest possible value is 19.",
-      "time": "5:39:40 PM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776980255225,
-      "message": "You're working on a factored form problem — expand f(x) = 3(x+1)² - 27 to find the solutions: 3(x+1)² = 27, so (x+1)² = 9, meaning x+1 = ±3, giving x = 2 or x = -4, which matches answer A: f(x) = 3(x-2)(x+4).",
-      "time": "5:37:35 PM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776980173390,
-      "message": "You're still at school at 5:36 PM looking absolutely drained, sir. Battery's healthy at 65% now. When you finally escape, remember: Phoenix Party first post tonight. You've got the chart ready to go.",
-      "time": "5:36:13 PM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776980130194,
-      "message": "You're working on a Venn diagram probability problem — students who play exactly two sports and baseball are those in the Basketball-Baseball only overlap (3) plus the Football-Baseball only overlap (4), totaling 7 students, and of those, 3 play basketball, so the probability is 3/7.",
-      "time": "5:35:30 PM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776979881520,
-      "message": "You're working on a distance-time graph problem — Casey stopped for breakfast when her distance stayed constant (flat line), which occurs around 8:30 A.M. based on the horizontal segment in the graph, so the answer is B.",
-      "time": "5:31:21 PM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776979510556,
-      "message": "You're working on a mixture problem — the janitor pours T liters of 20% solution plus 2 liters of pure (100%) solution to get 25% concentration, so 0.20T + 2(1) = 0.25(T + 2), solving gives 0.20T + 2 = 0.25T + 0.5, so 1.5 = 0.05T, meaning T = 30 liters.",
-      "time": "5:25:10 PM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776979261629,
-      "message": "You're working on solving for b in the equation a/3 = 10 - 7b — rearrange to get 7b = 10 - a/3, then multiply both sides by 3 to get 21b = 30 - a, so b = (30-a)/21, the answer is B.",
-      "time": "5:21:01 PM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776979136532,
-      "message": "You're working on an exponential growth problem — the yeast colonies start at 5 and multiply by 4 each second, so the equation is c = 5(4)^s, which means neither A nor B is correct based on what's visible.",
-      "time": "5:18:56 PM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776979011315,
-      "message": "You're working on a system of equations with no solution — for parallel lines, the coefficients must be proportional but constants different, so k/4 = 3/5, giving k = 12/5, the answer is B.",
-      "time": "5:16:51 PM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776978886472,
-      "message": "You're working on a car rental problem — set up the equation 30 + 0.25m = 75, which gives 0.25m = 45, so m = 180 miles, the answer is C.",
-      "time": "5:14:46 PM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776978762282,
-      "message": "You're working on a gas pressure problem — using Boyle's Law (P₁V₁ = P₂V₂), the gas goes from Container X (10L, 300 torr) to Container Z (30L), so the final pressure is (300 × 10) ÷ 30 = 100 torr.",
-      "time": "5:12:42 PM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776978513610,
-      "message": "The answer is C, 20h + 40t = 1,065 — since Ismael writes 20 words per minute handwriting for h minutes and 40 words per minute typing for t minutes, the total words written is 20h + 40t = 1,065.",
-      "time": "5:08:33 PM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776978386579,
-      "message": "You're working on a function transformation problem — since f(x) = 2h(x) - 1 and you need f(x) = 5, that means 2h(x) - 1 = 5, so h(x) = 3, and from the graph h(x) = 3 at x = 0 and x = 2, but since x > 0, the answer is 2.",
-      "time": "5:06:26 PM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776978261853,
-      "message": "You're working on a football stats problem — the highest scoring year is 2021 with 90 goals, and the average across all years (60+70+50+80+70+90+70+80+60) ÷ 9 ≈ 70, so the answer is 90 - 70 = 20 goals more than the average.",
-      "time": "5:04:21 PM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776978137408,
-      "message": "The answer is C, f(x) = x + 27 — since f(0) = 27 gives you the y-intercept, and the slope is (27-26)/(0-(-1)) = 1, so the line equation is f(x) = x + 27.",
-      "time": "5:02:17 PM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776978012771,
-      "message": "You're working on an SAT geometry problem — the area of triangle ABC with a 30° angle, side of 8, and base of 10 is calculated using the formula ½ × 10 × 8 × sin(30°) = 20, so the answer is A.",
-      "time": "5:00:12 PM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776977270034,
-      "message": "The answer is B \"Wagner's and Glass's operas are both lengthy, lasting fifteen hours and five hours, respectively\" — this directly uses the specific duration details from the notes to emphasize a similarity between the two operas.",
-      "time": "4:47:50 PM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776977144389,
-      "message": "The answer is A \"Therefore\" — the sentence explains that the coincidence of Shakespeare dying on the same day traditionally observed as his birthday logically led to biographers finding this appealing, making \"Therefore\" the correct causal transition.",
-      "time": "4:45:44 PM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776976572769,
-      "message": "Battery critical at 19%, sir — plug in now before it dies on you.",
-      "time": "4:36:12 PM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776975777025,
-      "message": "The answer is B \"Mr. Vladimir's concealed malice and Mr. Verloc's intimidation\" — the passage describes Vladimir studying Verloc in the mirror while appearing pleasant, then advancing with such fierce determination that Verloc \"quailed inwardly,\" indicating hidden hostility causing fear.",
-      "time": "4:22:57 PM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776975651636,
-      "message": "The answer is C \"derive new thoughts from its own internal activities\" — Locke describes reflection as the mind turning \"its view inward upon itself\" and observing \"its own actions about those ideas it has,\" deriving new ideas from internal contemplation.",
-      "time": "4:20:51 PM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776975525295,
-      "message": "The answer is B \"She measured the time each dog spent sniffing the scents\" — the passage explicitly states Horowitz assessed interest \"based on the amount of time dogs spent sniffing\" the urine samples.",
-      "time": "4:18:45 PM",
-      "date": "4/23/2026",
-      "read": true
-    },
-    {
-      "id": 1776975399952,
-      "message": "The answer is A \"To analyze the implications of the results of the experiment\" — the highlighted sentence discusses effects observed \"even weeks after\" exposure to the pro-diversity poster, which analyzes the broader implications of the experimental findings.",
-      "time": "4:16:39 PM",
-      "date": "4/23/2026",
       "read": true
     }
   ]

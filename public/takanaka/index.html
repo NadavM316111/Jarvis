@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Masayoshi Takanaka - Guitar Master</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&family=Zen+Maru+Gothic:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: linear-gradient(135deg, #1a0a0a 0%, #2d1f1f 50%, #1a0a0a 100%);
+            color: #f5e6d3;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Sakura Petals Animation */
+        .sakura-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .sakura {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            background: radial-gradient(ellipse at center, #ffb7c5 0%, #ff69b4 100%);
+            border-radius: 50% 0 50% 50%;
+            opacity: 0.8;
+            animation: fall linear infinite;
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(-10vh) rotate(0deg) translateX(0);
+                opacity: 0.8;
+            }
+            100% {
+                transform: translateY(110vh) rotate(720deg) translateX(100px);
+                opacity: 0;
+            }
+        }
+
+        /* Rising Sun */
+        .rising-sun {
+            position: fixed;
+            top: -300px;
+            right: -300px;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(200,30,30,0.3) 0%, transparent 70%);
+            border-radius: 50%;
+            z-index: 0;
+        }
+
+        .sun-rays {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-conic-gradient(
+                from 0deg at 100% 0%,
+                rgba(200,30,30,0.1) 0deg 10deg,
+                transparent 10deg 20deg
+            );
+            z-index: 0;
+        }
+
+        /* Header */
+        header {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            padding: 60px 20px;
+            background: linear-gradient(180deg, rgba(139,0,0,0.4) 0%, transparent 100%);
+        }
+
+        .japanese-title {
+            font-family: 'Noto Serif JP', serif;
+            font-size: 4rem;
+            color: #c41e3a;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.5);
+            margin-bottom: 10px;
+        }
+
+        .english-title {
+            font-size: 2.5rem;
+            color: #f5e6d3;
+            font-weight: 300;
+            letter-spacing: 8px;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #d4a574;
+            margin-top: 15px;
+            letter-spacing: 3px;
+        }
+
+        /* Navigation */
+        nav {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            padding: 20px;
+            background: rgba(0,0,0,0.3);
+            border-top: 1px solid rgba(196,30,58,0.3);
+            border-bottom: 1px solid rgba(196,30,58,0.3);
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            color: #d4a574;
+            text-decoration: none;
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
+            padding: 10px 20px;
+        }
+
+        nav a:hover {
+            color: #c41e3a;
+            text-shadow: 0 0 10px rgba(196,30,58,0.5);
+        }
+
+        /* Main Content */
+        main {
+            position: relative;
+            z-index: 10;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        section {
+            margin-bottom: 60px;
+            background: rgba(0,0,0,0.4);
+            border-radius: 15px;
+            padding: 40px;
+            border: 1px solid rgba(196,30,58,0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        h2 {
+            font-family: 'Noto Serif JP', serif;
+            font-size: 2rem;
+            color: #c41e3a;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(196,30,58,0.3);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        h2::before {
+            content: "";
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(135deg, #c41e3a, #8b0000);
+            border-radius: 50%;
+        }
+
+        /* Biography */
+        .bio-content {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+            line-height: 1.8;
+        }
+
+        .bio-text p {
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+            text-align: justify;
+        }
+
+        /* Guitar Section */
+        .guitars-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .guitar-card {
+            background: linear-gradient(145deg, rgba(139,0,0,0.2), rgba(0,0,0,0.3));
+            border-radius: 12px;
+            padding: 25px;
+            border: 1px solid rgba(196,30,58,0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .guitar-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(196,30,58,0.2);
+        }
+
+        .guitar-card h3 {
+            color: #d4a574;
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+        }
+
+        .guitar-card p {
+            color: #bbb;
+            line-height: 1.6;
+        }
+
+        /* Songs Section */
+        .songs-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .song-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px 20px;
+            background: rgba(139,0,0,0.15);
+            border-radius: 8px;
+            border-left: 4px solid #c41e3a;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            cursor: pointer;
+        }
+
+        .song-item:hover {
+            background: rgba(139,0,0,0.3);
+            transform: translateX(10px);
+        }
+
+        .song-number {
+            font-family: 'Noto Serif JP', serif;
+            font-size: 1.5rem;
+            color: #c41e3a;
+            min-width: 35px;
+        }
+
+        .song-info h4 {
+            color: #f5e6d3;
+            margin-bottom: 3px;
+        }
+
+        .song-info span {
+            color: #888;
+            font-size: 0.9rem;
+        }
+
+        .play-icon {
+            margin-left: auto;
+            color: #c41e3a;
+            font-size: 1.2rem;
+        }
+
+        /* Discography */
+        .albums-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .album-card {
+            background: linear-gradient(145deg, rgba(50,30,30,0.8), rgba(20,10,10,0.8));
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid rgba(196,30,58,0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .album-card:hover {
+            transform: scale(1.05);
+        }
+
+        .album-year {
+            display: inline-block;
+            background: #c41e3a;
+            color: white;
+            padding: 3px 12px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            margin-bottom: 10px;
+        }
+
+        .album-card h4 {
+            color: #d4a574;
+            margin-bottom: 5px;
+        }
+
+        /* Style Section */
+        .style-points {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .style-point {
+            padding: 25px;
+            background: rgba(139,0,0,0.1);
+            border-radius: 10px;
+            border: 1px solid rgba(196,30,58,0.2);
+        }
+
+        .style-point h4 {
+            color: #c41e3a;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        /* Footer */
+        footer {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            padding: 40px 20px;
+            background: rgba(0,0,0,0.5);
+            border-top: 1px solid rgba(196,30,58,0.3);
+        }
+
+        .footer-japanese {
+            font-family: 'Noto Serif JP', serif;
+            font-size: 1.5rem;
+            color: #c41e3a;
+            margin-bottom: 10px;
+        }
+
+        /* Quote */
+        .quote {
+            font-style: italic;
+            font-size: 1.3rem;
+            color: #d4a574;
+            text-align: center;
+            padding: 30px;
+            border-left: 3px solid #c41e3a;
+            border-right: 3px solid #c41e3a;
+            margin: 20px 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .japanese-title {
+                font-size: 2.5rem;
+            }
+            .english-title {
+                font-size: 1.5rem;
+                letter-spacing: 4px;
+            }
+            section {
+                padding: 25px;
+            }
+            nav {
+                gap: 15px;
+            }
+            nav a {
+                font-size: 0.9rem;
+                padding: 8px 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sakura-container" id="sakura"></div>
+    <div class="rising-sun"></div>
+    <div class="sun-rays"></div>
+
+    <header>
+        <h1 class="japanese-title">高中 正義</h1>
+        <p class="english-title">MASAYOSHI TAKANAKA</p>
+        <p class="subtitle">Legendary Japanese Fusion Guitar Master</p>
+    </header>
+
+    <nav>
+        <a href="#biography">Biography</a>
+        <a href="#style">Playing Style</a>
+        <a href="#guitars">Guitars</a>
+        <a href="#songs">Famous Songs</a>
+        <a href="#discography">Discography</a>
+    </nav>
+
+    <main>
+        <section id="biography">
+            <h2>Biography</h2>
+            <div class="bio-content">
+                <div class="bio-text">
+                    <p>Born on March 27, 1953, in Tokyo, Japan, Masayoshi Takanaka is one of the most influential and celebrated guitarists in Japanese music history. His unique blend of jazz fusion, rock, Latin rhythms, and tropical sounds has earned him the title of Japan's premier fusion guitarist.</p>
+                    <p>Takanaka began his professional career in the early 1970s as a member of the legendary fusion band Sadistic Mika Band. After the band dissolved, he launched an extraordinarily successful solo career in 1976, releasing his debut album "Seychelles" which showcased his incredible technical prowess and melodic sensibility.</p>
+                    <p>His 1979 hit "Blue Lagoon" became an international sensation, perfectly capturing the summer vibes and tropical imagery that would become his signature sound. The track remains one of the most recognized Japanese instrumental pieces worldwide, inspiring countless musicians across generations.</p>
+                    <p>Throughout his 50+ year career, Takanaka has released over 40 studio albums and continues to tour actively, captivating audiences with his energetic performances and innovative guitar techniques. His influence on Japanese popular music and the global fusion scene cannot be overstated.</p>
+                </div>
+            </div>
+            <div class="quote">"Music has no borders. The guitar speaks a universal language that connects hearts across the world."</div>
+        </section>
+
+        <section id="style">
+            <h2>Guitar Playing Style</h2>
+            <div class="style-points">
+                <div class="style-point">
+                    <h4>Tropical Fusion</h4>
+                    <p>Takanaka pioneered a unique sound blending Caribbean rhythms, Latin influences, and jazz fusion. His music evokes images of ocean waves, summer sunsets, and tropical paradise.</p>
+                </div>
+                <div class="style-point">
+                    <h4>Technical Mastery</h4>
+                    <p>Known for lightning-fast runs, precise picking, and flawless execution. His technique combines rock energy with jazz sophistication and classical precision.</p>
+                </div>
+                <div class="style-point">
+                    <h4>Melodic Sensibility</h4>
+                    <p>Despite his technical abilities, Takanaka always prioritizes melody. His solos sing like vocal lines, making complex passages accessible and emotionally resonant.</p>
+                </div>
+                <div class="style-point">
+                    <h4>Signature Effects</h4>
+                    <p>Master of chorus, delay, and wah-wah effects. His clean, shimmering tone is instantly recognizable - bright, warm, and full of life.</p>
+                </div>
+                <div class="style-point">
+                    <h4>Stage Presence</h4>
+                    <p>Famous for his energetic live shows, often performing in colorful Hawaiian shirts or costumes. His surfboard-shaped guitar has become an iconic symbol.</p>
+                </div>
+                <div class="style-point">
+                    <h4>Harmonic Innovation</h4>
+                    <p>Incorporates jazz chord voicings and unexpected harmonic shifts while maintaining accessibility. Bridges the gap between complex fusion and pop appeal.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="guitars">
+            <h2>Signature Guitars</h2>
+            <div class="guitars-grid">
+                <div class="guitar-card">
+                    <h3>The Surfboard Guitar</h3>
+                    <p>Takanaka's most iconic instrument - a custom-built guitar shaped like a surfboard, perfectly matching his tropical beach aesthetic and summer fusion sound. It has become synonymous with his image.</p>
+                </div>
+                <div class="guitar-card">
+                    <h3>Yamaha SG Series</h3>
+                    <p>His primary workhorse throughout much of his career. The SG's warm, sustaining tone and versatility made it perfect for his fusion style, from clean arpeggios to soaring leads.</p>
+                </div>
+                <div class="guitar-card">
+                    <h3>Gibson Les Paul</h3>
+                    <p>Used for heavier, rock-influenced tracks. The Les Paul's thick, creamy sustain adds weight and power to his more aggressive compositions.</p>
+                </div>
+                <div class="guitar-card">
+                    <h3>Fender Stratocaster</h3>
+                    <p>Employed for its bright, bell-like clean tones. Perfect for the shimmering, crystalline sounds featured in many of his tropical-themed pieces.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="songs">
+            <h2>Famous Songs</h2>
+            <p style="margin-bottom: 20px; color: #aaa;">Click any song to listen on YouTube</p>
+            <div class="songs-list">
+                <a href="https://www.youtube.com/watch?v=qbMC2XmhZBQ" target="_blank" rel="noopener noreferrer" class="song-item">
+                    <span class="song-number">01</span>
+                    <div class="song-info">
+                        <h4>Blue Lagoon</h4>
+                        <span>1979 - Jolly Jive</span>
+                    </div>
+                    <span class="play-icon">&#9654;</span>
+                </a>
+                <a href="https://www.youtube.com/watch?v=nQZKe9zla2U" target="_blank" rel="noopener noreferrer" class="song-item">
+                    <span class="song-number">02</span>
+                    <div class="song-info">
+                        <h4>Ready to Fly</h4>
+                        <span>1977 - Takanaka</span>
+                    </div>
+                    <span class="play-icon">&#9654;</span>
+                </a>
+                <a href="https://www.youtube.com/watch?v=4niX8b8ycfU" target="_blank" rel="noopener noreferrer" class="song-item">
+                    <span class="song-number">03</span>
+                    <div class="song-info">
+                        <h4>Traumatic</h4>
+                        <span>1985 - Traumatic</span>
+                    </div>
+                    <span class="play-icon">&#9654;</span>
+                </a>
+                <a href="https://www.youtube.com/watch?v=IpPG3-2V1S8" target="_blank" rel="noopener noreferrer" class="song-item">
+                    <span class="song-number">04</span>
+                    <div class="song-info">
+                        <h4>The Rainbow Goblins</h4>
+                        <span>1981 - Full Album</span>
+                    </div>
+                    <span class="play-icon">&#9654;</span>
+                </a>
+                <a href="https://www.youtube.com/watch?v=HItEV-1crFk" target="_blank" rel="noopener noreferrer" class="song-item">
+                    <span class="song-number">05</span>
+                    <div class="song-info">
+                        <h4>Thunderstorm</h4>
+                        <span>1981 - Rainbow Goblins</span>
+                    </div>
+                    <span class="play-icon">&#9654;</span>
+                </a>
+                <a href="https://www.youtube.com/watch?v=JoKxIRnALCg" target="_blank" rel="noopener noreferrer" class="song-item">
+                    <span class="song-number">06</span>
+                    <div class="song-info">
+                        <h4>Ready to Fly (Live w/ Santana)</h4>
+                        <span>1981 - Yokohama Stadium</span>
+                    </div>
+                    <span class="play-icon">&#9654;</span>
+                </a>
+            </div>
+        </section>
+
+        <section id="discography">
+            <h2>Selected Discography</h2>
+            <div class="albums-grid">
+                <div class="album-card">
+                    <span class="album-year">1976</span>
+                    <h4>Seychelles</h4>
+                    <p>Debut solo album</p>
+                </div>
+                <div class="album-card">
+                    <span class="album-year">1977</span>
+                    <h4>Takanaka</h4>
+                    <p>Self-titled breakthrough</p>
+                </div>
+                <div class="album-card">
+                    <span class="album-year">1978</span>
+                    <h4>An Insatiable High</h4>
+                    <p>Fusion masterpiece</p>
+                </div>
+                <div class="album-card">
+                    <span class="album-year">1979</span>
+                    <h4>Jolly Jive</h4>
+                    <p>Featuring Blue Lagoon</p>
+                </div>
+                <div class="album-card">
+                    <span class="album-year">1980</span>
+                    <h4>Super Takanaka Live!</h4>
+                    <p>Legendary live album</p>
+                </div>
+                <div class="album-card">
+                    <span class="album-year">1981</span>
+                    <h4>The Rainbow Goblins</h4>
+                    <p>Concept album masterwork</p>
+                </div>
+                <div class="album-card">
+                    <span class="album-year">1982</span>
+                    <h4>Ocean Breeze</h4>
+                    <p>Tropical vibes</p>
+                </div>
+                <div class="album-card">
+                    <span class="album-year">1985</span>
+                    <h4>Traumatic</h4>
+                    <p>Cinematic fusion</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p class="footer-japanese">音楽は国境を越える</p>
+        <p>Music Transcends Borders</p>
+        <p style="margin-top: 20px; color: #666;">A tribute to Masayoshi Takanaka</p>
+    </footer>
+
+    <script>
+        // Create falling sakura petals
+        function createSakura() {
+            const container = document.getElementById('sakura');
+            const petal = document.createElement('div');
+            petal.className = 'sakura';
+            petal.style.left = Math.random() * 100 + 'vw';
+            petal.style.animationDuration = (Math.random() * 5 + 8) + 's';
+            petal.style.opacity = Math.random() * 0.6 + 0.2;
+            petal.style.width = (Math.random() * 10 + 8) + 'px';
+            petal.style.height = petal.style.width;
+            container.appendChild(petal);
+
+            setTimeout(() => {
+                petal.remove();
+            }, 13000);
+        }
+
+        // Generate sakura petals periodically
+        setInterval(createSakura, 400);
+
+        // Create initial batch
+        for (let i = 0; i < 15; i++) {
+            setTimeout(createSakura, i * 200);
+        }
+
+        // Smooth scrolling for navigation
+        document.querySelectorAll('nav a').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                target.scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+    </script>
+</body>
+</html>

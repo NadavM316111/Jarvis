@@ -12,3 +12,9 @@ ValidationError: Custom keyGenerator appears to use request IP without calling t
   code: 'ERR_ERL_KEY_GEN_IPV6',
   help: 'https://express-rate-limit.github.io/ERR_ERL_KEY_GEN_IPV6/'
 }
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1777503658.229459   26344 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+C:\Users\nadav\AppData\Local\Programs\Python\Python310\lib\site-packages\google\api_core\_python_version_support.py:273: FutureWarning: You are using a Python version (3.10.11) which Google will stop supporting in new releases of google.api_core once it reaches its end of life (2026-10-04). Please upgrade to the latest Python version, or at least Python 3.11, to continue receiving updates for google.api_core past that date.
+  warnings.warn(message, FutureWarning)
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1777503669.078536   26344 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.

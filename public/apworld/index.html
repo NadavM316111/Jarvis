@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AP World History Study Hub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            color: #fff;
+        }
+        .header {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header h1 {
+            font-size: 1.8rem;
+            background: linear-gradient(90deg, #e94560, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .header p { color: #888; margin-top: 5px; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .tab {
+            padding: 12px 24px;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            border-radius: 25px;
+            color: #fff;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+        }
+        .tab:hover, .tab.active {
+            background: linear-gradient(90deg, #e94560, #ff6b6b);
+            transform: scale(1.05);
+        }
+        
+        .content-section { display: none; }
+        .content-section.active { display: block; }
+        
+        .unit-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .unit-card {
+            background: rgba(255,255,255,0.08);
+            border-radius: 16px;
+            padding: 25px;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        .unit-card:hover {
+            transform: translateY(-5px);
+            border-color: #e94560;
+            box-shadow: 0 10px 40px rgba(233, 69, 96, 0.2);
+        }
+        .unit-card h3 {
+            color: #e94560;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+        .unit-card .period { color: #888; font-size: 0.85rem; margin-bottom: 15px; }
+        .unit-card ul { list-style: none; }
+        .unit-card li {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            font-size: 0.9rem;
+            color: #ccc;
+        }
+        .unit-card li:last-child { border: none; }
+        
+        .flashcard-container {
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        .flashcard {
+            background: linear-gradient(145deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+            border-radius: 20px;
+            padding: 60px 40px;
+            min-height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.6s;
+            transform-style: preserve-3d;
+            border: 2px solid rgba(233, 69, 96, 0.3);
+        }
+        .flashcard:hover { border-color: #e94560; }
+        .flashcard.flipped { transform: rotateY(180deg); }
+        .flashcard-content {
+            font-size: 1.3rem;
+            line-height: 1.6;
+        }
+        .flashcard.flipped .flashcard-content { transform: rotateY(180deg); }
+        .flashcard-controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 25px;
+        }
+        .fc-btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .fc-btn.prev, .fc-btn.next {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+        }
+        .fc-btn.prev:hover, .fc-btn.next:hover { background: rgba(255,255,255,0.2); }
+        .fc-btn.flip {
+            background: linear-gradient(90deg, #e94560, #ff6b6b);
+            color: #fff;
+        }
+        .card-counter { margin-top: 20px; color: #888; }
+        
+        .quiz-container { max-width: 700px; margin: 0 auto; }
+        .quiz-question {
+            background: rgba(255,255,255,0.08);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+        .quiz-question h3 { margin-bottom: 20px; font-size: 1.1rem; line-height: 1.5; }
+        .quiz-options { display: flex; flex-direction: column; gap: 12px; }
+        .quiz-option {
+            padding: 15px 20px;
+            background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: left;
+        }
+        .quiz-option:hover { border-color: #e94560; background: rgba(233, 69, 96, 0.1); }
+        .quiz-option.correct { border-color: #4ade80; background: rgba(74, 222, 128, 0.2); }
+        .quiz-option.incorrect { border-color: #f87171; background: rgba(248, 113, 113, 0.2); }
+        .quiz-option.disabled { pointer-events: none; }
+        .quiz-score {
+            text-align: center;
+            padding: 20px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 16px;
+            margin-top: 20px;
+        }
+        .quiz-score h2 { color: #e94560; font-size: 2rem; }
+        .next-q-btn {
+            margin-top: 20px;
+            padding: 15px 40px;
+            background: linear-gradient(90deg, #e94560, #ff6b6b);
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(180deg, #e94560, #ff6b6b);
+        }
+        .timeline-item {
+            position: relative;
+            padding: 20px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            margin-bottom: 20px;
+            margin-left: 20px;
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -28px;
+            top: 25px;
+            width: 14px;
+            height: 14px;
+            background: #e94560;
+            border-radius: 50%;
+            border: 3px solid #1a1a2e;
+        }
+        .timeline-item h4 { color: #e94560; margin-bottom: 5px; }
+        .timeline-item .date { color: #888; font-size: 0.85rem; margin-bottom: 10px; }
+        
+        .search-box {
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto 30px;
+            position: relative;
+        }
+        .search-box input {
+            width: 100%;
+            padding: 15px 20px;
+            border-radius: 30px;
+            border: 2px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+            font-size: 1rem;
+        }
+        .search-box input:focus {
+            outline: none;
+            border-color: #e94560;
+        }
+        
+        .progress-bar {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            height: 10px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #e94560, #ff6b6b);
+            border-radius: 10px;
+            transition: width 0.5s;
+        }
+        
+        .most-likely {
+            background: linear-gradient(145deg, rgba(233, 69, 96, 0.2), rgba(255, 107, 107, 0.1));
+            border: 2px solid #e94560;
+            padding: 25px;
+            border-radius: 16px;
+            margin-bottom: 30px;
+        }
+        .most-likely h2 {
+            color: #e94560;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .most-likely ul { list-style: none; }
+        .most-likely li {
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .most-likely li::before {
+            content: '!!';
+            background: #e94560;
+            color: #fff;
+            padding: 2px 8px;
+            border-radius: 5px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+        
+        @media (max-width: 600px) {
+            .header h1 { font-size: 1.4rem; }
+            .tab { padding: 10px 16px; font-size: 0.85rem; }
+            .flashcard { padding: 40px 25px; min-height: 250px; }
+            .flashcard-content { font-size: 1.1rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>AP World History Study Hub</h1>
+        <p>Your personalized exam prep - Updated for 2025</p>
+    </div>
+    
+    <div class="container">
+        <div class="tabs">
+            <button class="tab active" onclick="showSection('likely')">Most Likely on Exam</button>
+            <button class="tab" onclick="showSection('units')">All Units</button>
+            <button class="tab" onclick="showSection('flashcards')">Flashcards</button>
+            <button class="tab" onclick="showSection('quiz')">Practice Quiz</button>
+            <button class="tab" onclick="showSection('timeline')">Timeline</button>
+        </div>
+        
+        <div id="likely" class="content-section active">
+            <div class="most-likely">
+                <h2>HIGH PRIORITY - Most Tested Topics</h2>
+                <ul>
+                    <li>Comparison of land-based empires (Ottoman, Safavid, Mughal, Ming/Qing)</li>
+                    <li>Columbian Exchange - biological, economic, and social effects</li>
+                    <li>Atlantic Slave Trade - causes, effects, and resistance</li>
+                    <li>Industrial Revolution - causes, effects on society, labor</li>
+                    <li>Imperialism in Africa and Asia - motives, methods, resistance</li>
+                    <li>Causes and effects of WWI and WWII</li>
+                    <li>Cold War - proxy wars, decolonization, Non-Aligned Movement</li>
+                    <li>Globalization - economic, cultural, environmental impacts</li>
+                    <li>Continuity and Change in trade networks (Silk Roads, Indian Ocean, Trans-Saharan)</li>
+                    <li>Revolutions comparison (French, Haitian, Latin American)</li>
+                </ul>
+            </div>
+            
+            <h2 style="margin-bottom: 20px;">Key Concepts You MUST Know</h2>
+            <div class="unit-grid">
+                <div class="unit-card">
+                    <h3>Document Analysis (DBQ)</h3>
+                    <ul>
+                        <li>HIPP: Historical context, Intended audience, Purpose, Point of view</li>
+                        <li>Sourcing - who wrote it and why</li>
+                        <li>Corroboration - compare multiple docs</li>
+                        <li>Outside evidence - add what you know</li>
+                    </ul>
+                </div>
+                <div class="unit-card">
+                    <h3>Comparison Essays (LEQ)</h3>
+                    <ul>
+                        <li>Direct comparisons with evidence</li>
+                        <li>Explain reasons for similarities/differences</li>
+                        <li>Make connections across time periods</li>
+                        <li>Strong thesis with argument</li>
+                    </ul>
+                </div>
+                <div class="unit-card">
+                    <h3>Causation Questions</h3>
+                    <ul>
+                        <li>Short-term vs long-term causes</li>
+                        <li>Direct vs indirect effects</li>
+                        <li>Turning points in history</li>
+                        <li>Unintended consequences</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div id="units" class="content-section">
+            <div class="search-box">
+                <input type="text" placeholder="Search topics..." oninput="filterUnits(this.value)">
+            </div>
+            <div class="unit-grid" id="unitGrid">
+                <div class="unit-card" data-unit="1">
+                    <h3>Unit 1: The Global Tapestry</h3>
+                    <p class="period">1200-1450</p>
+                    <ul>
+                        <li>Song Dynasty innovations</li>
+                        <li>Dar al-Islam expansion</li>
+                        <li>Delhi Sultanate</li>
+                        <li>Mongol Empire & Pax Mongolica</li>
+                        <li>African states (Mali, Great Zimbabwe)</li>
+                        <li>European feudalism</li>
+                    </ul>
+                </div>
+                <div class="unit-card" data-unit="2">
+                    <h3>Unit 2: Networks of Exchange</h3>
+                    <p class="period">1200-1450</p>
+                    <ul>
+                        <li>Silk Road trade</li>
+                        <li>Indian Ocean trade</li>
+                        <li>Trans-Saharan trade</li>
+                        <li>Cultural & technological diffusion</li>
+                        <li>Effects of Mongol expansion</li>
+                        <li>Spread of Black Death</li>
+                    </ul>
+                </div>
+                <div class="unit-card" data-unit="3">
+                    <h3>Unit 3: Land-Based Empires</h3>
+                    <p class="period">1450-1750</p>
+                    <ul>
+                        <li>Ottoman Empire</li>
+                        <li>Safavid Empire</li>
+                        <li>Mughal Empire</li>
+                        <li>Ming & Qing China</li>
+                        <li>Russian Empire expansion</li>
+                        <li>Gunpowder technology</li>
+                    </ul>
+                </div>
+                <div class="unit-card" data-unit="4">
+                    <h3>Unit 4: Transoceanic Connections</h3>
+                    <p class="period">1450-1750</p>
+                    <ul>
+                        <li>European exploration causes</li>
+                        <li>Columbian Exchange</li>
+                        <li>Atlantic slave trade</li>
+                        <li>Maritime empires (Portugal, Spain, Dutch)</li>
+                        <li>Colonial economies</li>
+                        <li>Syncretism in Americas</li>
+                    </ul>
+                </div>
+                <div class="unit-card" data-unit="5">
+                    <h3>Unit 5: Revolutions</h3>
+                    <p class="period">1750-1900</p>
+                    <ul>
+                        <li>Enlightenment ideas</li>
+                        <li>American Revolution</li>
+                        <li>French Revolution</li>
+                        <li>Haitian Revolution</li>
+                        <li>Latin American independence</li>
+                        <li>Nationalism movements</li>
+                    </ul>
+                </div>
+                <div class="unit-card" data-unit="6">
+                    <h3>Unit 6: Industrialization</h3>
+                    <p class="period">1750-1900</p>
+                    <ul>
+                        <li>Causes of Industrial Revolution</li>
+                        <li>Factory system & urbanization</li>
+                        <li>New social classes</li>
+                        <li>Reform movements</li>
+                        <li>Technology spread globally</li>
+                        <li>Environmental effects</li>
+                    </ul>
+                </div>
+                <div class="unit-card" data-unit="7">
+                    <h3>Unit 7: Global Conflict</h3>
+                    <p class="period">1900-Present</p>
+                    <ul>
+                        <li>New Imperialism</li>
+                        <li>Causes of WWI</li>
+                        <li>Russian Revolution</li>
+                        <li>Rise of totalitarianism</li>
+                        <li>WWII causes & effects</li>
+                        <li>Genocide & human rights</li>
+                    </ul>
+                </div>
+                <div class="unit-card" data-unit="8">
+                    <h3>Unit 8: Cold War & Decolonization</h3>
+                    <p class="period">1900-Present</p>
+                    <ul>
+                        <li>Cold War origins</li>
+                        <li>Proxy wars (Korea, Vietnam)</li>
+                        <li>Decolonization in Africa & Asia</li>
+                        <li>Non-Aligned Movement</li>
+                        <li>End of Cold War</li>
+                        <li>New nations challenges</li>
+                    </ul>
+                </div>
+                <div class="unit-card" data-unit="9">
+                    <h3>Unit 9: Globalization</h3>
+                    <p class="period">1900-Present</p>
+                    <ul>
+                        <li>Economic globalization</li>
+                        <li>International organizations</li>
+                        <li>Technology & communication</li>
+                        <li>Migration patterns</li>
+                        <li>Environmental challenges</li>
+                        <li>Cultural exchange & resistance</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div id="flashcards" class="content-section">
+            <div class="flashcard-container">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="flashProgress" style="width: 0%"></div>
+                </div>
+                <div class="flashcard" onclick="flipCard()">
+                    <div class="flashcard-content" id="flashContent">Click to start!</div>
+                </div>
+                <div class="flashcard-controls">
+                    <button class="fc-btn prev" onclick="prevCard()">Previous</button>
+                    <button class="fc-btn flip" onclick="flipCard()">Flip</button>
+                    <button class="fc-btn next" onclick="nextCard()">Next</button>
+                </div>
+                <p class="card-counter"><span id="cardNum">0</span> / <span id="totalCards">0</span></p>
+            </div>
+        </div>
+        
+        <div id="quiz" class="content-section">
+            <div class="quiz-container">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="quizProgress" style="width: 0%"></div>
+                </div>
+                <div id="quizContent"></div>
+            </div>
+        </div>
+        
+        <div id="timeline" class="content-section">
+            <h2 style="margin-bottom: 25px; text-align: center;">Key Events Timeline</h2>
+            <div class="timeline" id="timelineContent"></div>
+        </div>
+    </div>
+    
+    <script>
+        const flashcards = [
+            {q: "What was the Columbian Exchange?", a: "The transfer of plants, animals, diseases, and ideas between the Americas and the Old World after 1492"},
+            {q: "What were the 3 gunpowder empires?", a: "Ottoman, Safavid, and Mughal Empires"},
+            {q: "What caused the Industrial Revolution to start in Britain?", a: "Coal/iron resources, colonial markets, capital from trade, stable government, agricultural revolution"},
+            {q: "What was the Atlantic slave trade's triangular trade?", a: "Europe to Africa (manufactured goods), Africa to Americas (enslaved people), Americas to Europe (raw materials)"},
+            {q: "What was the mandate of heaven?", a: "Chinese belief that heaven grants the emperor the right to rule based on their ability to govern well"},
+            {q: "What was mercantilism?", a: "Economic policy where colonies exist to benefit the mother country through favorable trade balance"},
+            {q: "What caused WWI?", a: "MAIN: Militarism, Alliances, Imperialism, Nationalism + assassination of Archduke Franz Ferdinand"},
+            {q: "What was the Enlightenment's impact on revolutions?", a: "Ideas of natural rights, social contract, and popular sovereignty inspired American, French, and Latin American revolutions"},
+            {q: "What was the Non-Aligned Movement?", a: "Cold War-era movement where newly independent nations refused to align with either US or USSR"},
+            {q: "What is HIPP analysis?", a: "Historical context, Intended audience, Purpose, Point of view - used for document analysis"},
+            {q: "What were effects of the Mongol Empire?", a: "Pax Mongolica enabled trade, spread of plague, cultural exchange, new technologies (gunpowder, printing)"},
+            {q: "What was the encomienda system?", a: "Spanish colonial labor system granting colonists the right to demand tribute and labor from indigenous people"},
+            {q: "What caused decolonization after WWII?", a: "Weakened European powers, nationalist movements, Cold War competition, UN support for self-determination"},
+            {q: "What was the Indian Ocean trade network?", a: "Maritime trade connecting East Africa, Middle East, India, and Southeast Asia using monsoon winds"},
+            {q: "What was the Haitian Revolution significant for?", a: "First successful slave revolt leading to independence; inspired other abolition and independence movements"},
+            {q: "What were Ottoman devshirme?", a: "System of taking Christian boys to convert, educate, and serve as Janissaries or administrators"},
+            {q: "What was the Berlin Conference 1884-85?", a: "European powers divided Africa without African input, leading to Scramble for Africa"},
+            {q: "What were causes of the French Revolution?", a: "Enlightenment ideas, financial crisis, food shortages, inequality of Three Estates system"},
+            {q: "What was the Ming Dynasty known for?", a: "Great Wall restoration, Forbidden City, Zheng He voyages, then isolation policy"},
+            {q: "What is globalization?", a: "Increasing interconnection of economies, cultures, and populations through trade, technology, and migration"}
+        ];
+        
+        const quizQuestions = [
+            {q: "Which trade network relied on monsoon winds?", options: ["Silk Road", "Trans-Saharan", "Indian Ocean", "Mediterranean"], correct: 2},
+            {q: "The Columbian Exchange resulted in all EXCEPT:", options: ["Spread of disease to Americas", "Introduction of horses to Americas", "Spread of democracy to Europe", "Transfer of crops like potatoes"], correct: 2},
+            {q: "Which empire used the devshirme system?", options: ["Mughal", "Safavid", "Ottoman", "Ming"], correct: 2},
+            {q: "The Industrial Revolution began in Britain primarily because of:", options: ["Large population", "Democratic government", "Access to coal and iron", "Religious freedom"], correct: 2},
+            {q: "The Haitian Revolution was significant because it:", options: ["Was the first European colony to gain independence", "Was led by Napoleon", "Was the first successful slave revolt", "Established communism"], correct: 2},
+            {q: "MAIN causes of WWI include all EXCEPT:", options: ["Militarism", "Communism", "Imperialism", "Nationalism"], correct: 1},
+            {q: "The mandate of heaven was associated with:", options: ["Roman Empire", "Chinese dynasties", "Ottoman Empire", "Mughal Empire"], correct: 1},
+            {q: "The Berlin Conference of 1884-85 resulted in:", options: ["End of WWI", "Division of Africa", "Creation of NATO", "Fall of Ottoman Empire"], correct: 1},
+            {q: "Which was NOT a gunpowder empire?", options: ["Ottoman", "Safavid", "Mughal", "Song"], correct: 3},
+            {q: "The encomienda system was used primarily in:", options: ["British colonies", "Spanish Americas", "French Africa", "Dutch East Indies"], correct: 1}
+        ];
+        
+        const timelineEvents = [
+            {year: "1200s", event: "Mongol Empire expands under Genghis Khan", desc: "Created largest contiguous land empire, enabled trade and cultural exchange"},
+            {year: "1324", event: "Mansa Musa's pilgrimage to Mecca", desc: "Demonstrated Mali's wealth, spread Islam in West Africa"},
+            {year: "1453", event: "Fall of Constantinople", desc: "Ottoman conquest ends Byzantine Empire, shifts trade routes"},
+            {year: "1492", event: "Columbus reaches Americas", desc: "Begins Columbian Exchange and European colonization"},
+            {year: "1517", event: "Protestant Reformation begins", desc: "Luther's 95 Theses challenge Catholic Church"},
+            {year: "1526", event: "Mughal Empire established", desc: "Babur conquers Delhi, begins Mughal rule in India"},
+            {year: "1600s", event: "Atlantic Slave Trade peaks", desc: "Millions of Africans forcibly transported to Americas"},
+            {year: "1776", event: "American Revolution", desc: "Colonies declare independence, Enlightenment principles applied"},
+            {year: "1789", event: "French Revolution begins", desc: "Overthrow of monarchy, spread of revolutionary ideas"},
+            {year: "1791", event: "Haitian Revolution begins", desc: "Enslaved people revolt, first successful slave revolution"},
+            {year: "1760s-1840s", event: "Industrial Revolution", desc: "Transformation from agrarian to industrial economy"},
+            {year: "1884-85", event: "Berlin Conference", desc: "European powers divide Africa"},
+            {year: "1914-1918", event: "World War I", desc: "Global conflict reshapes empires and nations"},
+            {year: "1917", event: "Russian Revolution", desc: "Bolsheviks overthrow Tsar, establish communist state"},
+            {year: "1939-1945", event: "World War II", desc: "Deadliest conflict in history, leads to Cold War"},
+            {year: "1947", event: "Indian Independence", desc: "End of British rule, partition creates India and Pakistan"},
+            {year: "1945-1991", event: "Cold War", desc: "US-Soviet rivalry shapes global politics"},
+            {year: "1960s", event: "African Independence movements", desc: "Wave of decolonization across Africa"},
+            {year: "1991", event: "Soviet Union collapses", desc: "End of Cold War, US emerges as sole superpower"}
+        ];
+        
+        let currentCard = 0;
+        let isFlipped = false;
+        let currentQuestion = 0;
+        let score = 0;
+        
+        function showSection(id) {
+            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            event.target.classList.add('active');
+            
+            if (id === 'flashcards') initFlashcards();
+            if (id === 'quiz') initQuiz();
+            if (id === 'timeline') initTimeline();
+        }
+        
+        function initFlashcards() {
+            currentCard = 0;
+            isFlipped = false;
+            document.getElementById('totalCards').textContent = flashcards.length;
+            showCard();
+        }
+        
+        function showCard() {
+            const card = flashcards[currentCard];
+            document.getElementById('flashContent').textContent = isFlipped ? card.a : card.q;
+            document.getElementById('cardNum').textContent = currentCard + 1;
+            document.getElementById('flashProgress').style.width = ((currentCard + 1) / flashcards.length * 100) + '%';
+            document.querySelector('.flashcard').classList.toggle('flipped', isFlipped);
+        }
+        
+        function flipCard() {
+            isFlipped = !isFlipped;
+            showCard();
+        }
+        
+        function nextCard() {
+            if (currentCard < flashcards.length - 1) {
+                currentCard++;
+                isFlipped = false;
+                showCard();
+            }
+        }
+        
+        function prevCard() {
+            if (currentCard > 0) {
+                currentCard--;
+                isFlipped = false;
+                showCard();
+            }
+        }
+        
+        function initQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            showQuestion();
+        }
+        
+        function showQuestion() {
+            const container = document.getElementById('quizContent');
+            document.getElementById('quizProgress').style.width = (currentQuestion / quizQuestions.length * 100) + '%';
+            
+            if (currentQuestion >= quizQuestions.length) {
+                const percent = Math.round(score / quizQuestions.length * 100);
+                container.innerHTML = '<div class="quiz-score"><h2>' + score + '/' + quizQuestions.length + '</h2><p>You scored ' + percent + '%</p><button class="next-q-btn" onclick="initQuiz()">Try Again</button></div>';
+                return;
+            }
+            
+            const q = quizQuestions[currentQuestion];
+            let html = '<div class="quiz-question"><h3>Question ' + (currentQuestion + 1) + ': ' + q.q + '</h3><div class="quiz-options">';
+            q.options.forEach((opt, i) => {
+                html += '<div class="quiz-option" onclick="selectAnswer(' + i + ', ' + q.correct + ')">' + opt + '</div>';
+            });
+            html += '</div></div>';
+            container.innerHTML = html;
+        }
+        
+        function selectAnswer(selected, correct) {
+            const options = document.querySelectorAll('.quiz-option');
+            options.forEach((opt, i) => {
+                opt.classList.add('disabled');
+                if (i === correct) opt.classList.add('correct');
+                if (i === selected && selected !== correct) opt.classList.add('incorrect');
+            });
+            
+            if (selected === correct) score++;
+            
+            setTimeout(() => {
+                currentQuestion++;
+                showQuestion();
+            }, 1500);
+        }
+        
+        function initTimeline() {
+            const container = document.getElementById('timelineContent');
+            container.innerHTML = timelineEvents.map(e => 
+                '<div class="timeline-item"><h4>' + e.event + '</h4><div class="date">' + e.year + '</div><p>' + e.desc + '</p></div>'
+            ).join('');
+        }
+        
+        function filterUnits(query) {
+            const cards = document.querySelectorAll('.unit-card');
+            query = query.toLowerCase();
+            cards.forEach(card => {
+                const text = card.textContent.toLowerCase();
+                card.style.display = text.includes(query) ? 'block' : 'none';
+            });
+        }
+    </script>
+</body>
+</html>

@@ -721,29 +721,32 @@ async function runProactiveBrain() {
   const now = new Date();
   const hour = now.getHours();
   if (hour < 7 || hour > 23) return;
-  if (!sessions[NADAV_USER_ID]) return;
-  console.log('\n[PROACTIVE BRAIN] Running for Nadav...');
-  const { userMemory } = sessions[NADAV_USER_ID];
-  const sysInfo = await getSystemInfo();
-  const prompt = [
-    `Proactive check for ${userMemory.userName || 'Nadav'}. Time: ${now.toLocaleString()}`,
-    `System state: ${JSON.stringify(sysInfo).substring(0, 400)}`,
-    `Face status: ${faceStatus.present ? `${faceStatus.name} at computer, emotion: ${faceStatus.emotion}` : 'Away'}`,
-    '1. Weather in Fort Lauderdale — anything extreme?',
-    '2. Relevant news for: Clickflo, TROY Capital, Sokr, Sesami, Bookly',
-    '3. Morning 7-9am: brief. Evening 6-9pm: day summary.',
-    '4. Custom checks: ' + JSON.stringify(userMemory.dailyChecks || []),
-    'Use proactive_update for each genuinely important insight.',
-    'Only things that truly matter. Finish with "No updates needed" if quiet.'
-  ].join('\n');
-  try { await runAgenticLoop(prompt, null, NADAV_USER_ID); } catch (e) { console.log('[PROACTIVE] Error:', e.message); }
+  
+  // Run for ALL active users
+  for (const userId of Object.keys(sessions)) {
+    try {
+      const { userMemory } = sessions[userId];
+      const isNadav = userId === NADAV_USER_ID;
+      const prompt = [
+        `Proactive check for ${userMemory.userName || 'User'}. Time: ${now.toLocaleString()}`,
+        isNadav ? `Face status: ${faceStatus.present ? `${faceStatus.name} at computer, emotion: ${faceStatus.emotion}` : 'Away'}` : '',
+        '1. Check weather for their location if known.',
+        '2. Any relevant news or alerts for their interests.',
+        '3. Morning 7-9am: brief greeting. Evening 6-9pm: day summary.',
+        'Use proactive_update for each genuinely important insight.',
+        'Only things that truly matter. Skip if nothing important.',
+      ].filter(Boolean).join('\n');
+      await runAgenticLoop(prompt, null, userId);
+    } catch (e) { console.log(`[PROACTIVE] Error for ${userId}:`, e.message); }
+  }
+  
 }
 
 setInterval(runProactiveBrain, 30 * 60 * 1000);
 setTimeout(runProactiveBrain, 2 * 60 * 1000);
 setTimeout(() => runVisionLoop(), 30000);
 
-// ============ MORNING BRIEFING (Nadav-only) ============
+// ============ MORNING BRIEFING (all-users) ============
 let morningBriefingFiredToday = null;
 
 async function runMorningBriefing() {
