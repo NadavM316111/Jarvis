@@ -717,13 +717,17 @@ async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame
 }
 
 // ============ PROACTIVE BRAIN (Nadav-only) ============
+const proactiveLastRun = {};
+
 async function runProactiveBrain() {
   const now = new Date();
   const hour = now.getHours();
   if (hour < 7 || hour > 23) return;
-  
-  // Run for ALL active users
+
   for (const userId of Object.keys(sessions)) {
+    const lastRun = proactiveLastRun[userId] || 0;
+    if (Date.now() - lastRun < 25 * 60 * 1000) continue; // skip if ran < 25 min ago
+    proactiveLastRun[userId] = Date.now();
     try {
       const { userMemory } = sessions[userId];
       const isNadav = userId === NADAV_USER_ID;

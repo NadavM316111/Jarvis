@@ -1,3 +1,18 @@
 {
-  "updates": []
+  "updates": [
+    {
+      "id": 1777644147535,
+      "message": "Good morning Nadav! Here's your email briefing for Friday, May 1st:\n\n🚨 URGENT - ACTION REQUIRED:\n1. Railway build failed — your \"handsome-playfulness\" project/Jarvis service failed to build. Check Railway dashboard.\n2. Neon payment failed — Invoice #SYPKHT-00002 couldn't be processed. Update your payment info.\n3. DigitalOcean invoice unpaid — $12.00 due for April 2026. Payment method failed.\n4. Shopify trial expiring — extend for $1 to keep building without interruption.\n\n📈 FYI:\n- Stock market hit fresh highs yesterday — best month in years (Investopedia).\n- AP Exam prep reminder from College Board.\n- 25 Facebook notifications pending.\n\nThat's your morning rundown — biggest priorities are the 3 payment/billing issues. Have a great day!",
+      "time": "10:02:27 AM",
+      "date": "5/1/2026",
+      "read": true
+    },
+    {
+      "id": 1777644042646,
+      "message": "Good morning Nadav! Here's your email rundown for May 1st:\n\n⚠️ URGENT - Payment Failed: Neon LLC invoice #SYPKHT-00002 failed to process — you'll want to update your payment info.\n⚠️ URGENT - DigitalOcean: Failed to charge card ending in 1940, unpaid balance of $12.00 due.\n🛍️ Shopify: Your trial is expiring — extend it for just $1.\n📚 College Board: AP Exam day prep reminder sent.\n📈 Investopedia: Markets hit fresh highs yesterday — best month in years.\n🎮 Ubisoft: Account update request regarding state of residence.\n📘 Facebook: 25 unread notifications from Mercedes and Tangela.\n🎵 NYT Games: Bonus crossword puzzle co-made by Jeff Tweedy of Wilco.\n\nTop priority: Fix your payment methods on Neon and DigitalOcean!",
+      "time": "10:00:42 AM",
+      "date": "5/1/2026",
+      "read": true
+    }
+  ]
 }
