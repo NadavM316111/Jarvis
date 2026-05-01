@@ -27,6 +27,7 @@
     "jsonwebtoken": "^9.0.3",
     "next": "16.2.2",
     "openai": "^6.34.0",
+    "pdf-parse": "^2.4.5",
     "pdfkit": "^0.18.0",
     "pg": "^8.20.0",
     "puppeteer": "^24.42.0",

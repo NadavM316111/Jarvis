@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JARVIS - Investor Overview</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Georgia', serif;
+  background: #fff;
+  color: #111;
+  padding: 20px;
+}
+.page {
+  max-width: 900px;
+  margin: 0 auto;
+  background: #fff;
+}
+/* HEADER */
+.header {
+  text-align: center;
+  border: 3px solid #111;
+  padding: 24px 20px 18px;
+  margin-bottom: 18px;
+}
+.header h1 {
+  font-size: 38px;
+  font-family: 'Arial Black', Arial, sans-serif;
+  letter-spacing: 6px;
+  color: #111;
+  margin-bottom: 4px;
+}
+.header .sub { font-size: 13px; letter-spacing: 3px; color: #333; margin-bottom: 6px; }
+.header .tagline { font-size: 15px; color: #555; font-style: italic; margin-bottom: 8px; }
+.header .meta { font-size: 11px; color: #888; letter-spacing: 1px; }
+/* GRID LAYOUT */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+.grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+/* BOXES */
+.box {
+  border: 1.5px solid #111;
+  padding: 14px;
+}
+.box-title {
+  font-size: 10px;
+  font-family: Arial, sans-serif;
+  font-weight: bold;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #111;
+  border-bottom: 1.5px solid #111;
+  padding-bottom: 6px;
+  margin-bottom: 10px;
+}
+.box p {
+  font-size: 12px;
+  line-height: 1.55;
+  color: #333;
+}
+.box ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.box ul li {
+  font-size: 12px;
+  color: #333;
+  padding: 3px 0;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  line-height: 1.4;
+}
+.box ul li::before { content: ">"; font-weight: bold; color: #111; flex-shrink: 0; }
+/* STAT BOXES */
+.stat-box { text-align: center; border: 1.5px solid #111; padding: 14px 8px; }
+.stat-num { font-size: 32px; font-weight: bold; font-family: Arial, sans-serif; color: #111; }
+.stat-lbl { font-size: 10px; letter-spacing: 1px; color: #555; text-transform: uppercase; margin-top: 2px; }
+/* QUOTE */
+.quote-box {
+  border: 1.5px solid #111;
+  border-left: 5px solid #111;
+  padding: 14px 18px;
+  margin-bottom: 14px;
+  background: #f8f8f8;
+}
+.quote-box p { font-style: italic; font-size: 13px; color: #222; line-height: 1.6; }
+/* SECTION HEADER */
+.sec-label {
+  font-size: 9px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  font-family: Arial, sans-serif;
+  color: #888;
+  margin-bottom: 8px;
+  margin-top: 4px;
+}
+/* FULL WIDTH BOX */
+.box-full { border: 1.5px solid #111; padding: 14px; margin-bottom: 14px; }
+/* TABLE */
+table { width: 100%; border-collapse: collapse; font-size: 12px; }
+th { background: #111; color: #fff; padding: 7px 10px; text-align: left; font-size: 11px; letter-spacing: 1px; }
+td { padding: 7px 10px; border-bottom: 1px solid #ddd; color: #333; }
+td:first-child { font-weight: bold; color: #111; }
+/* FOOTER */
+.footer { text-align: center; border-top: 1.5px solid #111; padding-top: 10px; margin-top: 14px; font-size: 10px; color: #888; letter-spacing: 1px; }
+@media print {
+  body { padding: 0; }
+  .page { max-width: 100%; }
+  @page { margin: 1.2cm; size: A4; }
+}
+@media (max-width: 600px) {
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr 1fr; }
+  .grid-4 { grid-template-columns: 1fr 1fr; }
+  .header h1 { font-size: 26px; }
+}
+@media (max-width: 400px) {
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- HEADER BLOCK -->
+<div class="header">
+  <div class="sub">INVESTOR DOCUMENT &bull; APRIL 2026</div>
+  <h1>J.A.R.V.I.S.</h1>
+  <div class="tagline">Just A Rather Very Intelligent System</div>
+  <div class="meta">The world's first truly autonomous AI assistant that doesn't just answer - it ACTS</div>
+</div>
+
+<!-- STATS ROW -->
+<div class="grid-3" style="margin-bottom:14px">
+  <div class="stat-box"><div class="stat-num">11</div><div class="stat-lbl">Integrated Tools</div></div>
+  <div class="stat-box"><div class="stat-num">4</div><div class="stat-lbl">Coding Languages</div></div>
+  <div class="stat-box"><div class="stat-num">Unlimited</div><div class="stat-lbl">Possibilities</div></div>
+</div>
+
+<!-- WHAT / PROBLEM / SOLUTION -->
+<div class="grid-2" style="margin-bottom:14px">
+  <div class="box">
+    <div class="box-title">The Problem</div>
+    <p>Today's AI assistants (Siri, Alexa, ChatGPT) can only <em>talk</em>. They cannot actually DO things on your computer, control your home, or take real action. They are fancy search engines that speak.</p>
+  </div>
+  <div class="box">
+    <div class="box-title">Our Solution</div>
+    <p>JARVIS is an AI that executes code, controls devices, browses the web, sends emails, makes phone calls, automates tasks, and does anything a human could do on a computer - all from a simple conversation.</p>
+  </div>
+</div>
+
+<!-- QUOTE -->
+<div class="quote-box">
+  <p>"The difference between JARVIS and ChatGPT is like the difference between reading about how to drive and actually getting in the car."</p>
+</div>
+
+<!-- CAPABILITIES GRID -->
+<div class="sec-label">Core Capabilities</div>
+<div class="grid-4" style="margin-bottom:14px">
+  <div class="box">
+    <div class="box-title">Vision</div>
+    <p style="font-size:11px">Real-time screen vision and camera feed. Ask "what's on my screen?" or "who's at the door?" and JARVIS knows.</p>
+  </div>
+  <div class="box">
+    <div class="box-title">Home Control</div>
+    <p style="font-size:11px">Sony TVs, Roku, Sonos, smart lights, network devices. "Play jazz in the kitchen" just works.</p>
+  </div>
+  <div class="box">
+    <div class="box-title">Run Any Code</div>
+    <p style="font-size:11px">Python, JavaScript, PowerShell, Bash. Writes and executes code in real-time for any task.</p>
+  </div>
+  <div class="box">
+    <div class="box-title">Web & Research</div>
+    <p style="font-size:11px">Full web browsing with automation. Searches, reads articles, fills forms, extracts data from any site.</p>
+  </div>
+  <div class="box">
+    <div class="box-title">Communications</div>
+    <p style="font-size:11px">Sends emails, makes phone calls (Twilio), manages calendars, pushes phone notifications.</p>
+  </div>
+  <div class="box">
+    <div class="box-title">Create Content</div>
+    <p style="font-size:11px">AI videos with Luma AI, images, full websites, documents - all from voice commands.</p>
+  </div>
+  <div class="box">
+    <div class="box-title">File Management</div>
+    <p style="font-size:11px">Reads PDFs, organizes documents, searches folders, processes data files through conversation.</p>
+  </div>
+  <div class="box">
+    <div class="box-title">Persistent Memory</div>
+    <p style="font-size:11px">Remembers preferences, contacts, projects, and credentials across every session.</p>
+  </div>
+</div>
+
+<!-- SELF IMPROVING AI -->
+<div class="box-full">
+  <div class="box-title">The Magic: AI That Fixes and Teaches Itself</div>
+  <div class="grid-2" style="margin:0; border:0; gap:16px">
+    <div>
+      <p style="font-size:12px; margin-bottom:8px"><strong>Real Example - Connecting an Unknown TV:</strong> A user said "play music on the living room TV." The TV wasn't in the system. JARVIS: (1) scanned the network, found an unknown device at 192.168.4.25 &rarr; (2) probed it, discovered a Technicolor Fision TV using DIAL protocol &rarr; (3) searched the web to learn DIAL &rarr; (4) wrote new code, tested it &rarr; (5) saved it permanently. No human programmer involved.</p>
+    </div>
+    <div>
+      <ul>
+        <li>Auto-installs missing software packages</li>
+        <li>Adapts when external APIs change</li>
+        <li>Identifies and integrates new network devices</li>
+        <li>Learns from every interaction</li>
+        <li>Self-healing - if something breaks, it fixes itself</li>
+        <li>This is genuine problem-solving, not scripted behavior</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- COMPARISON + VISION -->
+<div class="grid-2" style="margin-bottom:14px">
+  <div class="box">
+    <div class="box-title">JARVIS vs The Competition</div>
+    <table>
+      <tr><th>Feature</th><th>ChatGPT</th><th>Siri</th><th>JARVIS</th></tr>
+      <tr><td>Conversation</td><td style="color:#333">Yes</td><td style="color:#333">Yes</td><td>Yes</td></tr>
+      <tr><td>Execute Code</td><td style="color:#aaa">No</td><td style="color:#aaa">No</td><td>Yes</td></tr>
+      <tr><td>Control Devices</td><td style="color:#aaa">No</td><td style="color:#aaa">Limited</td><td>Yes</td></tr>
+      <tr><td>Self-Improving</td><td style="color:#aaa">No</td><td style="color:#aaa">No</td><td>Yes</td></tr>
+      <tr><td>Persistent Memory</td><td style="color:#aaa">Limited</td><td style="color:#aaa">No</td><td>Yes</td></tr>
+    </table>
+  </div>
+  <div class="box">
+    <div class="box-title">Roadmap</div>
+    <ul>
+      <li><strong>Phase 1 (NOW):</strong> Personal assistant for power users &amp; developers</li>
+      <li><strong>Phase 2:</strong> Business Edition with team features, Salesforce, Slack</li>
+      <li><strong>Phase 3:</strong> Platform - third-party developers build JARVIS "skills"</li>
+      <li><strong>Phase 4:</strong> Mobile, wearables, cars, AR glasses - universal interface</li>
+    </ul>
+  </div>
+</div>
+
+<!-- INVESTMENT -->
+<div class="grid-2" style="margin-bottom:14px">
+  <div class="box">
+    <div class="box-title">Use of Funds</div>
+    <ul>
+      <li><strong>40% Engineering:</strong> Expand team, improve AI, build mobile apps</li>
+      <li><strong>25% Infrastructure:</strong> Cloud, API costs, security, scaling</li>
+      <li><strong>20% Go-to-Market:</strong> Marketing, user acquisition, partnerships</li>
+      <li><strong>15% Operations:</strong> Legal, compliance, customer support</li>
+    </ul>
+  </div>
+  <div class="box">
+    <div class="box-title">Revenue Model</div>
+    <table>
+      <tr><th>Tier</th><th>Price</th></tr>
+      <tr><td>Personal</td><td style="color:#333">$29 / month</td></tr>
+      <tr><td>Professional</td><td style="color:#333">$79 / month</td></tr>
+      <tr><td>Enterprise</td><td style="color:#333">Custom pricing</td></tr>
+    </table>
+    <p style="font-size:11px; margin-top:8px; color:#555">Full JARVIS capabilities + advanced integrations + enterprise security + team deployment</p>
+  </div>
+</div>
+
+<!-- WHY WIN -->
+<div class="box-full" style="margin-bottom:14px">
+  <div class="box-title">Why JARVIS Will Win</div>
+  <div class="grid-3" style="margin:0; gap:12px">
+    <div>
+      <ul>
+        <li><strong>First Mover:</strong> No one has built a truly autonomous AI with full code execution + device control</li>
+        <li><strong>Self-Improving:</strong> Gets better with every interaction automatically</li>
+      </ul>
+    </div>
+    <div>
+      <ul>
+        <li><strong>Network Effects:</strong> Each integration makes the platform more valuable for all users</li>
+        <li><strong>Technical Moat:</strong> Safe autonomous code execution architecture took years to build</li>
+      </ul>
+    </div>
+    <div>
+      <ul>
+        <li><strong>Brand Recognition:</strong> Everyone knows JARVIS from Iron Man - instant cultural resonance</li>
+        <li><strong>The Shift:</strong> For 50 years humans adapted to computers. JARVIS flips that.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  J.A.R.V.I.S. &bull; Just A Rather Very Intelligent System &bull; Confidential - April 2026 &bull; contact: nadav@jarvis.ai
+</div>
+
+</div><!-- /page -->
+</body>
+</html>

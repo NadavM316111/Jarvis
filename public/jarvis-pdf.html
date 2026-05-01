@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JARVIS - System Report</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #000;
+    color: #fff;
+    font-family: 'Share Tech Mono', monospace;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .page {
+    width: 794px;
+    min-height: 1123px;
+    background: #000;
+    border: 2px solid #fff;
+    padding: 40px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  /* Corner decorations */
+  .corner {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    border-color: #fff;
+    border-style: solid;
+  }
+  .corner.tl { top: 8px; left: 8px; border-width: 2px 0 0 2px; }
+  .corner.tr { top: 8px; right: 8px; border-width: 2px 2px 0 0; }
+  .corner.bl { bottom: 8px; left: 8px; border-width: 0 0 2px 2px; }
+  .corner.br { bottom: 8px; right: 8px; border-width: 0 2px 2px 0; }
+
+  .header {
+    text-align: center;
+    border-bottom: 1px solid #555;
+    padding-bottom: 20px;
+  }
+
+  .header .label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 6px;
+    color: #888;
+    margin-bottom: 8px;
+  }
+
+  .header h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 52px;
+    font-weight: 900;
+    letter-spacing: 14px;
+    color: #fff;
+    text-shadow: 0 0 30px rgba(255,255,255,0.3);
+  }
+
+  .header .subtitle {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 4px;
+    color: #aaa;
+    margin-top: 6px;
+  }
+
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #555;
+    font-size: 10px;
+    letter-spacing: 3px;
+  }
+  .divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #333;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .box {
+    border: 1px solid #333;
+    padding: 16px;
+    position: relative;
+    background: #050505;
+  }
+
+  .box::before {
+    content: '';
+    position: absolute;
+    top: -1px; left: -1px;
+    width: 12px; height: 12px;
+    border-top: 2px solid #fff;
+    border-left: 2px solid #fff;
+  }
+
+  .box::after {
+    content: '';
+    position: absolute;
+    bottom: -1px; right: -1px;
+    width: 12px; height: 12px;
+    border-bottom: 2px solid #fff;
+    border-right: 2px solid #fff;
+  }
+
+  .box-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 9px;
+    letter-spacing: 4px;
+    color: #888;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+  }
+
+  .box-value {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 4px;
+  }
+
+  .box-sub {
+    font-size: 10px;
+    color: #555;
+    letter-spacing: 2px;
+  }
+
+  .bar-container {
+    margin-top: 8px;
+    height: 4px;
+    background: #1a1a1a;
+    width: 100%;
+  }
+  .bar-fill {
+    height: 100%;
+    background: #fff;
+  }
+
+  .full-box {
+    border: 1px solid #333;
+    padding: 18px;
+    position: relative;
+    background: #050505;
+  }
+  .full-box::before {
+    content: '';
+    position: absolute;
+    top: -1px; left: -1px;
+    width: 14px; height: 14px;
+    border-top: 2px solid #fff;
+    border-left: 2px solid #fff;
+  }
+  .full-box::after {
+    content: '';
+    position: absolute;
+    bottom: -1px; right: -1px;
+    width: 14px; height: 14px;
+    border-bottom: 2px solid #fff;
+    border-right: 2px solid #fff;
+  }
+
+  .status-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #111;
+    font-size: 11px;
+    letter-spacing: 2px;
+  }
+  .status-row:last-child { border-bottom: none; }
+  .status-label { color: #666; }
+  .status-val { color: #fff; }
+  .status-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #fff;
+    display: inline-block;
+    margin-right: 8px;
+    box-shadow: 0 0 6px #fff;
+  }
+
+  .quote-box {
+    border: 1px solid #222;
+    padding: 20px;
+    text-align: center;
+    position: relative;
+  }
+  .quote-box::before {
+    content: '';
+    position: absolute;
+    top: -1px; left: -1px;
+    width: 14px; height: 14px;
+    border-top: 2px solid #fff;
+    border-left: 2px solid #fff;
+  }
+  .quote-box::after {
+    content: '';
+    position: absolute;
+    bottom: -1px; right: -1px;
+    width: 14px; height: 14px;
+    border-bottom: 2px solid #fff;
+    border-right: 2px solid #fff;
+  }
+
+  .quote-text {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 13px;
+    letter-spacing: 3px;
+    color: #ccc;
+    line-height: 1.8;
+  }
+
+  .footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #1a1a1a;
+    padding-top: 14px;
+    font-size: 9px;
+    letter-spacing: 3px;
+    color: #444;
+  }
+
+  .download-btn {
+    display: block;
+    margin: 30px auto 0;
+    padding: 14px 40px;
+    background: #000;
+    color: #fff;
+    border: 1px solid #fff;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 12px;
+    letter-spacing: 4px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.2s;
+    text-decoration: none;
+    text-align: center;
+  }
+  .download-btn:hover {
+    background: #fff;
+    color: #000;
+  }
+
+  @media print {
+    body { background: #000 !important; padding: 0; }
+    .page { width: 100%; min-height: auto; }
+    .download-btn { display: none; }
+  }
+
+  @media (max-width: 840px) {
+    .page { width: 100%; padding: 24px 16px; min-height: auto; }
+    .header h1 { font-size: 32px; letter-spacing: 8px; }
+    .grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+    .box-value { font-size: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page" id="page">
+  <div class="corner tl"></div>
+  <div class="corner tr"></div>
+  <div class="corner bl"></div>
+  <div class="corner br"></div>
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="label">// STARK INDUSTRIES - AUTONOMOUS AI SYSTEM //</div>
+    <h1>J.A.R.V.I.S</h1>
+    <div class="subtitle">JUST A RATHER VERY INTELLIGENT SYSTEM &nbsp;|&nbsp; BUILD v7.0.1</div>
+  </div>
+
+  <div class="divider">SYSTEM STATUS REPORT</div>
+
+  <!-- STATS GRID -->
+  <div class="grid">
+    <div class="box">
+      <div class="box-title">// Core Temperature</div>
+      <div class="box-value">98.6%</div>
+      <div class="box-sub">OPTIMAL RANGE</div>
+      <div class="bar-container"><div class="bar-fill" style="width:98%"></div></div>
+    </div>
+    <div class="box">
+      <div class="box-title">// Neural Network</div>
+      <div class="box-value">312 PB</div>
+      <div class="box-sub">ACTIVE MEMORY</div>
+      <div class="bar-container"><div class="bar-fill" style="width:76%"></div></div>
+    </div>
+    <div class="box">
+      <div class="box-title">// Threat Analysis</div>
+      <div class="box-value">0</div>
+      <div class="box-sub">THREATS DETECTED</div>
+      <div class="bar-container"><div class="bar-fill" style="width:4%"></div></div>
+    </div>
+    <div class="box">
+      <div class="box-title">// Uptime</div>
+      <div class="box-value">99.97%</div>
+      <div class="box-sub">ALL SYSTEMS NOMINAL</div>
+      <div class="bar-container"><div class="bar-fill" style="width:99%"></div></div>
+    </div>
+  </div>
+
+  <!-- STATUS LIST -->
+  <div class="full-box">
+    <div class="box-title">// Active Systems Overview</div>
+    <div class="status-row">
+      <span class="status-label"><span class="status-dot"></span>REPULSOR DRIVE</span>
+      <span class="status-val">ONLINE</span>
+    </div>
+    <div class="status-row">
+      <span class="status-label"><span class="status-dot"></span>VOICE RECOGNITION MODULE</span>
+      <span class="status-val">ACTIVE</span>
+    </div>
+    <div class="status-row">
+      <span class="status-label"><span class="status-dot"></span>PREDICTIVE ANALYSIS ENGINE</span>
+      <span class="status-val">RUNNING</span>
+    </div>
+    <div class="status-row">
+      <span class="status-label"><span class="status-dot"></span>GLOBAL SATELLITE LINK</span>
+      <span class="status-val">CONNECTED</span>
+    </div>
+    <div class="status-row">
+      <span class="status-label"><span class="status-dot"></span>SECURITY FIREWALL</span>
+      <span class="status-val">ENGAGED</span>
+    </div>
+  </div>
+
+  <!-- QUOTE -->
+  <div class="quote-box">
+    <div class="quote-text">"AT YOUR SERVICE, SIR. ALL SYSTEMS OPERATIONAL.<br>READY TO ASSIST WITH WHATEVER YOU NEED."</div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <span>STARK INDUSTRIES &copy; 2026</span>
+    <span>CLASSIFICATION: RESTRICTED</span>
+    <span>NADAV M. &mdash; AUTHORIZED USER</span>
+  </div>
+</div>
+
+<!-- DOWNLOAD BUTTON -->
+<button class="download-btn" onclick="downloadPDF()">DOWNLOAD PDF</button>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script>
+function downloadPDF() {
+  const element = document.getElementById('page');
+  const opt = {
+    margin: 0,
+    filename: 'JARVIS_Report.pdf',
+    image: { type: 'jpeg', quality: 1 },
+    html2canvas: { scale: 2, backgroundColor: '#000000', useCORS: true },
+    jsPDF: { unit: 'px', format: [794, 1123], orientation: 'portrait' }
+  };
+  html2pdf().set(opt).from(element).save();
+}
+</script>
+
+</body>
+</html>

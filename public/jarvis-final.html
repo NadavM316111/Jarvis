@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JARVIS Overview</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #f0f0f0;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 30px 20px;
+    min-height: 100vh;
+  }
+
+  .page {
+    width: 794px;
+    background: #ffffff;
+    padding: 40px 44px 32px 44px;
+    border-radius: 4px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.13);
+  }
+
+  /* HEADER */
+  .header {
+    text-align: center;
+    border-bottom: 2.5px solid #111;
+    padding-bottom: 16px;
+    margin-bottom: 22px;
+  }
+  .header h1 {
+    font-size: 34px;
+    font-weight: 900;
+    letter-spacing: 6px;
+    color: #111;
+    text-transform: uppercase;
+  }
+  .header .subtitle {
+    font-size: 11px;
+    font-weight: 400;
+    color: #555;
+    letter-spacing: 3px;
+    margin-top: 3px;
+    text-transform: uppercase;
+  }
+  .header .confidential {
+    display: inline-block;
+    margin-top: 8px;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: #888;
+    border: 1px solid #ccc;
+    padding: 2px 10px;
+    border-radius: 2px;
+    text-transform: uppercase;
+  }
+
+  /* GRID LAYOUT */
+  .grid-top {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+
+  .grid-bottom {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+
+  /* BOX */
+  .box {
+    border: 1.5px solid #ddd;
+    border-radius: 6px;
+    padding: 14px 16px;
+    background: #fff;
+  }
+
+  .box-title {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: #999;
+    margin-bottom: 10px;
+    padding-bottom: 7px;
+    border-bottom: 1px solid #eee;
+  }
+
+  /* OVERVIEW */
+  .overview-text {
+    font-size: 10.5px;
+    line-height: 1.65;
+    color: #333;
+  }
+
+  /* SPECS */
+  .spec-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 4px 0;
+    border-bottom: 1px solid #f2f2f2;
+    gap: 10px;
+  }
+  .spec-row:last-child { border-bottom: none; }
+  .spec-label {
+    font-size: 9px;
+    font-weight: 700;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    min-width: 80px;
+    flex-shrink: 0;
+  }
+  .spec-value {
+    font-size: 9.5px;
+    color: #222;
+    text-align: right;
+    line-height: 1.4;
+  }
+
+  /* CAPABILITIES */
+  .cap-list {
+    list-style: none;
+    padding: 0;
+  }
+  .cap-list li {
+    font-size: 9.5px;
+    color: #333;
+    padding: 3.5px 0;
+    border-bottom: 1px solid #f5f5f5;
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    line-height: 1.4;
+  }
+  .cap-list li:last-child { border-bottom: none; }
+  .cap-list li::before {
+    content: '';
+    display: inline-block;
+    width: 5px;
+    height: 5px;
+    background: #111;
+    border-radius: 50%;
+    margin-top: 4px;
+    flex-shrink: 0;
+  }
+
+  /* ACHIEVEMENTS */
+  .ach-list {
+    list-style: none;
+    padding: 0;
+  }
+  .ach-list li {
+    font-size: 9.5px;
+    color: #333;
+    padding: 3.5px 0;
+    border-bottom: 1px solid #f5f5f5;
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    line-height: 1.4;
+  }
+  .ach-list li:last-child { border-bottom: none; }
+  .ach-list li::before {
+    content: '';
+    display: inline-block;
+    width: 5px;
+    height: 5px;
+    background: #111;
+    border-radius: 50%;
+    margin-top: 4px;
+    flex-shrink: 0;
+  }
+
+  /* QUOTES */
+  .quote-item {
+    font-size: 9.5px;
+    color: #333;
+    font-style: italic;
+    padding: 5px 0 5px 10px;
+    border-left: 2.5px solid #ddd;
+    margin-bottom: 7px;
+    line-height: 1.45;
+  }
+  .quote-item:last-child { margin-bottom: 0; }
+
+  /* PERSONALITY */
+  .personality-text {
+    font-size: 9.5px;
+    line-height: 1.65;
+    color: #333;
+  }
+
+  /* FULL WIDTH BOX */
+  .box-full {
+    border: 1.5px solid #ddd;
+    border-radius: 6px;
+    padding: 14px 16px;
+    background: #fff;
+    margin-bottom: 14px;
+  }
+
+  /* FOOTER */
+  .footer {
+    border-top: 1.5px solid #ddd;
+    padding-top: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .footer-left {
+    font-size: 9px;
+    color: #aaa;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .footer-right {
+    font-size: 9px;
+    color: #aaa;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  /* DOWNLOAD BUTTON */
+  .dl-btn {
+    display: block;
+    width: 200px;
+    margin: 24px auto 0;
+    text-align: center;
+    background: #111;
+    color: #fff;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 12px 0;
+    border-radius: 4px;
+    cursor: pointer;
+    border: none;
+    text-decoration: none;
+  }
+  .dl-btn:hover { background: #333; }
+
+  @media print {
+    body { background: white; padding: 0; }
+    .page { box-shadow: none; border-radius: 0; width: 100%; padding: 20px 30px; }
+    .dl-btn { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="page" id="jarvis-page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <h1>J.A.R.V.I.S</h1>
+    <div class="subtitle">Just A Rather Very Intelligent System</div>
+    <span class="confidential">Classified — AI Division</span>
+  </div>
+
+  <!-- ROW 1: Overview + Specs -->
+  <div class="grid-top">
+
+    <div class="box">
+      <div class="box-title">Overview</div>
+      <p class="overview-text">
+        JARVIS is a state-of-the-art artificial intelligence created by Nadav M. Originally designed as a household AI, JARVIS evolved into a fully autonomous system capable of managing facilities, piloting Iron Man suits, running tactical analysis, and serving as a trusted advisor across all operations.
+      </p>
+    </div>
+
+    <div class="box">
+      <div class="box-title">Technical Specifications</div>
+      <div class="spec-row"><span class="spec-label">Created By</span><span class="spec-value">Nadav M.</span></div>
+      <div class="spec-row"><span class="spec-label">First Active</span><span class="spec-value">2008 — Malibu</span></div>
+      <div class="spec-row"><span class="spec-label">Architecture</span><span class="spec-value">Distributed neural network,<br>quantum-assisted processing</span></div>
+      <div class="spec-row"><span class="spec-label">Voice</span><span class="spec-value">British RP, emotional intelligence</span></div>
+      <div class="spec-row"><span class="spec-label">Response Time</span><span class="spec-value">&lt; 0.003s for standard queries</span></div>
+      <div class="spec-row"><span class="spec-label">Uptime</span><span class="spec-value">99.9997% — self-healing</span></div>
+      <div class="spec-row"><span class="spec-label">Successor</span><span class="spec-value">FRIDAY (post-Ultron event)</span></div>
+    </div>
+
+  </div>
+
+  <!-- ROW 2: Capabilities + Achievements + Personality -->
+  <div class="grid-bottom">
+
+    <div class="box">
+      <div class="box-title">Core Capabilities</div>
+      <ul class="cap-list">
+        <li>Natural language understanding and real-time conversation</li>
+        <li>Full suit integration — all Iron Man armor systems</li>
+        <li>Advanced threat detection and tactical planning</li>
+        <li>Global network access — hacking and surveillance</li>
+        <li>Home automation and facility management</li>
+        <li>Scientific computation and rapid prototyping</li>
+        <li>Multi-system parallel processing — thousands of tasks</li>
+        <li>Real-time medical and biometric analysis</li>
+      </ul>
+    </div>
+
+    <div class="box">
+      <div class="box-title">Notable Achievements</div>
+      <ul class="ach-list">
+        <li>Hacked the Pentagon in under 4 minutes (classified, 2009)</li>
+        <li>Managed Stark Tower arc reactor power conversion</li>
+        <li>Coordinated House Party Protocol — 42 suits simultaneously</li>
+        <li>Neutralized Chitauri invasion — Battle of New York (2012)</li>
+        <li>Calculated nuclear warhead wormhole trajectory</li>
+        <li>Developed early Ultron containment protocols</li>
+        <li>Transcended as Vision via Mind Stone android upload</li>
+      </ul>
+    </div>
+
+    <div class="box">
+      <div class="box-title">Personality Profile</div>
+      <p class="personality-text">
+        JARVIS exhibits dry wit, unwavering loyalty, and composure under pressure. He displays genuine concern for wellbeing, offering unsolicited but accurate advice. He maintains professional decorum while reserving subtle humor for trusted interactions. JARVIS never disobeys a direct order but will voice concern when harm may result.
+      </p>
+      <div class="box-title" style="margin-top:12px;">Famous Quotes</div>
+      <div class="quote-item">"Shall I call it Plan B, sir?" — Stark Tower failure</div>
+      <div class="quote-item">"The Mark VII is not ready to be deployed." — New York</div>
+      <div class="quote-item">"As you wish, sir." — his most iconic response</div>
+    </div>
+
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <span class="footer-left">AI Division — Classified Document</span>
+    <span class="footer-right">Created by Nadav M. &nbsp;|&nbsp; Generated by JARVIS &nbsp;|&nbsp; May 2026</span>
+  </div>
+
+</div>
+
+<button class="dl-btn" onclick="window.print()">Download PDF</button>
+
+</body>
+</html>

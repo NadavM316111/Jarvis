@@ -434,7 +434,9 @@ if (ytMatch2) setTimeout(() => window.open(ytMatch2[0], '_blank'), 500);
     try {
       const res = await fetch(`${API}/chat`, { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` }, body: JSON.stringify({ message: userMsg, attachedFile: fileToSend }) });
       const data = await res.json();
-      if (data.message && data.message !== 'On it.') {
+      if (data.message === 'On it.') {
+        addMessageToConv(finalConvId, { role: "assistant", content: "On it...", source: "text", timestamp: Date.now() });
+      } else if (data.message) {
         addMessageToConv(finalConvId, { role: "assistant", content: data.message, source: "text", timestamp: Date.now() });
         const urlMatch = data.message.match(/https:\/\/api\.heyjarvis\.me\/view\/[^\s)]+/);
 if (urlMatch) setTimeout(() => window.open(urlMatch[0], '_blank'), 500);
@@ -448,7 +450,7 @@ if (ytMatch) { const w = window.open(ytMatch[0], '_blank'); if (w) w.focus(); }
         }
       }
     } catch {
-      addMessageToConv(finalConvId, { role: "assistant", content: "Cannot connect to JARVIS server.", timestamp: Date.now() });
+      // Server may still be processing in background — don't show error
     }
     setLoading(false);
   };

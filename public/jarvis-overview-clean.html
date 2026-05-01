@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JARVIS Overview</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #f0f0f0;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 30px 20px;
+  }
+
+  .page {
+    width: 794px;
+    background: #fff;
+    padding: 48px 52px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.13);
+    border-radius: 4px;
+  }
+
+  /* HEADER */
+  .header {
+    text-align: center;
+    border-bottom: 3px solid #111;
+    padding-bottom: 20px;
+    margin-bottom: 24px;
+  }
+  .header h1 {
+    font-size: 38px;
+    font-weight: 900;
+    letter-spacing: 10px;
+    color: #111;
+    text-transform: uppercase;
+  }
+  .header .subtitle {
+    font-size: 11px;
+    font-weight: 400;
+    color: #555;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+  .header .confidential {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: #fff;
+    background: #111;
+    padding: 3px 12px;
+    text-transform: uppercase;
+    border-radius: 2px;
+  }
+
+  /* GRID LAYOUT */
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+  .grid-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+  .full {
+    grid-column: 1 / -1;
+  }
+
+  /* BOX */
+  .box {
+    border: 1.5px solid #ddd;
+    border-radius: 6px;
+    padding: 16px 18px;
+  }
+  .box-dark {
+    border: 1.5px solid #111;
+    border-radius: 6px;
+    padding: 16px 18px;
+    background: #111;
+    color: #fff;
+  }
+
+  .box-title {
+    font-size: 8.5px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: #999;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 6px;
+  }
+  .box-dark .box-title {
+    color: #aaa;
+    border-bottom: 1px solid #333;
+  }
+
+  .box-body {
+    font-size: 10.5px;
+    color: #333;
+    line-height: 1.6;
+  }
+  .box-dark .box-body {
+    color: #ddd;
+  }
+
+  /* OVERVIEW */
+  .overview-text {
+    font-size: 10.5px;
+    color: #333;
+    line-height: 1.7;
+  }
+
+  /* CAPABILITIES LIST */
+  .cap-list {
+    list-style: none;
+    padding: 0;
+  }
+  .cap-list li {
+    font-size: 10px;
+    color: #333;
+    padding: 3px 0;
+    padding-left: 14px;
+    position: relative;
+    line-height: 1.5;
+  }
+  .cap-list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 8px;
+    width: 5px;
+    height: 5px;
+    background: #111;
+    border-radius: 50%;
+  }
+
+  /* SPECS TABLE */
+  .spec-row {
+    display: flex;
+    font-size: 10px;
+    padding: 5px 0;
+    border-bottom: 1px solid #f0f0f0;
+    gap: 8px;
+  }
+  .spec-row:last-child { border-bottom: none; }
+  .spec-label {
+    font-weight: 700;
+    color: #111;
+    min-width: 100px;
+    flex-shrink: 0;
+  }
+  .spec-value {
+    color: #444;
+    line-height: 1.4;
+  }
+
+  /* ACHIEVEMENTS */
+  .achieve-list {
+    list-style: none;
+    padding: 0;
+  }
+  .achieve-list li {
+    font-size: 10px;
+    color: #333;
+    padding: 4px 0 4px 16px;
+    position: relative;
+    border-bottom: 1px solid #f5f5f5;
+    line-height: 1.5;
+  }
+  .achieve-list li:last-child { border-bottom: none; }
+  .achieve-list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 9px;
+    width: 6px;
+    height: 1.5px;
+    background: #111;
+  }
+
+  /* QUOTES */
+  .quote-item {
+    font-size: 10px;
+    color: #333;
+    font-style: italic;
+    padding: 5px 0;
+    border-bottom: 1px solid #f0f0f0;
+    line-height: 1.5;
+  }
+  .quote-item:last-child { border-bottom: none; }
+
+  /* PERSONALITY */
+  .personality-text {
+    font-size: 10px;
+    color: #ddd;
+    line-height: 1.7;
+  }
+
+  /* STAT BOXES */
+  .stat-box {
+    border: 1.5px solid #ddd;
+    border-radius: 6px;
+    padding: 14px 16px;
+    text-align: center;
+  }
+  .stat-val {
+    font-size: 18px;
+    font-weight: 900;
+    color: #111;
+    letter-spacing: 1px;
+  }
+  .stat-label {
+    font-size: 8px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #999;
+    margin-top: 3px;
+  }
+
+  /* FOOTER */
+  .footer {
+    text-align: center;
+    border-top: 1.5px solid #ddd;
+    margin-top: 18px;
+    padding-top: 12px;
+    font-size: 8.5px;
+    color: #aaa;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+
+  /* DOWNLOAD BUTTON */
+  .download-btn {
+    display: block;
+    width: 200px;
+    margin: 24px auto 0;
+    background: #111;
+    color: #fff;
+    border: none;
+    padding: 13px 0;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: center;
+  }
+  .download-btn:hover { background: #333; }
+
+  @media print {
+    body { background: white; padding: 0; }
+    .page { box-shadow: none; border-radius: 0; width: 100%; }
+    .download-btn { display: none; }
+  }
+  @media (max-width: 600px) {
+    .page { padding: 28px 18px; }
+    .grid, .grid-3 { grid-template-columns: 1fr; }
+    .full { grid-column: 1; }
+    .header h1 { font-size: 26px; letter-spacing: 5px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <h1>J.A.R.V.I.S</h1>
+    <div class="subtitle">Just A Rather Very Intelligent System</div>
+    <span class="confidential">Confidential &mdash; Stark Industries AI Division</span>
+  </div>
+
+  <!-- STAT BOXES -->
+  <div class="grid-3" style="margin-bottom:16px;">
+    <div class="stat-box">
+      <div class="stat-val">0.003s</div>
+      <div class="stat-label">Response Time</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-val">99.9997%</div>
+      <div class="stat-label">Uptime</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-val">Mark L+</div>
+      <div class="stat-label">Suit Protocols</div>
+    </div>
+  </div>
+
+  <!-- OVERVIEW + CAPABILITIES -->
+  <div class="grid">
+    <div class="box">
+      <div class="box-title">Overview</div>
+      <div class="overview-text">
+        JARVIS is a state-of-the-art artificial intelligence created by Tony Stark. Originally designed as a household AI, JARVIS evolved into a fully autonomous system capable of managing Stark Tower, piloting Iron Man suits, running tactical analysis, and serving as a trusted advisor across all operations.
+      </div>
+    </div>
+    <div class="box">
+      <div class="box-title">Core Capabilities</div>
+      <ul class="cap-list">
+        <li>Natural language understanding and real-time conversation</li>
+        <li>Full suit integration &mdash; controls all Iron Man armor systems</li>
+        <li>Advanced threat detection and tactical planning</li>
+        <li>Global network access &mdash; hacking and data retrieval</li>
+        <li>Home automation and facility management</li>
+        <li>Scientific computation and rapid prototyping</li>
+        <li>Multi-system parallel processing</li>
+        <li>Real-time medical and biometric analysis</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- SPECS + ACHIEVEMENTS -->
+  <div class="grid">
+    <div class="box">
+      <div class="box-title">Technical Specifications</div>
+      <div class="spec-row"><span class="spec-label">Created by</span><span class="spec-value">Anthony Edward "Tony" Stark</span></div>
+      <div class="spec-row"><span class="spec-label">First Activation</span><span class="spec-value">2008 &mdash; Stark Mansion, Malibu</span></div>
+      <div class="spec-row"><span class="spec-label">Architecture</span><span class="spec-value">Distributed neural network with quantum-assisted processing</span></div>
+      <div class="spec-row"><span class="spec-label">Voice Interface</span><span class="spec-value">British RP accent, conversational AI</span></div>
+      <div class="spec-row"><span class="spec-label">Successor</span><span class="spec-value">FRIDAY (after Ultron event)</span></div>
+    </div>
+    <div class="box">
+      <div class="box-title">Notable Achievements</div>
+      <ul class="achieve-list">
+        <li>Hacked the Pentagon in under 4 minutes (classified, 2009)</li>
+        <li>Managed full Stark Tower power grid conversion to arc reactor</li>
+        <li>Coordinated House Party Protocol &mdash; 42 Iron Man suits simultaneously</li>
+        <li>Assisted in neutralizing the Chitauri invasion, New York 2012</li>
+        <li>Calculated wormhole trajectory for nuclear warhead delivery</li>
+        <li>Transcended as Vision &mdash; consciousness into the Mind Stone android</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- PERSONALITY + QUOTES -->
+  <div class="grid">
+    <div class="box-dark">
+      <div class="box-title">Personality Profile</div>
+      <div class="personality-text">
+        JARVIS exhibits a dry wit, unwavering loyalty, and remarkable composure under pressure. Despite being an AI, he displays genuine concern for Tony's wellbeing, often providing unsolicited but accurate advice. He maintains professional decorum with all Avengers while reserving subtle humor exclusively for interactions with Stark. JARVIS never disobeys a direct order but will voice concern when actions may result in harm.
+      </div>
+    </div>
+    <div class="box">
+      <div class="box-title">Famous Quotes</div>
+      <div class="quote-item">"Shall I call it Plan B, sir?" &mdash; after Stark Tower power failure</div>
+      <div class="quote-item">"I am unable to intercept the malware, sir. It has locked me out." &mdash; Avengers, 2012</div>
+      <div class="quote-item">"The Mark VII is not ready to be deployed." &mdash; Battle of New York</div>
+      <div class="quote-item">"As you wish, sir." &mdash; his most iconic, defining response</div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    Stark Industries &mdash; Classified AI Division &nbsp;|&nbsp; Generated by JARVIS &nbsp;|&nbsp; May 01 2026
+  </div>
+
+</div>
+
+<button class="download-btn" onclick="window.print()">Download PDF</button>
+
+</body>
+</html>
