@@ -456,6 +456,7 @@ Chances is 1-5 (5=very likely). Be creative and specific. Return ONLY the JSON.`
       headers:{"Content-Type":"application/json"},
       body:JSON.stringify({
         prompt:prompt,
+        max_tokens:3000,
         system:"You are a Hollywood pitch generator. Return ONLY valid JSON, no markdown, no code blocks."
       })
     });
