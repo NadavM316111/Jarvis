@@ -185,6 +185,14 @@ body::before{
 
 .toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--dark3);border:1px solid rgba(201,168,76,0.3);border-top:2px solid var(--gold);color:var(--cream);font-family:'Barlow Condensed',sans-serif;font-size:14px;letter-spacing:0.1em;padding:14px 28px;z-index:10001;opacity:0;transition:all 0.3s;text-transform:uppercase}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.error-modal{position:fixed;inset:0;z-index:10002;background:rgba(10,10,12,0.92);display:flex;align-items:center;justify-content:center;padding:24px}
+.error-modal.hidden{display:none!important}
+.error-box{background:var(--dark3);border:1px solid rgba(192,57,43,0.4);border-top:2px solid #C0392B;max-width:600px;width:100%;padding:32px}
+.error-title{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;letter-spacing:0.2em;color:#E74C3C;text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.error-title::before{content:'';width:8px;height:8px;background:#E74C3C;border-radius:50%;flex-shrink:0}
+.error-body{font-family:'Barlow',monospace;font-size:13px;color:var(--text-dim);line-height:1.6;white-space:pre-wrap;word-break:break-all;background:var(--dark);padding:16px;border:1px solid rgba(255,255,255,0.06);max-height:300px;overflow-y:auto;margin-bottom:20px}
+.error-hint{font-size:13px;color:var(--text-dim);margin-bottom:20px;line-height:1.6}
+.error-close{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--dark);background:var(--gold);border:none;padding:12px 28px;cursor:pointer}
 
 @media(max-width:600px){
   .results-hero-content{padding:40px 24px}
@@ -340,12 +348,22 @@ body::before{
 
 <div class="toast" id="toast"></div>
 
+<div class="error-modal hidden" id="errorModal">
+  <div class="error-box">
+    <div class="error-title">Generation Failed</div>
+    <div class="error-body" id="errorBody"></div>
+    <div class="error-hint">Check that your proxy at <code>heyjarvis.me/ai-proxy</code> is running and returning <code>{ response: "..." }</code> or <code>{ text: "..." }</code>. Open DevTools → Network to inspect the raw request.</div>
+    <button class="error-close" onclick="document.getElementById('errorModal').classList.add('hidden')">Dismiss</button>
+  </div>
+</div>
+
 <script>
 let currentSlide=0;
 const loadSteps=["Analyzing your concept...","Casting actors...","Calculating budget...","Writing trailer script...","Predicting awards...","Curating soundtrack...","Finalizing pitch..."];
 let loadInterval=null;
 
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500)}
+function showError(msg){document.getElementById('errorBody').textContent=msg;document.getElementById('errorModal').classList.remove('hidden')}
 
 function goSlide(n){
   currentSlide=n;
@@ -433,30 +451,33 @@ Make cast have 6 entries, budget_breakdown have 6 entries, trailer_scenes have 5
 Chances is 1-5 (5=very likely). Be creative and specific. Return ONLY the JSON.`;
 
   try{
-    const res=await fetch("https://api.anthropic.com/v1/messages",{
+    const res=await fetch("https://api.heyjarvis.me/ai-proxy",{
       method:"POST",
       headers:{"Content-Type":"application/json"},
       body:JSON.stringify({
-        model:"claude-sonnet-4-20250514",
-        max_tokens:2000,
-        messages:[{role:"user",content:prompt}]
+        prompt:prompt,
+        system:"You are a Hollywood pitch generator. Return ONLY valid JSON, no markdown, no code blocks."
       })
     });
+    if(!res.ok){
+      const errText=await res.text();
+      throw new Error(`HTTP ${res.status}: ${errText.substring(0,200)}`);
+    }
     const data=await res.json();
     clearInterval(loadInterval);
     fill.style.width='100%';
     setTimeout(()=>{
       overlay.classList.add('hidden');
-      let raw=data.content.map(b=>b.text||'').join('');
+      let raw=data.response||data.text||(data.content&&data.content.map(b=>b.text||'').join(''))||JSON.stringify(data);
       raw=raw.replace(/```json|```/g,'').trim();
       let movie;
-      try{movie=JSON.parse(raw)}catch(e){showToast('Parse error, try again');return}
+      try{movie=JSON.parse(raw)}catch(e){showError('JSON parse failed: '+e.message+'\n\nRaw response:\n'+raw.substring(0,400));return}
       renderResults(movie);
     },400);
   }catch(e){
     clearInterval(loadInterval);
     overlay.classList.add('hidden');
-    showToast('Something went wrong. Try again.');
+    showError(e.message||String(e));
   }
 }
 
