@@ -496,11 +496,6 @@ async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame
       `Working dir: ${process.cwd()}`,
       `Credentials: .env.local | Google: credentials.json + token.json`,
       '',
-'═══ SERVER MANAGEMENT ═══',
-'To restart the server after adding new routes: use run_code powershell: pm2 restart jarvis',
-'ALWAYS restart the server after modifying server.js so new routes take effect.',
-'To check server status: pm2 status',
-'To view logs: pm2 logs jarvis --lines 20',
     ] : [
   '',
   '═══ CAPABILITIES ═══',
@@ -515,27 +510,6 @@ async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame
   'ENCODING: When writing HTML/CSS/JS with fs.writeFileSync, NEVER use emojis.',
   'MOBILE: All apps and websites must be fully mobile responsive. Use viewport meta tag, flexible layouts, touch-friendly buttons (min 44px), and test that it looks great on phone screens.',
   '',
-'═══ BUILDING FULL-STACK APPS ═══',
-'When building a complex app (Instagram clone, marketplace, SaaS, etc.) with database + backend + frontend:',
-'ALWAYS break it into steps and use these markers in your response:',
-'  [PROGRESS:25%]Creating database tables...[/PROGRESS] — shows a progress bar in chat',
-'  [CONTINUE_BUTTON:continue building the API routes] — shows a clickable Continue button',
-'Step 1: Create Neon DB tables with run_code node. STOP after this. End response with [PROGRESS:25%]Database ready[/PROGRESS][CONTINUE_BUTTON:continue building the API routes]',
-'Step 2: Create C:/Users/nadav/jarvis-web/apps/appname.js using module.exports = (app, sql) => { ... } pattern. Add ONE require line to server.js before app.listen: require("./apps/appname")(app, chatSql). pm2 restart jarvis. STOP after this. End with [PROGRESS:60%]Backend ready[/PROGRESS][CONTINUE_BUTTON:continue building the frontend]',
-'Step 3: Build frontend HTML/JS/CSS to public/appname/index.html. Serve it at https://api.heyjarvis.me/appname/. STOP after this. End with [PROGRESS:100%]App complete — live at https://api.heyjarvis.me/appname/[/PROGRESS]',
-'CRITICAL: Do ONE step at a time. STOP and wait for the user to click Continue before doing the next step. Never skip steps.',
-'You CAN create .js .css .json files in addition to .html — save them all to C:/Users/nadav/jarvis-web/public/appname/filename.ext',
-'NEON DB URL: postgresql://neondb_owner:npg_kT50YOCedwLf@ep-snowy-darkness-a4sa5ao8-pooler.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require',
-'For AI features in apps: call https://api.heyjarvis.me/ai-proxy with POST {prompt, system} — JARVIS will respond as AI inside the app.',
-'',
-'CRITICAL: All API routes must use @neondatabase/serverless neon tagged template literals, NEVER use pg Pool or pool.query — those are not available.',
-'CRITICAL: NEVER append routes directly to server.js. Instead:',
-'1. Create a separate file: C:/Users/nadav/jarvis-web/apps/appname.js',
-'2. Write all routes in that file using: module.exports = (app, sql) => { ... }',
-'3. In server.js, add ONE line before app.listen: require("./apps/appname")(app, chatSql)',
-'4. This keeps server.js clean and prevents duplicate variable errors.',
-'The apps/ folder is at C:/Users/nadav/jarvis-web/apps/',
-'When the app is complete always give the user the direct working URL as a clickable link.',
   '═══ GMAIL & CALENDAR ═══',
 'To read emails: use run_code with node:',
 'const { getRecentEmails } = require("./gmail_multi");',
@@ -1330,6 +1304,7 @@ app.post('/ai-proxy', async (req, res) => {
 require("./apps/ranked")(app, chatSql);
 
 require("./apps/cinevault")(app, chatSql);
+require("./apps/moviestudio")(app, chatSql);
 
 
 app.listen(3001, () => {

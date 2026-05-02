@@ -1,0 +1,1236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Croatia 2026 - The Journey of a Lifetime</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --gold: #D4AF37;
+            --gold-light: #F4E4BC;
+            --deep-blue: #0a1628;
+            --ocean: #1a4b6e;
+            --sunset: #ff6b4a;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Cormorant Garamond', serif;
+            background: var(--deep-blue);
+            color: white;
+            overflow-x: hidden;
+        }
+
+        /* Plane that moves with scroll */
+        .plane-container {
+            position: fixed;
+            left: 50px;
+            top: 100px;
+            z-index: 1000;
+            pointer-events: none;
+            transition: transform 0.1s ease-out;
+        }
+
+        .plane {
+            font-size: 40px;
+            filter: drop-shadow(0 0 20px rgba(255,255,255,0.5));
+            transform: rotate(90deg);
+        }
+
+        .plane-trail {
+            position: fixed;
+            left: 70px;
+            top: 0;
+            width: 3px;
+            background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.1), rgba(255,255,255,0.3));
+            z-index: 999;
+            pointer-events: none;
+        }
+
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            background: linear-gradient(135deg, #0a1628 0%, #1a3a5c 50%, #2d5a7b 100%);
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('https://images.unsplash.com/photo-1555990538-1e7a914e8796?w=1920') center/cover;
+            opacity: 0.3;
+            filter: blur(2px);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(3rem, 10vw, 8rem);
+            font-weight: 700;
+            letter-spacing: 0.3em;
+            color: var(--gold);
+            text-shadow: 0 0 60px rgba(212, 175, 55, 0.5);
+            animation: titleReveal 2s ease-out;
+        }
+
+        .hero .subtitle {
+            font-size: clamp(1.2rem, 3vw, 2rem);
+            font-weight: 300;
+            letter-spacing: 0.5em;
+            margin-top: 20px;
+            opacity: 0;
+            animation: fadeUp 1.5s ease-out 0.5s forwards;
+        }
+
+        .hero .date {
+            font-size: clamp(1rem, 2vw, 1.5rem);
+            color: var(--gold-light);
+            margin-top: 40px;
+            opacity: 0;
+            animation: fadeUp 1.5s ease-out 1s forwards;
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            opacity: 0;
+            animation: fadeUp 1.5s ease-out 1.5s forwards;
+        }
+
+        .scroll-indicator span {
+            font-size: 0.9rem;
+            letter-spacing: 0.3em;
+            color: var(--gold-light);
+        }
+
+        .scroll-arrow {
+            width: 30px;
+            height: 50px;
+            border: 2px solid var(--gold);
+            border-radius: 20px;
+            position: relative;
+        }
+
+        .scroll-arrow::before {
+            content: '';
+            position: absolute;
+            top: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            background: var(--gold);
+            border-radius: 50%;
+            animation: scrollBounce 2s infinite;
+        }
+
+        @keyframes titleReveal {
+            from { opacity: 0; transform: translateY(50px); letter-spacing: 0.5em; }
+            to { opacity: 1; transform: translateY(0); letter-spacing: 0.3em; }
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes scrollBounce {
+            0%, 100% { top: 8px; opacity: 1; }
+            50% { top: 25px; opacity: 0.3; }
+        }
+
+        /* Journey Section */
+        .journey {
+            padding: 100px 20px;
+            max-width: 900px;
+            margin: 0 auto 0 150px;
+        }
+
+        .section-title {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            color: var(--gold);
+            text-align: center;
+            margin-bottom: 60px;
+            letter-spacing: 0.2em;
+        }
+
+        /* Day Cards - Collapsible */
+        .day-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 15px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            transition: all 0.4s ease;
+        }
+
+        .day-card:hover {
+            border-color: var(--gold);
+            box-shadow: 0 10px 40px rgba(212, 175, 55, 0.2);
+        }
+
+        .day-header {
+            padding: 25px 30px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.3s ease;
+        }
+
+        .day-header:hover {
+            background: rgba(212, 175, 55, 0.1);
+        }
+
+        .day-header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .day-number {
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            color: var(--gold);
+            min-width: 100px;
+        }
+
+        .day-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.3rem;
+            color: white;
+        }
+
+        .day-location {
+            font-size: 1rem;
+            color: var(--gold-light);
+            opacity: 0.8;
+        }
+
+        .expand-icon {
+            font-size: 1.5rem;
+            color: var(--gold);
+            transition: transform 0.4s ease;
+        }
+
+        .day-card.expanded .expand-icon {
+            transform: rotate(180deg);
+        }
+
+        .day-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease;
+        }
+
+        .day-card.expanded .day-content {
+            max-height: 1500px;
+        }
+
+        .day-content-inner {
+            padding: 0 30px 30px 30px;
+            border-top: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .day-image {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .day-description {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 25px;
+        }
+
+        .schedule {
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            padding: 25px;
+        }
+
+        .schedule-title {
+            font-family: 'Cinzel', serif;
+            color: var(--gold);
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .schedule-item {
+            display: flex;
+            gap: 20px;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .schedule-item:last-child {
+            border-bottom: none;
+        }
+
+        .schedule-time {
+            font-family: 'Cinzel', serif;
+            color: var(--gold);
+            min-width: 100px;
+            font-weight: 600;
+        }
+
+        .schedule-activity {
+            flex: 1;
+        }
+
+        .schedule-activity h4 {
+            color: white;
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+
+        .schedule-activity p {
+            color: rgba(255,255,255,0.7);
+            font-size: 0.95rem;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 80px 20px;
+            background: linear-gradient(to top, rgba(0,0,0,0.5), transparent);
+        }
+
+        .footer h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 2.5rem;
+            color: var(--gold);
+            margin-bottom: 20px;
+        }
+
+        .footer p {
+            font-size: 1.3rem;
+            color: var(--gold-light);
+        }
+
+        /* Ambient particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: var(--gold);
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: float 15s infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.5; }
+            90% { opacity: 0.5; }
+            100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
+        }
+
+        @media (max-width: 768px) {
+            .journey {
+                margin: 0 auto;
+                padding: 60px 15px;
+            }
+
+            .plane-container {
+                left: 20px;
+            }
+
+            .plane-trail {
+                left: 40px;
+            }
+
+            .day-header {
+                padding: 20px;
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+
+            .day-header-left {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+
+            .schedule-item {
+                flex-direction: column;
+                gap: 5px;
+            }
+
+            .schedule-time {
+                min-width: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="particles" id="particles"></div>
+
+    <div class="plane-container" id="planeContainer">
+        <div class="plane">&#9992;</div>
+    </div>
+    <div class="plane-trail" id="planeTrail"></div>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1>CROATIA</h1>
+            <p class="subtitle">THE JOURNEY OF A LIFETIME</p>
+            <p class="date">9 Days - 6 Adventurers - Endless Memories</p>
+        </div>
+        <div class="scroll-indicator">
+            <span>EXPLORE</span>
+            <div class="scroll-arrow"></div>
+        </div>
+    </section>
+
+    <section class="journey">
+        <h2 class="section-title">THE ITINERARY</h2>
+
+        <div class="day-card" data-day="1">
+            <div class="day-header">
+                <div class="day-header-left">
+                    <span class="day-number">DAY 01</span>
+                    <div>
+                        <div class="day-title">Arrival in Paradise</div>
+                        <div class="day-location">Dubrovnik</div>
+                    </div>
+                </div>
+                <span class="expand-icon">&#9660;</span>
+            </div>
+            <div class="day-content">
+                <div class="day-content-inner">
+                    <img src="https://images.unsplash.com/photo-1555990538-1e7a914e8796?w=800" alt="Dubrovnik" class="day-image">
+                    <p class="day-description">Touch down in the Pearl of the Adriatic. Your Croatian odyssey begins as you descend into Dubrovnik, where ancient walls meet crystal waters.</p>
+                    <div class="schedule">
+                        <div class="schedule-title">&#128197; Daily Schedule</div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">10:00 AM</span>
+                            <div class="schedule-activity">
+                                <h4>Arrival at Dubrovnik Airport</h4>
+                                <p>Land at DBV airport, collect luggage, and meet your private transfer</p>
+                            </div>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">12:00 PM</span>
+                            <div class="schedule-activity">
+                                <h4>Check-in & Refresh</h4>
+                                <p>Settle into your accommodation in Old Town area, freshen up after the journey</p>
+                            </div>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">1:30 PM</span>
+                            <div class="schedule-activity">
+                                <h4>First Croatian Lunch</h4>
+                                <p>Traditional Dalmatian cuisine at a local konoba - try the fresh seafood risotto</p>
+                            </div>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">3:30 PM</span>
+                            <div class="schedule-activity">
+                                <h4>Old Town Orientation Walk</h4>
+                                <p>Stroll down the Stradun, get your bearings, pick up local SIM cards</p>
+                            </div>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">6:00 PM</span>
+                            <div class="schedule-activity">
+                                <h4>Golden Hour at Banje Beach</h4>
+                                <p>First swim in the Adriatic with stunning views of the old city walls</p>
+                            </div>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">8:30 PM</span>
+                            <div class="schedule-activity">
+                                <h4>Welcome Dinner</h4>
+                                <p>Rooftop dinner with panoramic views - celebrate the beginning of your adventure</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="day-card" data-day="2">
+            <div class="day-header">
+                <div class="day-header-left">
+                    <span class="day-number">DAY 02</span>
+                    <div>
+                        <div class="day-title">Walking the Walls</div>
+                        <div class="day-location">Dubrovnik Old Town</div>
+                    </div>
+                </div>
+                <span class="expand-icon">&#9660;</span>
+            </div>
+            <div class="day-content">
+                <div class="day-content-inner">
+                    <img src="https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?w=800" alt="Dubrovnik Walls" class="day-image">
+                    <p class="day-description">Walk in the footsteps of kings and conquerors. The legendary walls of Dubrovnik await, offering breathtaking vistas at every turn.</p>
+                    <div class="schedule">
+                        <div class="schedule-title">&#128197; Daily Schedule</div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">7:30 AM</span>
+                            <div class="schedule-activity">
+                                <h4>Early Bird Breakfast</h4>
+                                <p>Beat the crowds with an early Croatian breakfast - fresh pastries and strong coffee</p>
+                            </div>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">8:00 AM</span>
+                            <div class="schedule-activity">
+                                <h4>City Walls Walk</h4>
+                                <p>2km walk around the entire perimeter - arrive early to avoid the heat and crowds</p>
+                            </div>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">11:00 AM</span>
+                            <div class="schedule-activity">
+                                <h4>Game of Thrones Tour</h4>
+                                <p>Visit iconic filming locations - the kids will love seeing King's Landing come to life</p>
+                            </div>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">1:00 PM</span>
+                            <div class="schedule-activity">
+                                <h4>Lunch at Proto</h4>
+                                <p>Award-winning seafood restaurant in the heart of Old Town</p>
+                            </div>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">3:00 PM</span>
+                            <div class="schedule-activity">
+                                <h4>Cable Car to Mount Srd</h4>
+                                <p>Panoramic views of the entire coastline - incredible photo opportunities</p>
+                            </div>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">5:30 PM</span>
+                            <div class="schedule-activity">
+                                <h4>Cliff Jumping at Buza Bar</h4>
+                                <p>Brave ones can cliff jump, everyone enjoys drinks on the rocks at sunset</p>
+                            </div>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">8:00 PM</span>
+                            <div class="schedule-activity">
+                                <h4>Dinner & Gelato Stroll</h4>
+                                <p>Casual dinner followed by gelato while exploring the illuminated old town</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="day-card" data-day="3">
+            <div class="day-header">
+                <div class="day-header-left">
+                    <span class="day-number">DAY 03</span>
+                    <div>
+                        <div class="day-title">Island Hopping</div>
+                        <div class="day-location">Elafiti Islands</div>
+                    </div>
+                </div>
+                <span class="expand-icon">&#9660;</span>
+            </div>
+            <div class="day-content">
+                <div class="day-content-inner">
+                    <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800" alt="Islands" class="day-image">
+                    <p class="day-description">Sail the turquoise waters of the Adriatic, discovering hidden coves and pristine beaches across the magical Elafiti archipelago.</p>
+                    <div class="schedule">
+                        <div class="schedule-title">&#128197; Daily Schedule</div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">8:00 AM</span>
+                            <div class="schedule-activity">
+                                <h4>Breakfast & Pack</h4>
+                                <p>Quick breakfast, pack swimsuits, sunscreen, and snorkeling gear</p>
+                            </div>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">9:00 AM</span>
+                            <div class="schedule-activity">
+                                <h4>Board the Boat</h4>
+                                <p>Depart from Gruz Harbor on a full-day island hopping tour</p>
+                            </div>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">10:00 AM</span>
+                            <div class="schedule-activity">
+                                <h4>Kolocep Island</h4>
+                                <p>First stop - explore the car-free island, swim in the Blue Cave</p>
+                            </div>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">12:30 PM</span>
+                            <div class="schedule-activity">
+                                <h4>Lopud Island Lunch</h4>
+                                <p>Fresh grilled fish lunch at a beachside restaurant on Sunj Beach</p>
+                            </div>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">2:30 PM</span>
+                            <div class="schedule-activity">
+                                <h4>Beach Time & Watersports</h4>
+                                <p>Sandy beach time - kayaking, paddleboarding, or just relaxing</p>
+                            </div>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">4:30 PM</span>
+                            <div class="schedule-activity">
+                                <h4>Sipan Island</h4>
+                                <p>Final island stop - explore ancient ruins and olive groves</p>
+                            </div>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">6:30 PM</span>
+                            <div class="schedule-activity">
+                                <h4>Sunset Sail Back</h4>
+                                <p>Watch the sunset paint the Adriatic gold as you return to Dubrovnik</p>
+                            </div>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">8:30 PM</span>
+                            <div class="schedule-activity">
+                                <h4>Casual Harbor Dinner</h4>
+                                <p>Pizza and pasta at the harbor - perfect for tired adventurers</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="day-card" data-day="4">
+            <div class="day-header">
+                <div class="day-header-left">
+                    <span class="day-number">DAY 04</span>
+                    <div>
+                        <div class="day-title">Journey to Split</div>
+                        <div class="day-location">Coastal Road to Split</div>
+                    </div>
+                </div>
+                <span class="expand-icon">&#9660;</span>
+            </div>
+            <div class="day-content">
+                <div class="day-content-inner">
+                    <img src="https://images.unsplash.com/photo-1565372195458-49e8a0e0e8f1?w=800" alt="Split" class="day-image">
+                    <p class="day-description">The scenic coastal road unfolds before you, revealing dramatic cliffsides and hidden villages as you make your way to the ancient city of Split.</p>
+                    <div class="schedule">
+                        <div class="schedule-title">&#128197; Daily Schedule</div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">8:00 AM</span>
+                            <div class="schedule-activity">
+                                <h4>Check-out & Depart</h4>
+                                <p>Say goodbye to Dubrovnik, load up the rental car for the scenic drive</p>
+                            </div>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">9:30 AM</span>
+                            <div class="schedule-activity">
+                                <h4>Ston Stop</h4>
+                                <p>Walk Europe's longest defensive walls, taste famous Ston oysters</p>
+                            </div>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">12:00 PM</span>
+                            <div class="schedule-activity">
+                                <h4>Makarska Riviera Lunch</h4>
+                                <p>Stop at a seaside restaurant with views of the Biokovo mountains</p>
+                            </div>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">2:00 PM</span>
+                            <div class="schedule-activity">
+                                <h4>Continue the Journey</h4>
+                                <p>Wind along the stunning coastal highway with photo stops</p>
+                            </div>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">4:00 PM</span>
+                            <div class="schedule-activity">
+                                <h4>Arrive in Split</h4>
+                                <p>Check into your apartment near Diocletian's Palace</p>
+                            </div>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">5:30 PM</span>
+                            <div class="schedule-activity">
+                                <h4>Explore the Riva</h4>
+                                <p>Walk the famous waterfront promenade, coffee culture at its finest</p>
+                            </div>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">7:30 PM</span>
+                            <div class="schedule-activity">
+                                <h4>Diocletian's Palace at Dusk</h4>
+                                <p>Watch the palace transform as lights illuminate the ancient stones</p>
+                            </div>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">8:30 PM</span>
+                            <div class="schedule-activity">
+                                <h4>Dinner in the Palace</h4>
+                                <p>Dine inside a 1,700-year-old Roman emperor's residence</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="day-card" data-day="5">
+            <div class="day-header">
+                <div class="day-header-left">
+                    <span class="day-number">DAY 05</span>
+                    <div>
+                        <div class="day-title">Island of Lavender</div>
+                        <div class="day-location">Hvar Island</div>
+                    </div>
+                </div>
+                <span class="expand-icon">&#9660;</span>
+            </div>
+            <div class="day-content">
+                <div class="day-content-inner">
+                    <img src="https://images.unsplash.com/photo-1590523277543-a94d2e4eb00b?w=800" alt="Hvar" class="day-image">
+                    <p class="day-description">Ferry across to the sunniest island in Croatia. Hvar's lavender fields, ancient fortresses, and glamorous harbors await your discovery.</p>
+                    <div class="schedule">
+                        <div class="schedule-title">&#128197; Daily Schedule</div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">7:00 AM</span>
+                            <div class="schedule-activity">
+                                <h4>Early Ferry</h4>
+                                <p>Catch the catamaran from Split to Hvar Town (1 hour journey)</p>
+                            </div>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">8:30 AM</span>
+                            <div class="schedule-activity">
+                                <h4>Breakfast in Hvar Town</h4>
+                                <p>Coffee and pastries in the main square with harbor views</p>
+                            </div>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">10:00 AM</span>
+                            <div class="schedule-activity">
+                                <h4>Climb to Fortica Fortress</h4>
+                                <p>16th century Spanish fortress with 360-degree island views</p>
+                            </div>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">12:00 PM</span>
+                            <div class="schedule-activity">
+                                <h4>Pakleni Islands Boat Trip</h4>
+                                <p>Water taxi to the stunning Pakleni archipelago</p>
+                            </div>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">1:00 PM</span>
+                            <div class="schedule-activity">
+                                <h4>Beach Club Lunch</h4>
+                                <p>Lunch at a beach club on Palmizana island - swim between courses</p>
+                            </div>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">3:00 PM</span>
+                            <div class="schedule-activity">
+                                <h4>Snorkeling & Swimming</h4>
+                                <p>Crystal clear waters perfect for underwater exploration</p>
+                            </div>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">5:30 PM</span>
+                            <div class="schedule-activity">
+                                <h4>Return to Hvar Town</h4>
+                                <p>Explore the narrow streets, lavender shops, and artisan stores</p>
+                            </div>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">7:30 PM</span>
+                            <div class="schedule-activity">
+                                <h4>Sunset Dinner</h4>
+                                <p>Waterfront dinner watching superyachts and sunset</p>
+                            </div>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">9:30 PM</span>
+                            <div class="schedule-activity">
+                                <h4>Evening Ferry Back</h4>
+                                <p>Return to Split under the stars</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="day-card" data-day="6">
+            <div class="day-header">
+                <div class="day-header-left">
+                    <span class="day-number">DAY 06</span>
+                    <div>
+                        <div class="day-title">Chasing Waterfalls</div>
+                        <div class="day-location">Krka National Park</div>
+                    </div>
+                </div>
+                <span class="expand-icon">&#9660;</span>
+            </div>
+            <div class="day-content">
+                <div class="day-content-inner">
+                    <img src="https://images.unsplash.com/photo-1588866309847-e9f1de5d0f6a?w=800" alt="Krka" class="day-image">
+                    <p class="day-description">Step into a natural paradise where emerald waters cascade over ancient travertine. Krka National Park is Croatia's crown jewel of natural wonders.</p>
+                    <div class="schedule">
+                        <div class="schedule-title">&#128197; Daily Schedule</div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">7:30 AM</span>
+                            <div class="schedule-activity">
+                                <h4>Early Departure</h4>
+                                <p>Beat the crowds - leave Split early for the 1.5 hour drive to Krka</p>
+                            </div>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">9:00 AM</span>
+                            <div class="schedule-activity">
+                                <h4>Enter Krka</h4>
+                                <p>Arrive at Skradinski Buk entrance, take the boat to the main falls</p>
+                            </div>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">9:30 AM</span>
+                            <div class="schedule-activity">
+                                <h4>Waterfall Trail</h4>
+                                <p>Walk the wooden boardwalks through 17 cascading waterfalls</p>
+                            </div>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">11:00 AM</span>
+                            <div class="schedule-activity">
+                                <h4>Swimming at the Falls</h4>
+                                <p>Take a refreshing dip in the designated swimming areas</p>
+                            </div>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">12:30 PM</span>
+                            <div class="schedule-activity">
+                                <h4>Picnic Lunch</h4>
+                                <p>Enjoy a packed lunch at the scenic picnic area near the water mills</p>
+                            </div>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">2:00 PM</span>
+                            <div class="schedule-activity">
+                                <h4>Visovac Island</h4>
+                                <p>Boat trip to the monastery island in the middle of the lake</p>
+                            </div>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">4:30 PM</span>
+                            <div class="schedule-activity">
+                                <h4>Drive to Sibenik</h4>
+                                <p>Short drive to the charming coastal town of Sibenik</p>
+                            </div>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">5:30 PM</span>
+                            <div class="schedule-activity">
+                                <h4>Sibenik Cathedral</h4>
+                                <p>Visit the UNESCO-listed St. James Cathedral</p>
+                            </div>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">7:30 PM</span>
+                            <div class="schedule-activity">
+                                <h4>Dinner & Return</h4>
+                                <p>Seafood dinner in Sibenik, then drive to Zadar accommodation</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="day-card" data-day="7">
+            <div class="day-header">
+                <div class="day-header-left">
+                    <span class="day-number">DAY 07</span>
+                    <div>
+                        <div class="day-title">Lakes of Dreams</div>
+                        <div class="day-location">Plitvice Lakes</div>
+                    </div>
+                </div>
+                <span class="expand-icon">&#9660;</span>
+            </div>
+            <div class="day-content">
+                <div class="day-content-inner">
+                    <img src="https://images.unsplash.com/photo-1504214208698-ea1916a2195a?w=800" alt="Plitvice" class="day-image">
+                    <p class="day-description">Enter a fairytale landscape. Plitvice's sixteen terraced lakes, connected by waterfalls and surrounded by forest, is nature's masterpiece.</p>
+                    <div class="schedule">
+                        <div class="schedule-title">&#128197; Daily Schedule</div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">6:00 AM</span>
+                            <div class="schedule-activity">
+                                <h4>Very Early Start</h4>
+                                <p>Wake up early - Plitvice is a 2-hour drive and worth arriving first</p>
+                            </div>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">8:00 AM</span>
+                            <div class="schedule-activity">
+                                <h4>Park Opens</h4>
+                                <p>Be at Entrance 1 when gates open - beat thousands of day-trippers</p>
+                            </div>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">8:30 AM</span>
+                            <div class="schedule-activity">
+                                <h4>Lower Lakes Trail</h4>
+                                <p>Start with the iconic lower lakes - the most photographed views</p>
+                            </div>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">10:30 AM</span>
+                            <div class="schedule-activity">
+                                <h4>Veliki Slap</h4>
+                                <p>Croatia's tallest waterfall at 78 meters - truly breathtaking</p>
+                            </div>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">11:30 AM</span>
+                            <div class="schedule-activity">
+                                <h4>Electric Boat Ride</h4>
+                                <p>Cruise across Kozjak Lake, the largest lake in the park</p>
+                            </div>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">12:30 PM</span>
+                            <div class="schedule-activity">
+                                <h4>Lunch Break</h4>
+                                <p>Eat at the park restaurant or enjoy packed sandwiches</p>
+                            </div>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">1:30 PM</span>
+                            <div class="schedule-activity">
+                                <h4>Upper Lakes Trail</h4>
+                                <p>More secluded, stunning blue-green waters and wooden walkways</p>
+                            </div>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">4:00 PM</span>
+                            <div class="schedule-activity">
+                                <h4>Panoramic Train</h4>
+                                <p>Ride the park train back to the entrance through the forest</p>
+                            </div>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">5:00 PM</span>
+                            <div class="schedule-activity">
+                                <h4>Return to Zadar</h4>
+                                <p>Scenic drive back to the coast</p>
+                            </div>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">7:30 PM</span>
+                            <div class="schedule-activity">
+                                <h4>Sea Organ Sunset</h4>
+                                <p>Listen to the waves play music at Zadar's famous Sea Organ</p>
+                            </div>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">8:30 PM</span>
+                            <div class="schedule-activity">
+                                <h4>Greeting to the Sun</h4>
+                                <p>Watch the solar-powered light installation come alive, dinner nearby</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="day-card" data-day="8">
+            <div class="day-header">
+                <div class="day-header-left">
+                    <span class="day-number">DAY 08</span>
+                    <div>
+                        <div class="day-title">Relax & Explore</div>
+                        <div class="day-location">Zadar</div>
+                    </div>
+                </div>
+                <span class="expand-icon">&#9660;</span>
+            </div>
+            <div class="day-content">
+                <div class="day-content-inner">
+                    <img src="https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?w=800" alt="Zadar" class="day-image">
+                    <p class="day-description">A day to catch your breath. Explore Zadar's Roman ruins, relax on hidden beaches, and soak in the final moments of your Croatian adventure.</p>
+                    <div class="schedule">
+                        <div class="schedule-title">&#128197; Daily Schedule</div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">9:00 AM</span>
+                            <div class="schedule-activity">
+                                <h4>Sleep In</h4>
+                                <p>No alarm today - you've earned a lazy morning</p>
+                            </div>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">10:00 AM</span>
+                            <div class="schedule-activity">
+                                <h4>Brunch at the Market</h4>
+                                <p>Explore Zadar's green market, pick up fresh fruit and pastries</p>
+                            </div>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">11:30 AM</span>
+                            <div class="schedule-activity">
+                                <h4>Roman Forum</h4>
+                                <p>Walk through 2,000 years of history at the ancient forum</p>
+                            </div>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">12:30 PM</span>
+                            <div class="schedule-activity">
+                                <h4>St. Donatus Church</h4>
+                                <p>9th century Byzantine church with incredible acoustics</p>
+                            </div>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">1:30 PM</span>
+                            <div class="schedule-activity">
+                                <h4>Lunch & Maraschino</h4>
+                                <p>Try the local specialty - Maraschino cherry liqueur with dessert</p>
+                            </div>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">3:00 PM</span>
+                            <div class="schedule-activity">
+                                <h4>Beach Time</h4>
+                                <p>Relax at Kolovare Beach or rent kayaks for the afternoon</p>
+                            </div>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">5:00 PM</span>
+                            <div class="schedule-activity">
+                                <h4>Souvenir Shopping</h4>
+                                <p>Pick up lavender, olive oil, and Croatian chocolates</p>
+                            </div>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">7:00 PM</span>
+                            <div class="schedule-activity">
+                                <h4>Alfred Hitchcock Sunset</h4>
+                                <p>Watch what Hitchcock called "the most beautiful sunset in the world"</p>
+                            </div>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">8:30 PM</span>
+                            <div class="schedule-activity">
+                                <h4>Farewell Dinner</h4>
+                                <p>Special final dinner - celebrate 9 incredible days together</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="day-card" data-day="9">
+            <div class="day-header">
+                <div class="day-header-left">
+                    <span class="day-number">DAY 09</span>
+                    <div>
+                        <div class="day-title">Until We Meet Again</div>
+                        <div class="day-location">Departure</div>
+                    </div>
+                </div>
+                <span class="expand-icon">&#9660;</span>
+            </div>
+            <div class="day-content">
+                <div class="day-content-inner">
+                    <img src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800" alt="Departure" class="day-image">
+                    <p class="day-description">Every adventure must end, but the memories last forever. Carry the spirit of Croatia in your hearts as you journey home.</p>
+                    <div class="schedule">
+                        <div class="schedule-title">&#128197; Daily Schedule</div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">7:00 AM</span>
+                            <div class="schedule-activity">
+                                <h4>Final Sunrise</h4>
+                                <p>Early risers catch one last Croatian sunrise over the Adriatic</p>
+                            </div>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">8:00 AM</span>
+                            <div class="schedule-activity">
+                                <h4>Pack & Breakfast</h4>
+                                <p>Final packing, last Croatian breakfast together</p>
+                            </div>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">9:30 AM</span>
+                            <div class="schedule-activity">
+                                <h4>Check-out</h4>
+                                <p>Say goodbye to your home away from home</p>
+                            </div>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">10:00 AM</span>
+                            <div class="schedule-activity">
+                                <h4>Drive to Airport</h4>
+                                <p>Transfer to Zadar or Split airport depending on flights</p>
+                            </div>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">12:00 PM</span>
+                            <div class="schedule-activity">
+                                <h4>Return Rental Car</h4>
+                                <p>Drop off the car, clear final inspections</p>
+                            </div>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">1:00 PM</span>
+                            <div class="schedule-activity">
+                                <h4>Airport & Check-in</h4>
+                                <p>Check in for your flight, last duty-free shopping</p>
+                            </div>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">3:00 PM</span>
+                            <div class="schedule-activity">
+                                <h4>Departure</h4>
+                                <p>Board your flight home - Dovidenja Croatia!</p>
+                            </div>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-time">Forever</span>
+                            <div class="schedule-activity">
+                                <h4>Memories</h4>
+                                <p>Sort through photos, plan the next adventure, dream of return</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+    <footer class="footer">
+        <h2>Dovidenja, Croatia</h2>
+        <p>Until we meet again...</p>
+    </footer>
+
+    <script>
+        // Create particles
+        const particlesContainer = document.getElementById('particles');
+        for (let i = 0; i < 30; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.animationDelay = Math.random() * 15 + 's';
+            particle.style.animationDuration = (10 + Math.random() * 10) + 's';
+            particlesContainer.appendChild(particle);
+        }
+
+        // Plane follows scroll - moves in a straight line down
+        const planeContainer = document.getElementById('planeContainer');
+        const planeTrail = document.getElementById('planeTrail');
+        
+        window.addEventListener('scroll', () => {
+            const scrollY = window.scrollY;
+            const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+            const scrollProgress = scrollY / maxScroll;
+            
+            // Plane moves from top to bottom as you scroll
+            const planeY = 100 + (scrollProgress * (window.innerHeight - 200));
+            planeContainer.style.transform = 'translateY(' + scrollY * 0.3 + 'px)';
+            
+            // Trail follows the plane
+            planeTrail.style.height = (scrollY * 0.3 + 120) + 'px';
+        });
+
+        // Collapsible day cards
+        document.querySelectorAll('.day-header').forEach(header => {
+            header.addEventListener('click', () => {
+                const card = header.parentElement;
+                const wasExpanded = card.classList.contains('expanded');
+                
+                // Close all others
+                document.querySelectorAll('.day-card').forEach(c => c.classList.remove('expanded'));
+                
+                // Toggle this one
+                if (!wasExpanded) {
+                    card.classList.add('expanded');
+                    // Smooth scroll to card
+                    setTimeout(() => {
+                        card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }, 100);
+                }
+            });
+        });
+
+        // Intersection Observer for fade-in animation
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.day-card').forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(30px)';
+            card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(card);
+        });
+    </script>
+</body>
+</html>

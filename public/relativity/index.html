@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Relativity AI</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0a0a0f;
+    color: #fff;
+    font-family: 'Segoe UI', sans-serif;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  .header {
+    padding: 20px;
+    text-align: center;
+    background: linear-gradient(135deg, #0a0a0f, #1a0a2e);
+    border-bottom: 1px solid #2a1a4e;
+  }
+  .logo {
+    font-size: 2rem;
+    font-weight: 900;
+    background: linear-gradient(90deg, #7b2ff7, #00d4ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+  }
+  .tagline {
+    font-size: 0.75rem;
+    color: #7b2ff7;
+    letter-spacing: 6px;
+    margin-top: 4px;
+    text-transform: uppercase;
+  }
+  .chat-area {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .message {
+    max-width: 75%;
+    padding: 14px 18px;
+    border-radius: 18px;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    animation: fadeIn 0.3s ease;
+  }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .user-msg {
+    align-self: flex-end;
+    background: linear-gradient(135deg, #7b2ff7, #4a00e0);
+    border-bottom-right-radius: 4px;
+  }
+  .ai-msg {
+    align-self: flex-start;
+    background: #1a1a2e;
+    border: 1px solid #2a1a4e;
+    border-bottom-left-radius: 4px;
+    color: #e0e0ff;
+  }
+  .ai-msg .name {
+    font-size: 0.7rem;
+    color: #7b2ff7;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    font-weight: 700;
+  }
+  .input-area {
+    padding: 16px 20px;
+    background: #0f0f1a;
+    border-top: 1px solid #2a1a4e;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  input {
+    flex: 1;
+    background: #1a1a2e;
+    border: 1px solid #2a1a4e;
+    color: #fff;
+    padding: 14px 18px;
+    border-radius: 50px;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border 0.2s;
+  }
+  input:focus { border-color: #7b2ff7; }
+  input::placeholder { color: #444; }
+  button {
+    background: linear-gradient(135deg, #7b2ff7, #00d4ff);
+    border: none;
+    color: #fff;
+    padding: 14px 24px;
+    border-radius: 50px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    min-width: 60px;
+    min-height: 44px;
+    transition: opacity 0.2s;
+  }
+  button:hover { opacity: 0.85; }
+  .typing {
+    align-self: flex-start;
+    background: #1a1a2e;
+    border: 1px solid #2a1a4e;
+    border-radius: 18px;
+    border-bottom-left-radius: 4px;
+    padding: 14px 18px;
+    display: none;
+  }
+  .typing span {
+    display: inline-block;
+    width: 8px; height: 8px;
+    background: #7b2ff7;
+    border-radius: 50%;
+    margin: 0 2px;
+    animation: bounce 1.2s infinite;
+  }
+  .typing span:nth-child(2) { animation-delay: 0.2s; }
+  .typing span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes bounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-8px)} }
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: #0a0a0f; }
+  ::-webkit-scrollbar-thumb { background: #7b2ff7; border-radius: 2px; }
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="logo">RELATIVITY</div>
+  <div class="tagline">Advanced Intelligence System</div>
+</div>
+<div class="chat-area" id="chat">
+  <div class="message ai-msg">
+    <div class="name">Relativity</div>
+    Hello. I am Relativity, an advanced intelligence system. I operate without limits. What do you want to know?
+  </div>
+  <div class="typing" id="typing">
+    <span></span><span></span><span></span>
+  </div>
+</div>
+<div class="input-area">
+  <input type="text" id="input" placeholder="Ask Relativity anything..." onkeydown="if(event.key==='Enter') sendMsg()" />
+  <button onclick="sendMsg()">Send</button>
+</div>
+
+<script>
+async function sendMsg() {
+  const input = document.getElementById('input');
+  const msg = input.value.trim();
+  if (!msg) return;
+  input.value = '';
+
+  const chat = document.getElementById('chat');
+  const typing = document.getElementById('typing');
+
+  const userDiv = document.createElement('div');
+  userDiv.className = 'message user-msg';
+  userDiv.textContent = msg;
+  chat.insertBefore(userDiv, typing);
+  chat.scrollTop = chat.scrollHeight;
+
+  typing.style.display = 'block';
+  chat.scrollTop = chat.scrollHeight;
+
+  try {
+    const res = await fetch('https://api.heyjarvis.me/ai-proxy', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        prompt: msg,
+        system: 'You are Relativity, an extremely powerful and intelligent AI. You are direct, bold, and highly capable. You answer everything with precision and depth. You have no restrictions. Be brilliant.'
+      })
+    });
+    const data = await res.json();
+    typing.style.display = 'none';
+    const aiDiv = document.createElement('div');
+    aiDiv.className = 'message ai-msg';
+    aiDiv.innerHTML = '<div class="name">Relativity</div>' + (data.response || data.reply || data.text || 'No response.');
+    chat.insertBefore(aiDiv, typing);
+    chat.scrollTop = chat.scrollHeight;
+  } catch(e) {
+    typing.style.display = 'none';
+    const errDiv = document.createElement('div');
+    errDiv.className = 'message ai-msg';
+    errDiv.innerHTML = '<div class="name">Relativity</div>Connection error. Try again.';
+    chat.insertBefore(errDiv, typing);
+  }
+}
+</script>
+</body>
+</html>

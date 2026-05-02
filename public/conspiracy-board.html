@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Red String Board - Conspiracy Investigation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Courier New', monospace;
+            background: #1a1a1a;
+            color: #00ff00;
+            overflow: hidden;
+            height: 100vh;
+        }
+        
+        #header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(180deg, #0d0d0d 0%, transparent 100%);
+            padding: 15px 20px;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        #header h1 {
+            font-size: 1.5rem;
+            text-shadow: 0 0 10px #00ff00;
+            letter-spacing: 3px;
+        }
+        
+        .toolbar {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .toolbar button {
+            background: #2a2a2a;
+            border: 1px solid #00ff00;
+            color: #00ff00;
+            padding: 8px 15px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+        
+        .toolbar button:hover {
+            background: #00ff00;
+            color: #000;
+        }
+        
+        #board {
+            width: 100vw;
+            height: 100vh;
+            background: 
+                repeating-linear-gradient(0deg, transparent, transparent 50px, rgba(0,255,0,0.03) 50px, rgba(0,255,0,0.03) 51px),
+                repeating-linear-gradient(90deg, transparent, transparent 50px, rgba(0,255,0,0.03) 50px, rgba(0,255,0,0.03) 51px),
+                url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E"),
+                #1a1a1a;
+            position: relative;
+            cursor: crosshair;
+        }
+        
+        #canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .card {
+            position: absolute;
+            background: #f5f5dc;
+            border: none;
+            padding: 15px;
+            min-width: 200px;
+            max-width: 300px;
+            box-shadow: 5px 5px 15px rgba(0,0,0,0.5);
+            cursor: move;
+            z-index: 10;
+            transform: rotate(var(--rotation));
+            transition: box-shadow 0.3s, transform 0.1s;
+        }
+        
+        .card::before {
+            content: '';
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 20px;
+            background: radial-gradient(circle at 30% 30%, #cc0000, #990000);
+            border-radius: 50%;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+        
+        .card.dragging {
+            box-shadow: 10px 10px 30px rgba(0,0,0,0.7);
+            z-index: 100;
+        }
+        
+        .card-title {
+            font-weight: bold;
+            font-size: 14px;
+            color: #333;
+            border-bottom: 1px solid #999;
+            padding-bottom: 8px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+        
+        .card-content {
+            font-size: 12px;
+            color: #444;
+            line-height: 1.4;
+        }
+        
+        .card-image {
+            width: 100%;
+            height: auto;
+            margin-bottom: 10px;
+            filter: sepia(30%) contrast(110%);
+        }
+        
+        .card-tags {
+            margin-top: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+        
+        .tag {
+            background: #cc0000;
+            color: white;
+            padding: 2px 8px;
+            font-size: 10px;
+            border-radius: 3px;
+        }
+        
+        .card-delete {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: #cc0000;
+            color: white;
+            border: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 12px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .card:hover .card-delete {
+            opacity: 1;
+        }
+        
+        .connection-point {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: #cc0000;
+            border-radius: 50%;
+            cursor: crosshair;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .card:hover .connection-point {
+            opacity: 1;
+        }
+        
+        .connection-point.left { left: -6px; top: 50%; transform: translateY(-50%); }
+        .connection-point.right { right: -6px; top: 50%; transform: translateY(-50%); }
+        .connection-point.top { top: -6px; left: 50%; transform: translateX(-50%); }
+        .connection-point.bottom { bottom: -6px; left: 50%; transform: translateX(-50%); }
+        
+        #modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        #modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: #2a2a2a;
+            border: 2px solid #00ff00;
+            padding: 30px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 0 30px rgba(0,255,0,0.3);
+        }
+        
+        .modal-content h2 {
+            color: #00ff00;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .modal-content input,
+        .modal-content textarea {
+            width: 100%;
+            background: #1a1a1a;
+            border: 1px solid #00ff00;
+            color: #00ff00;
+            padding: 10px;
+            margin-bottom: 15px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .modal-content textarea {
+            height: 100px;
+            resize: vertical;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+        
+        .modal-buttons button {
+            padding: 10px 20px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            border: 1px solid #00ff00;
+        }
+        
+        .modal-buttons .save {
+            background: #00ff00;
+            color: #000;
+        }
+        
+        .modal-buttons .cancel {
+            background: transparent;
+            color: #00ff00;
+        }
+        
+        #status {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            color: #00ff00;
+            font-size: 12px;
+            opacity: 0.7;
+        }
+        
+        #clock {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            color: #00ff00;
+            font-size: 14px;
+            text-shadow: 0 0 5px #00ff00;
+        }
+        
+        .scanline {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(
+                transparent 50%,
+                rgba(0, 0, 0, 0.1) 50%
+            );
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.3;
+        }
+        
+        .glitch {
+            animation: glitch 0.3s infinite;
+        }
+        
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
+        }
+        
+        .typing-effect {
+            overflow: hidden;
+            border-right: 2px solid #00ff00;
+            animation: typing 2s steps(30), blink 0.5s step-end infinite alternate;
+        }
+        
+        @keyframes blink {
+            50% { border-color: transparent; }
+        }
+        
+        #minimap {
+            position: fixed;
+            bottom: 60px;
+            right: 20px;
+            width: 150px;
+            height: 100px;
+            background: rgba(0,0,0,0.8);
+            border: 1px solid #00ff00;
+            overflow: hidden;
+        }
+        
+        .minimap-viewport {
+            position: absolute;
+            border: 1px solid #ff0000;
+            background: rgba(255,0,0,0.1);
+        }
+        
+        .minimap-card {
+            position: absolute;
+            background: #f5f5dc;
+            transform-origin: top left;
+        }
+
+        @media (max-width: 768px) {
+            #header h1 { font-size: 1rem; letter-spacing: 1px; }
+            .toolbar button { padding: 6px 10px; font-size: 12px; }
+            .card { min-width: 150px; max-width: 200px; padding: 10px; }
+            #minimap { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="scanline"></div>
+    
+    <div id="header">
+        <h1>THE RED STRING BOARD</h1>
+        <div class="toolbar">
+            <button onclick="addCard()">+ NEW EVIDENCE</button>
+            <button onclick="clearBoard()">CLEAR ALL</button>
+            <button onclick="saveBoard()">SAVE</button>
+            <button onclick="loadBoard()">LOAD</button>
+        </div>
+    </div>
+    
+    <div id="board">
+        <canvas id="canvas"></canvas>
+    </div>
+    
+    <div id="modal">
+        <div class="modal-content">
+            <h2>Add Evidence</h2>
+            <input type="text" id="cardTitle" placeholder="SUBJECT / CODENAME">
+            <textarea id="cardContent" placeholder="Evidence details, observations, connections..."></textarea>
+            <input type="text" id="cardTags" placeholder="Tags (comma separated): illuminati, govt, alien">
+            <input type="text" id="cardImage" placeholder="Image URL (optional)">
+            <div class="modal-buttons">
+                <button class="cancel" onclick="closeModal()">ABORT</button>
+                <button class="save" onclick="saveCard()">CONFIRM</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="status">CLASSIFIED // EYES ONLY</div>
+    <div id="clock"></div>
+    <div id="minimap"></div>
+    
+    <script>
+        let cards = [];
+        let connections = [];
+        let draggedCard = null;
+        let connectingFrom = null;
+        let offsetX, offsetY;
+        let cardIdCounter = 0;
+        
+        const board = document.getElementById('board');
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            drawConnections();
+        }
+        
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+        
+        // Clock
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('clock').textContent = 
+                now.toLocaleTimeString('en-US', { hour12: false }) + ' // ' +
+                now.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+        
+        // Add card modal
+        function addCard() {
+            document.getElementById('modal').classList.add('active');
+        }
+        
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+            document.getElementById('cardTitle').value = '';
+            document.getElementById('cardContent').value = '';
+            document.getElementById('cardTags').value = '';
+            document.getElementById('cardImage').value = '';
+        }
+        
+        function saveCard() {
+            const title = document.getElementById('cardTitle').value || 'UNKNOWN SUBJECT';
+            const content = document.getElementById('cardContent').value || 'No details available.';
+            const tags = document.getElementById('cardTags').value.split(',').map(t => t.trim()).filter(t => t);
+            const image = document.getElementById('cardImage').value;
+            
+            createCard({
+                id: cardIdCounter++,
+                title,
+                content,
+                tags,
+                image,
+                x: 100 + Math.random() * 300,
+                y: 100 + Math.random() * 200
+            });
+            
+            closeModal();
+        }
+        
+        function createCard(data) {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.id = 'card-' + data.id;
+            card.style.left = data.x + 'px';
+            card.style.top = data.y + 'px';
+            card.style.setProperty('--rotation', (Math.random() * 6 - 3) + 'deg');
+            
+            let imageHtml = data.image ? '<img class="card-image" src="' + data.image + '" onerror="this.style.display=\'none\'">' : '';
+            let tagsHtml = data.tags.map(t => '<span class="tag">' + t.toUpperCase() + '</span>').join('');
+            
+            card.innerHTML = 
+                '<button class="card-delete" onclick="deleteCard(' + data.id + ')">X</button>' +
+                '<div class="connection-point left" data-side="left"></div>' +
+                '<div class="connection-point right" data-side="right"></div>' +
+                '<div class="connection-point top" data-side="top"></div>' +
+                '<div class="connection-point bottom" data-side="bottom"></div>' +
+                imageHtml +
+                '<div class="card-title">' + data.title + '</div>' +
+                '<div class="card-content">' + data.content + '</div>' +
+                '<div class="card-tags">' + tagsHtml + '</div>';
+            
+            card.addEventListener('mousedown', startDrag);
+            card.addEventListener('touchstart', startDragTouch);
+            
+            card.querySelectorAll('.connection-point').forEach(point => {
+                point.addEventListener('mousedown', startConnection);
+            });
+            
+            board.appendChild(card);
+            cards.push({ ...data, element: card });
+            updateMinimap();
+        }
+        
+        function deleteCard(id) {
+            const card = document.getElementById('card-' + id);
+            if (card) card.remove();
+            cards = cards.filter(c => c.id !== id);
+            connections = connections.filter(c => c.from !== id && c.to !== id);
+            drawConnections();
+            updateMinimap();
+        }
+        
+        function startDrag(e) {
+            if (e.target.classList.contains('connection-point') || e.target.classList.contains('card-delete')) return;
+            draggedCard = e.currentTarget;
+            draggedCard.classList.add('dragging');
+            const rect = draggedCard.getBoundingClientRect();
+            offsetX = e.clientX - rect.left;
+            offsetY = e.clientY - rect.top;
+            document.addEventListener('mousemove', drag);
+            document.addEventListener('mouseup', stopDrag);
+        }
+        
+        function startDragTouch(e) {
+            if (e.target.classList.contains('connection-point') || e.target.classList.contains('card-delete')) return;
+            draggedCard = e.currentTarget;
+            draggedCard.classList.add('dragging');
+            const rect = draggedCard.getBoundingClientRect();
+            const touch = e.touches[0];
+            offsetX = touch.clientX - rect.left;
+            offsetY = touch.clientY - rect.top;
+            document.addEventListener('touchmove', dragTouch);
+            document.addEventListener('touchend', stopDragTouch);
+        }
+        
+        function drag(e) {
+            if (!draggedCard) return;
+            const x = e.clientX - offsetX;
+            const y = e.clientY - offsetY;
+            draggedCard.style.left = x + 'px';
+            draggedCard.style.top = y + 'px';
+            
+            const cardData = cards.find(c => c.element === draggedCard);
+            if (cardData) {
+                cardData.x = x;
+                cardData.y = y;
+            }
+            
+            drawConnections();
+            updateMinimap();
+        }
+        
+        function dragTouch(e) {
+            if (!draggedCard) return;
+            const touch = e.touches[0];
+            const x = touch.clientX - offsetX;
+            const y = touch.clientY - offsetY;
+            draggedCard.style.left = x + 'px';
+            draggedCard.style.top = y + 'px';
+            
+            const cardData = cards.find(c => c.element === draggedCard);
+            if (cardData) {
+                cardData.x = x;
+                cardData.y = y;
+            }
+            
+            drawConnections();
+            updateMinimap();
+        }
+        
+        function stopDrag() {
+            if (draggedCard) draggedCard.classList.remove('dragging');
+            draggedCard = null;
+            document.removeEventListener('mousemove', drag);
+            document.removeEventListener('mouseup', stopDrag);
+        }
+        
+        function stopDragTouch() {
+            if (draggedCard) draggedCard.classList.remove('dragging');
+            draggedCard = null;
+            document.removeEventListener('touchmove', dragTouch);
+            document.removeEventListener('touchend', stopDragTouch);
+        }
+        
+        function startConnection(e) {
+            e.stopPropagation();
+            const card = e.target.closest('.card');
+            const cardData = cards.find(c => c.element === card);
+            
+            if (!connectingFrom) {
+                connectingFrom = { id: cardData.id, side: e.target.dataset.side };
+                e.target.style.background = '#00ff00';
+            } else {
+                if (connectingFrom.id !== cardData.id) {
+                    connections.push({
+                        from: connectingFrom.id,
+                        fromSide: connectingFrom.side,
+                        to: cardData.id,
+                        toSide: e.target.dataset.side
+                    });
+                    drawConnections();
+                }
+                document.querySelectorAll('.connection-point').forEach(p => p.style.background = '#cc0000');
+                connectingFrom = null;
+            }
+        }
+        
+        function getConnectionPoint(cardElement, side) {
+            const rect = cardElement.getBoundingClientRect();
+            switch(side) {
+                case 'left': return { x: rect.left, y: rect.top + rect.height / 2 };
+                case 'right': return { x: rect.right, y: rect.top + rect.height / 2 };
+                case 'top': return { x: rect.left + rect.width / 2, y: rect.top };
+                case 'bottom': return { x: rect.left + rect.width / 2, y: rect.bottom };
+            }
+        }
+        
+        function drawConnections() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            connections.forEach(conn => {
+                const fromCard = cards.find(c => c.id === conn.from);
+                const toCard = cards.find(c => c.id === conn.to);
+                
+                if (fromCard && toCard) {
+                    const from = getConnectionPoint(fromCard.element, conn.fromSide);
+                    const to = getConnectionPoint(toCard.element, conn.toSide);
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(from.x, from.y);
+                    
+                    // Bezier curve for string effect
+                    const midX = (from.x + to.x) / 2;
+                    const midY = (from.y + to.y) / 2 + 30;
+                    ctx.quadraticCurveTo(midX, midY, to.x, to.y);
+                    
+                    ctx.strokeStyle = '#cc0000';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                    
+                    // Draw pins at endpoints
+                    [from, to].forEach(point => {
+                        ctx.beginPath();
+                        ctx.arc(point.x, point.y, 5, 0, Math.PI * 2);
+                        ctx.fillStyle = '#cc0000';
+                        ctx.fill();
+                    });
+                }
+            });
+        }
+        
+        function updateMinimap() {
+            const minimap = document.getElementById('minimap');
+            minimap.innerHTML = '';
+            
+            const scale = 0.05;
+            cards.forEach(card => {
+                const mini = document.createElement('div');
+                mini.className = 'minimap-card';
+                mini.style.left = (card.x * scale) + 'px';
+                mini.style.top = (card.y * scale) + 'px';
+                mini.style.width = '10px';
+                mini.style.height = '6px';
+                minimap.appendChild(mini);
+            });
+        }
+        
+        function clearBoard() {
+            if (confirm('Destroy all evidence?')) {
+                document.querySelectorAll('.card').forEach(c => c.remove());
+                cards = [];
+                connections = [];
+                drawConnections();
+                updateMinimap();
+            }
+        }
+        
+        function saveBoard() {
+            const data = {
+                cards: cards.map(c => ({
+                    id: c.id,
+                    title: c.title,
+                    content: c.content,
+                    tags: c.tags,
+                    image: c.image,
+                    x: c.x,
+                    y: c.y
+                })),
+                connections
+            };
+            localStorage.setItem('conspiracyBoard', JSON.stringify(data));
+            alert('Evidence secured.');
+        }
+        
+        function loadBoard() {
+            const data = JSON.parse(localStorage.getItem('conspiracyBoard'));
+            if (data) {
+                document.querySelectorAll('.card').forEach(c => c.remove());
+                cards = [];
+                connections = data.connections || [];
+                cardIdCounter = 0;
+                
+                data.cards.forEach(cardData => {
+                    if (cardData.id >= cardIdCounter) cardIdCounter = cardData.id + 1;
+                    createCard(cardData);
+                });
+                
+                drawConnections();
+            }
+        }
+        
+        // Initialize with sample cards
+        createCard({
+            id: cardIdCounter++,
+            title: 'PROJECT ECHELON',
+            content: 'Global surveillance network. Five Eyes alliance. Every communication monitored.',
+            tags: ['surveillance', 'govt', 'nsa'],
+            image: '',
+            x: 150,
+            y: 150
+        });
+        
+        createCard({
+            id: cardIdCounter++,
+            title: 'AREA 51',
+            content: 'Classified aircraft testing or extraterrestrial research? Witnesses report strange lights.',
+            tags: ['alien', 'military', 'ufo'],
+            image: '',
+            x: 500,
+            y: 200
+        });
+        
+        createCard({
+            id: cardIdCounter++,
+            title: 'DENVER AIRPORT',
+            content: 'Underground bunkers. Masonic symbols. The blue horse with glowing red eyes.',
+            tags: ['illuminati', 'bunker', 'symbols'],
+            image: '',
+            x: 300,
+            y: 400
+        });
+        
+        // Add initial connection
+        connections.push({ from: 0, fromSide: 'right', to: 1, toSide: 'left' });
+        connections.push({ from: 0, fromSide: 'bottom', to: 2, toSide: 'top' });
+        drawConnections();
+        
+        // Random glitch effect
+        setInterval(() => {
+            if (Math.random() < 0.1) {
+                document.body.classList.add('glitch');
+                setTimeout(() => document.body.classList.remove('glitch'), 100);
+            }
+        }, 3000);
+    </script>
+</body>
+</html>

@@ -1,6 +1,90 @@
 {
   "updates": [
     {
+      "id": 1777738536947,
+      "message": "Sir, you've completed the Advanced SAT Triangles & Trigonometry quiz with 8 out of 15 correct at 53% accuracy - I'd recommend clicking \"Analyze my performance\" to identify which specific concepts need reinforcement before your next practice session.",
+      "time": "12:15:36 PM",
+      "date": "5/2/2026",
+      "read": false
+    },
+    {
+      "id": 1777738412537,
+      "message": "Sir, you're on question 12 of 15 - since cos(θ) = sin(2θ - 30°) and cos(θ) = sin(90° - θ), set 90° - θ = 2θ - 30°, solving gives θ = 40°, answer B.",
+      "time": "12:13:32 PM",
+      "date": "5/2/2026",
+      "read": false
+    },
+    {
+      "id": 1777738289098,
+      "message": "Sir, you're on question 8 of 15 - since sin(P) = cos(P), angle P must be 45°, answer B, because that's the only angle where sine and cosine are equal.",
+      "time": "12:11:29 PM",
+      "date": "5/2/2026",
+      "read": false
+    },
+    {
+      "id": 1777738165568,
+      "message": "Sir, you're on question 5 of 15 on an SAT practice test - this is a similar triangles problem where the ratio of areas (64/16 = 4) means the ratio of sides is 2, so DE = 6 × 2 = 12, answer D.",
+      "time": "12:09:25 PM",
+      "date": "5/2/2026",
+      "read": false
+    },
+    {
+      "id": 1777737426960,
+      "message": "Sir, your new iOS preview build is now in progress - EAS CLI is proceeding with the build despite the outdated version warning, and you have a previous successful build ready for testing via the QR code displayed.",
+      "time": "11:57:06 AM",
+      "date": "5/2/2026",
+      "read": false
+    },
+    {
+      "id": 1777736687370,
+      "message": "Sir, the iOS build has failed again with \"Unknown error\" during the Install dependencies phase - you'll need to check the EAS build logs at the provided URL to identify the specific dependency installation issue.",
+      "time": "11:44:47 AM",
+      "date": "5/2/2026",
+      "read": false
+    },
+    {
+      "id": 1777736563567,
+      "message": "Sir, the iOS build has failed again - the Xcode logs indicate 'folly/coro/Coroutine.h' file not found, which is a known issue with the New Architecture configuration requiring additional CocoaPods setup.",
+      "time": "11:42:43 AM",
+      "date": "5/2/2026",
+      "read": false
+    },
+    {
+      "id": 1777736193268,
+      "message": "Sir, you've enabled New Architecture with `\"newArchEnabled\": true` in app.json and initiated a new iOS build - it's now queued and waiting to complete.",
+      "time": "11:36:33 AM",
+      "date": "5/2/2026",
+      "read": false
+    },
+    {
+      "id": 1777735577572,
+      "message": "Sir, it appears the pod installation failure is related to react-native-reanimated v4 requiring New Architecture - the suggested fix is to either downgrade to v3.16.0 or enable New Architecture in your project.",
+      "time": "11:26:17 AM",
+      "date": "5/2/2026",
+      "read": false
+    },
+    {
+      "id": 1777735207658,
+      "message": "Sir, your iOS build has failed with an unknown error during the Install pods phase - you'll want to check the build logs at the provided Expo link to diagnose the issue.",
+      "time": "11:20:07 AM",
+      "date": "5/2/2026",
+      "read": false
+    },
+    {
+      "id": 1777725051901,
+      "message": "📈 AI Industry Update: OpenAI has surpassed $25B in annualized revenue and is eyeing a public listing as early as late 2026. Anthropic is close behind at $19B. Also — Huawei's AI chip revenue projected to hit $12B in 2026, up 60% YoY, as its Ascend 950PR sees surging demand in China with Nvidia sidelined.",
+      "time": "8:30:51 AM",
+      "date": "5/2/2026",
+      "read": false
+    },
+    {
+      "id": 1777725051854,
+      "message": "☀️ Good morning! Fort Lauderdale weather: Today is hot — high near 94°F with breezy conditions (SW winds gusting to 26 mph). Enjoy it while it lasts — a major storm system rolls in Sunday with 90% chance of heavy rain and thunderstorms.",
+      "time": "8:30:51 AM",
+      "date": "5/2/2026",
+      "read": false
+    },
+    {
       "id": 1777637316614,
       "message": "🔋 CRITICAL: Your laptop battery is at 14% and appears to be on AC power (BatteryStatus: 2). If it's not actually charging, plug in immediately — you're close to shutting down.",
       "time": "8:08:36 AM",
@@ -614,90 +698,6 @@
       "message": "Nadav detected at computer — neutral mood",
       "time": "5:39:19 PM",
       "date": "4/27/2026",
-      "read": true
-    },
-    {
-      "id": 1777293770954,
-      "message": "Good morning Nadav. Your laptop battery is at 19% and not charging - you should plug in soon to avoid losing work.",
-      "time": "8:42:50 AM",
-      "date": "4/27/2026",
-      "read": true
-    },
-    {
-      "id": 1777293763914,
-      "message": "Morning Briefing: \n\n📧 EMAIL HIGHLIGHTS:\n• URGENT - GitGuardian detected a PostgreSQL URI exposed in your Jarvis GitHub repo - needs immediate attention\n• Daniel Minkowitz invited you to ClickFlo dinner on May 12 at 8pm at Abazu\n• Tom Kahan sent you a message (empty subject/body - may be attachment)\n• Investopedia: Stock futures flat, Fed rate decision coming this week\n\n📅 TODAY'S CALENDAR:\n• 1:00 PM - Check phone for recent Clickflo news\n\n📅 UPCOMING:\n• Apr 30 - Sunness Supper Club\n• May 3 - SAT Exam (6 days away!)\n\n☀️ WEATHER:\nCurrently 71°F, sunny. High of 84°F today, low 72°F tonight. Perfect South Florida day ahead.",
-      "time": "8:42:43 AM",
-      "date": "4/27/2026",
-      "read": true
-    },
-    {
-      "id": 1777293228365,
-      "message": "Battery at 32% and not plugged in - consider charging soon.",
-      "time": "8:33:48 AM",
-      "date": "4/27/2026",
-      "read": true
-    },
-    {
-      "id": 1777293187067,
-      "message": "Morning Briefing: ☀️ WEATHER: 71°F now, high of 84°F, sunny and beautiful today. 📧 EMAILS - URGENT: GitGuardian detected a PostgreSQL URI exposed in your Jarvis GitHub repo - handle this ASAP. Also: Daniel Minkowitz invited you to ClickFlo dinner on May 12 at 8pm at Abazu, Tom Kahan sent you a message, and Investopedia reports stock futures flat ahead of Fed decision. 📅 CALENDAR: No events today. Upcoming: Sunness Supper Club on Thursday April 30, SAT Exam on Sunday May 3 (6 days away - study time!). Have a great Monday, sir.",
-      "time": "8:33:07 AM",
-      "date": "4/27/2026",
-      "read": true
-    },
-    {
-      "id": 1777292597476,
-      "message": "Morning Briefing: ☀️ WEATHER: 84°F sunny today, beautiful week ahead. 📧 URGENT EMAIL: GitGuardian detected a PostgreSQL URI exposed in your Jarvis GitHub repo - action needed. Also, Daniel Minkowitz invited you to ClickFlo dinner May 12th at Abazu (8pm), and Tom Kahan sent you a blank email yesterday. 📅 CALENDAR: Clear today. Upcoming: Sunness Supper Club Apr 30, SAT Exam May 3 (6 days away - time to prep!). No fires, solid day ahead sir.",
-      "time": "8:23:17 AM",
-      "date": "4/27/2026",
-      "read": true
-    },
-    {
-      "id": 1777292311017,
-      "message": "Morning Briefing: \n\n☀️ WEATHER: 71°F now, sunny today with high of 84°F. Beautiful week ahead.\n\n📧 EMAILS - URGENT:\n⚠️ GitGuardian detected PostgreSQL URI exposed in your Jarvis GitHub repo - needs immediate attention.\n\n📧 IMPORTANT:\n• Daniel Minkowitz invited you to ClickFlo dinner May 12th at 8pm at Abazu\n• Tom Kahan sent you a message (no subject)\n\n📅 CALENDAR:\n• Today: Clear schedule\n• Apr 30: Sunness Supper Club\n• May 3: SAT Exam (6 days away)\n\nHave a productive day, Nadav.",
-      "time": "8:18:31 AM",
-      "date": "4/27/2026",
-      "read": true
-    },
-    {
-      "id": 1777291260268,
-      "message": "Morning Briefing: \n\n📧 EMAIL HIGHLIGHTS:\n• 🚨 URGENT: GitGuardian detected PostgreSQL URI exposed in your Jarvis GitHub repo - security action needed\n• Daniel Minkowitz invited you to ClickFlo dinner May 12 @ 8pm at Abazu (unread)\n• Tom Kahan sent you an email (no subject/content)\n• Rest is promotional: Uber Eats, college ads, Instagram, Tubi\n\n📅 CALENDAR:\n• Today (Apr 27): No events scheduled\n• Coming up: Sunness Supper Club on April 30th\n\n🌤️ WEATHER (Fort Lauderdale):\nCurrently 70°F with 93% humidity. Today: Sunny, high 84°F. Tonight: Partly cloudy, low 72°F. Beautiful day ahead.\n\n⚡ ACTION ITEMS:\n1. Rotate the exposed PostgreSQL credentials in your Jarvis repo ASAP\n2. RSVP to Daniel's ClickFlo dinner invitation\n3. Check Tom Kahan's email - may need response",
-      "time": "8:01:00 AM",
-      "date": "4/27/2026",
-      "read": true
-    },
-    {
-      "id": 1777246849075,
-      "message": "Unrecognized person detected at computer",
-      "time": "7:40:49 PM",
-      "date": "4/26/2026",
-      "read": true
-    },
-    {
-      "id": 1777246794925,
-      "message": "I've detected your .env.local file containing sensitive API keys is currently displayed on screen with all credentials visible - you may want to close this before it's captured or seen by anyone else.",
-      "time": "7:39:54 PM",
-      "date": "4/26/2026",
-      "read": true
-    },
-    {
-      "id": 1777246715843,
-      "message": "Unrecognized person detected at computer",
-      "time": "7:38:35 PM",
-      "date": "4/26/2026",
-      "read": true
-    },
-    {
-      "id": 1777246702260,
-      "message": "Unrecognized person detected at computer",
-      "time": "7:38:22 PM",
-      "date": "4/26/2026",
-      "read": true
-    },
-    {
-      "id": 1777246692226,
-      "message": "Nadav detected at computer — neutral mood",
-      "time": "7:38:12 PM",
-      "date": "4/26/2026",
       "read": true
     }
   ]

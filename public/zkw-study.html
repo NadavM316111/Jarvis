@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Zookeeper's Wife - Study Guide Ch. 16-23</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Georgia',serif;background:#0d1117;color:#e6d5b8;min-height:100vh;}
+.hero{background:linear-gradient(135deg,#1a0a00 0%,#2d1500 40%,#0d2818 100%);padding:60px 20px 40px;text-align:center;border-bottom:2px solid #c8a96e;position:relative;overflow:hidden;}
+.hero-badge{display:inline-block;background:#c8a96e22;border:1px solid #c8a96e;color:#c8a96e;padding:6px 18px;border-radius:20px;font-size:0.8em;letter-spacing:2px;text-transform:uppercase;margin-bottom:20px;}
+.hero h1{font-size:clamp(1.8em,5vw,3.2em);color:#f0e0c0;line-height:1.2;margin-bottom:12px;text-shadow:0 2px 20px #c8a96e55;}
+.hero h2{font-size:clamp(1em,3vw,1.4em);color:#c8a96e;font-weight:normal;font-style:italic;margin-bottom:20px;}
+.hero p{color:#b0a090;max-width:600px;margin:0 auto;line-height:1.7;}
+.nav-tabs{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;padding:20px 20px 0;background:#0d1117;border-bottom:1px solid #2a2020;position:sticky;top:0;z-index:100;}
+.nav-tab{padding:10px 20px;border-radius:8px 8px 0 0;cursor:pointer;font-size:0.9em;border:1px solid #2a2020;border-bottom:none;background:#161010;color:#b0a090;transition:all 0.2s;}
+.nav-tab:hover,.nav-tab.active{background:#c8a96e;color:#1a0a00;font-weight:bold;}
+.section{display:none;padding:30px 20px;max-width:900px;margin:0 auto;}
+.section.active{display:block;}
+.section-title{color:#c8a96e;font-size:1.4em;margin-bottom:20px;padding-bottom:10px;border-bottom:1px solid #2a2020;}
+.chapter-card{background:#161010;border:1px solid #2a2020;border-radius:12px;margin-bottom:14px;overflow:hidden;transition:border-color 0.2s;}
+.chapter-card:hover{border-color:#c8a96e55;}
+.chapter-header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;cursor:pointer;gap:10px;}
+.chapter-num{background:#c8a96e22;color:#c8a96e;border:1px solid #c8a96e44;border-radius:8px;padding:4px 12px;font-size:0.82em;font-weight:bold;white-space:nowrap;flex-shrink:0;}
+.chapter-title{font-size:1.05em;color:#f0e0c0;flex:1;}
+.chapter-date{color:#b0a090;font-size:0.82em;font-style:italic;white-space:nowrap;}
+.expand-icon{color:#c8a96e;font-size:1.1em;transition:transform 0.3s;flex-shrink:0;}
+.chapter-card.open .expand-icon{transform:rotate(180deg);}
+.chapter-body{display:none;padding:0 22px 22px;border-top:1px solid #2a2020;}
+.chapter-card.open .chapter-body{display:block;}
+.chapter-body p{color:#c8b89a;line-height:1.8;margin:14px 0;}
+.kp-title{color:#c8a96e;font-size:0.85em;letter-spacing:1px;text-transform:uppercase;margin-top:16px;margin-bottom:8px;}
+.kp{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px;}
+.kp-dot{width:6px;height:6px;border-radius:50%;background:#c8a96e;flex-shrink:0;margin-top:8px;}
+.kp span{color:#c8b89a;line-height:1.6;font-size:0.93em;}
+.char-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;}
+.char-card{background:#161010;border:1px solid #2a2020;border-radius:12px;padding:20px;}
+.char-name{color:#c8a96e;font-size:1.05em;font-weight:bold;margin-bottom:4px;}
+.char-role{color:#b0a090;font-size:0.82em;font-style:italic;margin-bottom:10px;}
+.char-desc{color:#c8b89a;font-size:0.9em;line-height:1.7;}
+.theme-card{background:#161010;border-left:4px solid #c8a96e;border-radius:0 12px 12px 0;padding:20px 22px;margin-bottom:14px;}
+.theme-name{color:#c8a96e;font-size:1.05em;font-weight:bold;margin-bottom:8px;}
+.theme-desc{color:#c8b89a;line-height:1.7;font-size:0.95em;}
+.tq-item{background:#161010;border:1px solid #2a2020;border-radius:10px;padding:18px 20px;margin-bottom:12px;}
+.tq-item p{color:#e6d5b8;line-height:1.6;}
+.tq-hint{color:#b0a090;font-size:0.85em;font-style:italic;margin-top:8px;}
+.quiz-q{background:#161010;border:1px solid #2a2020;border-radius:12px;padding:20px 22px;margin-bottom:14px;}
+.quiz-qnum{color:#c8a96e;font-size:0.82em;font-weight:bold;margin-bottom:8px;}
+.quiz-qtext{color:#e6d5b8;font-size:0.97em;margin-bottom:14px;line-height:1.6;}
+.quiz-opt{display:block;width:100%;text-align:left;background:#0d1117;border:1px solid #2a2020;color:#c8b89a;padding:10px 16px;margin-bottom:8px;border-radius:8px;cursor:pointer;transition:all 0.2s;font-size:0.93em;}
+.quiz-opt:hover{border-color:#c8a96e;color:#f0e0c0;}
+.quiz-opt.correct{background:#0d2818!important;border-color:#4caf50!important;color:#81c784!important;}
+.quiz-opt.wrong{background:#2d0a0a!important;border-color:#f44336!important;color:#e57373!important;}
+.quiz-opt:disabled{cursor:default;}
+.quiz-fb{margin-top:8px;font-size:0.88em;font-style:italic;color:#b0a090;display:none;}
+.sr-section{margin-top:28px;}
+.sr-title{color:#c8a96e;font-size:1.1em;margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid #2a2020;}
+.sr-item{background:#161010;border:1px solid #2a2020;border-radius:12px;padding:20px;margin-bottom:16px;}
+.sr-item p{color:#e6d5b8;margin-bottom:12px;line-height:1.6;}
+.sr-item textarea{width:100%;background:#0d1117;border:1px solid #2a2020;color:#e6d5b8;border-radius:8px;padding:12px;font-family:Georgia,serif;font-size:0.93em;min-height:130px;resize:vertical;outline:none;line-height:1.6;}
+.sr-item textarea:focus{border-color:#c8a96e;}
+.grade-btn{background:#c8a96e;color:#1a0a00;border:none;padding:10px 24px;border-radius:8px;cursor:pointer;font-weight:bold;margin-top:10px;font-size:0.93em;}
+.grade-btn:hover{background:#e0bf80;}
+.ai-fb{margin-top:14px;background:#0a1a10;border:1px solid #4caf5033;border-radius:8px;padding:16px;display:none;}
+.ai-fb-title{color:#4caf50;font-size:0.85em;font-weight:bold;margin-bottom:8px;letter-spacing:1px;}
+.ai-fb p{color:#c8b89a;line-height:1.7;font-size:0.93em;}
+.score-box{background:#161010;border:1px solid #c8a96e33;border-radius:12px;padding:24px;margin-top:24px;text-align:center;display:none;}
+.score-box h3{color:#c8a96e;margin-bottom:8px;}
+.score-num{font-size:3em;color:#f0e0c0;font-weight:bold;}
+.score-msg{color:#b0a090;margin-top:8px;font-style:italic;}
+.submit-quiz{background:#c8a96e;color:#1a0a00;border:none;padding:14px 40px;border-radius:10px;font-size:1em;font-weight:bold;cursor:pointer;margin-top:8px;display:block;margin:20px auto 0;}
+.submit-quiz:hover{background:#e0bf80;}
+@media(max-width:600px){
+  .nav-tab{padding:8px 12px;font-size:0.78em;}
+  .chapter-header{padding:14px 16px;}
+  .chapter-body{padding:0 16px 16px;}
+  .char-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+<div class="hero">
+  <div class="hero-badge">Study Guide &mdash; Chapters 16-23</div>
+  <h1>The Zookeeper's Wife</h1>
+  <h2>by Diane Ackerman</h2>
+  <p>Complete test preparation: chapter summaries, characters, themes, likely test questions, and a graded practice quiz with AI short-response feedback.</p>
+</div>
+<div class="nav-tabs">
+  <div class="nav-tab active" onclick="showTab('summaries')">Ch. Summaries</div>
+  <div class="nav-tab" onclick="showTab('characters')">Characters</div>
+  <div class="nav-tab" onclick="showTab('themes')">Themes</div>
+  <div class="nav-tab" onclick="showTab('testprep')">Likely Test Qs</div>
+  <div class="nav-tab" onclick="showTab('quiz')">Practice Quiz</div>
+</div>

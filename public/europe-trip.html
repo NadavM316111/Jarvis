@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>European Adventure 2026</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Raleway:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Raleway', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('https://images.unsplash.com/photo-1499856871958-5b9627545d1a?w=1920') center/cover;
+            opacity: 0.3;
+            z-index: -1;
+        }
+
+        .hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.5rem, 8vw, 5rem);
+            text-align: center;
+            margin-bottom: 1rem;
+            animation: fadeInUp 1.5s ease;
+            text-shadow: 2px 4px 20px rgba(0,0,0,0.5);
+        }
+
+        .hero p {
+            font-size: clamp(1rem, 3vw, 1.5rem);
+            opacity: 0.9;
+            animation: fadeInUp 1.5s ease 0.3s both;
+        }
+
+        .scroll-hint {
+            position: absolute;
+            bottom: 40px;
+            animation: bounce 2s infinite;
+            font-size: 2rem;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(10px); }
+        }
+
+        /* Flight Path */
+        .journey-container {
+            padding: 60px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .flight-path {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        /* Transport Animation */
+        .transport-section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 0;
+            position: relative;
+        }
+
+        .transport-line {
+            width: 80%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #e94560, #e94560, transparent);
+            position: relative;
+        }
+
+        .transport-line::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, #e94560, #ffd700);
+            animation: linePulse 2s infinite;
+        }
+
+        @keyframes linePulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        .plane-icon, .train-icon {
+            position: absolute;
+            font-size: 2.5rem;
+            animation: flyAcross 4s ease-in-out infinite;
+            filter: drop-shadow(0 0 10px #e94560);
+        }
+
+        @keyframes flyAcross {
+            0% { left: 10%; opacity: 0; }
+            20% { opacity: 1; }
+            80% { opacity: 1; }
+            100% { left: 85%; opacity: 0; }
+        }
+
+        .transport-label {
+            position: absolute;
+            bottom: 10px;
+            font-size: 0.9rem;
+            color: #e94560;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* Destination Cards */
+        .destination {
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            margin: 20px 0;
+            transform: translateY(50px);
+            opacity: 0;
+            transition: all 0.8s ease;
+        }
+
+        .destination.visible {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .destination-header {
+            position: relative;
+            height: 300px;
+            overflow: hidden;
+        }
+
+        .destination-header img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .destination:hover .destination-header img {
+            transform: scale(1.05);
+        }
+
+        .destination-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 30px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.9));
+        }
+
+        .destination-overlay h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            margin-bottom: 5px;
+        }
+
+        .destination-overlay .duration {
+            color: #e94560;
+            font-weight: 500;
+            font-size: 1.1rem;
+        }
+
+        .destination-content {
+            padding: 25px;
+        }
+
+        .destination-content p {
+            line-height: 1.8;
+            opacity: 0.9;
+            font-size: 1.05rem;
+        }
+
+        /* Collapsible Itinerary */
+        .itinerary {
+            margin-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 20px;
+        }
+
+        .day-toggle {
+            width: 100%;
+            background: linear-gradient(135deg, rgba(233, 69, 96, 0.2), rgba(233, 69, 96, 0.1));
+            border: 1px solid rgba(233, 69, 96, 0.3);
+            border-radius: 12px;
+            padding: 18px 25px;
+            color: #fff;
+            font-size: 1.1rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .day-toggle:hover {
+            background: linear-gradient(135deg, rgba(233, 69, 96, 0.3), rgba(233, 69, 96, 0.2));
+            transform: translateX(5px);
+        }
+
+        .day-toggle .arrow {
+            transition: transform 0.3s ease;
+            font-size: 1.2rem;
+        }
+
+        .day-toggle.active .arrow {
+            transform: rotate(180deg);
+        }
+
+        .day-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease, padding 0.3s ease;
+            background: rgba(0,0,0,0.2);
+            border-radius: 12px;
+            margin-bottom: 10px;
+        }
+
+        .day-content.open {
+            max-height: 800px;
+            padding: 20px;
+        }
+
+        .activity {
+            display: flex;
+            align-items: flex-start;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .activity:last-child {
+            border-bottom: none;
+        }
+
+        .activity-time {
+            min-width: 80px;
+            color: #e94560;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .activity-details h4 {
+            font-size: 1rem;
+            margin-bottom: 4px;
+            color: #ffd700;
+        }
+
+        .activity-details p {
+            font-size: 0.9rem;
+            opacity: 0.7;
+            line-height: 1.5;
+        }
+
+        /* Final Section */
+        .return-home {
+            text-align: center;
+            padding: 80px 20px;
+            background: linear-gradient(180deg, transparent, rgba(233, 69, 96, 0.1));
+        }
+
+        .return-home h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .return-home p {
+            opacity: 0.8;
+            font-size: 1.2rem;
+        }
+
+        .home-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        /* Trip Stats */
+        .trip-stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+            margin-top: 40px;
+            padding: 30px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            color: #e94560;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.7;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .destination-header {
+                height: 220px;
+            }
+
+            .destination-overlay h2 {
+                font-size: 1.8rem;
+            }
+
+            .trip-stats {
+                gap: 25px;
+            }
+
+            .stat-number {
+                font-size: 2.2rem;
+            }
+
+            .day-toggle {
+                padding: 15px 18px;
+                font-size: 1rem;
+            }
+
+            .activity {
+                flex-direction: column;
+            }
+
+            .activity-time {
+                margin-bottom: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <section class="hero">
+        <h1>European Adventure</h1>
+        <p>France - Italy - Venice | 8 Days of Magic</p>
+        <div class="scroll-hint">&#8595;</div>
+    </section>
+
+    <div class="journey-container">
+        <div class="flight-path">
+            <!-- Flight to France -->
+            <div class="transport-section">
+                <div class="transport-line">
+                    <span class="plane-icon">&#9992;</span>
+                </div>
+                <span class="transport-label">Flight to Paris</span>
+            </div>
+
+            <!-- France -->
+            <div class="destination" id="france">
+                <div class="destination-header">
+                    <img src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=1200" alt="Paris, France">
+                    <div class="destination-overlay">
+                        <h2>Paris, France</h2>
+                        <span class="duration">3 Days</span>
+                    </div>
+                </div>
+                <div class="destination-content">
+                    <p>Experience the magic of the City of Light. From the iconic Eiffel Tower to the charming streets of Montmartre, Paris awaits with its timeless elegance, world-class cuisine, and artistic treasures.</p>
+                    
+                    <div class="itinerary">
+                        <button class="day-toggle" onclick="toggleDay(this)">
+                            <span>Day 1 - Arrival & Iconic Paris</span>
+                            <span class="arrow">&#9660;</span>
+                        </button>
+                        <div class="day-content">
+                            <div class="activity">
+                                <span class="activity-time">10:00 AM</span>
+                                <div class="activity-details">
+                                    <h4>Arrive at Charles de Gaulle Airport</h4>
+                                    <p>Clear customs, grab luggage, take taxi or RER B train to city center</p>
+                                </div>
+                            </div>
+                            <div class="activity">
+                                <span class="activity-time">12:30 PM</span>
+                                <div class="activity-details">
+                                    <h4>Hotel Check-in & Freshen Up</h4>
+                                    <p>Drop bags, quick shower, get ready for exploration</p>
+                                </div>
+                            </div>
+                            <div class="activity">
+                                <span class="activity-time">2:00 PM</span>
+                                <div class="activity-details">
+                                    <h4>Lunch at a Local Bistro</h4>
+                                    <p>Classic French onion soup, croissants, cafe au lait</p>
+                                </div>
+                            </div>
+                            <div class="activity">
+                                <span class="activity-time">4:00 PM</span>
+                                <div class="activity-details">
+                                    <h4>Eiffel Tower Visit</h4>
+                                    <p>Take the elevator to the summit for panoramic views of Paris</p>
+                                </div>
+                            </div>
+                            <div class="activity">
+                                <span class="activity-time">7:00 PM</span>
+                                <div class="activity-details">
+                                    <h4>Seine River Cruise</h4>
+                                    <p>Evening dinner cruise watching the city lights twinkle</p>
+                                </div>
+                            </div>
+                            <div class="activity">
+                                <span class="activity-time">10:00 PM</span>
+                                <div class="activity-details">
+                                    <h4>Champs-Elysees Night Walk</h4>
+                                    <p>Stroll down the famous avenue, see the Arc de Triomphe lit up</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button class="day-toggle" onclick="toggleDay(this)">
+                            <span>Day 2 - Art & Culture</span>
+                            <span class="arrow">&#9660;</span>
+                        </button>
+                        <div class="day-content">
+                            <div class="activity">
+                                <span class="activity-time">8:30 AM</span>
+                                <div class="activity-details">
+                                    <h4>Breakfast at Cafe de Flore</h4>
+                                    <p>Historic cafe in Saint-Germain-des-Pres, famous for intellectuals</p>
+                                </div>
+                            </div>
+                            <div class="activity">
+                                <span class="activity-time">10:00 AM</span>
+                                <div class="activity-details">
+                                    <h4>The Louvre Museum</h4>
+                                    <p>See the Mona Lisa, Venus de Milo, and thousands of masterpieces</p>
+                                </div>
+                            </div>
+                            <div class="activity">
+                                <span class="activity-time">1:30 PM</span>
+                                <div class="activity-details">
+                                    <h4>Lunch in Tuileries Garden</h4>
+                                    <p>Grab a crepe and relax in the beautiful royal garden</p>
+                                </div>
+                            </div>
+                            <div class="activity">
+                                <span class="activity-time">3:00 PM</span>
+                                <div class="activity-details">
+                                    <h4>Notre-Dame Cathedral Area</h4>
+                                    <p>Walk around the historic cathedral (exterior), explore Ile de la Cite</p>
+                                </div>
+                            </div>
+                            <div class="activity">
+                                <span class="activity-time">5:30 PM</span>
+                                <div class="activity-details">
+                                    <h4>Latin Quarter Exploration</h4>
+                                    <p>Wander narrow streets, browse bookshops at Shakespeare & Company</p>
+                                </div>
+                            </div>
+                            <div class="activity">
+                                <span class="activity-time">8:00 PM</span>
+                                <div class="activity-details">
+                                    <h4>Dinner in Le Marais</h4>
+                                    <p>Trendy neighborhood with amazing restaurants and nightlife</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button class="day-toggle" onclick="toggleDay(this)">
+                            <span>Day 3 - Montmartre & Departure</span>
+                            <span class="arrow">&#9660;</span>
+                        </button>
+                        <div class="day-content">
+                            <div class="activity">
+                                <span class="activity-time">9:00 AM</span>
+                                <div class="activity-details">
+                                    <h4>Montmartre Morning</h4>
+                                    <p>Climb to Sacre-Coeur Basilica, enjoy views over Paris</p>
+                                </div>
+                            </div>
+                            <div class="activity">
+                                <span class="activity-time">11:00 AM</span>
+                                <div class="activity-details">
+                                    <h4>Place du Tertre</h4>
+                                    <p>Watch artists paint, maybe get a portrait done</p>
+                                </div>
+                            </div>
+                            <div class="activity">
+                                <span class="activity-time">12:30 PM</span>
+                                <div class="activity-details">
+                                    <h4>Final French Lunch</h4>
+                                    <p>Coq au vin, escargot, finish with creme brulee</p>
+                                </div>
+                            </div>
+                            <div class="activity">
+                                <span class="activity-time">2:30 PM</span>
+                                <div class="activity-details">
+                                    <h4>Last-minute Shopping</h4>
+                                    <p>Pick up macarons from Laduree, souvenirs</p>
+                                </div>
+                            </div>
+                            <div class="activity">
+                                <span class="activity-time">4:30 PM</span>
+                                <div class="activity-details">
+                                    <h4>Head to Airport</h4>
+                                    <p>Au revoir Paris! Next stop: Rome</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Flight to Rome -->
+            <div class="transport-section">
+                <div class="transport-line">
+                    <span class="plane-icon">&#9992;</span>
+                </div>
+                <span class="transport-label">Flight to Rome</span>
+            </div>
+
+            <!-- Rome -->
+            <div class="destination" id="rome">
+                <div class="destination-header">
+                    <img src="https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=1200" alt="Rome, Italy">
+                    <div class="destination-overlay">
+                        <h2>Rome, Italy</h2>
+                        <span class="duration">2 Days</span>
+                    </div>
+                </div>
+                <div class="destination-content">
+                    <p>Step into the Eternal City where ancient history meets vibrant modern life. Walk in the footsteps of emperors at the Colosseum, toss a coin in the Trevi Fountain, and indulge in authentic Italian cuisine.</p>
+                    
+                    <div class="itinerary">
+                        <button class="day-toggle" onclick="toggleDay(this)">
+                            <span>Day 1 - Ancient Rome</span>
+                            <span class="arrow">&#9660;</span>
+                        </button>
+                        <div class="day-content">
+                            <div class="activity">
+                                <span class="activity-time">9:00 AM</span>
+                                <div class="activity-details">
+                                    <h4>Arrive in Rome</h4>
+                                    <p>Land at Fiumicino, train to Termini Station, check into hotel</p>
+                                </div>
+                            </div>
+                            <div class="activity">
+                                <span class="activity-time">11:00 AM</span>
+                                <div class="activity-details">
+                                    <h4>Colosseum Tour</h4>
+                                    <p>Skip-the-line guided tour of the iconic amphitheater</p>
+                                </div>
+                            </div>
+                            <div class="activity">
+                                <span class="activity-time">1:30 PM</span>
+                                <div class="activity-details">
+                                    <h4>Roman Forum & Palatine Hill</h4>
+                                    <p>Wander through ancient ruins where Roman life happened</p>
+                                </div>
+                            </div>
+                            <div class="activity">
+                                <span class="activity-time">3:30 PM</span>
+                                <div class="activity-details">
+                                    <h4>Lunch near Piazza Venezia</h4>
+                                    <p>Authentic cacio e pepe, supplì, cold Peroni</p>
+                                </div>
+                            </div>
+                            <div class="activity">
+                                <span class="activity-time">5:00 PM</span>
+                                <div class="activity-details">
+                                    <h4>Trevi Fountain</h4>
+                                    <p>Toss a coin to ensure your return to Rome!</p>
+                                </div>
+                            </div>
+                            <div class="activity">
+                                <span class="activity-time">6:30 PM</span>
+                                <div class="activity-details">
+                                    <h4>Spanish Steps & Shopping</h4>
+                                    <p>Sit on the famous steps, browse Via Condotti boutiques</p>
+                                </div>
+                            </div>
+                            <div class="activity">
+                                <span class="activity-time">8:30 PM</span>
+                                <div class="activity-details">
+                                    <h4>Dinner in Trastevere</h4>
+                                    <p>Charming neighborhood, amazing trattorias, live music</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button class="day-toggle" onclick="toggleDay(this)">
+                            <span>Day 2 - Vatican & Dolce Vita</span>
+                            <span class="arrow">&#9660;</span>
+                        </button>
+                        <div class="day-content">
+                            <div class="activity">
+                                <span class="activity-time">7:30 AM</span>
+                                <div class="activity-details">
+                                    <h4>Early Vatican Museums</h4>
+                                    <p>Beat the crowds! See the Sistine Chapel ceiling in peace</p>
+                                </div>
+                            </div>
+                            <div class="activity">
+                                <span class="activity-time">10:30 AM</span>
+                                <div class="activity-details">
+                                    <h4>St. Peter's Basilica</h4>
+                                    <p>Marvel at Michelangelo's Pieta, climb the dome for views</p>
+                                </div>
+                            </div>
+                            <div class="activity">
+                                <span class="activity-time">1:00 PM</span>
+                                <div class="activity-details">
+                                    <h4>Lunch at Pizzarium</h4>
+                                    <p>Best pizza al taglio in Rome - Gabriele Bonci's famous spot</p>
+                                </div>
+                            </div>
+                            <div class="activity">
+                                <span class="activity-time">3:00 PM</span>
+                                <div class="activity-details">
+                                    <h4>Pantheon Visit</h4>
+                                    <p>2000-year-old temple with the famous oculus dome</p>
+                                </div>
+                            </div>
+                            <div class="activity">
+                                <span class="activity-time">4:30 PM</span>
+                                <div class="activity-details">
+                                    <h4>Gelato at Giolitti</h4>
+                                    <p>Historic gelateria since 1900 - try pistachio and stracciatella</p>
+                                </div>
+                            </div>
+                            <div class="activity">
+                                <span class="activity-time">6:00 PM</span>
+                                <div class="activity-details">
+                                    <h4>Piazza Navona Evening</h4>
+                                    <p>Relax by Bernini's fountains, watch street performers</p>
+                                </div>
+                            </div>
+                            <div class="activity">
+                                <span class="activity-time">8:30 PM</span>
+                                <div class="activity-details">
+                                    <h4>Final Roman Feast</h4>
+                                    <p>Carbonara, amatriciana, tiramisu - eat like a Roman!</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Train to Venice -->
+            <div class="transport-section">
+                <div class="transport-line">
+                    <span class="train-icon">&#128645;</span>
+                </div>
+                <span class="transport-label">4-Hour Bullet Train to Venice</span>
+            </div>
+
+            <!-- Venice -->
+            <div class="destination" id="venice">
+                <div class="destination-header">
+                    <img src="https://images.unsplash.com/photo-1514890547357-a9ee288728e0?w=1200" alt="Venice, Italy">
+                    <div class="destination-overlay">
+                        <h2>Venice, Italy</h2>
+                        <span class="duration">3 Days</span>
+                    </div>
+                </div>
+                <div class="destination-content">
+                    <p>Glide through the enchanting canals of La Serenissima. This floating city of bridges and gondolas offers unmatched romance, stunning architecture, and a pace of life that's been unchanged for centuries.</p>
+                    
+                    <div class="itinerary">
+                        <button class="day-toggle" onclick="toggleDay(this)">
+                            <span>Day 1 - Arrival & Grand Canal</span>
+                            <span class="arrow">&#9660;</span>
+                        </button>
+                        <div class="day-content">
+                            <div class="activity">
+                                <span class="activity-time">9:00 AM</span>
+                                <div class="activity-details">
+                                    <h4>High-Speed Train from Rome</h4>
+                                    <p>Board the Frecciarossa, enjoy Italian countryside views</p>
+                                </div>
+                            </div>
+                            <div class="activity">
+                                <span class="activity-time">1:00 PM</span>
+                                <div class="activity-details">
+                                    <h4>Arrive at Santa Lucia Station</h4>
+                                    <p>Step out to your first view of the Grand Canal - magical!</p>
+                                </div>
+                            </div>
+                            <div class="activity">
+                                <span class="activity-time">2:00 PM</span>
+                                <div class="activity-details">
+                                    <h4>Water Taxi to Hotel</h4>
+                                    <p>Navigate the canals to your accommodation</p>
+                                </div>
+                            </div>
+                            <div class="activity">
+                                <span class="activity-time">3:30 PM</span>
+                                <div class="activity-details">
+                                    <h4>Rialto Bridge & Market</h4>
+                                    <p>Cross the iconic bridge, explore the fish market area</p>
+                                </div>
+                            </div>
+                            <div class="activity">
+                                <span class="activity-time">5:30 PM</span>
+                                <div class="activity-details">
+                                    <h4>Aperitivo Time</h4>
+                                    <p>Spritz and cicchetti at a canal-side bar</p>
+                                </div>
+                            </div>
+                            <div class="activity">
+                                <span class="activity-time">7:30 PM</span>
+                                <div class="activity-details">
+                                    <h4>Sunset Gondola Ride</h4>
+                                    <p>Classic Venetian experience through quiet back canals</p>
+                                </div>
+                            </div>
+                            <div class="activity">
+                                <span class="activity-time">9:00 PM</span>
+                                <div class="activity-details">
+                                    <h4>Dinner with Canal View</h4>
+                                    <p>Fresh seafood risotto, sarde in saor, prosecco</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button class="day-toggle" onclick="toggleDay(this)">
+                            <span>Day 2 - St. Mark's & Islands</span>
+                            <span class="arrow">&#9660;</span>
+                        </button>
+                        <div class="day-content">
+                            <div class="activity">
+                                <span class="activity-time">8:00 AM</span>
+                                <div class="activity-details">
+                                    <h4>St. Mark's Square (Early)</h4>
+                                    <p>See the piazza empty before tourist crowds arrive</p>
+                                </div>
+                            </div>
+                            <div class="activity">
+                                <span class="activity-time">9:00 AM</span>
+                                <div class="activity-details">
+                                    <h4>St. Mark's Basilica</h4>
+                                    <p>Golden mosaics, Byzantine architecture, incredible interior</p>
+                                </div>
+                            </div>
+                            <div class="activity">
+                                <span class="activity-time">10:30 AM</span>
+                                <div class="activity-details">
+                                    <h4>Campanile Bell Tower</h4>
+                                    <p>Elevator to the top for panoramic lagoon views</p>
+                                </div>
+                            </div>
+                            <div class="activity">
+                                <span class="activity-time">12:00 PM</span>
+                                <div class="activity-details">
+                                    <h4>Vaporetto to Murano</h4>
+                                    <p>Famous glass-making island, watch artisans blow glass</p>
+                                </div>
+                            </div>
+                            <div class="activity">
+                                <span class="activity-time">2:30 PM</span>
+                                <div class="activity-details">
+                                    <h4>Burano Island</h4>
+                                    <p>Rainbow-colored houses, lace-making tradition, amazing photos</p>
+                                </div>
+                            </div>
+                            <div class="activity">
+                                <span class="activity-time">5:00 PM</span>
+                                <div class="activity-details">
+                                    <h4>Return to Venice</h4>
+                                    <p>Leisurely boat ride back through the lagoon</p>
+                                </div>
+                            </div>
+                            <div class="activity">
+                                <span class="activity-time">7:30 PM</span>
+                                <div class="activity-details">
+                                    <h4>Dinner in Dorsoduro</h4>
+                                    <p>Local neighborhood away from tourists, authentic cuisine</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button class="day-toggle" onclick="toggleDay(this)">
+                            <span>Day 3 - Hidden Venice & Departure</span>
+                            <span class="arrow">&#9660;</span>
+                        </button>
+                        <div class="day-content">
+                            <div class="activity">
+                                <span class="activity-time">9:00 AM</span>
+                                <div class="activity-details">
+                                    <h4>Doge's Palace Tour</h4>
+                                    <p>Gothic masterpiece, Bridge of Sighs, secret passages</p>
+                                </div>
+                            </div>
+                            <div class="activity">
+                                <span class="activity-time">11:30 AM</span>
+                                <div class="activity-details">
+                                    <h4>Get Lost on Purpose</h4>
+                                    <p>Wander the maze of alleys, discover hidden squares</p>
+                                </div>
+                            </div>
+                            <div class="activity">
+                                <span class="activity-time">1:00 PM</span>
+                                <div class="activity-details">
+                                    <h4>Final Italian Lunch</h4>
+                                    <p>Bigoli in salsa, fegato alla veneziana, tiramisu</p>
+                                </div>
+                            </div>
+                            <div class="activity">
+                                <span class="activity-time">3:00 PM</span>
+                                <div class="activity-details">
+                                    <h4>Last Minute Shopping</h4>
+                                    <p>Venetian masks, Murano glass jewelry, souvenirs</p>
+                                </div>
+                            </div>
+                            <div class="activity">
+                                <span class="activity-time">5:00 PM</span>
+                                <div class="activity-details">
+                                    <h4>Head to Marco Polo Airport</h4>
+                                    <p>Water bus or taxi through the lagoon - final views</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Flight Home -->
+            <div class="transport-section">
+                <div class="transport-line">
+                    <span class="plane-icon">&#9992;</span>
+                </div>
+                <span class="transport-label">Flight Home</span>
+            </div>
+        </div>
+
+        <!-- Return Home Section -->
+        <div class="return-home">
+            <div class="home-icon">&#127968;</div>
+            <h2>Welcome Home</h2>
+            <p>8 days, 3 cities, countless memories</p>
+            
+            <div class="trip-stats">
+                <div class="stat">
+                    <div class="stat-number">8</div>
+                    <div class="stat-label">Days</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">3</div>
+                    <div class="stat-label">Cities</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">2</div>
+                    <div class="stat-label">Countries</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">1</div>
+                    <div class="stat-label">Adventure</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Toggle day itinerary
+        function toggleDay(button) {
+            const content = button.nextElementSibling;
+            const isOpen = content.classList.contains('open');
+            
+            // Close all other open sections in same destination
+            const parent = button.closest('.itinerary');
+            parent.querySelectorAll('.day-content.open').forEach(el => {
+                el.classList.remove('open');
+                el.previousElementSibling.classList.remove('active');
+            });
+            
+            // Toggle current
+            if (!isOpen) {
+                content.classList.add('open');
+                button.classList.add('active');
+            }
+        }
+
+        // Scroll animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.destination').forEach(dest => {
+            observer.observe(dest);
+        });
+
+        // Smooth scroll
+        document.querySelector('.scroll-hint').addEventListener('click', () => {
+            document.querySelector('.journey-container').scrollIntoView({ 
+                behavior: 'smooth' 
+            });
+        });
+    </script>
+</body>
+</html>
