@@ -390,6 +390,18 @@ function sharePitch(){
 
 function initials(name){return name.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase()}
 
+function genreGradient(genre){
+  const g=(genre||'').toLowerCase();
+  if(g.includes('horror')||g.includes('thriller')) return 'linear-gradient(135deg,#0d0005,#1a0010)';
+  if(g.includes('sci')||g.includes('space')) return 'linear-gradient(135deg,#020d1a,#0a1a2e)';
+  if(g.includes('action')) return 'linear-gradient(135deg,#1a0800,#2a1000)';
+  if(g.includes('romance')) return 'linear-gradient(135deg,#1a0814,#2a0a1e)';
+  if(g.includes('comedy')) return 'linear-gradient(135deg,#0a1200,#141f00)';
+  if(g.includes('western')) return 'linear-gradient(135deg,#1a1000,#2a1800)';
+  if(g.includes('period')||g.includes('histor')) return 'linear-gradient(135deg,#10080a,#201010)';
+  return 'linear-gradient(135deg,#0a0a0c,#14141a)';
+}
+
 async function generateMovie(){
   const idea=document.getElementById('movieIdea').value.trim();
   if(!idea){showToast('Please enter a movie concept!');return}
@@ -415,65 +427,59 @@ async function generateMovie(){
     stepText.textContent=loadSteps[step];
   },900);
 
-  const prompt=`You are a Hollywood pitch generator. Based on this movie concept: "${idea}"
-Genre preference: ${genre==='auto'?'detect from concept':genre}, Era: ${era}, Tone: ${tone}, Rating: ${rating}
-
-Generate a complete movie pitch as JSON with EXACTLY this structure (no markdown, pure JSON):
-{
-  "title": "Movie title (creative, marketable)",
-  "tagline": "Punchy one-liner tagline",
-  "genre": "Primary genre",
-  "era": "${era}",
-  "rating": "${rating}",
-  "budget": "$XXXm (a realistic budget for the genre)",
-  "runtime": "Xh Xm",
-  "director": "Suggested real or fictional director name",
-  "studio": "Suggested studio name",
-  "synopsis": "2-3 sentence compelling synopsis",
-  "bgGradient": "A CSS gradient string for the poster background that fits the movie mood, e.g. linear-gradient(135deg,#1a0a2e,#0d1b2a)",
-  "cast": [
-    {"actor":"Actor name","role":"Character name","salary":"$XM"}
-  ],
-  "budget_breakdown": [
-    {"category":"Category name","amount":"$XXm","percentage":25}
-  ],
-  "trailer_scenes": [
-    {"beat":"BEAT NAME","text":"Scene description or dialogue snippet","note":"Director note"}
-  ],
-  "awards": [
-    {"category":"Award category","title":"Specific award name","note":"Why it qualifies","chances":4}
-  ],
-  "soundtrack": [
-    {"name":"Track title","artist":"Artist or composer","type":"Original Score / Licensed","duration":"3:42"}
-  ]
-}
-Make cast have 6 entries, budget_breakdown have 6 entries, trailer_scenes have 5 entries, awards have 6 entries, soundtrack have 8 entries.
-Chances is 1-5 (5=very likely). Be creative and specific. Return ONLY the JSON.`;
+  const toneNum=tone==='Serious'?2:tone==='Dark & Gritty'?1:tone==='Campy/Fun'?9:tone==='Lighthearted'?7:5;
 
   try{
-    const res=await fetch("https://api.heyjarvis.me/ai-proxy",{
+    const res=await fetch("https://api.heyjarvis.me/api/moviestudio/generate",{
       method:"POST",
       headers:{"Content-Type":"application/json"},
       body:JSON.stringify({
-        prompt:prompt,
-        max_tokens:3000,
-        system:"You are a Hollywood pitch generator. Return ONLY valid JSON, no markdown, no code blocks."
+        prompt:idea,
+        genre:genre==='auto'?'':genre,
+        era:era,
+        tone:toneNum,
+        rating:rating
       })
     });
     if(!res.ok){
       const errText=await res.text();
-      throw new Error(`HTTP ${res.status}: ${errText.substring(0,200)}`);
+      throw new Error(`HTTP ${res.status}: ${errText.substring(0,300)}`);
     }
     const data=await res.json();
+    if(data.error) throw new Error(data.error+(data.raw?'\n\nRaw AI output:\n'+data.raw:''));
     clearInterval(loadInterval);
     fill.style.width='100%';
     setTimeout(()=>{
       overlay.classList.add('hidden');
-      let raw=data.response||data.text||(data.content&&data.content.map(b=>b.text||'').join(''))||JSON.stringify(data);
-      raw=raw.replace(/```json|```/g,'').trim();
-      let movie;
-      try{movie=JSON.parse(raw)}catch(e){showError('JSON parse failed: '+e.message+'\n\nRaw response:\n'+raw.substring(0,400));return}
-      renderResults(movie);
+      const m=data.movie;
+      const mapped={
+        title:m.title,
+        tagline:m.tagline,
+        genre:m.genre,
+        era:era,
+        rating:m.rating,
+        budget:m.budget&&m.budget.total?m.budget.total:'—',
+        runtime:m.runtime,
+        director:m.director,
+        studio:m.studio||'—',
+        synopsis:m.synopsis,
+        bgGradient:genreGradient(m.genre),
+        cast:(m.cast||[]).map(c=>({actor:c.actor,role:c.role,salary:'—'})),
+        budget_breakdown:[
+          {category:'Cast',amount:m.budget&&m.budget.cast?m.budget.cast:'—',percentage:30},
+          {category:'Production',amount:m.budget&&m.budget.production?m.budget.production:'—',percentage:37},
+          {category:'VFX',amount:m.budget&&m.budget.vfx?m.budget.vfx:'—',percentage:23},
+          {category:'Marketing',amount:m.budget&&m.budget.marketing?m.budget.marketing:'—',percentage:10},
+        ],
+        trailer_scenes:(m.trailer||[]).map(s=>({
+          beat:'Scene '+s.scene+(s.timestamp?' — '+s.timestamp:''),
+          text:s.visual||'',
+          note:s.dialogue||s.audio||''
+        })),
+        awards:[],
+        soundtrack:[]
+      };
+      renderResults(mapped);
     },400);
   }catch(e){
     clearInterval(loadInterval);
