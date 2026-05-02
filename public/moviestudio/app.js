@@ -1,220 +1,175 @@
-let currentMovie = null;
+// AI Movie Studio - App Logic
 
-// ── Tone label ──────────────────────────────────────────────────────────────
-document.getElementById('tone').addEventListener('input', function () {
-  const v = parseInt(this.value);
-  document.getElementById('tone-val').textContent =
-    v <= 3 ? 'Dead Serious' : v <= 6 ? 'Balanced' : v <= 8 ? 'Lighthearted' : 'Pure Campy';
+document.addEventListener('DOMContentLoaded', () => {
+    const generateBtn = document.getElementById('generateBtn');
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    const resultsSection = document.getElementById('resultsSection');
+    
+    generateBtn.addEventListener('click', generateMovie);
 });
 
-document.getElementById('generate-btn').addEventListener('click', generate);
-document.getElementById('prompt').addEventListener('keydown', function (e) {
-  if (e.key === 'Enter' && e.ctrlKey) generate();
-});
-
-// ── Main generate ────────────────────────────────────────────────────────────
-async function generate() {
-  const prompt = document.getElementById('prompt').value.trim();
-  if (!prompt) { alert('Please enter a movie idea!'); return; }
-
-  const genre     = document.getElementById('genre').value;
-  const era       = document.getElementById('era').value;
-  const rating    = document.getElementById('rating').value;
-  const toneVal   = parseInt(document.getElementById('tone').value);
-  const toneDesc  = toneVal <= 3 ? 'Dead Serious' : toneVal <= 6 ? 'Balanced' : toneVal <= 8 ? 'Lighthearted' : 'Pure Campy';
-
-  // UI state
-  document.querySelector('.prompt-box').style.display = 'none';
-  document.getElementById('loading').style.display    = 'block';
-  document.getElementById('result').style.display     = 'none';
-  document.getElementById('error-box').style.display  = 'none';
-
-  const loadingMsgs = [
-    'Pitching to studio executives...',
-    'Assembling the dream cast...',
-    'Writing the screenplay...',
-    'Negotiating budgets with producers...',
-    'Crafting the perfect trailer...',
-  ];
-  let msgIdx = 0;
-  const msgEl       = document.getElementById('loading-msg');
-  const msgInterval = setInterval(() => {
-    msgIdx = (msgIdx + 1) % loadingMsgs.length;
-    msgEl.textContent = loadingMsgs[msgIdx];
-  }, 2500);
-
-  const systemPrompt = `You are a Hollywood movie studio executive. Return ONLY valid raw JSON — no markdown, no code blocks, no explanation.`;
-
-  const userMsg = `Create a complete movie concept for: "${prompt}"
-Genre: ${genre || 'any'}, Tone: ${toneDesc}, Era: ${era}, Rating: ${rating}.
-
-Return ONLY this exact JSON (no markdown, no backticks):
-{
-  "title": "Movie Title",
-  "tagline": "Catchy tagline",
-  "genre": "Action / Thriller",
-  "rating": "PG-13",
-  "runtime": "2h 15m",
-  "synopsis": "3-4 sentence synopsis",
-  "director": "Famous Director",
-  "composer": "Famous Composer",
-  "cast": [
-    {"role": "Hero Name",      "actor": "Actor Name", "description": "Character description"},
-    {"role": "Villain Name",   "actor": "Actor Name", "description": "Character description"},
-    {"role": "Sidekick Name",  "actor": "Actor Name", "description": "Character description"},
-    {"role": "Love Interest",  "actor": "Actor Name", "description": "Character description"},
-    {"role": "Mentor",         "actor": "Actor Name", "description": "Character description"}
-  ],
-  "budget": {
-    "total": "$150 million",
-    "cast": "$45 million",
-    "production": "$55 million",
-    "vfx": "$35 million",
-    "marketing": "$15 million"
-  },
-  "trailer": [
-    {"scene": 1, "timestamp": "0:00 - 0:15", "visual": "...", "audio": "...", "dialogue": "..."},
-    {"scene": 2, "timestamp": "0:15 - 0:35", "visual": "...", "audio": "...", "dialogue": "..."},
-    {"scene": 3, "timestamp": "0:35 - 0:55", "visual": "...", "audio": "...", "dialogue": "..."},
-    {"scene": 4, "timestamp": "0:55 - 1:15", "visual": "...", "audio": "...", "dialogue": "..."},
-    {"scene": 5, "timestamp": "1:15 - 1:40", "visual": "...", "audio": "...", "dialogue": "..."},
-    {"scene": 6, "timestamp": "1:40 - 2:00", "visual": "...", "audio": "...", "dialogue": "..."}
-  ]
-}`;
-
-  try {
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 3000,
-        system: systemPrompt,
-        messages: [{ role: 'user', content: userMsg }]
-      })
-    });
-
-    const data = await resp.json();
-    clearInterval(msgInterval);
-
-    if (!resp.ok) {
-      throw new Error(data.error?.message || 'Anthropic API error ' + resp.status);
+async function generateMovie() {
+    const idea = document.getElementById('movieIdea').value.trim();
+    
+    if (!idea) {
+        alert('Please enter a movie idea!');
+        return;
     }
-
-    // Extract text and strip any accidental markdown fences
-    let raw = data.content.map(b => b.text || '').join('');
-    raw = raw.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```\s*$/i, '').trim();
-
-    let movie;
+    
+    const genre = document.getElementById('genre').value;
+    const era = document.getElementById('era').value;
+    const tone = document.getElementById('tone').value;
+    const rating = document.getElementById('rating').value;
+    
+    // Show loading overlay
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    loadingOverlay.classList.add('active');
+    
     try {
-      movie = JSON.parse(raw);
-    } catch (parseErr) {
-      throw new Error('AI returned invalid JSON — try again. (' + parseErr.message + ')');
+        const response = await fetch('https://api.heyjarvis.me/ai-proxy', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                prompt: `Generate a complete movie pitch based on this idea: "${idea}"
+                
+Settings:
+- Genre: ${genre === 'auto' ? 'auto-detect from the idea' : genre}
+- Era: ${era}
+- Tone: ${tone}
+- Rating: ${rating}
+
+Return a JSON object with this EXACT structure (no markdown, just pure JSON):
+{
+    "title": "Movie Title Here",
+    "tagline": "A catchy one-liner tagline",
+    "genre": "The genre",
+    "rating": "${rating}",
+    "era": "${era}",
+    "runtime": "2h 15m",
+    "synopsis": "A compelling 3-4 sentence plot summary",
+    "budget": "$150M",
+    "cast": [
+        {"actor": "Real Actor Name", "role": "Character Name", "description": "Brief character description"},
+        {"actor": "Real Actor Name", "role": "Character Name", "description": "Brief character description"},
+        {"actor": "Real Actor Name", "role": "Character Name", "description": "Brief character description"},
+        {"actor": "Real Actor Name", "role": "Character Name", "description": "Brief character description"}
+    ],
+    "budgetBreakdown": [
+        {"category": "Cast Salaries", "amount": "$40M"},
+        {"category": "Production", "amount": "$35M"},
+        {"category": "Visual Effects", "amount": "$30M"},
+        {"category": "Marketing", "amount": "$25M"},
+        {"category": "Post-Production", "amount": "$15M"},
+        {"category": "Other", "amount": "$5M"}
+    ],
+    "trailer": [
+        {"scene": 1, "visual": "Description of what we see", "dialogue": "Any dialogue or voiceover"},
+        {"scene": 2, "visual": "Description of what we see", "dialogue": "Any dialogue or voiceover"},
+        {"scene": 3, "visual": "Description of what we see", "dialogue": "Any dialogue or voiceover"},
+        {"scene": 4, "visual": "Description of what we see", "dialogue": "Any dialogue or voiceover"},
+        {"scene": 5, "visual": "Final shot description", "dialogue": "Closing line and title reveal"}
+    ]
+}
+
+Use real, well-known actors that would actually fit these roles. Be creative and make it feel like a real Hollywood pitch!`,
+                system: 'You are a Hollywood movie studio executive and creative director. Generate compelling, creative movie pitches. Always respond with valid JSON only, no markdown formatting or code blocks.'
+            })
+        });
+        
+        const data = await response.json();
+        let movieData;
+        
+        // Parse the AI response
+        try {
+            // Try to extract JSON from the response
+            let jsonStr = data.response || data.text || JSON.stringify(data);
+            
+            // Remove any markdown code blocks if present
+            jsonStr = jsonStr.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+            
+            movieData = JSON.parse(jsonStr);
+        } catch (e) {
+            console.error('Parse error:', e);
+            throw new Error('Failed to parse movie data');
+        }
+        
+        // Hide loading, show results
+        loadingOverlay.classList.remove('active');
+        displayResults(movieData);
+        
+    } catch (error) {
+        console.error('Error:', error);
+        loadingOverlay.classList.remove('active');
+        alert('Error generating movie: ' + error.message);
     }
-
-    currentMovie = movie;
-    renderMovie(movie);
-
-    document.getElementById('loading').style.display    = 'none';
-    document.getElementById('result').style.display     = 'block';
-    document.querySelector('.prompt-box').style.display = 'block';
-    document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
-
-  } catch (err) {
-    clearInterval(msgInterval);
-    document.getElementById('loading').style.display    = 'none';
-    document.querySelector('.prompt-box').style.display = 'block';
-    const errBox = document.getElementById('error-box');
-    errBox.style.display = 'block';
-    errBox.textContent   = 'Error: ' + err.message;
-    console.error(err);
-  }
 }
 
-// ── Render ───────────────────────────────────────────────────────────────────
-function renderMovie(m) {
-  document.getElementById('movie-title').textContent   = m.title    || 'Untitled';
-  document.getElementById('movie-tagline').textContent = m.tagline  || '';
-  document.getElementById('synopsis').textContent      = m.synopsis || '';
-
-  document.getElementById('badges').innerHTML =
-    [m.genre, m.rating, m.runtime].filter(Boolean)
-      .map(b => '<span class="badge">' + b + '</span>').join('');
-
-  document.getElementById('crew-info').innerHTML =
-    (m.director ? '<span class="badge">Dir: ' + m.director + '</span>' : '') +
-    (m.composer  ? '<span class="badge">Music: ' + m.composer  + '</span>' : '');
-
-  document.getElementById('poster-area').innerHTML =
-    '<div class="poster-placeholder">🎬 ' + (m.title || 'Poster') + '</div>';
-
-  // Cast
-  const castEl = document.getElementById('cast-grid');
-  castEl.innerHTML = '';
-  (m.cast || []).forEach((c, i) => {
-    const div = document.createElement('div');
-    div.className = 'cast-card';
-    div.innerHTML =
-      '<div class="cast-role">'   + (c.role || '')        + '</div>' +
-      '<div class="cast-actor"><input type="text" value="' + (c.actor || '') +
-        '" placeholder="Cast actor..." id="cast-' + i + '"></div>' +
-      '<div class="cast-desc">'   + (c.description || '') + '</div>';
-    castEl.appendChild(div);
-  });
-
-  // Budget
-  const budgetEl = document.getElementById('budget-grid');
-  budgetEl.innerHTML = '';
-  if (m.budget) {
-    [
-      { label: 'TOTAL BUDGET', amount: m.budget.total,      cls: 'total' },
-      { label: 'Cast',         amount: m.budget.cast,       cls: '' },
-      { label: 'Production',   amount: m.budget.production, cls: '' },
-      { label: 'VFX',          amount: m.budget.vfx,        cls: '' },
-      { label: 'Marketing',    amount: m.budget.marketing,  cls: '' },
-    ].forEach(item => {
-      if (!item.amount) return;
-      const div = document.createElement('div');
-      div.className = 'budget-item ' + item.cls;
-      div.innerHTML =
-        '<div class="budget-label">'  + item.label  + '</div>' +
-        '<div class="budget-amount">' + item.amount + '</div>';
-      budgetEl.appendChild(div);
-    });
-  }
-
-  // Trailer
-  const trailerEl = document.getElementById('trailer-scenes');
-  trailerEl.innerHTML = '';
-  (m.trailer || []).forEach(scene => {
-    const div = document.createElement('div');
-    div.className = 'scene-card';
-    div.innerHTML =
-      '<div class="scene-header">' +
-        '<div class="scene-num">'  + scene.scene              + '</div>' +
-        '<div class="scene-time">' + (scene.timestamp || '')  + '</div>' +
-      '</div>' +
-      '<div class="scene-visual">' + (scene.visual   || '')   + '</div>' +
-      '<div class="scene-audio">Audio: ' + (scene.audio || '') + '</div>' +
-      (scene.dialogue ? '<div class="scene-dialogue">"' + scene.dialogue + '"</div>' : '');
-    trailerEl.appendChild(div);
-  });
-}
-
-// ── Utility ──────────────────────────────────────────────────────────────────
-function newMovie() {
-  document.getElementById('result').style.display = 'none';
-  document.getElementById('prompt').value = '';
-  document.querySelector('.prompt-box').scrollIntoView({ behavior: 'smooth' });
+function displayResults(movie) {
+    const resultsSection = document.getElementById('resultsSection');
+    
+    // Update movie header
+    document.getElementById('movieTitle').textContent = movie.title;
+    document.getElementById('movieTagline').textContent = '"' + movie.tagline + '"';
+    document.getElementById('movieSynopsis').textContent = movie.synopsis;
+    document.getElementById('genreBadge').textContent = movie.genre.toUpperCase();
+    document.getElementById('ratingBadge').textContent = movie.rating;
+    document.getElementById('eraBadge').textContent = movie.era.toUpperCase();
+    document.getElementById('budgetValue').textContent = movie.budget;
+    document.getElementById('runtimeValue').textContent = movie.runtime;
+    
+    // Update cast grid
+    const castGrid = document.getElementById('castGrid');
+    castGrid.innerHTML = movie.cast.map(member => `
+        <div class="cast-card">
+            <div class="cast-avatar">${member.actor.charAt(0)}</div>
+            <div class="cast-actor">${member.actor}</div>
+            <div class="cast-role">as ${member.role}</div>
+        </div>
+    `).join('');
+    
+    // Update budget breakdown
+    const budgetGrid = document.getElementById('budgetGrid');
+    budgetGrid.innerHTML = movie.budgetBreakdown.map(item => `
+        <div class="budget-item">
+            <div class="budget-category">${item.category}</div>
+            <div class="budget-amount">${item.amount}</div>
+        </div>
+    `).join('');
+    
+    // Update trailer scenes
+    const trailerContainer = document.getElementById('trailerContainer');
+    trailerContainer.innerHTML = movie.trailer.map(scene => `
+        <div class="trailer-scene">
+            <span class="scene-number">SCENE ${scene.scene}</span>
+            <p class="scene-description">${scene.visual}</p>
+            ${scene.dialogue ? `<p class="scene-dialogue">"${scene.dialogue}"</p>` : ''}
+        </div>
+    `).join('');
+    
+    // Show results section
+    resultsSection.classList.remove('hidden');
+    
+    // Scroll to results
+    setTimeout(() => {
+        resultsSection.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
 }
 
 function shareMovie() {
-  if (!currentMovie) return;
-  const text = currentMovie.title + ' — ' + currentMovie.tagline +
-    '\n\nGenerated by AI Movie Studio';
-  if (navigator.share) {
-    navigator.share({ title: currentMovie.title, text });
-  } else {
-    navigator.clipboard.writeText(text).then(() => alert('Copied to clipboard!'));
-  }
+    const title = document.getElementById('movieTitle').textContent;
+    const tagline = document.getElementById('movieTagline').textContent;
+    
+    if (navigator.share) {
+        navigator.share({
+            title: title,
+            text: `Check out this AI-generated movie pitch: ${title} - ${tagline}`,
+            url: window.location.href
+        });
+    } else {
+        // Fallback - copy to clipboard
+        const text = `Check out this movie pitch: ${title} - ${tagline}`;
+        navigator.clipboard.writeText(text).then(() => {
+            alert('Movie pitch copied to clipboard!');
+        });
+    }
 }

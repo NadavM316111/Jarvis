@@ -1,110 +1,530 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>AI Movie Studio</title>
-<link rel="stylesheet" href="style.css">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Barlow+Condensed:wght@300;400;500;600;700;800&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --gold:#C9A84C;--gold-dim:#9B7B32;--gold-bright:#F0CC7A;
+  --cream:#F5EDD8;--cream-dim:#D4C49A;
+  --dark:#0A0A0C;--dark2:#111114;--dark3:#191920;--dark4:#222230;
+  --text:#E8E0D0;--text-dim:#A09880;
+  --red:#C0392B;--red-bright:#E74C3C;
+}
+html,body{background:var(--dark);color:var(--text);font-family:'Barlow',sans-serif;overflow-x:hidden;min-height:100vh}
+a{color:inherit;text-decoration:none}
+
+body::before{
+  content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  opacity:0.3;mix-blend-mode:overlay
+}
+
+.loading-overlay{position:fixed;inset:0;z-index:10000;background:var(--dark);display:flex;align-items:center;justify-content:center;flex-direction:column}
+.loading-overlay.hidden{display:none}
+.clapboard{width:280px;background:#111;border:2px solid #333;border-radius:4px;overflow:hidden;margin-bottom:32px}
+.clap-top{display:flex;height:48px;background:#111}
+.clap-stripe{flex:1;background:repeating-linear-gradient(45deg,#222,#222 6px,#111 6px,#111 12px)}
+.clap-body{padding:20px 24px;border-top:2px solid #333}
+.clap-title{display:block;font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;letter-spacing:0.12em;color:var(--cream);text-transform:uppercase}
+.clap-sub{display:block;font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:0.08em;color:var(--text-dim);margin-top:4px;text-transform:uppercase}
+.load-bar-wrap{width:280px;height:3px;background:#222;border-radius:2px;overflow:hidden}
+.load-bar-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--gold-dim),var(--gold-bright));transition:width 0.4s ease;border-radius:2px}
+.load-step-text{margin-top:16px;font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:0.1em;color:var(--text-dim);text-transform:uppercase}
+
+.hero{position:relative;min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:0 24px;overflow:hidden}
+.hero-bg{position:absolute;inset:0;background:
+  radial-gradient(ellipse 120% 80% at 50% 120%, #1a1209 0%, transparent 60%),
+  radial-gradient(ellipse 60% 40% at 20% 30%, rgba(201,168,76,0.04) 0%, transparent 60%),
+  radial-gradient(ellipse 60% 40% at 80% 60%, rgba(180,40,20,0.03) 0%, transparent 60%),
+  var(--dark)
+}
+.hero-scanlines{position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.15) 2px,rgba(0,0,0,0.15) 4px);pointer-events:none}
+.hero-frame{position:absolute;inset:20px;border:1px solid rgba(201,168,76,0.12);pointer-events:none}
+.hero-frame::before,.hero-frame::after{content:'';position:absolute;width:40px;height:40px;border-color:var(--gold);border-style:solid;opacity:0.5}
+.hero-frame::before{top:-1px;left:-1px;border-width:2px 0 0 2px}
+.hero-frame::after{bottom:-1px;right:-1px;border-width:0 2px 2px 0}
+
+.nav{position:absolute;top:0;left:0;right:0;padding:28px 40px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(201,168,76,0.08)}
+.nav-logo{display:flex;align-items:center;gap:10px}
+.logo-icon{width:28px;height:28px;background:var(--gold);clip-path:polygon(0 0,60% 0,100% 50%,60% 100%,0 100%,40% 50%)}
+.nav-logo-text{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;letter-spacing:0.18em;color:var(--cream);text-transform:uppercase}
+.nav-badge{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:0.12em;color:var(--gold-dim);background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.2);padding:4px 10px;border-radius:2px;text-transform:uppercase}
+
+.hero-content{position:relative;z-index:2;max-width:820px}
+.hero-eyebrow{font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:0.25em;color:var(--gold);text-transform:uppercase;margin-bottom:24px;display:flex;align-items:center;justify-content:center;gap:16px}
+.hero-eyebrow::before,.hero-eyebrow::after{content:'';display:block;width:40px;height:1px;background:var(--gold);opacity:0.5}
+.hero-h1{font-family:'Playfair Display',serif;font-size:clamp(52px,8vw,100px);font-weight:900;line-height:0.95;letter-spacing:-0.02em;color:var(--cream);margin-bottom:12px}
+.hero-h1 .italic{font-style:italic;color:var(--gold)}
+.hero-h1 .outline{-webkit-text-stroke:1px var(--cream-dim);color:transparent}
+.hero-p{font-size:17px;font-weight:300;color:var(--text-dim);line-height:1.7;max-width:520px;margin:24px auto 40px}
+.hero-cta{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:var(--dark);background:var(--gold);border:none;padding:16px 40px;cursor:pointer;transition:all 0.2s;clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)}
+.hero-cta:hover{background:var(--gold-bright);transform:translateY(-2px)}
+.hero-scroll{position:absolute;bottom:32px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer}
+.hero-scroll-text{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:0.25em;color:var(--text-dim);text-transform:uppercase}
+.scroll-arrow{width:1px;height:40px;background:linear-gradient(var(--gold),transparent);margin:0 auto;animation:scrollPulse 2s ease-in-out infinite}
+@keyframes scrollPulse{0%,100%{opacity:0.3;transform:scaleY(1)}50%{opacity:1;transform:scaleY(1.1)}}
+
+.studio-section{padding:80px 24px;min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--dark2)}
+.studio-wrap{width:100%;max-width:820px}
+.studio-eyebrow{font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:0.25em;color:var(--gold);text-transform:uppercase;margin-bottom:16px}
+.studio-h2{font-family:'Playfair Display',serif;font-size:clamp(32px,5vw,52px);font-weight:700;color:var(--cream);margin-bottom:40px;line-height:1.1}
+.studio-h2 em{font-style:italic;color:var(--gold)}
+
+.idea-input{width:100%;background:var(--dark3);border:1px solid rgba(201,168,76,0.15);border-top:2px solid var(--gold);color:var(--text);font-family:'Barlow',sans-serif;font-size:16px;font-weight:300;line-height:1.7;padding:24px 28px;resize:vertical;min-height:140px;outline:none;transition:border-color 0.2s;margin-bottom:24px}
+.idea-input::placeholder{color:var(--text-dim);opacity:0.5}
+.idea-input:focus{border-color:rgba(201,168,76,0.4);border-top-color:var(--gold-bright)}
+
+.options-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;margin-bottom:32px}
+.opt-group label{display:block;font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:0.18em;color:var(--gold-dim);text-transform:uppercase;margin-bottom:8px}
+.opt-group select{width:100%;background:var(--dark3);border:1px solid rgba(201,168,76,0.15);color:var(--text);font-family:'Barlow',sans-serif;font-size:14px;padding:10px 14px;outline:none;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239B7B32' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;transition:border-color 0.2s}
+.opt-group select:hover{border-color:rgba(201,168,76,0.35)}
+.opt-group select option{background:var(--dark3)}
+
+.generate-btn{width:100%;padding:20px;background:var(--dark3);border:1px solid rgba(201,168,76,0.3);border-top:2px solid var(--gold);color:var(--cream);font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;letter-spacing:0.25em;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:16px;transition:all 0.25s;position:relative;overflow:hidden}
+.generate-btn::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(201,168,76,0.05),transparent);transform:translateX(-100%);transition:transform 0.5s}
+.generate-btn:hover{border-color:var(--gold);background:rgba(201,168,76,0.08)}
+.generate-btn:hover::before{transform:translateX(100%)}
+.generate-btn:active{transform:scale(0.99)}
+.gen-icon{width:20px;height:20px;background:var(--gold);clip-path:polygon(0 0,100% 50%,0 100%);flex-shrink:0}
+
+.results-section{background:var(--dark)}
+.results-section.hidden{display:none!important}
+
+.results-hero{position:relative;min-height:70vh;display:flex;align-items:flex-end;overflow:hidden}
+.results-hero-bg{position:absolute;inset:0;background-size:cover;background-position:center;filter:brightness(0.3) saturate(1.3)}
+.results-hero-gradient{position:absolute;inset:0;background:linear-gradient(to top, var(--dark) 0%, rgba(10,10,12,0.6) 50%, transparent 100%)}
+.results-hero-vignette{position:absolute;inset:0;background:radial-gradient(ellipse at center,transparent 30%,rgba(10,10,12,0.7) 100%)}
+
+.results-hero-content{position:relative;z-index:2;padding:60px 48px;width:100%;max-width:1000px}
+.res-badges{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.badge{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;padding:5px 12px;border:1px solid;border-radius:1px}
+.badge-genre{color:var(--gold);border-color:rgba(201,168,76,0.4);background:rgba(201,168,76,0.1)}
+.badge-rating{color:var(--cream);border-color:rgba(245,237,216,0.3);background:rgba(245,237,216,0.08)}
+.badge-era{color:var(--text-dim);border-color:rgba(160,152,128,0.3);background:rgba(160,152,128,0.06)}
+
+.res-title{font-family:'Playfair Display',serif;font-size:clamp(42px,6vw,80px);font-weight:900;line-height:0.95;color:var(--cream);margin-bottom:16px;text-shadow:0 2px 40px rgba(0,0,0,0.8)}
+.res-tagline{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(16px,2vw,22px);color:var(--gold);margin-bottom:32px;opacity:0.9}
+
+.res-meta-row{display:flex;gap:40px;flex-wrap:wrap;margin-bottom:28px;padding-top:24px;border-top:1px solid rgba(201,168,76,0.15)}
+.res-meta-item{display:flex;flex-direction:column;gap:4px}
+.res-meta-label{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:0.2em;color:var(--gold-dim);text-transform:uppercase}
+.res-meta-val{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:600;color:var(--cream);letter-spacing:0.05em}
+
+.res-synopsis{font-size:16px;font-weight:300;color:var(--text-dim);line-height:1.75;max-width:620px}
+
+.carousel-nav-bar{display:flex;gap:0;border-bottom:1px solid rgba(201,168,76,0.1);background:var(--dark2);overflow-x:auto;scrollbar-width:none}
+.carousel-nav-bar::-webkit-scrollbar{display:none}
+.carousel-nav-btn{font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:0.18em;color:var(--text-dim);background:none;border:none;border-bottom:2px solid transparent;padding:18px 28px;cursor:pointer;text-transform:uppercase;transition:all 0.2s;white-space:nowrap}
+.carousel-nav-btn:hover{color:var(--cream)}
+.carousel-nav-btn.active{color:var(--gold);border-bottom-color:var(--gold)}
+
+.carousel-outer{overflow:hidden;background:var(--dark2)}
+.carousel-track{display:flex;transition:transform 0.45s cubic-bezier(0.4,0,0.2,1)}
+.carousel-slide{min-width:100%;padding:48px 40px 64px}
+.slide-title{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.25em;color:var(--gold);text-transform:uppercase;margin-bottom:36px;display:flex;align-items:center;gap:16px}
+.slide-title::after{content:'';flex:1;height:1px;background:rgba(201,168,76,0.15)}
+
+.cast-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px}
+.cast-card{background:var(--dark3);border:1px solid rgba(201,168,76,0.1);border-top:2px solid rgba(201,168,76,0.3);padding:20px 18px;transition:border-color 0.2s}
+.cast-card:hover{border-color:rgba(201,168,76,0.3);border-top-color:var(--gold)}
+.cast-initials{width:48px;height:48px;background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.2);display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;color:var(--gold);margin-bottom:14px;clip-path:polygon(4px 0,100% 0,calc(100% - 4px) 100%,0 100%)}
+.cast-actor{font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:700;color:var(--cream);letter-spacing:0.04em;margin-bottom:4px}
+.cast-role{font-size:13px;color:var(--gold-dim);margin-bottom:8px;font-style:italic}
+.cast-salary{font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:0.1em;color:var(--text-dim);text-transform:uppercase}
+
+.budget-bars{display:flex;flex-direction:column;gap:12px;margin-bottom:24px}
+.budget-row{display:flex;align-items:center;gap:16px}
+.budget-label{font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:0.08em;color:var(--text-dim);text-transform:uppercase;width:160px;flex-shrink:0}
+.budget-bar-track{flex:1;height:6px;background:rgba(255,255,255,0.06);border-radius:1px;overflow:hidden}
+.budget-bar-fill{height:100%;background:linear-gradient(90deg,var(--gold-dim),var(--gold-bright));border-radius:1px;transition:width 1s cubic-bezier(0.4,0,0.2,1)}
+.budget-amount{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:600;color:var(--cream);width:70px;text-align:right;flex-shrink:0}
+.budget-total-row{display:flex;justify-content:space-between;align-items:baseline;padding:20px 0;border-top:1px solid rgba(201,168,76,0.2);font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:0.12em;color:var(--text-dim);text-transform:uppercase}
+.budget-total-num{font-size:28px;font-weight:700;color:var(--gold)}
+
+.trailer-scenes{display:flex;flex-direction:column;gap:0}
+.trailer-scene{display:flex;gap:0;border-bottom:1px solid rgba(201,168,76,0.08)}
+.scene-num{width:64px;font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:0.15em;color:var(--gold-dim);text-transform:uppercase;padding:20px 0;flex-shrink:0;opacity:0.6}
+.scene-body{flex:1;padding:20px 0}
+.scene-beat{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.18em;color:var(--gold);text-transform:uppercase;margin-bottom:6px}
+.scene-text{font-size:15px;font-weight:300;color:var(--text);line-height:1.65}
+.scene-note{font-size:12px;color:var(--text-dim);margin-top:6px;font-style:italic}
+
+.awards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px}
+.award-card{background:var(--dark3);border:1px solid rgba(201,168,76,0.1);padding:20px 18px;position:relative;overflow:hidden}
+.award-card::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:var(--gold);opacity:0.5}
+.award-category{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:0.18em;color:var(--gold);text-transform:uppercase;margin-bottom:8px}
+.award-title{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--cream);margin-bottom:4px}
+.award-note{font-size:13px;color:var(--text-dim)}
+.award-chances{display:flex;gap:6px;margin-top:12px;align-items:center}
+.chance-dot{width:8px;height:8px;background:var(--gold);border-radius:50%}
+.chance-dot.dim{background:rgba(201,168,76,0.2)}
+.chances-label{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:0.1em;color:var(--text-dim);text-transform:uppercase;margin-left:4px}
+
+.soundtrack-list{display:flex;flex-direction:column;gap:0}
+.track-row{display:flex;align-items:center;gap:20px;padding:16px 0;border-bottom:1px solid rgba(201,168,76,0.06);transition:background 0.2s}
+.track-row:hover{background:rgba(201,168,76,0.03)}
+.track-num{font-family:'Barlow Condensed',sans-serif;font-size:14px;color:var(--text-dim);width:24px;text-align:center;flex-shrink:0}
+.track-info{flex:1}
+.track-name{font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:600;color:var(--cream);letter-spacing:0.05em;margin-bottom:2px}
+.track-artist{font-size:13px;color:var(--text-dim)}
+.track-type{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:0.12em;color:var(--gold-dim);text-transform:uppercase;border:1px solid rgba(201,168,76,0.2);padding:3px 8px;flex-shrink:0}
+.track-duration{font-family:'Barlow Condensed',sans-serif;font-size:14px;color:var(--text-dim);width:40px;text-align:right;flex-shrink:0}
+
+.res-actions{display:flex;gap:16px;justify-content:center;padding:40px 24px;background:var(--dark2);border-top:1px solid rgba(201,168,76,0.08)}
+.res-btn{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;padding:14px 36px;cursor:pointer;transition:all 0.2s;border:1px solid}
+.res-btn.primary{background:var(--gold);color:var(--dark);border-color:var(--gold);clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)}
+.res-btn.primary:hover{background:var(--gold-bright)}
+.res-btn.secondary{background:transparent;color:var(--text);border-color:rgba(201,168,76,0.2)}
+.res-btn.secondary:hover{border-color:var(--gold);color:var(--cream)}
+
+.hidden{display:none!important}
+
+.toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--dark3);border:1px solid rgba(201,168,76,0.3);border-top:2px solid var(--gold);color:var(--cream);font-family:'Barlow Condensed',sans-serif;font-size:14px;letter-spacing:0.1em;padding:14px 28px;z-index:10001;opacity:0;transition:all 0.3s;text-transform:uppercase}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@media(max-width:600px){
+  .results-hero-content{padding:40px 24px}
+  .res-meta-row{gap:24px}
+  .carousel-slide{padding:32px 20px 48px}
+  .budget-label{width:100px;font-size:11px}
+  .nav{padding:20px 24px}
+}
+</style>
 </head>
 <body>
 
-<header>
-  <h1>AI Movie Studio</h1>
-  <p>Describe any movie idea. Get a full production package instantly.</p>
-</header>
-
-<div class="container">
-
-  <div class="prompt-box">
-    <textarea id="prompt" placeholder="Describe your movie idea... e.g. A retired astronaut and a talking golden retriever become unlikely space cops investigating crimes across the galaxy..."></textarea>
-
-    <div class="options-row">
-      <select id="genre">
-        <option value="">Any Genre</option>
-        <option value="Action">Action</option>
-        <option value="Comedy">Comedy</option>
-        <option value="Horror">Horror</option>
-        <option value="Sci-Fi">Sci-Fi</option>
-        <option value="Romance">Romance</option>
-        <option value="Thriller">Thriller</option>
-        <option value="Drama">Drama</option>
-        <option value="Fantasy">Fantasy</option>
-        <option value="Animation">Animation</option>
-        <option value="Horror Comedy">Horror Comedy</option>
-      </select>
-      <select id="era">
-        <option value="modern">Modern Day</option>
-        <option value="80s">80s Style</option>
-        <option value="90s">90s Style</option>
-        <option value="futuristic">Futuristic</option>
-        <option value="period">Period Piece</option>
-        <option value="post-apocalyptic">Post-Apocalyptic</option>
-      </select>
-      <select id="rating">
-        <option value="PG-13">PG-13</option>
-        <option value="PG">PG</option>
-        <option value="R">R</option>
-        <option value="G">G</option>
-      </select>
+<div id="loadingOverlay" class="loading-overlay hidden">
+  <div class="clapboard">
+    <div class="clap-top">
+      <div class="clap-stripe"></div><div class="clap-stripe"></div><div class="clap-stripe"></div>
+      <div class="clap-stripe"></div><div class="clap-stripe"></div><div class="clap-stripe"></div>
     </div>
-
-    <div class="tone-row">
-      <label>Tone: <span id="tone-val">Balanced</span></label>
-      <input type="range" id="tone" min="1" max="10" value="5">
-      <div class="tone-labels"><span>Dead Serious</span><span>Pure Campy</span></div>
+    <div class="clap-body">
+      <span class="clap-title" id="loadTitle">AI MOVIE STUDIO</span>
+      <span class="clap-sub" id="loadSub">Casting actors...</span>
     </div>
-
-    <button class="generate-btn" id="generate-btn">GENERATE MY MOVIE</button>
-    <p style="text-align:center;color:#666;font-size:0.8rem;margin-top:10px;">Tip: Press Ctrl+Enter to generate</p>
   </div>
-
-  <div id="error-box" class="error-box"></div>
-
-  <div id="loading" class="loading">
-    <div class="spinner"></div>
-    <p id="loading-msg">Pitching to studio executives...</p>
-  </div>
-
-  <div id="result" class="result">
-
-    <div class="poster-section">
-      <div class="poster-img" id="poster-area">
-        <div class="poster-placeholder">AI Poster Coming Soon</div>
-      </div>
-      <div class="movie-meta">
-        <div class="movie-title" id="movie-title"></div>
-        <div class="movie-tagline" id="movie-tagline"></div>
-        <div class="badges" id="badges"></div>
-        <div class="badges" id="crew-info"></div>
-        <div class="synopsis" id="synopsis"></div>
-      </div>
-    </div>
-
-    <div class="section">
-      <div class="section-title">Cast</div>
-      <div class="cast-grid" id="cast-grid"></div>
-      <p style="color:#666;font-size:0.8rem;margin-top:12px;">Click any actor name to swap them out</p>
-    </div>
-
-    <div class="section">
-      <div class="section-title">Production Budget</div>
-      <div class="budget-grid" id="budget-grid"></div>
-    </div>
-
-    <div class="section">
-      <div class="section-title">Trailer Breakdown</div>
-      <div class="trailer-scenes" id="trailer-scenes"></div>
-    </div>
-
-    <div class="save-bar">
-      <button onclick="newMovie()">NEW MOVIE</button>
-      <button onclick="shareMovie()">SHARE</button>
-    </div>
-
-  </div>
-
+  <div class="load-bar-wrap"><div class="load-bar-fill" id="loadBarFill"></div></div>
+  <div class="load-step-text" id="loadStepText">Analyzing your concept...</div>
 </div>
 
-<script src="app.js"></script>
+<header class="hero" id="heroSection">
+  <div class="hero-bg"></div>
+  <div class="hero-scanlines"></div>
+  <div class="hero-frame"></div>
+  <nav class="nav">
+    <div class="nav-logo">
+      <div class="logo-icon"></div>
+      <span class="nav-logo-text">AI Movie Studio</span>
+    </div>
+    <div class="nav-badge">Production Suite</div>
+  </nav>
+  <div class="hero-content">
+    <div class="hero-eyebrow">Powered by Artificial Intelligence</div>
+    <h1 class="hero-h1">Turn Any Idea<br/>Into a <span class="italic">Hollywood</span><br/><span class="outline">Pitch</span></h1>
+    <p class="hero-p">Enter your concept. Get a full pitch deck — title, cast, budget, trailer script, awards predictions, and soundtrack — in seconds.</p>
+    <button class="hero-cta" onclick="document.getElementById('studioSection').scrollIntoView({behavior:'smooth'})">Open Studio</button>
+  </div>
+  <div class="hero-scroll" onclick="document.getElementById('studioSection').scrollIntoView({behavior:'smooth'})">
+    <div class="scroll-arrow"></div>
+    <span class="hero-scroll-text">Scroll</span>
+  </div>
+</header>
+
+<section class="studio-section" id="studioSection">
+  <div class="studio-wrap">
+    <div class="studio-eyebrow">Your Concept</div>
+    <h2 class="studio-h2">What is your<br/><em>movie about?</em></h2>
+    <textarea id="movieIdea" class="idea-input" placeholder="e.g. A disgraced NASA astronaut must team up with a rogue AI to save Earth from a collapsing black hole while uncovering a government conspiracy..."></textarea>
+    <div class="options-row">
+      <div class="opt-group">
+        <label>Genre</label>
+        <select id="genre">
+          <option value="auto">Auto-detect</option>
+          <option value="Action">Action</option>
+          <option value="Comedy">Comedy</option>
+          <option value="Drama">Drama</option>
+          <option value="Horror">Horror</option>
+          <option value="Sci-Fi">Sci-Fi</option>
+          <option value="Romance">Romance</option>
+          <option value="Thriller">Thriller</option>
+          <option value="Animation">Animation</option>
+          <option value="Western">Western</option>
+        </select>
+      </div>
+      <div class="opt-group">
+        <label>Era</label>
+        <select id="era">
+          <option value="Modern">Modern Day</option>
+          <option value="1980s">1980s</option>
+          <option value="1990s">1990s</option>
+          <option value="Futuristic">Futuristic</option>
+          <option value="Period Piece">Period Piece</option>
+          <option value="Post-Apocalyptic">Post-Apocalyptic</option>
+        </select>
+      </div>
+      <div class="opt-group">
+        <label>Tone</label>
+        <select id="tone">
+          <option value="Balanced">Balanced</option>
+          <option value="Serious">Serious</option>
+          <option value="Campy/Fun">Campy / Fun</option>
+          <option value="Dark & Gritty">Dark &amp; Gritty</option>
+          <option value="Lighthearted">Lighthearted</option>
+        </select>
+      </div>
+      <div class="opt-group">
+        <label>Rating</label>
+        <select id="rating">
+          <option value="PG-13">PG-13</option>
+          <option value="PG">PG</option>
+          <option value="R">R</option>
+          <option value="G">G</option>
+          <option value="NC-17">NC-17</option>
+        </select>
+      </div>
+    </div>
+    <button class="generate-btn" id="generateBtn" onclick="generateMovie()">
+      <div class="gen-icon"></div>
+      <span>Generate Movie</span>
+    </button>
+  </div>
+</section>
+
+<section class="results-section hidden" id="resultsSection">
+  <div class="results-hero" id="resultsHero">
+    <div class="results-hero-bg" id="resultsHeroBg"></div>
+    <div class="results-hero-gradient"></div>
+    <div class="results-hero-vignette"></div>
+    <div class="results-hero-content">
+      <div class="res-badges" id="resBadges"></div>
+      <h1 class="res-title" id="resTitle">Movie Title</h1>
+      <p class="res-tagline" id="resTagline">"Tagline here"</p>
+      <div class="res-meta-row">
+        <div class="res-meta-item"><span class="res-meta-label">Budget</span><span class="res-meta-val" id="resBudget">$150M</span></div>
+        <div class="res-meta-item"><span class="res-meta-label">Runtime</span><span class="res-meta-val" id="resRuntime">2h 15m</span></div>
+        <div class="res-meta-item"><span class="res-meta-label">Director</span><span class="res-meta-val" id="resDirector">TBD</span></div>
+        <div class="res-meta-item"><span class="res-meta-label">Studio</span><span class="res-meta-val" id="resStudio">TBD</span></div>
+      </div>
+      <p class="res-synopsis" id="resSynopsis">Synopsis...</p>
+    </div>
+  </div>
+
+  <div class="carousel-nav-bar">
+    <button class="carousel-nav-btn active" data-slide="0" onclick="goSlide(0)">Cast</button>
+    <button class="carousel-nav-btn" data-slide="1" onclick="goSlide(1)">Budget</button>
+    <button class="carousel-nav-btn" data-slide="2" onclick="goSlide(2)">Trailer Script</button>
+    <button class="carousel-nav-btn" data-slide="3" onclick="goSlide(3)">Awards</button>
+    <button class="carousel-nav-btn" data-slide="4" onclick="goSlide(4)">Soundtrack</button>
+  </div>
+
+  <div class="carousel-outer">
+    <div class="carousel-track" id="carouselTrack">
+      <div class="carousel-slide" id="slide0"><div class="slide-inner"><div class="slide-title">Suggested Cast</div><div class="cast-grid" id="castGrid"></div></div></div>
+      <div class="carousel-slide" id="slide1"><div class="slide-inner"><div class="slide-title">Budget Breakdown</div><div class="budget-bars" id="budgetBars"></div><div class="budget-total-row"><span>Total Budget</span><span id="budgetTotal" class="budget-total-num">$0</span></div></div></div>
+      <div class="carousel-slide" id="slide2"><div class="slide-inner"><div class="slide-title">Trailer Script</div><div class="trailer-scenes" id="trailerScenes"></div></div></div>
+      <div class="carousel-slide" id="slide3"><div class="slide-inner"><div class="slide-title">Awards Predictions</div><div class="awards-grid" id="awardsGrid"></div></div></div>
+      <div class="carousel-slide" id="slide4"><div class="slide-inner"><div class="slide-title">Soundtrack</div><div class="soundtrack-list" id="soundtrackList"></div></div></div>
+    </div>
+  </div>
+
+  <div class="res-actions">
+    <button class="res-btn secondary" onclick="resetStudio()">Generate Another</button>
+    <button class="res-btn primary" onclick="sharePitch()">Share This Pitch</button>
+  </div>
+</section>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let currentSlide=0;
+const loadSteps=["Analyzing your concept...","Casting actors...","Calculating budget...","Writing trailer script...","Predicting awards...","Curating soundtrack...","Finalizing pitch..."];
+let loadInterval=null;
+
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500)}
+
+function goSlide(n){
+  currentSlide=n;
+  document.getElementById('carouselTrack').style.transform=`translateX(-${n*100}%)`;
+  document.querySelectorAll('.carousel-nav-btn').forEach((b,i)=>b.classList.toggle('active',i===n));
+}
+
+function animateBars(){
+  setTimeout(()=>{
+    document.querySelectorAll('.budget-bar-fill').forEach(b=>{b.style.width=b.dataset.width});
+  },100);
+}
+
+function resetStudio(){
+  document.getElementById('resultsSection').classList.add('hidden');
+  document.getElementById('studioSection').scrollIntoView({behavior:'smooth'});
+}
+
+function sharePitch(){
+  const title=document.getElementById('resTitle').textContent;
+  if(navigator.share){navigator.share({title:'AI Movie Studio',text:`Check out my movie pitch: "${title}"!`})}
+  else{navigator.clipboard.writeText(`Check out my movie pitch: "${title}"! Generated by AI Movie Studio`).then(()=>showToast('Pitch copied to clipboard!'))}
+}
+
+function initials(name){return name.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase()}
+
+async function generateMovie(){
+  const idea=document.getElementById('movieIdea').value.trim();
+  if(!idea){showToast('Please enter a movie concept!');return}
+  const genre=document.getElementById('genre').value;
+  const era=document.getElementById('era').value;
+  const tone=document.getElementById('tone').value;
+  const rating=document.getElementById('rating').value;
+
+  const overlay=document.getElementById('loadingOverlay');
+  const fill=document.getElementById('loadBarFill');
+  const sub=document.getElementById('loadSub');
+  const stepText=document.getElementById('loadStepText');
+  overlay.classList.remove('hidden');
+  let step=0;
+  fill.style.width='5%';
+  sub.textContent=loadSteps[0];
+  stepText.textContent=loadSteps[0];
+  loadInterval=setInterval(()=>{
+    step=Math.min(step+1,loadSteps.length-1);
+    const pct=Math.round((step/(loadSteps.length-1))*90);
+    fill.style.width=pct+'%';
+    sub.textContent=loadSteps[step];
+    stepText.textContent=loadSteps[step];
+  },900);
+
+  const prompt=`You are a Hollywood pitch generator. Based on this movie concept: "${idea}"
+Genre preference: ${genre==='auto'?'detect from concept':genre}, Era: ${era}, Tone: ${tone}, Rating: ${rating}
+
+Generate a complete movie pitch as JSON with EXACTLY this structure (no markdown, pure JSON):
+{
+  "title": "Movie title (creative, marketable)",
+  "tagline": "Punchy one-liner tagline",
+  "genre": "Primary genre",
+  "era": "${era}",
+  "rating": "${rating}",
+  "budget": "$XXXm (a realistic budget for the genre)",
+  "runtime": "Xh Xm",
+  "director": "Suggested real or fictional director name",
+  "studio": "Suggested studio name",
+  "synopsis": "2-3 sentence compelling synopsis",
+  "bgGradient": "A CSS gradient string for the poster background that fits the movie mood, e.g. linear-gradient(135deg,#1a0a2e,#0d1b2a)",
+  "cast": [
+    {"actor":"Actor name","role":"Character name","salary":"$XM"}
+  ],
+  "budget_breakdown": [
+    {"category":"Category name","amount":"$XXm","percentage":25}
+  ],
+  "trailer_scenes": [
+    {"beat":"BEAT NAME","text":"Scene description or dialogue snippet","note":"Director note"}
+  ],
+  "awards": [
+    {"category":"Award category","title":"Specific award name","note":"Why it qualifies","chances":4}
+  ],
+  "soundtrack": [
+    {"name":"Track title","artist":"Artist or composer","type":"Original Score / Licensed","duration":"3:42"}
+  ]
+}
+Make cast have 6 entries, budget_breakdown have 6 entries, trailer_scenes have 5 entries, awards have 6 entries, soundtrack have 8 entries.
+Chances is 1-5 (5=very likely). Be creative and specific. Return ONLY the JSON.`;
+
+  try{
+    const res=await fetch("https://api.anthropic.com/v1/messages",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        model:"claude-sonnet-4-20250514",
+        max_tokens:2000,
+        messages:[{role:"user",content:prompt}]
+      })
+    });
+    const data=await res.json();
+    clearInterval(loadInterval);
+    fill.style.width='100%';
+    setTimeout(()=>{
+      overlay.classList.add('hidden');
+      let raw=data.content.map(b=>b.text||'').join('');
+      raw=raw.replace(/```json|```/g,'').trim();
+      let movie;
+      try{movie=JSON.parse(raw)}catch(e){showToast('Parse error, try again');return}
+      renderResults(movie);
+    },400);
+  }catch(e){
+    clearInterval(loadInterval);
+    overlay.classList.add('hidden');
+    showToast('Something went wrong. Try again.');
+  }
+}
+
+function renderResults(m){
+  document.getElementById('resBadges').innerHTML=`<span class="badge badge-genre">${m.genre||''}</span><span class="badge badge-rating">${m.rating||''}</span><span class="badge badge-era">${m.era||''}</span>`;
+  document.getElementById('resTitle').textContent=m.title||'Untitled';
+  document.getElementById('resTagline').textContent=`"${m.tagline||''}"`;
+  document.getElementById('resBudget').textContent=m.budget||'—';
+  document.getElementById('resRuntime').textContent=m.runtime||'—';
+  document.getElementById('resDirector').textContent=m.director||'—';
+  document.getElementById('resStudio').textContent=m.studio||'—';
+  document.getElementById('resSynopsis').textContent=m.synopsis||'';
+  if(m.bgGradient){document.getElementById('resultsHeroBg').style.background=m.bgGradient}
+
+  document.getElementById('castGrid').innerHTML=(m.cast||[]).map(c=>`
+    <div class="cast-card">
+      <div class="cast-initials">${initials(c.actor)}</div>
+      <div class="cast-actor">${c.actor}</div>
+      <div class="cast-role">${c.role}</div>
+      <div class="cast-salary">${c.salary}</div>
+    </div>`).join('');
+
+  const maxPct=Math.max(...(m.budget_breakdown||[]).map(b=>b.percentage||1));
+  document.getElementById('budgetBars').innerHTML=(m.budget_breakdown||[]).map(b=>`
+    <div class="budget-row">
+      <div class="budget-label">${b.category}</div>
+      <div class="budget-bar-track"><div class="budget-bar-fill" data-width="${Math.round((b.percentage/maxPct)*100)}%" style="width:0%"></div></div>
+      <div class="budget-amount">${b.amount}</div>
+    </div>`).join('');
+  document.getElementById('budgetTotal').textContent=m.budget||'—';
+
+  document.getElementById('trailerScenes').innerHTML=(m.trailer_scenes||[]).map((s,i)=>`
+    <div class="trailer-scene">
+      <div class="scene-num">${String(i+1).padStart(2,'0')}</div>
+      <div class="scene-body">
+        <div class="scene-beat">${s.beat}</div>
+        <div class="scene-text">${s.text}</div>
+        ${s.note?`<div class="scene-note">${s.note}</div>`:''}
+      </div>
+    </div>`).join('');
+
+  document.getElementById('awardsGrid').innerHTML=(m.awards||[]).map(a=>`
+    <div class="award-card">
+      <div class="award-category">${a.category}</div>
+      <div class="award-title">${a.title}</div>
+      <div class="award-note">${a.note}</div>
+      <div class="award-chances">
+        ${[1,2,3,4,5].map(n=>`<div class="chance-dot${n>(a.chances||3)?' dim':''}"></div>`).join('')}
+        <span class="chances-label">Confidence</span>
+      </div>
+    </div>`).join('');
+
+  document.getElementById('soundtrackList').innerHTML=(m.soundtrack||[]).map((t,i)=>`
+    <div class="track-row">
+      <div class="track-num">${i+1}</div>
+      <div class="track-info">
+        <div class="track-name">${t.name}</div>
+        <div class="track-artist">${t.artist}</div>
+      </div>
+      <div class="track-type">${t.type}</div>
+      <div class="track-duration">${t.duration}</div>
+    </div>`).join('');
+
+  document.getElementById('resultsSection').classList.remove('hidden');
+  document.getElementById('resultsSection').scrollIntoView({behavior:'smooth'});
+  goSlide(0);
+  setTimeout(animateBars,600);
+}
+</script>
 </body>
 </html>
