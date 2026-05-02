@@ -331,13 +331,7 @@ body::before{
       <div class="logo-icon"></div>
       <span class="nav-logo-text">AI Movie Studio</span>
     </div>
-    <div style="display:flex;gap:12px;align-items:center">
-      <button class="trailer-launch-btn hidden" id="trailerLaunchBtn" onclick="launchTrailer()">
-        <span class="trailer-btn-icon"></span>
-        <span>Watch Trailer</span>
-      </button>
-      <div class="nav-badge">Production Suite</div>
-    </div>
+    <div class="nav-badge">Production Suite</div>
   </nav>
   <div class="hero-content">
     <div class="hero-eyebrow">Powered by Artificial Intelligence</div>
@@ -420,6 +414,10 @@ body::before{
       <div class="res-badges" id="resBadges"></div>
       <h1 class="res-title" id="resTitle">Movie Title</h1>
       <p class="res-tagline" id="resTagline">"Tagline here"</p>
+      <button class="trailer-launch-btn hidden" id="trailerLaunchBtn" onclick="launchTrailer()" style="margin-bottom:28px">
+        <span class="trailer-btn-icon"></span>
+        <span>Watch Trailer</span>
+      </button>
       <div class="res-meta-row">
         <div class="res-meta-item"><span class="res-meta-label">Budget</span><span class="res-meta-val" id="resBudget">$150M</span></div>
         <div class="res-meta-item"><span class="res-meta-label">Runtime</span><span class="res-meta-val" id="resRuntime">2h 15m</span></div>
