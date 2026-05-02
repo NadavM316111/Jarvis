@@ -94,6 +94,40 @@ body::before{
 .results-section{background:var(--dark)}
 .results-section.hidden{display:none!important}
 
+/* TRAILER LAUNCH BUTTON */
+.trailer-launch-btn{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--dark);background:var(--gold);border:none;padding:9px 20px;cursor:pointer;display:flex;align-items:center;gap:8px;transition:all 0.2s;clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%)}
+.trailer-launch-btn:hover{background:var(--gold-bright);transform:translateY(-1px)}
+.trailer-btn-icon{width:0;height:0;border-style:solid;border-width:5px 0 5px 8px;border-color:transparent transparent transparent var(--dark)}
+
+/* TRAILER MODAL */
+.trailer-modal{position:fixed;inset:0;z-index:20000;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.trailer-modal.hidden{display:none!important}
+.trailer-film-strip{position:absolute;left:0;right:0;height:48px;background:repeating-linear-gradient(90deg,#111 0px,#111 32px,#000 32px,#000 40px);display:flex;align-items:center;z-index:2}
+.trailer-film-strip.top{top:0;border-bottom:2px solid #222}
+.trailer-film-strip.bottom{bottom:0;border-top:2px solid #222}
+.trailer-film-strip::before{content:'';position:absolute;top:50%;left:0;right:0;height:20px;transform:translateY(-50%);background:repeating-linear-gradient(90deg,#000 0,#000 4px,transparent 4px,transparent 36px);pointer-events:none}
+.trailer-close{position:absolute;top:60px;right:24px;z-index:10;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#fff;width:36px;height:36px;cursor:pointer;font-size:14px;transition:background 0.2s}
+.trailer-close:hover{background:rgba(255,255,255,0.18)}
+.trailer-screen{position:relative;width:min(860px,90vw);aspect-ratio:16/9;background:#000;overflow:hidden;border:1px solid #222}
+.trailer-scene-content{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;text-align:center;transition:opacity 0.6s ease}
+.trailer-scene-content.fade-out{opacity:0}
+.trailer-scene-content.fade-in{opacity:1}
+.scene-bg-overlay{position:absolute;inset:0;opacity:0.15;background-size:cover;background-position:center;filter:blur(2px)}
+.trailer-timestamp{font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:0.25em;color:var(--gold);text-transform:uppercase;margin-bottom:20px;opacity:0.8}
+.trailer-visual{font-family:'Playfair Display',serif;font-size:clamp(16px,2.5vw,24px);color:#fff;line-height:1.5;margin-bottom:20px;max-width:600px}
+.trailer-audio{font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:0.1em;color:rgba(201,168,76,0.7);margin-bottom:16px}
+.trailer-dialogue{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(14px,2vw,20px);color:var(--gold);border-left:2px solid var(--gold);padding-left:16px;text-align:left;max-width:500px;line-height:1.6}
+.trailer-title-card .trailer-visual{font-family:'Playfair Display',serif;font-size:clamp(28px,5vw,56px);font-weight:900;letter-spacing:-0.01em;color:#fff;margin-bottom:8px}
+.trailer-title-card .trailer-dialogue{border:none;padding:0;text-align:center;font-size:clamp(12px,1.5vw,16px);color:var(--gold-dim);letter-spacing:0.2em;font-style:normal;font-family:'Barlow Condensed',sans-serif}
+.trailer-progress-bar{position:absolute;bottom:44px;left:0;right:0;height:2px;background:rgba(255,255,255,0.1)}
+.trailer-progress-fill{height:100%;background:var(--gold);transition:width 0.1s linear;width:0%}
+.trailer-scene-counter{position:absolute;bottom:52px;right:16px;font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:0.15em;color:rgba(255,255,255,0.4);text-transform:uppercase}
+.trailer-now-playing{position:absolute;top:12px;left:16px;font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:0.12em;color:rgba(201,168,76,0.6);text-transform:uppercase;max-width:60%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.trailer-controls{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);display:flex;gap:8px;align-items:center}
+.tctrl-btn{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:#fff;width:32px;height:28px;cursor:pointer;font-size:10px;transition:background 0.15s}
+.tctrl-btn:hover{background:rgba(255,255,255,0.18)}
+.tctrl-play{width:40px;background:rgba(201,168,76,0.2);border-color:rgba(201,168,76,0.4);color:var(--gold)}
+
 .results-hero{position:relative;min-height:70vh;display:flex;align-items:flex-end;overflow:hidden}
 .results-hero-bg{position:absolute;inset:0;background-size:cover;background-position:center;filter:brightness(0.3) saturate(1.3)}
 .results-hero-gradient{position:absolute;inset:0;background:linear-gradient(to top, var(--dark) 0%, rgba(10,10,12,0.6) 50%, transparent 100%)}
@@ -183,10 +217,78 @@ body::before{
 
 .hidden{display:none!important}
 
+/* TRAILER LAUNCH BUTTON */
+.trailer-launch-btn{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--dark);background:var(--gold);border:none;padding:9px 20px;cursor:pointer;display:flex;align-items:center;gap:8px;transition:all 0.2s;clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%)}
+.trailer-launch-btn:hover{background:var(--gold-bright);transform:translateY(-1px)}
+.trailer-btn-icon{width:0;height:0;border-style:solid;border-width:5px 0 5px 8px;border-color:transparent transparent transparent var(--dark)}
+
+/* TRAILER MODAL */
+.trailer-modal{position:fixed;inset:0;z-index:20000;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.trailer-modal.hidden{display:none!important}
+.trailer-film-strip{position:absolute;left:0;right:0;height:48px;background:repeating-linear-gradient(90deg,#111 0px,#111 32px,#000 32px,#000 40px);display:flex;align-items:center;z-index:2}
+.trailer-film-strip.top{top:0;border-bottom:2px solid #222}
+.trailer-film-strip.bottom{bottom:0;border-top:2px solid #222}
+.trailer-film-strip::before{content:'';position:absolute;top:50%;left:0;right:0;height:20px;transform:translateY(-50%);background:repeating-linear-gradient(90deg,#000 0,#000 4px,transparent 4px,transparent 36px);pointer-events:none}
+.trailer-close{position:absolute;top:60px;right:24px;z-index:10;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#fff;width:36px;height:36px;cursor:pointer;font-size:14px;transition:background 0.2s}
+.trailer-close:hover{background:rgba(255,255,255,0.18)}
+.trailer-screen{position:relative;width:min(860px,90vw);aspect-ratio:16/9;background:#000;overflow:hidden;border:1px solid #222}
+.trailer-scene-content{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;text-align:center;transition:opacity 0.6s ease}
+.trailer-scene-content.fade-out{opacity:0}
+.trailer-scene-content.fade-in{opacity:1}
+.scene-bg-overlay{position:absolute;inset:0;opacity:0.15;background-size:cover;background-position:center;filter:blur(2px)}
+.trailer-timestamp{font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:0.25em;color:var(--gold);text-transform:uppercase;margin-bottom:20px;opacity:0.8}
+.trailer-visual{font-family:'Playfair Display',serif;font-size:clamp(16px,2.5vw,24px);color:#fff;line-height:1.5;margin-bottom:20px;max-width:600px}
+.trailer-audio{font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:0.1em;color:rgba(201,168,76,0.7);margin-bottom:16px}
+.trailer-dialogue{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(14px,2vw,20px);color:var(--gold);border-left:2px solid var(--gold);padding-left:16px;text-align:left;max-width:500px;line-height:1.6}
+.trailer-title-card .trailer-visual{font-family:'Playfair Display',serif;font-size:clamp(28px,5vw,56px);font-weight:900;letter-spacing:-0.01em;color:#fff;margin-bottom:8px}
+.trailer-title-card .trailer-dialogue{border:none;padding:0;text-align:center;font-size:clamp(12px,1.5vw,16px);color:var(--gold-dim);letter-spacing:0.2em;font-style:normal;font-family:'Barlow Condensed',sans-serif}
+.trailer-progress-bar{position:absolute;bottom:44px;left:0;right:0;height:2px;background:rgba(255,255,255,0.1)}
+.trailer-progress-fill{height:100%;background:var(--gold);transition:width 0.1s linear;width:0%}
+.trailer-scene-counter{position:absolute;bottom:52px;right:16px;font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:0.15em;color:rgba(255,255,255,0.4);text-transform:uppercase}
+.trailer-now-playing{position:absolute;top:12px;left:16px;font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:0.12em;color:rgba(201,168,76,0.6);text-transform:uppercase;max-width:60%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.trailer-controls{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);display:flex;gap:8px;align-items:center}
+.tctrl-btn{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:#fff;width:32px;height:28px;cursor:pointer;font-size:10px;transition:background 0.15s}
+.tctrl-btn:hover{background:rgba(255,255,255,0.18)}
+.tctrl-play{width:40px;background:rgba(201,168,76,0.2);border-color:rgba(201,168,76,0.4);color:var(--gold)}
+
 .toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--dark3);border:1px solid rgba(201,168,76,0.3);border-top:2px solid var(--gold);color:var(--cream);font-family:'Barlow Condensed',sans-serif;font-size:14px;letter-spacing:0.1em;padding:14px 28px;z-index:10001;opacity:0;transition:all 0.3s;text-transform:uppercase}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .error-modal{position:fixed;inset:0;z-index:10002;background:rgba(10,10,12,0.92);display:flex;align-items:center;justify-content:center;padding:24px}
 .error-modal.hidden{display:none!important}
+
+/* TRAILER LAUNCH BUTTON */
+.trailer-launch-btn{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--dark);background:var(--gold);border:none;padding:9px 20px;cursor:pointer;display:flex;align-items:center;gap:8px;transition:all 0.2s;clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%)}
+.trailer-launch-btn:hover{background:var(--gold-bright);transform:translateY(-1px)}
+.trailer-btn-icon{width:0;height:0;border-style:solid;border-width:5px 0 5px 8px;border-color:transparent transparent transparent var(--dark)}
+
+/* TRAILER MODAL */
+.trailer-modal{position:fixed;inset:0;z-index:20000;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.trailer-modal.hidden{display:none!important}
+.trailer-film-strip{position:absolute;left:0;right:0;height:48px;background:repeating-linear-gradient(90deg,#111 0px,#111 32px,#000 32px,#000 40px);display:flex;align-items:center;z-index:2}
+.trailer-film-strip.top{top:0;border-bottom:2px solid #222}
+.trailer-film-strip.bottom{bottom:0;border-top:2px solid #222}
+.trailer-film-strip::before{content:'';position:absolute;top:50%;left:0;right:0;height:20px;transform:translateY(-50%);background:repeating-linear-gradient(90deg,#000 0,#000 4px,transparent 4px,transparent 36px);pointer-events:none}
+.trailer-close{position:absolute;top:60px;right:24px;z-index:10;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#fff;width:36px;height:36px;cursor:pointer;font-size:14px;transition:background 0.2s}
+.trailer-close:hover{background:rgba(255,255,255,0.18)}
+.trailer-screen{position:relative;width:min(860px,90vw);aspect-ratio:16/9;background:#000;overflow:hidden;border:1px solid #222}
+.trailer-scene-content{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;text-align:center;transition:opacity 0.6s ease}
+.trailer-scene-content.fade-out{opacity:0}
+.trailer-scene-content.fade-in{opacity:1}
+.scene-bg-overlay{position:absolute;inset:0;opacity:0.15;background-size:cover;background-position:center;filter:blur(2px)}
+.trailer-timestamp{font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:0.25em;color:var(--gold);text-transform:uppercase;margin-bottom:20px;opacity:0.8}
+.trailer-visual{font-family:'Playfair Display',serif;font-size:clamp(16px,2.5vw,24px);color:#fff;line-height:1.5;margin-bottom:20px;max-width:600px}
+.trailer-audio{font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:0.1em;color:rgba(201,168,76,0.7);margin-bottom:16px}
+.trailer-dialogue{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(14px,2vw,20px);color:var(--gold);border-left:2px solid var(--gold);padding-left:16px;text-align:left;max-width:500px;line-height:1.6}
+.trailer-title-card .trailer-visual{font-family:'Playfair Display',serif;font-size:clamp(28px,5vw,56px);font-weight:900;letter-spacing:-0.01em;color:#fff;margin-bottom:8px}
+.trailer-title-card .trailer-dialogue{border:none;padding:0;text-align:center;font-size:clamp(12px,1.5vw,16px);color:var(--gold-dim);letter-spacing:0.2em;font-style:normal;font-family:'Barlow Condensed',sans-serif}
+.trailer-progress-bar{position:absolute;bottom:44px;left:0;right:0;height:2px;background:rgba(255,255,255,0.1)}
+.trailer-progress-fill{height:100%;background:var(--gold);transition:width 0.1s linear;width:0%}
+.trailer-scene-counter{position:absolute;bottom:52px;right:16px;font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:0.15em;color:rgba(255,255,255,0.4);text-transform:uppercase}
+.trailer-now-playing{position:absolute;top:12px;left:16px;font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:0.12em;color:rgba(201,168,76,0.6);text-transform:uppercase;max-width:60%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.trailer-controls{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);display:flex;gap:8px;align-items:center}
+.tctrl-btn{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:#fff;width:32px;height:28px;cursor:pointer;font-size:10px;transition:background 0.15s}
+.tctrl-btn:hover{background:rgba(255,255,255,0.18)}
+.tctrl-play{width:40px;background:rgba(201,168,76,0.2);border-color:rgba(201,168,76,0.4);color:var(--gold)}
 .error-box{background:var(--dark3);border:1px solid rgba(192,57,43,0.4);border-top:2px solid #C0392B;max-width:600px;width:100%;padding:32px}
 .error-title{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;letter-spacing:0.2em;color:#E74C3C;text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:10px}
 .error-title::before{content:'';width:8px;height:8px;background:#E74C3C;border-radius:50%;flex-shrink:0}
@@ -229,7 +331,13 @@ body::before{
       <div class="logo-icon"></div>
       <span class="nav-logo-text">AI Movie Studio</span>
     </div>
-    <div class="nav-badge">Production Suite</div>
+    <div style="display:flex;gap:12px;align-items:center">
+      <button class="trailer-launch-btn hidden" id="trailerLaunchBtn" onclick="launchTrailer()">
+        <span class="trailer-btn-icon"></span>
+        <span>Watch Trailer</span>
+      </button>
+      <div class="nav-badge">Production Suite</div>
+    </div>
   </nav>
   <div class="hero-content">
     <div class="hero-eyebrow">Powered by Artificial Intelligence</div>
@@ -347,6 +455,24 @@ body::before{
 </section>
 
 <div class="toast" id="toast"></div>
+
+<!-- TRAILER MODAL -->
+<div class="trailer-modal hidden" id="trailerModal">
+  <div class="trailer-film-strip top" id="trailerStripTop"></div>
+  <div class="trailer-film-strip bottom" id="trailerStripBottom"></div>
+  <button class="trailer-close" onclick="closeTrailer()">&#10005;</button>
+  <div class="trailer-screen" id="trailerScreen">
+    <div class="trailer-scene-content" id="trailerSceneContent"></div>
+    <div class="trailer-progress-bar"><div class="trailer-progress-fill" id="trailerProgressFill"></div></div>
+    <div class="trailer-scene-counter" id="trailerSceneCounter">1 / 6</div>
+    <div class="trailer-now-playing" id="trailerNowPlaying"></div>
+    <div class="trailer-controls">
+      <button class="tctrl-btn" onclick="trailerPrev()">&#9664;</button>
+      <button class="tctrl-btn tctrl-play" id="trailerPlayBtn" onclick="toggleTrailerPlay()">&#9646;&#9646;</button>
+      <button class="tctrl-btn" onclick="trailerNext()">&#9654;</button>
+    </div>
+  </div>
+</div>
 
 <div class="error-modal hidden" id="errorModal">
   <div class="error-box">
@@ -550,11 +676,169 @@ function renderResults(m){
       <div class="track-duration">${t.duration}</div>
     </div>`).join('');
 
+  // Store globally for trailer player
+  trailerScenes=m.trailer_scenes||[];
+  trailerSoundtrack=m.soundtrack||[];
+
   document.getElementById('resultsSection').classList.remove('hidden');
   document.getElementById('resultsSection').scrollIntoView({behavior:'smooth'});
   goSlide(0);
   setTimeout(animateBars,600);
+  // Show trailer button
+  document.getElementById('trailerLaunchBtn').classList.remove('hidden');
 }
+
+// ── TRAILER PLAYER ──────────────────────────────────────────
+let trailerScenes=[];
+let trailerSoundtrack=[];
+let trailerCurrentScene=0;
+let trailerPlaying=true;
+let trailerTimer=null;
+let trailerProgressTimer=null;
+let trailerProgressVal=0;
+const SCENE_DURATION=6000; // ms per scene
+
+function launchTrailer(){
+  const modal=document.getElementById('trailerModal');
+  modal.classList.remove('hidden');
+  document.body.style.overflow='hidden';
+  trailerCurrentScene=0;
+  trailerPlaying=true;
+  document.getElementById('trailerPlayBtn').innerHTML='&#9646;&#9646;';
+  showTrailerScene(0);
+  startTrailerTimer();
+}
+
+function closeTrailer(){
+  document.getElementById('trailerModal').classList.add('hidden');
+  document.body.style.overflow='';
+  clearTimeout(trailerTimer);
+  clearInterval(trailerProgressTimer);
+}
+
+function showTrailerScene(idx){
+  const scenes=trailerScenes;
+  if(!scenes.length) return;
+  idx=((idx%scenes.length)+scenes.length)%scenes.length;
+  trailerCurrentScene=idx;
+  const s=scenes[idx];
+  const isLast=idx===scenes.length-1;
+  const content=document.getElementById('trailerSceneContent');
+
+  // Fade out
+  content.classList.remove('fade-in');
+  content.classList.add('fade-out');
+
+  setTimeout(()=>{
+    const trackIdx=idx % Math.max(trailerSoundtrack.length,1);
+    const track=trailerSoundtrack[trackIdx];
+    document.getElementById('trailerNowPlaying').textContent=track?'Now Playing: '+track.name+' — '+track.artist:'';
+    document.getElementById('trailerSceneCounter').textContent=(idx+1)+' / '+scenes.length;
+
+    if(isLast){
+      // Title card
+      content.innerHTML=`
+        <div class="scene-bg-overlay" style="background:var(--dark)"></div>
+        <div class="trailer-title-card" style="position:relative;z-index:2">
+          <div class="trailer-visual" id="typedTitle"></div>
+          <div class="trailer-dialogue">${s.dialogue||''}</div>
+        </div>`;
+      content.classList.remove('fade-out');
+      content.classList.add('fade-in');
+      // Type out title
+      const titleEl=document.getElementById('typedTitle');
+      const titleText=document.getElementById('resTitle').textContent||'';
+      typeText(titleEl, titleText, 60);
+    } else {
+      content.innerHTML=`
+        <div class="scene-bg-overlay" style="background:${genreGradient(document.querySelector('.badge-genre')?.textContent||'')}"></div>
+        <div style="position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:0">
+          <div class="trailer-timestamp">${s.beat||''}</div>
+          <div class="trailer-visual" id="typedVisual"></div>
+          ${s.audio?`<div class="trailer-audio">&#9834; ${s.audio}</div>`:''}
+          ${s.note?`<div class="trailer-dialogue">&ldquo;<span id="typedDialogue"></span>&rdquo;</div>`:''}
+        </div>`;
+      content.classList.remove('fade-out');
+      content.classList.add('fade-in');
+      typeText(document.getElementById('typedVisual'), s.text||'', 18);
+      if(s.note && document.getElementById('typedDialogue')){
+        setTimeout(()=>typeText(document.getElementById('typedDialogue'), s.note, 22), (s.text||'').length*18+400);
+      }
+    }
+
+    // Progress bar
+    trailerProgressVal=0;
+    document.getElementById('trailerProgressFill').style.width='0%';
+    clearInterval(trailerProgressTimer);
+    if(trailerPlaying){
+      const steps=SCENE_DURATION/50;
+      trailerProgressTimer=setInterval(()=>{
+        trailerProgressVal=Math.min(trailerProgressVal+100/steps,100);
+        document.getElementById('trailerProgressFill').style.width=trailerProgressVal+'%';
+      },50);
+    }
+  }, 350);
+}
+
+function typeText(el, text, speed){
+  if(!el||!text) return;
+  el.textContent='';
+  let i=0;
+  const t=setInterval(()=>{
+    if(i>=text.length){clearInterval(t);return}
+    el.textContent+=text[i++];
+  }, speed);
+}
+
+function startTrailerTimer(){
+  clearTimeout(trailerTimer);
+  if(!trailerPlaying) return;
+  trailerTimer=setTimeout(()=>{
+    trailerNext();
+  }, SCENE_DURATION);
+}
+
+function trailerNext(){
+  clearTimeout(trailerTimer);
+  clearInterval(trailerProgressTimer);
+  const next=(trailerCurrentScene+1)%trailerScenes.length;
+  showTrailerScene(next);
+  if(trailerPlaying) startTrailerTimer();
+}
+
+function trailerPrev(){
+  clearTimeout(trailerTimer);
+  clearInterval(trailerProgressTimer);
+  const prev=(trailerCurrentScene-1+trailerScenes.length)%trailerScenes.length;
+  showTrailerScene(prev);
+  if(trailerPlaying) startTrailerTimer();
+}
+
+function toggleTrailerPlay(){
+  trailerPlaying=!trailerPlaying;
+  document.getElementById('trailerPlayBtn').innerHTML=trailerPlaying?'&#9646;&#9646;':'&#9654;';
+  if(trailerPlaying){
+    startTrailerTimer();
+    const steps=SCENE_DURATION/50;
+    const remaining=(100-trailerProgressVal)/100*SCENE_DURATION;
+    trailerProgressTimer=setInterval(()=>{
+      trailerProgressVal=Math.min(trailerProgressVal+100/(SCENE_DURATION/50),100);
+      document.getElementById('trailerProgressFill').style.width=trailerProgressVal+'%';
+    },50);
+  } else {
+    clearTimeout(trailerTimer);
+    clearInterval(trailerProgressTimer);
+  }
+}
+
+// keyboard controls
+document.addEventListener('keydown',e=>{
+  if(document.getElementById('trailerModal').classList.contains('hidden')) return;
+  if(e.key==='Escape') closeTrailer();
+  if(e.key==='ArrowRight') trailerNext();
+  if(e.key==='ArrowLeft') trailerPrev();
+  if(e.key===' '){e.preventDefault();toggleTrailerPlay();}
+});
 </script>
 </body>
 </html>
