@@ -474,10 +474,11 @@ async function generateMovie(){
         trailer_scenes:(m.trailer||[]).map(s=>({
           beat:'Scene '+s.scene+(s.timestamp?' — '+s.timestamp:''),
           text:s.visual||'',
-          note:s.dialogue||s.audio||''
+          audio:s.audio||'',
+          note:s.dialogue||''
         })),
-        awards:[],
-        soundtrack:[]
+        awards:(m.awards||[]),
+        soundtrack:(m.soundtrack||[])
       };
       renderResults(mapped);
     },400);
@@ -522,7 +523,8 @@ function renderResults(m){
       <div class="scene-body">
         <div class="scene-beat">${s.beat}</div>
         <div class="scene-text">${s.text}</div>
-        ${s.note?`<div class="scene-note">${s.note}</div>`:''}
+        ${s.audio?`<div class="scene-note" style="color:var(--text-dim);opacity:0.7">&#9834; ${s.audio}</div>`:''}
+        ${s.note?`<div class="scene-note">&ldquo;${s.note}&rdquo;</div>`:''}
       </div>
     </div>`).join('');
 

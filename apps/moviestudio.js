@@ -13,8 +13,8 @@ module.exports = (app) => {
 
       const aiResp = await anthropic.messages.create({
         model: "claude-opus-4-5",
-        max_tokens: 4000,
-        system: "You are a Hollywood movie studio executive. Return ONLY valid raw JSON with no markdown, no code blocks, no explanation. Be concise in descriptions to stay within token limits.",
+        max_tokens: 6000,
+        system: "You are a Hollywood movie studio executive. Return ONLY valid raw JSON with no markdown, no code blocks, no explanation.",
         messages: [{
           role: "user",
           content: `Create a complete movie concept for: "${prompt}"
@@ -45,12 +45,30 @@ Return ONLY this JSON (no markdown, no backticks):
     "marketing": "$15M"
   },
   "trailer": [
-    {"scene": 1, "timestamp": "0:00-0:15", "visual": "Opening scene", "audio": "Ambient sound", "dialogue": "Voiceover line"},
-    {"scene": 2, "timestamp": "0:15-0:35", "visual": "Scene description", "audio": "Music", "dialogue": "Dialogue"},
-    {"scene": 3, "timestamp": "0:35-0:55", "visual": "Scene description", "audio": "Music", "dialogue": "Dialogue"},
-    {"scene": 4, "timestamp": "0:55-1:15", "visual": "Action scene", "audio": "Score", "dialogue": "Dialogue"},
-    {"scene": 5, "timestamp": "1:15-1:40", "visual": "Climax", "audio": "Epic swell", "dialogue": "Final line"},
-    {"scene": 6, "timestamp": "1:40-2:00", "visual": "Title card", "audio": "Music fade", "dialogue": "Title + release date"}
+    {"scene": 1, "timestamp": "0:00-0:15", "visual": "Opening shot description", "audio": "Sound description", "dialogue": "Voiceover or spoken line"},
+    {"scene": 2, "timestamp": "0:15-0:35", "visual": "Scene description", "audio": "Music description", "dialogue": "Dialogue line"},
+    {"scene": 3, "timestamp": "0:35-0:55", "visual": "Scene description", "audio": "Music description", "dialogue": "Dialogue line"},
+    {"scene": 4, "timestamp": "0:55-1:15", "visual": "Action scene", "audio": "Intense score", "dialogue": "Dialogue line"},
+    {"scene": 5, "timestamp": "1:15-1:40", "visual": "Climax montage", "audio": "Epic swell", "dialogue": "Final memorable line"},
+    {"scene": 6, "timestamp": "1:40-2:00", "visual": "Title card on black", "audio": "Music fade to silence", "dialogue": "TITLE. Release date."}
+  ],
+  "awards": [
+    {"category": "Academy Awards", "title": "Best Picture", "note": "Why it qualifies", "chances": 4},
+    {"category": "Academy Awards", "title": "Best Director", "note": "Why it qualifies", "chances": 3},
+    {"category": "Academy Awards", "title": "Best Original Score", "note": "Why it qualifies", "chances": 4},
+    {"category": "Golden Globes", "title": "Best Motion Picture - Drama", "note": "Why it qualifies", "chances": 3},
+    {"category": "Academy Awards", "title": "Best Visual Effects", "note": "Why it qualifies", "chances": 5},
+    {"category": "SAG Awards", "title": "Outstanding Cast in a Motion Picture", "note": "Why it qualifies", "chances": 3}
+  ],
+  "soundtrack": [
+    {"name": "Track Title", "artist": "Composer Name", "type": "Original Score", "duration": "3:42"},
+    {"name": "Track Title", "artist": "Composer Name", "type": "Original Score", "duration": "4:15"},
+    {"name": "Track Title", "artist": "Artist Name", "type": "Licensed", "duration": "3:28"},
+    {"name": "Track Title", "artist": "Composer Name", "type": "Original Score", "duration": "5:02"},
+    {"name": "Track Title", "artist": "Artist Name", "type": "Licensed", "duration": "3:55"},
+    {"name": "Track Title", "artist": "Composer Name", "type": "Original Score", "duration": "4:33"},
+    {"name": "Track Title", "artist": "Artist Name", "type": "Licensed", "duration": "3:17"},
+    {"name": "Track Title", "artist": "Composer Name", "type": "Original Score", "duration": "6:08"}
   ]
 }`
         }]
@@ -72,7 +90,7 @@ Return ONLY this JSON (no markdown, no backticks):
         INSERT INTO movie_films (title, tagline, genre, rating, synopsis, full_data, user_prompt)
         VALUES (${movie.title}, ${movie.tagline}, ${movie.genre}, ${movie.rating}, ${movie.synopsis}, ${JSON.stringify(movie)}, ${prompt})
         RETURNING id
-      `.then(saved => { movie.id = saved[0].id; }).catch(e => console.error("[MovieStudio] DB save error:", e.message));
+      `.then(saved => { movie.id = saved[0]?.id; }).catch(e => console.error("[MovieStudio] DB save error:", e.message));
 
       res.json({ success: true, movie });
     } catch (err) {
