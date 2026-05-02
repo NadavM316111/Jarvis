@@ -109,10 +109,9 @@ body::before{
 .trailer-close{position:absolute;top:60px;right:24px;z-index:10;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#fff;width:36px;height:36px;cursor:pointer;font-size:14px;transition:background 0.2s}
 .trailer-close:hover{background:rgba(255,255,255,0.18)}
 .trailer-screen{position:relative;width:min(860px,90vw);aspect-ratio:16/9;background:#000;overflow:hidden;border:1px solid #222}
-.trailer-scene-content{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;text-align:center;transition:opacity 0.6s ease}
-.trailer-scene-content.fade-out{opacity:0}
-.trailer-scene-content.fade-in{opacity:1}
-.scene-bg-overlay{position:absolute;inset:0;opacity:0.15;background-size:cover;background-position:center;filter:blur(2px)}
+.trailer-scene-content{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;overflow:hidden}
+.scene-bg-img{position:absolute;inset:0;background-size:cover;background-position:center;transition:opacity 0.8s ease}
+.scene-bg-overlay-dark{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.85) 0%,rgba(0,0,0,0.3) 60%,rgba(0,0,0,0.5) 100%)}
 .trailer-timestamp{font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:0.25em;color:var(--gold);text-transform:uppercase;margin-bottom:20px;opacity:0.8}
 .trailer-visual{font-family:'Playfair Display',serif;font-size:clamp(16px,2.5vw,24px);color:#fff;line-height:1.5;margin-bottom:20px;max-width:600px}
 .trailer-audio{font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:0.1em;color:rgba(201,168,76,0.7);margin-bottom:16px}
@@ -232,10 +231,9 @@ body::before{
 .trailer-close{position:absolute;top:60px;right:24px;z-index:10;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#fff;width:36px;height:36px;cursor:pointer;font-size:14px;transition:background 0.2s}
 .trailer-close:hover{background:rgba(255,255,255,0.18)}
 .trailer-screen{position:relative;width:min(860px,90vw);aspect-ratio:16/9;background:#000;overflow:hidden;border:1px solid #222}
-.trailer-scene-content{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;text-align:center;transition:opacity 0.6s ease}
-.trailer-scene-content.fade-out{opacity:0}
-.trailer-scene-content.fade-in{opacity:1}
-.scene-bg-overlay{position:absolute;inset:0;opacity:0.15;background-size:cover;background-position:center;filter:blur(2px)}
+.trailer-scene-content{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;overflow:hidden}
+.scene-bg-img{position:absolute;inset:0;background-size:cover;background-position:center;transition:opacity 0.8s ease}
+.scene-bg-overlay-dark{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.85) 0%,rgba(0,0,0,0.3) 60%,rgba(0,0,0,0.5) 100%)}
 .trailer-timestamp{font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:0.25em;color:var(--gold);text-transform:uppercase;margin-bottom:20px;opacity:0.8}
 .trailer-visual{font-family:'Playfair Display',serif;font-size:clamp(16px,2.5vw,24px);color:#fff;line-height:1.5;margin-bottom:20px;max-width:600px}
 .trailer-audio{font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:0.1em;color:rgba(201,168,76,0.7);margin-bottom:16px}
@@ -271,10 +269,9 @@ body::before{
 .trailer-close{position:absolute;top:60px;right:24px;z-index:10;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#fff;width:36px;height:36px;cursor:pointer;font-size:14px;transition:background 0.2s}
 .trailer-close:hover{background:rgba(255,255,255,0.18)}
 .trailer-screen{position:relative;width:min(860px,90vw);aspect-ratio:16/9;background:#000;overflow:hidden;border:1px solid #222}
-.trailer-scene-content{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;text-align:center;transition:opacity 0.6s ease}
-.trailer-scene-content.fade-out{opacity:0}
-.trailer-scene-content.fade-in{opacity:1}
-.scene-bg-overlay{position:absolute;inset:0;opacity:0.15;background-size:cover;background-position:center;filter:blur(2px)}
+.trailer-scene-content{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;overflow:hidden}
+.scene-bg-img{position:absolute;inset:0;background-size:cover;background-position:center;transition:opacity 0.8s ease}
+.scene-bg-overlay-dark{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.85) 0%,rgba(0,0,0,0.3) 60%,rgba(0,0,0,0.5) 100%)}
 .trailer-timestamp{font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:0.25em;color:var(--gold);text-transform:uppercase;margin-bottom:20px;opacity:0.8}
 .trailer-visual{font-family:'Playfair Display',serif;font-size:clamp(16px,2.5vw,24px);color:#fff;line-height:1.5;margin-bottom:20px;max-width:600px}
 .trailer-audio{font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:0.1em;color:rgba(201,168,76,0.7);margin-bottom:16px}
@@ -456,11 +453,22 @@ body::before{
 
 <!-- TRAILER MODAL -->
 <div class="trailer-modal hidden" id="trailerModal">
-  <div class="trailer-film-strip top" id="trailerStripTop"></div>
-  <div class="trailer-film-strip bottom" id="trailerStripBottom"></div>
+  <div class="trailer-film-strip top"></div>
+  <div class="trailer-film-strip bottom"></div>
   <button class="trailer-close" onclick="closeTrailer()">&#10005;</button>
+
+  <!-- Hidden YouTube audio player -->
+  <iframe id="ytAudioFrame" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;left:-9999px" allow="autoplay" frameborder="0"></iframe>
+
   <div class="trailer-screen" id="trailerScreen">
-    <div class="trailer-scene-content" id="trailerSceneContent"></div>
+    <!-- Loading state -->
+    <div id="trailerLoadingBar" style="position:absolute;inset:0;z-index:20;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:0.25em;color:var(--gold);text-transform:uppercase">Generating Scenes</div>
+      <div style="width:200px;height:2px;background:rgba(255,255,255,0.1)"><div id="trailerLoadingFill" style="height:100%;background:var(--gold);width:0%;transition:width 0.3s"></div></div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.3);font-family:'Barlow Condensed',sans-serif;letter-spacing:0.1em">Powered by AI image generation</div>
+    </div>
+
+    <div class="trailer-scene-content" id="trailerSceneContent" style="opacity:0"></div>
     <div class="trailer-progress-bar"><div class="trailer-progress-fill" id="trailerProgressFill"></div></div>
     <div class="trailer-scene-counter" id="trailerSceneCounter">1 / 6</div>
     <div class="trailer-now-playing" id="trailerNowPlaying"></div>
@@ -694,7 +702,9 @@ let trailerPlaying=true;
 let trailerTimer=null;
 let trailerProgressTimer=null;
 let trailerProgressVal=0;
-const SCENE_DURATION=6000; // ms per scene
+let trailerImageCache={};
+let ytPlayer=null;
+const SCENE_DURATION=8000;
 
 function launchTrailer(){
   const modal=document.getElementById('trailerModal');
@@ -703,8 +713,13 @@ function launchTrailer(){
   trailerCurrentScene=0;
   trailerPlaying=true;
   document.getElementById('trailerPlayBtn').innerHTML='&#9646;&#9646;';
-  showTrailerScene(0);
-  startTrailerTimer();
+  // Preload all scene images
+  preloadTrailerImages().then(()=>{
+    showTrailerScene(0);
+    startTrailerTimer();
+  });
+  // Start YouTube audio for first track
+  playYouTubeTrack(0);
 }
 
 function closeTrailer(){
@@ -712,6 +727,43 @@ function closeTrailer(){
   document.body.style.overflow='';
   clearTimeout(trailerTimer);
   clearInterval(trailerProgressTimer);
+  // Stop YouTube
+  const ytFrame=document.getElementById('ytAudioFrame');
+  if(ytFrame) ytFrame.src='';
+}
+
+async function preloadTrailerImages(){
+  const loadingEl=document.getElementById('trailerLoadingBar');
+  if(loadingEl) loadingEl.style.display='flex';
+  const movieTitle=document.getElementById('resTitle').textContent||'';
+  const genre=document.querySelector('.badge-genre')?.textContent||'';
+  const promises=trailerScenes.map((s,i)=>{
+    if(trailerImageCache[i]) return Promise.resolve();
+    const prompt=encodeURIComponent(`${s.text}, ${genre} movie scene, cinematic, dramatic lighting, film still, 4k, ${movieTitle}`);
+    const url=`https://image.pollinations.ai/prompt/${prompt}?width=1280&height=720&nologo=true&seed=${i*999+42}`;
+    return new Promise(resolve=>{
+      const img=new Image();
+      img.onload=()=>{trailerImageCache[i]=url;loaded++;if(fillEl)fillEl.style.width=Math.round(loaded/trailerScenes.length*100)+'%';resolve()};
+      img.onerror=()=>{trailerImageCache[i]=null;loaded++;if(fillEl)fillEl.style.width=Math.round(loaded/trailerScenes.length*100)+'%';resolve()};
+      img.src=url;
+    });
+  });
+  await Promise.allSettled(promises);
+  if(loadingEl) loadingEl.style.display='none';
+}
+
+function playYouTubeTrack(trackIdx){
+  if(!trailerSoundtrack.length) return;
+  const track=trailerSoundtrack[trackIdx%trailerSoundtrack.length];
+  if(!track) return;
+  // Search YouTube via embed search
+  const query=encodeURIComponent((track.name||'')+" "+(track.artist||'')+" official audio");
+  const ytFrame=document.getElementById('ytAudioFrame');
+  if(ytFrame){
+    // Use YouTube search embed — this plays the top result audio
+    ytFrame.src=`https://www.youtube.com/embed?listType=search&list=${query}&autoplay=1&controls=0&loop=1&mute=0&enablejsapi=0`;
+    document.getElementById('trailerNowPlaying').textContent='♪ '+( track.name||'')+' — '+(track.artist||'');
+  }
 }
 
 function showTrailerScene(idx){
@@ -723,48 +775,42 @@ function showTrailerScene(idx){
   const isLast=idx===scenes.length-1;
   const content=document.getElementById('trailerSceneContent');
 
-  // Fade out
-  content.classList.remove('fade-in');
-  content.classList.add('fade-out');
-
+  content.style.opacity='0';
   setTimeout(()=>{
-    const trackIdx=idx % Math.max(trailerSoundtrack.length,1);
-    const track=trailerSoundtrack[trackIdx];
-    document.getElementById('trailerNowPlaying').textContent=track?'Now Playing: '+track.name+' — '+track.artist:'';
     document.getElementById('trailerSceneCounter').textContent=(idx+1)+' / '+scenes.length;
+
+    // Change track every 2 scenes
+    if(idx%2===0) playYouTubeTrack(Math.floor(idx/2));
+
+    const imgUrl=trailerImageCache[idx];
 
     if(isLast){
       // Title card
       content.innerHTML=`
-        <div class="scene-bg-overlay" style="background:var(--dark)"></div>
-        <div class="trailer-title-card" style="position:relative;z-index:2">
-          <div class="trailer-visual" id="typedTitle"></div>
-          <div class="trailer-dialogue">${s.dialogue||''}</div>
+        <div class="scene-bg-img" style="background-image:url('${imgUrl||''}');opacity:0.25"></div>
+        <div class="trailer-title-card" style="position:relative;z-index:2;text-align:center">
+          <div class="trailer-visual" id="typedTitle" style="font-size:clamp(32px,6vw,72px);font-weight:900;letter-spacing:-0.02em;margin-bottom:16px"></div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:14px;letter-spacing:0.3em;color:var(--gold-dim);text-transform:uppercase">${s.note||s.dialogue||''}</div>
         </div>`;
-      content.classList.remove('fade-out');
-      content.classList.add('fade-in');
-      // Type out title
-      const titleEl=document.getElementById('typedTitle');
-      const titleText=document.getElementById('resTitle').textContent||'';
-      typeText(titleEl, titleText, 60);
+      typeText(document.getElementById('typedTitle'), document.getElementById('resTitle').textContent||'', 55);
     } else {
       content.innerHTML=`
-        <div class="scene-bg-overlay" style="background:${genreGradient(document.querySelector('.badge-genre')?.textContent||'')}"></div>
-        <div style="position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:0">
+        ${imgUrl?`<div class="scene-bg-img" style="background-image:url('${imgUrl}')"></div><div class="scene-bg-overlay-dark"></div>`:`<div class="scene-bg-img" style="background:${genreGradient(document.querySelector('.badge-genre')?.textContent||'')}"></div>`}
+        <div style="position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:8px;padding:32px;text-align:center;width:100%">
           <div class="trailer-timestamp">${s.beat||''}</div>
-          <div class="trailer-visual" id="typedVisual"></div>
-          ${s.audio?`<div class="trailer-audio">&#9834; ${s.audio}</div>`:''}
+          <div class="trailer-visual" id="typedVisual" style="text-shadow:0 2px 20px rgba(0,0,0,0.9)"></div>
           ${s.note?`<div class="trailer-dialogue">&ldquo;<span id="typedDialogue"></span>&rdquo;</div>`:''}
         </div>`;
-      content.classList.remove('fade-out');
-      content.classList.add('fade-in');
-      typeText(document.getElementById('typedVisual'), s.text||'', 18);
+      typeText(document.getElementById('typedVisual'), s.text||'', 16);
       if(s.note && document.getElementById('typedDialogue')){
-        setTimeout(()=>typeText(document.getElementById('typedDialogue'), s.note, 22), (s.text||'').length*18+400);
+        setTimeout(()=>typeText(document.getElementById('typedDialogue'), s.note, 20), (s.text||'').length*16+500);
       }
     }
 
-    // Progress bar
+    content.style.transition='opacity 0.5s ease';
+    content.style.opacity='1';
+
+    // Progress bar reset
     trailerProgressVal=0;
     document.getElementById('trailerProgressFill').style.width='0%';
     clearInterval(trailerProgressTimer);
@@ -775,7 +821,7 @@ function showTrailerScene(idx){
         document.getElementById('trailerProgressFill').style.width=trailerProgressVal+'%';
       },50);
     }
-  }, 350);
+  },350);
 }
 
 function typeText(el, text, speed){
@@ -783,7 +829,7 @@ function typeText(el, text, speed){
   el.textContent='';
   let i=0;
   const t=setInterval(()=>{
-    if(i>=text.length){clearInterval(t);return}
+    if(!el||i>=text.length){clearInterval(t);return}
     el.textContent+=text[i++];
   }, speed);
 }
@@ -791,45 +837,30 @@ function typeText(el, text, speed){
 function startTrailerTimer(){
   clearTimeout(trailerTimer);
   if(!trailerPlaying) return;
-  trailerTimer=setTimeout(()=>{
-    trailerNext();
-  }, SCENE_DURATION);
+  trailerTimer=setTimeout(()=>trailerNext(), SCENE_DURATION);
 }
 
 function trailerNext(){
   clearTimeout(trailerTimer);
   clearInterval(trailerProgressTimer);
-  const next=(trailerCurrentScene+1)%trailerScenes.length;
-  showTrailerScene(next);
+  showTrailerScene((trailerCurrentScene+1)%trailerScenes.length);
   if(trailerPlaying) startTrailerTimer();
 }
 
 function trailerPrev(){
   clearTimeout(trailerTimer);
   clearInterval(trailerProgressTimer);
-  const prev=(trailerCurrentScene-1+trailerScenes.length)%trailerScenes.length;
-  showTrailerScene(prev);
+  showTrailerScene((trailerCurrentScene-1+trailerScenes.length)%trailerScenes.length);
   if(trailerPlaying) startTrailerTimer();
 }
 
 function toggleTrailerPlay(){
   trailerPlaying=!trailerPlaying;
   document.getElementById('trailerPlayBtn').innerHTML=trailerPlaying?'&#9646;&#9646;':'&#9654;';
-  if(trailerPlaying){
-    startTrailerTimer();
-    const steps=SCENE_DURATION/50;
-    const remaining=(100-trailerProgressVal)/100*SCENE_DURATION;
-    trailerProgressTimer=setInterval(()=>{
-      trailerProgressVal=Math.min(trailerProgressVal+100/(SCENE_DURATION/50),100);
-      document.getElementById('trailerProgressFill').style.width=trailerProgressVal+'%';
-    },50);
-  } else {
-    clearTimeout(trailerTimer);
-    clearInterval(trailerProgressTimer);
-  }
+  if(trailerPlaying){ startTrailerTimer(); }
+  else { clearTimeout(trailerTimer); clearInterval(trailerProgressTimer); }
 }
 
-// keyboard controls
 document.addEventListener('keydown',e=>{
   if(document.getElementById('trailerModal').classList.contains('hidden')) return;
   if(e.key==='Escape') closeTrailer();
