@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nadav's AP Study Plan</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Inter',sans-serif;background:#0a0a0f;color:#e0e0e0;min-height:100vh;}
+  .hero{background:linear-gradient(135deg,#0a0a0f 0%,#0d1117 40%,#0a0a1a 100%);padding:48px 20px 32px;text-align:center;border-bottom:1px solid #1e2a3a;position:relative;overflow:hidden;}
+  .hero::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(ellipse at center,rgba(59,130,246,0.08) 0%,transparent 60%);pointer-events:none;}
+  .hero h1{font-size:clamp(2rem,5vw,3.5rem);font-weight:900;background:linear-gradient(135deg,#60a5fa,#a78bfa,#34d399);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-1px;margin-bottom:8px;}
+  .hero p{color:#64748b;font-size:1.1rem;font-weight:400;}
+  .exam-badges{display:flex;justify-content:center;gap:16px;margin-top:20px;flex-wrap:wrap;}
+  .badge{padding:10px 24px;border-radius:50px;font-weight:700;font-size:0.9rem;letter-spacing:0.5px;}
+  .badge-seminar{background:linear-gradient(135deg,#7c3aed,#a855f7);color:white;box-shadow:0 4px 20px rgba(124,58,237,0.4);}
+  .badge-csa{background:linear-gradient(135deg,#0ea5e9,#38bdf8);color:white;box-shadow:0 4px 20px rgba(14,165,233,0.4);}
+  .countdown-row{display:flex;justify-content:center;gap:32px;margin-top:24px;flex-wrap:wrap;}
+  .countdown-box{background:rgba(255,255,255,0.04);border:1px solid #1e2a3a;border-radius:16px;padding:16px 28px;text-align:center;}
+  .countdown-box .num{font-size:2.2rem;font-weight:900;background:linear-gradient(135deg,#60a5fa,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+  .countdown-box .label{font-size:0.75rem;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:1px;}
+  .container{max-width:1100px;margin:0 auto;padding:40px 20px;}
+  .section-title{font-size:1.5rem;font-weight:800;color:#f0f0f0;margin:40px 0 20px;letter-spacing:-0.5px;display:flex;align-items:center;gap:10px;}
+  .section-title span{font-size:1.3rem;}
+  .day-card{background:#0d1117;border:1px solid #1e2a3a;border-radius:20px;margin-bottom:24px;overflow:hidden;transition:transform 0.2s,box-shadow 0.2s;}
+  .day-card:hover{transform:translateY(-2px);box-shadow:0 8px 40px rgba(0,0,0,0.4);}
+  .day-header{padding:18px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+  .day-header.both{background:linear-gradient(135deg,rgba(124,58,237,0.15),rgba(14,165,233,0.15));border-bottom:1px solid #1e2a3a;}
+  .day-header.seminar-only{background:linear-gradient(135deg,rgba(124,58,237,0.2),rgba(167,85,247,0.1));border-bottom:1px solid #2d1b4e;}
+  .day-header.csa-only{background:linear-gradient(135deg,rgba(14,165,233,0.2),rgba(56,189,248,0.1));border-bottom:1px solid #0c2a3a;}
+  .day-header.exam-day-sem{background:linear-gradient(135deg,rgba(124,58,237,0.3),rgba(167,85,247,0.2));border-bottom:2px solid #7c3aed;}
+  .day-header.exam-day-csa{background:linear-gradient(135deg,rgba(14,165,233,0.3),rgba(56,189,248,0.2));border-bottom:2px solid #0ea5e9;}
+  .day-info h2{font-size:1.25rem;font-weight:800;color:#f0f0f0;}
+  .day-info p{font-size:0.85rem;color:#64748b;margin-top:2px;}
+  .day-tags{display:flex;gap:8px;flex-wrap:wrap;}
+  .tag{padding:5px 14px;border-radius:20px;font-size:0.75rem;font-weight:700;letter-spacing:0.3px;}
+  .tag-sem{background:rgba(124,58,237,0.2);color:#a78bfa;border:1px solid rgba(124,58,237,0.3);}
+  .tag-csa{background:rgba(14,165,233,0.2);color:#60a5fa;border:1px solid rgba(14,165,233,0.3);}
+  .tag-exam{background:rgba(239,68,68,0.2);color:#f87171;border:1px solid rgba(239,68,68,0.3);}
+  .day-body{padding:20px 24px;display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+  .day-body.single{grid-template-columns:1fr;}
+  .subject-block{background:rgba(255,255,255,0.02);border-radius:12px;padding:16px;border:1px solid #1e2a3a;}
+  .subject-block h3{font-size:0.85rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;}
+  .subject-block.sem h3{color:#a78bfa;}
+  .subject-block.csa h3{color:#60a5fa;}
+  .task{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px;cursor:pointer;}
+  .task input[type=checkbox]{width:18px;height:18px;min-width:18px;cursor:pointer;accent-color:#60a5fa;margin-top:2px;}
+  .task label{font-size:0.88rem;color:#cbd5e1;line-height:1.5;cursor:pointer;}
+  .task.done label{text-decoration:line-through;color:#475569;}
+  .tip-box{background:rgba(52,211,153,0.06);border:1px solid rgba(52,211,153,0.2);border-radius:10px;padding:10px 14px;margin-top:12px;}
+  .tip-box p{font-size:0.8rem;color:#34d399;line-height:1.5;}
+  .tip-box p strong{color:#6ee7b7;}
+  .hours-badge{background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.2);border-radius:8px;padding:4px 10px;font-size:0.75rem;font-weight:700;color:#fbbf24;white-space:nowrap;}
+  .exam-card{border-radius:20px;padding:32px 24px;text-align:center;margin-bottom:24px;}
+  .exam-card.sem{background:linear-gradient(135deg,#1a0a2e,#2d1b4e);border:2px solid #7c3aed;box-shadow:0 0 40px rgba(124,58,237,0.2);}
+  .exam-card.csa{background:linear-gradient(135deg,#0a1628,#0c2a3a);border:2px solid #0ea5e9;box-shadow:0 0 40px rgba(14,165,233,0.2);}
+  .exam-card h2{font-size:2rem;font-weight:900;margin-bottom:8px;}
+  .exam-card.sem h2{background:linear-gradient(135deg,#a78bfa,#c4b5fd);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+  .exam-card.csa h2{background:linear-gradient(135deg,#60a5fa,#93c5fd);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+  .exam-card p{color:#94a3b8;font-size:1rem;margin-bottom:16px;}
+  .exam-details{display:flex;justify-content:center;gap:16px;flex-wrap:wrap;margin-top:12px;}
+  .exam-detail{background:rgba(255,255,255,0.05);border-radius:10px;padding:10px 20px;font-size:0.85rem;color:#cbd5e1;font-weight:500;}
+  .progress-bar-wrap{background:#1e2a3a;border-radius:10px;height:8px;margin:20px 0 8px;overflow:hidden;}
+  .progress-bar{height:100%;border-radius:10px;background:linear-gradient(90deg,#7c3aed,#60a5fa,#34d399);transition:width 0.5s ease;}
+  .progress-label{font-size:0.8rem;color:#64748b;text-align:right;}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;margin:32px 0;}
+  .legend-item{display:flex;align-items:center;gap:8px;font-size:0.82rem;color:#94a3b8;}
+  .legend-dot{width:12px;height:12px;border-radius:50%;}
+  footer{text-align:center;padding:40px 20px;color:#374151;font-size:0.85rem;border-top:1px solid #1e2a3a;}
+  @media(max-width:700px){.day-body{grid-template-columns:1fr;}.hero h1{font-size:1.8rem;}.exam-card h2{font-size:1.5rem;}}
+</style>
+</head>
+<body>
+<div class="hero">
+  <h1>Nadav's AP Study Plan</h1>
+  <p>May 4 - May 15, 2026 &nbsp;|&nbsp; Two Exams. One Mission. Let's go.</p>
+  <div class="exam-badges">
+    <div class="badge badge-seminar">AP Seminar - May 11</div>
+    <div class="badge badge-csa">AP Computer Science A - May 15</div>
+  </div>
+  <div class="countdown-row">
+    <div class="countdown-box"><div class="num">8</div><div class="label">Days to Seminar</div></div>
+    <div class="countdown-box"><div class="num">12</div><div class="label">Days to CSA</div></div>
+    <div class="countdown-box"><div class="num">10</div><div class="label">Study Days</div></div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#a78bfa"></div>AP Seminar</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#60a5fa"></div>AP CSA</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#34d399"></div>Pro Tip</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#fbbf24"></div>Hours</div>
+  </div>
+
+  <div class="progress-bar-wrap"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
+  <div class="progress-label" id="progressLabel">0% complete - keep going!</div>
+
+  <div class="section-title"><span>WEEK 1</span> May 4-8 - Dual Focus: Seminar + CSA</div>
+
+  <!-- MAY 4 MONDAY -->
+  <div class="day-card">
+    <div class="day-header both">
+      <div class="day-info"><h2>Monday, May 4</h2><p>Day 1 of 10 - Strong start!</p></div>
+      <div class="day-tags">
+        <span class="tag tag-sem">AP Seminar</span>
+        <span class="tag tag-csa">AP CSA</span>
+        <span class="hours-badge">4-5 hrs</span>
+      </div>
+    </div>
+    <div class="day-body">
+      <div class="subject-block sem">
+        <h3>AP Seminar (2 hrs)</h3>
+        <div class="task"><input type="checkbox" id="t1"><label for="t1">Review the QUEST framework (Question, Understand, Evaluate, Synthesize, Transform)</label></div>
+        <div class="task"><input type="checkbox" id="t2"><label for="t2">Re-read your IWA (Individual Written Argument) from start to finish</label></div>
+        <div class="task"><input type="checkbox" id="t3"><label for="t3">Practice writing a 1-page stimulus-based argument in 25 minutes</label></div>
+        <div class="task"><input type="checkbox" id="t4"><label for="t4">Review past AP Seminar EOC exam prompts (College Board)</label></div>
+        <div class="task"><input type="checkbox" id="t5"><label for="t5">Identify your 3 strongest argument structures to use on exam day</label></div>
+        <div class="tip-box"><p><strong>Tip:</strong> EOC Part A is a written argument from a stimulus packet. Practice skimming the packet for key claims in under 5 min.</p></div>
+      </div>
+      <div class="subject-block csa">
+        <h3>AP CSA - Unit 1 (2-3 hrs)</h3>
+        <div class="task"><input type="checkbox" id="t6"><label for="t6">1.1-1.3: Algorithms, variables, data types (int, double, boolean, String), println output</label></div>
+        <div class="task"><input type="checkbox" id="t7"><label for="t7">1.4-1.5: Assignment statements, Scanner input, casting int/double, range of primitives</label></div>
+        <div class="task"><input type="checkbox" id="t8"><label for="t8">1.6-1.8: Compound operators (+=, -=, *=, /=, %=), APIs, libraries, Javadoc comments</label></div>
+        <div class="task"><input type="checkbox" id="t9"><label for="t9">CodeHS: Complete any Unit 1 exercises or review lessons on variables and types</label></div>
+        <div class="task"><input type="checkbox" id="t10"><label for="t10">Write 10 short Java snippets from scratch covering each topic above</label></div>
+        <div class="tip-box"><p><strong>Tip:</strong> Casting truncates - (int)3.9 = 3. Know integer overflow ranges. These appear on MCQ constantly.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAY 5 TUESDAY -->
+  <div class="day-card">
+    <div class="day-header both">
+      <div class="day-info"><h2>Tuesday, May 5</h2><p>Day 2 of 10 - Building momentum</p></div>
+      <div class="day-tags">
+        <span class="tag tag-sem">AP Seminar</span>
+        <span class="tag tag-csa">AP CSA</span>
+        <span class="hours-badge">4-5 hrs</span>
+      </div>
+    </div>
+    <div class="day-body">
+      <div class="subject-block sem">
+        <h3>AP Seminar (2 hrs)</h3>
+        <div class="task"><input type="checkbox" id="t11"><label for="t11">Study EOC Part B: Team Multimedia Presentation format and scoring rubric</label></div>
+        <div class="task"><input type="checkbox" id="t12"><label for="t12">Review at least 2 past AP Seminar EOC exam samples from College Board</label></div>
+        <div class="task"><input type="checkbox" id="t13"><label for="t13">Practice citing sources and integrating evidence into arguments</label></div>
+        <div class="task"><input type="checkbox" id="t14"><label for="t14">Write out your thesis statement and supporting claims for a practice prompt</label></div>
+        <div class="task"><input type="checkbox" id="t15"><label for="t15">Review the 6 AP Seminar big ideas: QRY, RQS, CRED, POV, AIM, DIST</label></div>
+        <div class="tip-box"><p><strong>Tip:</strong> In Part B you present AND defend. Practice saying your argument out loud - know your counterarguments cold.</p></div>
+      </div>
+      <div class="subject-block csa">
+        <h3>AP CSA - Unit 1 cont. (2-3 hrs)</h3>
+        <div class="task"><input type="checkbox" id="t16"><label for="t16">1.9-1.10: Method signatures (name, params, return type), calling class/static methods</label></div>
+        <div class="task"><input type="checkbox" id="t17"><label for="t17">1.11: Math class - Math.abs(), Math.pow(), Math.sqrt(), Math.random(), Math.max/min</label></div>
+        <div class="task"><input type="checkbox" id="t18"><label for="t18">1.12-1.14: Objects vs primitives, instantiation with new, calling instance methods</label></div>
+        <div class="task"><input type="checkbox" id="t19"><label for="t19">1.15: String methods - length(), substring(), indexOf(), equals(), charAt(), toUpperCase()</label></div>
+        <div class="task"><input type="checkbox" id="t20"><label for="t20">CodeHS: Work through String manipulation exercises. Do past FRQ that involve String parsing.</label></div>
+        <div class="task"><input type="checkbox" id="t21"><label for="t21">Do 15 Unit 1 MCQ practice questions (Albert.io or College Board)</label></div>
+        <div class="tip-box"><p><strong>Tip:</strong> Math.random() returns [0.0, 1.0). To get range 1-6: (int)(Math.random()*6)+1. This is a classic MCQ trap.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAY 6 WEDNESDAY -->
+  <div class="day-card">
+    <div class="day-header both">
+      <div class="day-info"><h2>Wednesday, May 6</h2><p>Day 3 of 10 - Deep work day</p></div>
+      <div class="day-tags">
+        <span class="tag tag-sem">AP Seminar</span>
+        <span class="tag tag-csa">AP CSA</span>
+        <span class="hours-badge">4-5 hrs</span>
+      </div>
+    </div>
+    <div class="day-body">
+      <div class="subject-block sem">
+        <h3>AP Seminar (2 hrs)</h3>
+        <div class="task"><input type="checkbox" id="t22"><label for="t22">Do a full timed practice of EOC Part A: 25 min read + 45 min write</label></div>
+        <div class="task"><input type="checkbox" id="t23"><label for="t23">Self-grade using the official AP Seminar scoring rubric</label></div>
+        <div class="task"><input type="checkbox" id="t24"><label for="t24">Review credibility and relevance of sources - CRED framework</label></div>
+        <div class="task"><input type="checkbox" id="t25"><label for="t25">Look up 2026 AP Seminar themes and make sure you know global/contemporary issues</label></div>
+        <div class="tip-box"><p><strong>Tip:</strong> Your argument must have a clear THESIS, EVIDENCE, and REASONING chain. Graders look for explicit connections between your evidence and claim.</p></div>
+      </div>
+      <div class="subject-block csa">
+        <h3>AP CSA - Unit 2 (2-3 hrs)</h3>
+        <div class="task"><input type="checkbox" id="t26"><label for="t26">2.1-2.3: Boolean expressions, relational operators, if/else if/else structure</label></div>
+        <div class="task"><input type="checkbox" id="t27"><label for="t27">2.4-2.5: Nested if statements, compound booleans with AND (&&), OR (||), NOT (!)</label></div>
+        <div class="task"><input type="checkbox" id="t28"><label for="t28">2.6: Comparing booleans - know == vs .equals() for objects vs primitives</label></div>
+        <div class="task"><input type="checkbox" id="t29"><label for="t29">Draw truth tables for &&, ||, ! - trace 3 nested if-else problems by hand</label></div>
+        <div class="task"><input type="checkbox" id="t30"><label for="t30">CodeHS: Complete selection/conditional exercises. Trace all logic step by step.</label></div>
+        <div class="task"><input type="checkbox" id="t31"><label for="t31">Do 10 Unit 2 MCQ practice - focus on tracing boolean logic problems</label></div>
+        <div class="tip-box"><p><strong>Tip:</strong> NEVER use == to compare Strings. Always use .equals(). This is an extremely common FRQ and MCQ trap.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAY 7 THURSDAY -->
+  <div class="day-card">
+    <div class="day-header both">
+      <div class="day-info"><h2>Thursday, May 7</h2><p>Day 4 of 10 - Push through!</p></div>
+      <div class="day-tags">
+        <span class="tag tag-sem">AP Seminar</span>
+        <span class="tag tag-csa">AP CSA</span>
+        <span class="hours-badge">4-5 hrs</span>
+      </div>
+    </div>
+    <div class="day-body">
+      <div class="subject-block sem">
+        <h3>AP Seminar (2 hrs)</h3>
+        <div class="task"><input type="checkbox" id="t32"><label for="t32">Review your team multimedia presentation - know each slide's argument cold</label></div>
+        <div class="task"><input type="checkbox" id="t33"><label for="t33">Practice your individual defense responses - 2 min answer drills</label></div>
+        <div class="task"><input type="checkbox" id="t34"><label for="t34">Study past AP Seminar exam scoring commentary from College Board</label></div>
+        <div class="task"><input type="checkbox" id="t35"><label for="t35">Review cross-curricular connections and multiple perspectives in your argument</label></div>
+        <div class="tip-box"><p><strong>Tip:</strong> In the defense portion, it is OK to say "I would add to that by..." - you don't have to argue against your teammates, just deepen the argument.</p></div>
+      </div>
+      <div class="subject-block csa">
+        <h3>AP CSA - Unit 2 cont. (2-3 hrs)</h3>
+        <div class="task"><input type="checkbox" id="t36"><label for="t36">2.7: while loops - initialization, condition, update. Trace 5 while loop problems.</label></div>
+        <div class="task"><input type="checkbox" id="t37"><label for="t37">2.8: for loops - know the 3-part header. Convert while loops to for loops and back.</label></div>
+        <div class="task"><input type="checkbox" id="t38"><label for="t38">2.9-2.10: Selection + iteration algorithms, String traversal with charAt() and loops</label></div>
+        <div class="task"><input type="checkbox" id="t39"><label for="t39">2.11: Nested iteration - trace 2D patterns, row/column loop logic step by step</label></div>
+        <div class="task"><input type="checkbox" id="t40"><label for="t40">2.12: Informal runtime - understand O(n) vs O(n^2) for loops</label></div>
+        <div class="task"><input type="checkbox" id="t41"><label for="t41">CodeHS: Loop exercises. Do a past FRQ that involves array traversal with loops.</label></div>
+        <div class="tip-box"><p><strong>Tip:</strong> Off-by-one errors kill points on FRQs. Always double check loop bounds: i=0 to i less than length vs i less than or equal.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAY 8 FRIDAY -->
+  <div class="day-card">
+    <div class="day-header both">
+      <div class="day-info"><h2>Friday, May 8</h2><p>Day 5 of 10 - Last dual-focus day!</p></div>
+      <div class="day-tags">
+        <span class="tag tag-sem">AP Seminar</span>
+        <span class="tag tag-csa">AP CSA</span>
+        <span class="hours-badge">4-5 hrs</span>
+      </div>
+    </div>
+    <div class="day-body">
+      <div class="subject-block sem">
+        <h3>AP Seminar (2 hrs)</h3>
+        <div class="task"><input type="checkbox" id="t42"><label for="t42">Full timed mock: EOC Part A from a past exam (stimulus packet + written argument)</label></div>
+        <div class="task"><input type="checkbox" id="t43"><label for="t43">Review any weak areas from your self-grade on Wednesday's practice</label></div>
+        <div class="task"><input type="checkbox" id="t44"><label for="t44">Practice transitions and logical connectors in your writing (furthermore, however, thus)</label></div>
+        <div class="task"><input type="checkbox" id="t45"><label for="t45">Review your team's research sources - be ready to cite them in defense</label></div>
+        <div class="tip-box"><p><strong>Tip:</strong> In Part A, use at least 2 sources from the stimulus packet AND your own prior knowledge. Show you can SYNTHESIZE, not just summarize.</p></div>
+      </div>
+      <div class="subject-block csa">
+        <h3>AP CSA - Unit 3 Intro (2-3 hrs)</h3>
+        <div class="task"><input type="checkbox" id="t46"><label for="t46">3.1-3.3: Abstraction, program design, anatomy of a class (fields, constructors, methods)</label></div>
+        <div class="task"><input type="checkbox" id="t47"><label for="t47">3.4: Constructors - default vs parameterized. Practice writing multiple constructors.</label></div>
+        <div class="task"><input type="checkbox" id="t48"><label for="t48">3.5: Writing methods - return types, parameters, method body, return statements</label></div>
+        <div class="task"><input type="checkbox" id="t49"><label for="t49">Write a complete Java class from scratch (BankAccount or Student) with fields + constructor + methods</label></div>
+        <div class="task"><input type="checkbox" id="t50"><label for="t50">CodeHS: Class creation exercises. Review any Unit 3 CodeHS lessons you have.</label></div>
+        <div class="tip-box"><p><strong>Tip:</strong> FRQ type "Class Design" asks you to write an entire class. Know the pattern: private fields, public constructor, public getters/setters, toString.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAY 9 SATURDAY -->
+  <div class="day-card">
+    <div class="day-header both">
+      <div class="day-info"><h2>Saturday, May 9</h2><p>Day 6 of 10 - 2 days to Seminar!</p></div>
+      <div class="day-tags">
+        <span class="tag tag-sem">AP Seminar</span>
+        <span class="tag tag-csa">AP CSA</span>
+        <span class="hours-badge">4-5 hrs</span>
+      </div>
+    </div>
+    <div class="day-body">
+      <div class="subject-block sem">
+        <h3>AP Seminar (2-3 hrs)</h3>
+        <div class="task"><input type="checkbox" id="t51"><label for="t51">Full mock EOC Part B: Present your team multimedia presentation solo - time yourself</label></div>
+        <div class="task"><input type="checkbox" id="t52"><label for="t52">Practice Q&A defense: have someone ask you hard questions about your argument</label></div>
+        <div class="task"><input type="checkbox" id="t53"><label for="t53">Review the rubric one more time - make sure you hit every scoring point</label></div>
+        <div class="task"><input type="checkbox" id="t54"><label for="t54">Review 1 more past AP Seminar EOC exam to study high-scoring responses</label></div>
+        <div class="task"><input type="checkbox" id="t55"><label for="t55">Write out your exam day game plan: timing strategy for Part A writing</label></div>
+        <div class="tip-box"><p><strong>Tip:</strong> Sleep by 10pm tonight. Your brain consolidates memory during sleep - this matters more than cramming late.</p></div>
+      </div>
+      <div class="subject-block csa">
+        <h3>AP CSA - Unit 3 cont. (1-2 hrs)</h3>
+        <div class="task"><input type="checkbox" id="t56"><label for="t56">3.6: Passing and returning object references - understand aliasing vs copying</label></div>
+        <div class="task"><input type="checkbox" id="t57"><label for="t57">3.7: Static (class) variables and methods vs instance variables and methods</label></div>
+        <div class="task"><input type="checkbox" id="t58"><label for="t58">3.8-3.9: Scope rules (local vs instance), access modifiers (public/private), this keyword</label></div>
+        <div class="task"><input type="checkbox" id="t59"><label for="t59">CodeHS: Any remaining Unit 3 exercises. Quick review of static vs instance.</label></div>
+        <div class="tip-box"><p><strong>Tip:</strong> Keep CSA light today - Seminar is in 2 days. 1 hour of solid CSA review is enough. Seminar is priority.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title"><span>SEMINAR SPRINT</span> May 10 - Final Seminar Prep</div>
+
+  <!-- MAY 10 SUNDAY - SEMINAR ONLY -->
+  <div class="day-card">
+    <div class="day-header seminar-only">
+      <div class="day-info"><h2>Sunday, May 10</h2><p>Day 7 of 10 - Seminar TOMORROW. Full focus.</p></div>
+      <div class="day-tags">
+        <span class="tag tag-sem">AP Seminar ONLY</span>
+        <span class="hours-badge">3-4 hrs</span>
+      </div>
+    </div>
+    <div class="day-body single">
+      <div class="subject-block sem">
+        <h3>AP Seminar - Final Prep Day</h3>
+        <div class="task"><input type="checkbox" id="t60"><label for="t60">Morning: Re-read your IWA completely - refresh your memory on your argument and sources</label></div>
+        <div class="task"><input type="checkbox" id="t61"><label for="t61">Do one final timed Part A practice (stimulus packet you have NOT seen before)</label></div>
+        <div class="task"><input type="checkbox" id="t62"><label for="t62">Review the EOC Part A rubric criteria: Thesis, Evidence, Reasoning, Perspective, Style</label></div>
+        <div class="task"><input type="checkbox" id="t63"><label for="t63">Go through your team presentation slides one final time - know the content perfectly</label></div>
+        <div class="task"><input type="checkbox" id="t64"><label for="t64">Practice your defense responses - answer 5 random questions about your team's argument</label></div>
+        <div class="task"><input type="checkbox" id="t65"><label for="t65">Afternoon: STOP studying by 3pm. Relax, eat well, organize your materials.</label></div>
+        <div class="task"><input type="checkbox" id="t66"><label for="t66">Pack your bag: pencils, pens, ID, water bottle, snack. Sleep by 9:30pm.</label></div>
+        <div class="tip-box"><p><strong>Tip:</strong> Rest IS studying. Your brain performs 20% better on adequate sleep. Trust your preparation - you have been working hard all week.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAY 11 EXAM DAY - SEMINAR -->
+  <div class="exam-card sem">
+    <h2>EXAM DAY - AP Seminar</h2>
+    <p>Sunday, May 11, 2026 &nbsp;|&nbsp; EOC Part A + Part B</p>
+    <div class="exam-details">
+      <div class="exam-detail">Part A: Individual Written Argument</div>
+      <div class="exam-detail">Part B: Team Multimedia Presentation</div>
+      <div class="exam-detail">Eat a real breakfast</div>
+      <div class="exam-detail">Arrive 15 min early</div>
+    </div>
+    <div style="margin-top:20px;padding:16px;background:rgba(124,58,237,0.1);border-radius:12px;">
+      <p style="color:#c4b5fd;font-size:0.9rem;line-height:1.7;">In Part A: Read the packet strategically (5 min), outline your argument (5 min), write (35 min), review (5 min). In Part B: Present confidently, listen to teammates, and in the defense - expand and deepen, don't just repeat. YOU HAVE GOT THIS, NADAV.</p>
+    </div>
+  </div>
+
+  <div class="section-title"><span>CSA FINAL SPRINT</span> May 12-15 - Full Computer Science A Grind</div>
+
+  <!-- MAY 12 TUESDAY -->
+  <div class="day-card">
+    <div class="day-header csa-only">
+      <div class="day-info"><h2>Tuesday, May 12</h2><p>Day 8 of 10 - Seminar is DONE. CSA time.</p></div>
+      <div class="day-tags">
+        <span class="tag tag-csa">AP CSA Only</span>
+        <span class="hours-badge">4-5 hrs</span>
+      </div>
+    </div>
+    <div class="day-body single">
+      <div class="subject-block csa">
+        <h3>AP CSA - Unit 2 Review + Unit 3 Full + FRQ Practice</h3>
+        <div class="task"><input type="checkbox" id="t67"><label for="t67">Quick Unit 1+2 review: Write 5 programs covering loops, booleans, String methods from memory</label></div>
+        <div class="task"><input type="checkbox" id="t68"><label for="t68">Unit 3 full review: Write a complete class with private fields, constructor, getters, setters, toString</label></div>
+        <div class="task"><input type="checkbox" id="t69"><label for="t69">Practice FRQ Type 1: Class Design - write a complete class from a written description</label></div>
+        <div class="task"><input type="checkbox" id="t70"><label for="t70">Practice FRQ Type 2: Methods and Control Structures - implement methods using loops/conditionals</label></div>
+        <div class="task"><input type="checkbox" id="t71"><label for="t71">Review 2 past AP CSA FRQs from College Board (2023 or 2024 exams)</label></div>
+        <div class="task"><input type="checkbox" id="t72"><label for="t72">CodeHS: Do any Unit 3 exercises you have not completed. Review class design lessons.</label></div>
+        <div class="task"><input type="checkbox" id="t73"><label for="t73">Do 20 MCQ practice questions covering Units 1-3 (Albert.io or College Board)</label></div>
+        <div class="tip-box"><p><strong>FRQ Tip:</strong> Always write the complete method header first. Even if your body is wrong, you can get points for the correct signature. Show ALL your work.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAY 13 WEDNESDAY -->
+  <div class="day-card">
+    <div class="day-header csa-only">
+      <div class="day-info"><h2>Wednesday, May 13</h2><p>Day 9 of 10 - Unit 4 Deep Dive</p></div>
+      <div class="day-tags">
+        <span class="tag tag-csa">AP CSA Only</span>
+        <span class="hours-badge">4-5 hrs</span>
+      </div>
+    </div>
+    <div class="day-body single">
+      <div class="subject-block csa">
+        <h3>AP CSA - Unit 4 Part 1: Arrays + ArrayLists + FRQ</h3>
+        <div class="task"><input type="checkbox" id="t74"><label for="t74">4.1-4.3: Data ethics overview, array creation (int[] arr = new int[5]), index access, length</label></div>
+        <div class="task"><input type="checkbox" id="t75"><label for="t75">4.4-4.5: Array traversals with for and for-each loops. Implement sum, max, count algorithms.</label></div>
+        <div class="task"><input type="checkbox" id="t76"><label for="t76">4.7-4.8: Wrapper classes (Integer, Double), ArrayList creation, add/remove/get/set/size methods</label></div>
+        <div class="task"><input type="checkbox" id="t77"><label for="t77">4.9-4.10: ArrayList traversal with for-each and indexed loops, implement search/filter algorithms</label></div>
+        <div class="task"><input type="checkbox" id="t78"><label for="t78">Practice FRQ Type 3: Array/ArrayList - traverse and manipulate arrays with conditions</label></div>
+        <div class="task"><input type="checkbox" id="t79"><label for="t79">Review 2 past AP CSA FRQs focused on arrays (College Board 2022-2024)</label></div>
+        <div class="task"><input type="checkbox" id="t80"><label for="t80">CodeHS: Complete all array and ArrayList exercises. These are the most tested FRQ topics.</label></div>
+        <div class="task"><input type="checkbox" id="t81"><label for="t81">Do 20 MCQ practice questions focused on Unit 4 arrays and ArrayLists</label></div>
+        <div class="tip-box"><p><strong>FRQ Tip:</strong> When removing from an ArrayList in a loop, traverse BACKWARDS or use an iterator to avoid index shift bugs. Graders know this trap.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAY 14 THURSDAY - MEGA REVIEW DAY -->
+  <div class="day-card" style="border:2px solid #34d399;box-shadow:0 0 30px rgba(52,211,153,0.15);">
+    <div class="day-header csa-only" style="background:linear-gradient(135deg,rgba(52,211,153,0.15),rgba(14,165,233,0.15));border-bottom:1px solid rgba(52,211,153,0.3);">
+      <div class="day-info"><h2>Thursday, May 14 - MEGA REVIEW DAY</h2><p>Day 10 of 10 - Exam is TOMORROW. Hit everything.</p></div>
+      <div class="day-tags">
+        <span class="tag tag-csa">AP CSA FULL REVIEW</span>
+        <span class="hours-badge">5-6 hrs</span>
+      </div>
+    </div>
+    <div class="day-body single">
+      <div class="subject-block csa">
+        <h3>AP CSA - COMPLETE Units 1-4 Final Review + All FRQ Types</h3>
+        <div class="task"><input type="checkbox" id="t82"><label for="t82">MORNING - 2D Arrays: 4.11-4.13: Create, access [row][col], traverse with nested loops, implement algorithms</label></div>
+        <div class="task"><input type="checkbox" id="t83"><label for="t83">Searching: 4.14: Linear search (O(n)) vs Binary search (O(log n)) - code both from memory</label></div>
+        <div class="task"><input type="checkbox" id="t84"><label for="t84">Sorting: 4.15: Selection sort and Insertion sort - trace each algorithm by hand on a small array</label></div>
+        <div class="task"><input type="checkbox" id="t85"><label for="t85">Recursion: 4.16-4.17: Base case + recursive case. Trace factorial, fibonacci. Recursive binary search.</label></div>
+        <div class="task"><input type="checkbox" id="t86"><label for="t86">AFTERNOON - Do a FULL timed past AP CSA exam: 40 MCQ (90 min) + 4 FRQ (90 min)</label></div>
+        <div class="task"><input type="checkbox" id="t87"><label for="t87">FRQ Type 1 practice: Write a complete class (15 min)</label></div>
+        <div class="task"><input type="checkbox" id="t88"><label for="t88">FRQ Type 2 practice: Methods with loops and conditions (15 min)</label></div>
+        <div class="task"><input type="checkbox" id="t89"><label for="t89">FRQ Type 3 practice: Array traversal and manipulation (15 min)</label></div>
+        <div class="task"><input type="checkbox" id="t90"><label for="t90">FRQ Type 4 practice: 2D array problem (15 min)</label></div>
+        <div class="task"><input type="checkbox" id="t91"><label for="t91">CodeHS: Quick run through any exercises or topics that felt weak during the mock exam</label></div>
+        <div class="task"><input type="checkbox" id="t92"><label for="t92">Review your most common mistakes from all practice this week</label></div>
+        <div class="task"><input type="checkbox" id="t93"><label for="t93">EVENING: Write a cheat-sheet from memory of: String methods, Math methods, ArrayList methods, sorting steps</label></div>
+        <div class="task"><input type="checkbox" id="t94"><label for="t94">Pack your bag, set your alarm, eat well, sleep by 10pm. YOU ARE READY.</label></div>
+        <div class="tip-box"><p><strong>Mega Tip:</strong> On FRQs: write method header first, add comments explaining your logic, then write code. Even partial credit adds up. The exam awards points for each correct component - never leave an FRQ blank.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAY 15 EXAM DAY - CSA -->
+  <div class="exam-card csa">
+    <h2>EXAM DAY - AP Computer Science A</h2>
+    <p>Friday, May 15, 2026 &nbsp;|&nbsp; 40 MCQ + 4 FRQ</p>
+    <div class="exam-details">
+      <div class="exam-detail">Section 1: 40 MCQ (~90 min)</div>
+      <div class="exam-detail">Section 2: 4 FRQ (~90 min)</div>
+      <div class="exam-detail">No calculator needed</div>
+      <div class="exam-detail">Show ALL work on FRQs</div>
+    </div>
+    <div style="margin-top:20px;padding:16px;background:rgba(14,165,233,0.1);border-radius:12px;">
+      <p style="color:#93c5fd;font-size:0.9rem;line-height:1.7;">MCQ Strategy: Skip and return on hard questions. For tracing problems - trace on paper. FRQ Strategy: Read all 4 FRQs first, start with your strongest. Write the method signature even if unsure about the body. Never leave an FRQ blank - partial credit counts. YOU HAVE GOT THIS, NADAV. TWO EXAMS DOWN.</p>
+    </div>
+  </div>
+
+  <div style="text-align:center;padding:40px 20px;background:rgba(255,255,255,0.02);border-radius:20px;border:1px solid #1e2a3a;margin-bottom:40px;">
+    <div style="font-size:1.5rem;font-weight:900;background:linear-gradient(135deg,#60a5fa,#a78bfa,#34d399);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:12px;">10 Study Days. 2 Exams. You've got this, Nadav.</div>
+    <p style="color:#64748b;font-size:0.9rem;">AP Seminar: May 11 &nbsp;|&nbsp; AP Computer Science A: May 15</p>
+    <p style="color:#374151;font-size:0.8rem;margin-top:8px;">Built by JARVIS for Nadav M. - May 2026</p>
+  </div>
+
+</div>
+
+<script>
+  function updateProgress() {
+    const boxes = document.querySelectorAll('input[type=checkbox]');
+    const checked = document.querySelectorAll('input[type=checkbox]:checked').length;
+    const pct = Math.round((checked / boxes.length) * 100);
+    document.getElementById('progressBar').style.width = pct + '%';
+    const label = document.getElementById('progressLabel');
+    if (pct === 0) label.textContent = '0% complete - let us get started!';
+    else if (pct < 25) label.textContent = pct + '% complete - great start!';
+    else if (pct < 50) label.textContent = pct + '% complete - building momentum!';
+    else if (pct < 75) label.textContent = pct + '% complete - over halfway there!';
+    else if (pct < 100) label.textContent = pct + '% complete - almost there!';
+    else label.textContent = '100% complete - YOU ARE READY. Go crush those exams!';
+    boxes.forEach(box => {
+      const task = box.closest('.task');
+      if (box.checked) task.classList.add('done');
+      else task.classList.remove('done');
+    });
+    const state = {};
+    boxes.forEach(box => { state[box.id] = box.checked; });
+    localStorage.setItem('nadav_ap_progress', JSON.stringify(state));
+  }
+  function loadProgress() {
+    const saved = localStorage.getItem('nadav_ap_progress');
+    if (!saved) return;
+    const state = JSON.parse(saved);
+    Object.keys(state).forEach(id => {
+      const box = document.getElementById(id);
+      if (box) box.checked = state[id];
+    });
+    updateProgress();
+  }
+  document.querySelectorAll('input[type=checkbox]').forEach(box => {
+    box.addEventListener('change', updateProgress);
+  });
+  loadProgress();
+</script>
+</body>
+</html>

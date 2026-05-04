@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Producer Studio</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #16213e 100%);
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        /* Header */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 20px;
+            background: rgba(0,0,0,0.5);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .logo {
+            font-size: 1.4em;
+            font-weight: bold;
+            color: #00d4ff;
+        }
+        
+        .transport {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        
+        .transport button {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.2s;
+        }
+        
+        .play-btn {
+            background: linear-gradient(135deg, #00d4ff, #0099cc);
+            color: #000;
+        }
+        
+        .play-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(0,212,255,0.5);
+        }
+        
+        .play-btn.playing {
+            background: linear-gradient(135deg, #ff4444, #cc0000);
+        }
+        
+        .stop-btn {
+            background: #333;
+            color: #fff;
+        }
+        
+        .stop-btn:hover {
+            background: #444;
+        }
+        
+        .bpm-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.1);
+            padding: 8px 12px;
+            border-radius: 8px;
+        }
+        
+        .bpm-control input {
+            width: 60px;
+            background: transparent;
+            border: none;
+            color: #00d4ff;
+            font-size: 1.1em;
+            text-align: center;
+        }
+        
+        .time-display {
+            font-family: 'Courier New', monospace;
+            font-size: 1.2em;
+            color: #0f0;
+            background: #111;
+            padding: 8px 15px;
+            border-radius: 5px;
+        }
+        
+        /* Main Layout */
+        .main-container {
+            display: flex;
+            height: calc(100vh - 70px);
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 200px;
+            background: rgba(0,0,0,0.4);
+            border-right: 1px solid rgba(255,255,255,0.1);
+            padding: 15px;
+            overflow-y: auto;
+        }
+        
+        .sidebar h3 {
+            color: #888;
+            font-size: 0.75em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+        
+        .instrument-btn {
+            width: 100%;
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            color: #fff;
+            cursor: pointer;
+            text-align: left;
+            font-size: 14px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .instrument-btn:hover {
+            background: rgba(0,212,255,0.2);
+            border-color: #00d4ff;
+        }
+        
+        .instrument-btn.active {
+            background: rgba(0,212,255,0.3);
+            border-color: #00d4ff;
+        }
+        
+        .instrument-icon {
+            font-size: 1.3em;
+        }
+        
+        /* Track Area */
+        .track-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        /* Timeline */
+        .timeline {
+            height: 35px;
+            background: rgba(0,0,0,0.4);
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-left: 150px;
+        }
+        
+        .timeline-markers {
+            display: flex;
+            flex: 1;
+        }
+        
+        .timeline-marker {
+            width: 100px;
+            color: #666;
+            font-size: 12px;
+            border-left: 1px solid rgba(255,255,255,0.1);
+            padding-left: 5px;
+        }
+        
+        /* Tracks */
+        .tracks-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+        }
+        
+        .track {
+            display: flex;
+            align-items: stretch;
+            background: rgba(255,255,255,0.03);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            min-height: 60px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        .track-info {
+            width: 140px;
+            padding: 10px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 8px 0 0 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .track-name {
+            font-weight: 500;
+            font-size: 13px;
+        }
+        
+        .track-controls {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .track-btn {
+            width: 28px;
+            height: 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 10px;
+            font-weight: bold;
+        }
+        
+        .mute-btn {
+            background: #333;
+            color: #888;
+        }
+        
+        .mute-btn.active {
+            background: #ff4444;
+            color: #fff;
+        }
+        
+        .solo-btn {
+            background: #333;
+            color: #888;
+        }
+        
+        .solo-btn.active {
+            background: #ffcc00;
+            color: #000;
+        }
+        
+        .delete-btn {
+            background: #333;
+            color: #888;
+        }
+        
+        .delete-btn:hover {
+            background: #ff4444;
+            color: #fff;
+        }
+        
+        .track-content {
+            flex: 1;
+            position: relative;
+            overflow-x: auto;
+            min-width: 0;
+        }
+        
+        .track-grid {
+            display: flex;
+            height: 100%;
+            min-width: 800px;
+        }
+        
+        .beat-cell {
+            width: 25px;
+            height: 100%;
+            border-right: 1px solid rgba(255,255,255,0.05);
+            cursor: pointer;
+            transition: background 0.1s;
+        }
+        
+        .beat-cell:nth-child(4n+1) {
+            border-right: 1px solid rgba(255,255,255,0.15);
+        }
+        
+        .beat-cell:hover {
+            background: rgba(0,212,255,0.2);
+        }
+        
+        .beat-cell.active {
+            background: linear-gradient(135deg, #00d4ff, #0099cc);
+        }
+        
+        .beat-cell.playing {
+            box-shadow: inset 0 0 10px rgba(255,255,255,0.5);
+        }
+        
+        /* Add Track Button */
+        .add-track-btn {
+            width: 100%;
+            padding: 15px;
+            background: rgba(255,255,255,0.05);
+            border: 2px dashed rgba(255,255,255,0.2);
+            border-radius: 8px;
+            color: #888;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        
+        .add-track-btn:hover {
+            border-color: #00d4ff;
+            color: #00d4ff;
+            background: rgba(0,212,255,0.1);
+        }
+        
+        /* Instrument Panel */
+        .instrument-panel {
+            background: rgba(0,0,0,0.6);
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding: 20px;
+            display: none;
+        }
+        
+        .instrument-panel.active {
+            display: block;
+        }
+        
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .panel-title {
+            font-size: 1.2em;
+            color: #00d4ff;
+        }
+        
+        .close-panel {
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        .close-panel:hover {
+            color: #fff;
+        }
+        
+        /* Piano */
+        .piano-container {
+            text-align: center;
+        }
+        
+        .piano-help {
+            color: #888;
+            font-size: 12px;
+            margin-bottom: 10px;
+        }
+        
+        .piano {
+            display: flex;
+            justify-content: center;
+            position: relative;
+            height: 140px;
+            user-select: none;
+        }
+        
+        .white-key {
+            width: 50px;
+            height: 140px;
+            background: linear-gradient(180deg, #fff 0%, #e8e8e8 100%);
+            border: 1px solid #999;
+            border-radius: 0 0 6px 6px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+            padding-bottom: 8px;
+            transition: all 0.05s;
+            position: relative;
+        }
+        
+        .white-key:hover {
+            background: linear-gradient(180deg, #f0f0f0 0%, #ddd 100%);
+        }
+        
+        .white-key.active {
+            background: linear-gradient(180deg, #00d4ff 0%, #0099cc 100%);
+            transform: translateY(2px);
+        }
+        
+        .white-key .key-label {
+            color: #666;
+            font-size: 10px;
+            font-weight: bold;
+        }
+        
+        .black-key {
+            width: 30px;
+            height: 90px;
+            background: linear-gradient(180deg, #333 0%, #000 100%);
+            border-radius: 0 0 4px 4px;
+            position: absolute;
+            cursor: pointer;
+            z-index: 10;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            padding-bottom: 5px;
+            transition: all 0.05s;
+        }
+        
+        .black-key:hover {
+            background: linear-gradient(180deg, #444 0%, #222 100%);
+        }
+        
+        .black-key.active {
+            background: linear-gradient(180deg, #00d4ff 0%, #0066aa 100%);
+            transform: translateY(2px);
+        }
+        
+        .black-key .key-label {
+            color: #888;
+            font-size: 8px;
+        }
+        
+        /* Drums */
+        .drum-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        .drum-pad {
+            aspect-ratio: 1;
+            background: linear-gradient(145deg, #2a2a3a, #1a1a2a);
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            transition: all 0.1s;
+            min-height: 80px;
+        }
+        
+        .drum-pad:hover {
+            border-color: #00d4ff;
+            transform: scale(1.02);
+        }
+        
+        .drum-pad.active {
+            background: linear-gradient(145deg, #00d4ff, #0099cc);
+            transform: scale(0.95);
+        }
+        
+        .drum-pad .pad-name {
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .drum-pad .pad-key {
+            font-size: 10px;
+            color: #888;
+            background: rgba(0,0,0,0.3);
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+        
+        /* Playhead */
+        .playhead {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #ff0;
+            z-index: 100;
+            display: none;
+            pointer-events: none;
+        }
+        
+        .track-content {
+            position: relative;
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 60px;
+                padding: 10px 5px;
+            }
+            
+            .instrument-btn span:not(.instrument-icon) {
+                display: none;
+            }
+            
+            .instrument-btn {
+                justify-content: center;
+                padding: 12px;
+            }
+            
+            .track-info {
+                width: 80px;
+            }
+            
+            .bpm-control, .time-display {
+                display: none;
+            }
+            
+            .piano {
+                overflow-x: auto;
+                justify-content: flex-start;
+                padding: 0 10px;
+            }
+            
+            .white-key {
+                width: 40px;
+                height: 120px;
+                min-width: 40px;
+            }
+            
+            .black-key {
+                width: 25px;
+                height: 70px;
+            }
+            
+            .drum-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">Producer Studio</div>
+        <div class="transport">
+            <button class="stop-btn" onclick="stopPlayback()" title="Stop">&#9632;</button>
+            <button class="play-btn" id="playBtn" onclick="togglePlayback()" title="Play/Pause">&#9654;</button>
+            <div class="bpm-control">
+                <span>BPM</span>
+                <input type="number" id="bpmInput" value="120" min="60" max="200">
+            </div>
+            <div class="time-display" id="timeDisplay">0:00:00</div>
+        </div>
+    </header>
+    
+    <div class="main-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <h3>Instruments</h3>
+            <button class="instrument-btn" onclick="openInstrument('piano')">
+                <span class="instrument-icon">&#127929;</span>
+                <span>Piano</span>
+            </button>
+            <button class="instrument-btn" onclick="openInstrument('drums')">
+                <span class="instrument-icon">&#129345;</span>
+                <span>Drums</span>
+            </button>
+            <button class="instrument-btn" onclick="openInstrument('synth')">
+                <span class="instrument-icon">&#127932;</span>
+                <span>Synth</span>
+            </button>
+            <button class="instrument-btn" onclick="openInstrument('bass')">
+                <span class="instrument-icon">&#127928;</span>
+                <span>Bass</span>
+            </button>
+        </aside>
+        
+        <!-- Track Area -->
+        <main class="track-area">
+            <!-- Timeline -->
+            <div class="timeline">
+                <div class="timeline-markers">
+                    <div class="timeline-marker">1</div>
+                    <div class="timeline-marker">2</div>
+                    <div class="timeline-marker">3</div>
+                    <div class="timeline-marker">4</div>
+                    <div class="timeline-marker">5</div>
+                    <div class="timeline-marker">6</div>
+                    <div class="timeline-marker">7</div>
+                    <div class="timeline-marker">8</div>
+                </div>
+            </div>
+            
+            <!-- Tracks -->
+            <div class="tracks-container" id="tracksContainer">
+                <button class="add-track-btn" onclick="addTrack()">+ Add Track</button>
+            </div>
+            
+            <!-- Instrument Panel -->
+            <div class="instrument-panel" id="instrumentPanel">
+                <div class="panel-header">
+                    <span class="panel-title" id="panelTitle">Piano</span>
+                    <button class="close-panel" onclick="closeInstrumentPanel()">&times;</button>
+                </div>
+                <div id="instrumentContent"></div>
+            </div>
+        </main>
+    </div>
+    
+    <script>
+        // Audio Context
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        let audioCtx = null;
+        
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new AudioContext();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+        
+        // State
+        let tracks = [];
+        let isPlaying = false;
+        let currentBeat = 0;
+        let playInterval = null;
+        let currentInstrument = null;
+        let selectedTrackId = null;
+        
+        // Notes frequencies
+        const noteFreqs = {
+            'C4': 261.63, 'C#4': 277.18, 'D4': 293.66, 'D#4': 311.13,
+            'E4': 329.63, 'F4': 349.23, 'F#4': 369.99, 'G4': 392.00,
+            'G#4': 415.30, 'A4': 440.00, 'A#4': 466.16, 'B4': 493.88,
+            'C5': 523.25, 'C#5': 554.37, 'D5': 587.33
+        };
+        
+        // Keyboard mappings
+        const pianoKeys = {
+            'a': 'C4', 'w': 'C#4', 's': 'D4', 'e': 'D#4', 'd': 'E4',
+            'f': 'F4', 't': 'F#4', 'g': 'G4', 'y': 'G#4', 'h': 'A4',
+            'u': 'A#4', 'j': 'B4', 'k': 'C5', 'o': 'C#5', 'l': 'D5'
+        };
+        
+        const drumKeys = {
+            '1': 'kick', '2': 'snare', '3': 'hihat', '4': 'clap',
+            'q': 'tom1', 'w': 'tom2', 'e': 'crash', 'r': 'ride',
+            'a': 'perc1', 's': 'perc2', 'd': 'bass808', 'f': 'fx'
+        };
+        
+        // Play note
+        function playNote(freq, type = 'sine', duration = 0.3) {
+            initAudio();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            
+            osc.type = type;
+            osc.frequency.value = freq;
+            
+            gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+            
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            
+            osc.start();
+            osc.stop(audioCtx.currentTime + duration);
+        }
+        
+        // Play drum
+        function playDrum(type) {
+            initAudio();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            const noise = audioCtx.createBufferSource();
+            
+            switch(type) {
+                case 'kick':
+                    osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+                    gain.gain.setValueAtTime(1, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.5);
+                    break;
+                case 'snare':
+                    // Noise for snare
+                    const bufferSize = audioCtx.sampleRate * 0.2;
+                    const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+                    const data = buffer.getChannelData(0);
+                    for (let i = 0; i < bufferSize; i++) {
+                        data[i] = Math.random() * 2 - 1;
+                    }
+                    noise.buffer = buffer;
+                    const noiseGain = audioCtx.createGain();
+                    noiseGain.gain.setValueAtTime(0.5, audioCtx.currentTime);
+                    noiseGain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+                    noise.connect(noiseGain);
+                    noiseGain.connect(audioCtx.destination);
+                    noise.start();
+                    break;
+                case 'hihat':
+                    const hihatBuffer = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.05, audioCtx.sampleRate);
+                    const hihatData = hihatBuffer.getChannelData(0);
+                    for (let i = 0; i < hihatData.length; i++) {
+                        hihatData[i] = Math.random() * 2 - 1;
+                    }
+                    const hihat = audioCtx.createBufferSource();
+                    hihat.buffer = hihatBuffer;
+                    const hihatGain = audioCtx.createGain();
+                    hihatGain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                    hihatGain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
+                    const hihatFilter = audioCtx.createBiquadFilter();
+                    hihatFilter.type = 'highpass';
+                    hihatFilter.frequency.value = 7000;
+                    hihat.connect(hihatFilter);
+                    hihatFilter.connect(hihatGain);
+                    hihatGain.connect(audioCtx.destination);
+                    hihat.start();
+                    break;
+                case 'clap':
+                    const clapBuffer = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.15, audioCtx.sampleRate);
+                    const clapData = clapBuffer.getChannelData(0);
+                    for (let i = 0; i < clapData.length; i++) {
+                        clapData[i] = Math.random() * 2 - 1;
+                    }
+                    const clap = audioCtx.createBufferSource();
+                    clap.buffer = clapBuffer;
+                    const clapGain = audioCtx.createGain();
+                    clapGain.gain.setValueAtTime(0.4, audioCtx.currentTime);
+                    clapGain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+                    const clapFilter = audioCtx.createBiquadFilter();
+                    clapFilter.type = 'bandpass';
+                    clapFilter.frequency.value = 1500;
+                    clap.connect(clapFilter);
+                    clapFilter.connect(clapGain);
+                    clapGain.connect(audioCtx.destination);
+                    clap.start();
+                    break;
+                default:
+                    osc.frequency.value = 200 + Math.random() * 200;
+                    gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.2);
+            }
+        }
+        
+        // Add track
+        function addTrack(name = 'Track ' + (tracks.length + 1), instrument = 'piano') {
+            const track = {
+                id: Date.now(),
+                name: name,
+                instrument: instrument,
+                muted: false,
+                solo: false,
+                beats: new Array(32).fill(null) // 32 beats = 8 bars
+            };
+            tracks.push(track);
+            renderTracks();
+            return track;
+        }
+        
+        // Render tracks
+        function renderTracks() {
+            const container = document.getElementById('tracksContainer');
+            container.innerHTML = '';
+            
+            tracks.forEach(track => {
+                const trackEl = document.createElement('div');
+                trackEl.className = 'track';
+                trackEl.innerHTML = `
+                    <div class="track-info">
+                        <div class="track-name">${track.name}</div>
+                        <div class="track-controls">
+                            <button class="track-btn mute-btn ${track.muted ? 'active' : ''}" onclick="toggleMute(${track.id})">M</button>
+                            <button class="track-btn solo-btn ${track.solo ? 'active' : ''}" onclick="toggleSolo(${track.id})">S</button>
+                            <button class="track-btn delete-btn" onclick="deleteTrack(${track.id})">X</button>
+                        </div>
+                    </div>
+                    <div class="track-content">
+                        <div class="track-grid" id="grid-${track.id}">
+                            ${track.beats.map((beat, i) => `
+                                <div class="beat-cell ${beat ? 'active' : ''}" 
+                                     data-track="${track.id}" 
+                                     data-beat="${i}"
+                                     onclick="toggleBeat(${track.id}, ${i})"></div>
+                            `).join('')}
+                        </div>
+                        <div class="playhead" id="playhead-${track.id}"></div>
+                    </div>
+                `;
+                container.appendChild(trackEl);
+            });
+            
+            // Add button at end
+            const addBtn = document.createElement('button');
+            addBtn.className = 'add-track-btn';
+            addBtn.onclick = () => addTrack();
+            addBtn.textContent = '+ Add Track';
+            container.appendChild(addBtn);
+        }
+        
+        // Toggle beat
+        function toggleBeat(trackId, beatIndex) {
+            const track = tracks.find(t => t.id === trackId);
+            if (track) {
+                if (track.beats[beatIndex]) {
+                    track.beats[beatIndex] = null;
+                } else {
+                    // Store note info
+                    track.beats[beatIndex] = {
+                        note: 'C4',
+                        velocity: 1
+                    };
+                    // Play preview
+                    if (track.instrument === 'drums') {
+                        playDrum('kick');
+                    } else {
+                        playNote(noteFreqs['C4']);
+                    }
+                }
+                renderTracks();
+            }
+        }
+        
+        // Toggle mute
+        function toggleMute(trackId) {
+            const track = tracks.find(t => t.id === trackId);
+            if (track) {
+                track.muted = !track.muted;
+                renderTracks();
+            }
+        }
+        
+        // Toggle solo
+        function toggleSolo(trackId) {
+            const track = tracks.find(t => t.id === trackId);
+            if (track) {
+                track.solo = !track.solo;
+                renderTracks();
+            }
+        }
+        
+        // Delete track
+        function deleteTrack(trackId) {
+            tracks = tracks.filter(t => t.id !== trackId);
+            renderTracks();
+        }
+        
+        // Playback
+        function togglePlayback() {
+            if (isPlaying) {
+                pausePlayback();
+            } else {
+                startPlayback();
+            }
+        }
+        
+        function startPlayback() {
+            initAudio();
+            isPlaying = true;
+            document.getElementById('playBtn').classList.add('playing');
+            document.getElementById('playBtn').innerHTML = '&#10074;&#10074;';
+            
+            // Show playheads
+            tracks.forEach(t => {
+                const ph = document.getElementById('playhead-' + t.id);
+                if (ph) ph.style.display = 'block';
+            });
+            
+            const bpm = parseInt(document.getElementById('bpmInput').value) || 120;
+            const beatDuration = 60000 / bpm / 4; // 16th notes
+            
+            playInterval = setInterval(() => {
+                // Check if any track has solo
+                const hasSolo = tracks.some(t => t.solo);
+                
+                // Play current beat for all tracks
+                tracks.forEach(track => {
+                    // Skip if muted or (has solo tracks and this isn't one)
+                    if (track.muted || (hasSolo && !track.solo)) return;
+                    
+                    const beat = track.beats[currentBeat];
+                    if (beat) {
+                        if (track.instrument === 'drums') {
+                            playDrum('kick');
+                        } else if (track.instrument === 'bass') {
+                            playNote(noteFreqs['C4'] / 2, 'sawtooth', 0.2);
+                        } else if (track.instrument === 'synth') {
+                            playNote(noteFreqs['C4'], 'square', 0.2);
+                        } else {
+                            playNote(noteFreqs[beat.note] || noteFreqs['C4']);
+                        }
+                    }
+                    
+                    // Update playhead
+                    const ph = document.getElementById('playhead-' + track.id);
+                    if (ph) {
+                        ph.style.left = (currentBeat * 25) + 'px';
+                    }
+                    
+                    // Highlight current beat
+                    const cells = document.querySelectorAll(`[data-track="${track.id}"]`);
+                    cells.forEach((cell, i) => {
+                        cell.classList.toggle('playing', i === currentBeat);
+                    });
+                });
+                
+                // Update time display
+                const totalSeconds = Math.floor((currentBeat * beatDuration) / 1000);
+                const mins = Math.floor(totalSeconds / 60);
+                const secs = totalSeconds % 60;
+                document.getElementById('timeDisplay').textContent = `${mins}:${String(secs).padStart(2, '0')}:00`;
+                
+                currentBeat = (currentBeat + 1) % 32;
+            }, beatDuration);
+        }
+        
+        function pausePlayback() {
+            isPlaying = false;
+            clearInterval(playInterval);
+            document.getElementById('playBtn').classList.remove('playing');
+            document.getElementById('playBtn').innerHTML = '&#9654;';
+        }
+        
+        function stopPlayback() {
+            pausePlayback();
+            currentBeat = 0;
+            document.getElementById('timeDisplay').textContent = '0:00:00';
+            
+            // Hide playheads and remove playing class
+            tracks.forEach(t => {
+                const ph = document.getElementById('playhead-' + t.id);
+                if (ph) {
+                    ph.style.display = 'none';
+                    ph.style.left = '0';
+                }
+            });
+            document.querySelectorAll('.beat-cell').forEach(c => c.classList.remove('playing'));
+        }
+        
+        // Instrument panels
+        function openInstrument(type) {
+            currentInstrument = type;
+            const panel = document.getElementById('instrumentPanel');
+            const title = document.getElementById('panelTitle');
+            const content = document.getElementById('instrumentContent');
+            
+            // Update sidebar
+            document.querySelectorAll('.instrument-btn').forEach(b => b.classList.remove('active'));
+            event.target.closest('.instrument-btn').classList.add('active');
+            
+            // Auto-add a track for this instrument
+            const existingTrack = tracks.find(t => t.instrument === type);
+            if (!existingTrack) {
+                addTrack(type.charAt(0).toUpperCase() + type.slice(1), type);
+            }
+            selectedTrackId = (existingTrack || tracks.find(t => t.instrument === type)).id;
+            
+            if (type === 'piano' || type === 'synth' || type === 'bass') {
+                title.textContent = type.charAt(0).toUpperCase() + type.slice(1);
+                content.innerHTML = `
+                    <div class="piano-container">
+                        <div class="piano-help">Use keyboard: A S D F G H J K for white keys, W E T Y U O for black keys</div>
+                        <div class="piano">
+                            <div class="white-key" data-note="C4"><span class="key-label">A</span></div>
+                            <div class="black-key" data-note="C#4" style="left: 35px;"><span class="key-label">W</span></div>
+                            <div class="white-key" data-note="D4"><span class="key-label">S</span></div>
+                            <div class="black-key" data-note="D#4" style="left: 85px;"><span class="key-label">E</span></div>
+                            <div class="white-key" data-note="E4"><span class="key-label">D</span></div>
+                            <div class="white-key" data-note="F4"><span class="key-label">F</span></div>
+                            <div class="black-key" data-note="F#4" style="left: 185px;"><span class="key-label">T</span></div>
+                            <div class="white-key" data-note="G4"><span class="key-label">G</span></div>
+                            <div class="black-key" data-note="G#4" style="left: 235px;"><span class="key-label">Y</span></div>
+                            <div class="white-key" data-note="A4"><span class="key-label">H</span></div>
+                            <div class="black-key" data-note="A#4" style="left: 285px;"><span class="key-label">U</span></div>
+                            <div class="white-key" data-note="B4"><span class="key-label">J</span></div>
+                            <div class="white-key" data-note="C5"><span class="key-label">K</span></div>
+                            <div class="black-key" data-note="C#5" style="left: 385px;"><span class="key-label">O</span></div>
+                            <div class="white-key" data-note="D5"><span class="key-label">L</span></div>
+                        </div>
+                    </div>
+                `;
+                
+                // Add click handlers
+                content.querySelectorAll('.white-key, .black-key').forEach(key => {
+                    key.addEventListener('mousedown', () => playPianoKey(key.dataset.note, type));
+                    key.addEventListener('mouseup', () => key.classList.remove('active'));
+                    key.addEventListener('mouseleave', () => key.classList.remove('active'));
+                    key.addEventListener('touchstart', (e) => {
+                        e.preventDefault();
+                        playPianoKey(key.dataset.note, type);
+                    });
+                    key.addEventListener('touchend', () => key.classList.remove('active'));
+                });
+            } else if (type === 'drums') {
+                title.textContent = 'Drum Machine';
+                content.innerHTML = `
+                    <div class="piano-help">Use keyboard: 1-4 for top row, Q-R for second row, A-F for bottom row</div>
+                    <div class="drum-grid">
+                        <div class="drum-pad" data-drum="kick" onclick="hitDrumPad('kick')">
+                            <span class="pad-name">Kick</span>
+                            <span class="pad-key">1</span>
+                        </div>
+                        <div class="drum-pad" data-drum="snare" onclick="hitDrumPad('snare')">
+                            <span class="pad-name">Snare</span>
+                            <span class="pad-key">2</span>
+                        </div>
+                        <div class="drum-pad" data-drum="hihat" onclick="hitDrumPad('hihat')">
+                            <span class="pad-name">Hi-Hat</span>
+                            <span class="pad-key">3</span>
+                        </div>
+                        <div class="drum-pad" data-drum="clap" onclick="hitDrumPad('clap')">
+                            <span class="pad-name">Clap</span>
+                            <span class="pad-key">4</span>
+                        </div>
+                        <div class="drum-pad" data-drum="tom1" onclick="hitDrumPad('tom1')">
+                            <span class="pad-name">Tom 1</span>
+                            <span class="pad-key">Q</span>
+                        </div>
+                        <div class="drum-pad" data-drum="tom2" onclick="hitDrumPad('tom2')">
+                            <span class="pad-name">Tom 2</span>
+                            <span class="pad-key">W</span>
+                        </div>
+                        <div class="drum-pad" data-drum="crash" onclick="hitDrumPad('crash')">
+                            <span class="pad-name">Crash</span>
+                            <span class="pad-key">E</span>
+                        </div>
+                        <div class="drum-pad" data-drum="ride" onclick="hitDrumPad('ride')">
+                            <span class="pad-name">Ride</span>
+                            <span class="pad-key">R</span>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            panel.classList.add('active');
+        }
+        
+        function playPianoKey(note, type = 'piano') {
+            const key = document.querySelector(`[data-note="${note}"]`);
+            if (key) key.classList.add('active');
+            
+            let waveType = 'sine';
+            let freqMult = 1;
+            if (type === 'synth') waveType = 'square';
+            if (type === 'bass') {
+                waveType = 'sawtooth';
+                freqMult = 0.5;
+            }
+            
+            playNote(noteFreqs[note] * freqMult, waveType, 0.4);
+            
+            setTimeout(() => {
+                if (key) key.classList.remove('active');
+            }, 200);
+        }
+        
+        function hitDrumPad(drum) {
+            const pad = document.querySelector(`[data-drum="${drum}"]`);
+            if (pad) pad.classList.add('active');
+            
+            playDrum(drum);
+            
+            setTimeout(() => {
+                if (pad) pad.classList.remove('active');
+            }, 100);
+        }
+        
+        function closeInstrumentPanel() {
+            document.getElementById('instrumentPanel').classList.remove('active');
+            document.querySelectorAll('.instrument-btn').forEach(b => b.classList.remove('active'));
+            currentInstrument = null;
+        }
+        
+        // Keyboard controls
+        document.addEventListener('keydown', (e) => {
+            if (e.repeat) return;
+            
+            const key = e.key.toLowerCase();
+            
+            // Space for play/pause
+            if (key === ' ' && e.target.tagName !== 'INPUT') {
+                e.preventDefault();
+                togglePlayback();
+                return;
+            }
+            
+            // Piano keys
+            if (currentInstrument === 'piano' || currentInstrument === 'synth' || currentInstrument === 'bass') {
+                if (pianoKeys[key]) {
+                    playPianoKey(pianoKeys[key], currentInstrument);
+                }
+            }
+            
+            // Drum keys
+            if (currentInstrument === 'drums') {
+                if (drumKeys[key]) {
+                    hitDrumPad(drumKeys[key]);
+                }
+            }
+        });
+        
+        // Init with one track
+        addTrack('Piano', 'piano');
+    </script>
+</body>
+</html>

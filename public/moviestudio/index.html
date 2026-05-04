@@ -300,6 +300,39 @@ body::before{
   .budget-label{width:100px;font-size:11px}
   .nav{padding:20px 24px}
 }
+
+/* ---- BUDGET BARS ---- */
+.budget-bar-row{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.budget-bar-label{font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:0.08em;color:var(--text-dim);text-transform:uppercase;width:160px;flex-shrink:0}
+.budget-bar-track{flex:1;height:6px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden}
+.budget-bar-fill{height:100%;background:linear-gradient(90deg,var(--gold-dim),var(--gold-bright));border-radius:3px;transition:width 0.8s ease}
+.budget-bar-amt{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:600;color:var(--gold);width:56px;text-align:right;flex-shrink:0}
+.budget-total-row{display:flex;justify-content:space-between;align-items:center;padding-top:16px;border-top:1px solid rgba(201,168,76,0.2);margin-top:8px;font-family:'Barlow Condensed',sans-serif;font-size:14px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim)}
+.budget-total-num{font-size:22px;font-weight:700;color:var(--gold)}
+
+/* ---- AWARDS ---- */
+.award-card{background:var(--dark3);border:1px solid rgba(201,168,76,0.1);padding:20px 18px;position:relative;overflow:hidden}
+.award-card::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:var(--gold);opacity:0.5}
+.award-category{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:0.18em;color:var(--gold);text-transform:uppercase;margin-bottom:8px}
+.award-prediction{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;margin-bottom:8px}
+.award-reason{font-size:13px;color:var(--text-dim);line-height:1.5}
+
+/* ---- CAST NOTE ---- */
+.cast-note{font-size:12px;color:var(--text-dim);margin-top:4px;font-style:italic;text-align:center}
+
+/* ---- SOUNDTRACK ---- */
+.soundtrack-item{display:flex;align-items:center;gap:16px;padding:14px 0;border-bottom:1px solid rgba(201,168,76,0.07)}
+.track-num{font-family:'Barlow Condensed',sans-serif;font-size:13px;color:var(--text-dim);width:28px;flex-shrink:0}
+.track-info{flex:1}
+.track-title{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:600;letter-spacing:0.06em;color:var(--cream)}
+.track-artist{font-size:13px;color:var(--text-dim);margin-top:2px}
+.track-mood{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold-dim);background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.15);padding:4px 10px;border-radius:2px;white-space:nowrap}
+
+/* ---- RES BADGE ---- */
+.res-badge{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--gold);background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.25);padding:4px 12px;border-radius:2px;margin-right:8px;display:inline-block;margin-bottom:8px}
+
+/* ---- TRAILER LAUNCH HIDDEN ---- */
+.hidden{display:none!important}
 </style>
 </head>
 <body>

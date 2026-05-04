@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chemistry Mastery | Nadav's Study Hub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #00f0ff;
+            --secondary: #ff00aa;
+            --accent: #ffff00;
+            --dark: #0a0a1a;
+            --darker: #050510;
+            --glass: rgba(255, 255, 255, 0.05);
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: var(--darker);
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a0a2a 50%, #0a1a2a 100%);
+        }
+
+        .molecule {
+            position: absolute;
+            border-radius: 50%;
+            animation: float 20s infinite ease-in-out;
+            opacity: 0.1;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-100px) rotate(180deg); }
+        }
+
+        /* Header */
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            background: rgba(10, 10, 26, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0, 240, 255, 0.2);
+        }
+
+        .logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 900;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(0, 240, 255, 0.5);
+        }
+
+        nav {
+            display: flex;
+            gap: 10px;
+        }
+
+        nav button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 30px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: var(--glass);
+            color: #fff;
+            border: 1px solid rgba(0, 240, 255, 0.3);
+        }
+
+        nav button:hover, nav button.active {
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            color: #000;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 240, 255, 0.3);
+        }
+
+        /* Main Content */
+        main {
+            padding-top: 100px;
+            min-height: 100vh;
+        }
+
+        .section {
+            display: none;
+            padding: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 80px 20px;
+        }
+
+        .hero h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: glow 3s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% { filter: drop-shadow(0 0 20px rgba(0, 240, 255, 0.5)); }
+            50% { filter: drop-shadow(0 0 40px rgba(255, 0, 170, 0.5)); }
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 40px;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+            margin-top: 60px;
+        }
+
+        .stat-card {
+            background: var(--glass);
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            border-radius: 20px;
+            padding: 30px 40px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .stat-card h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            color: var(--primary);
+        }
+
+        .stat-card p {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 10px;
+        }
+
+        /* Topic Cards */
+        .topics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            padding: 20px;
+        }
+
+        .topic-card {
+            background: linear-gradient(145deg, rgba(0, 240, 255, 0.05), rgba(255, 0, 170, 0.05));
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            border-radius: 20px;
+            padding: 30px;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .topic-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .topic-card:hover::before {
+            left: 100%;
+        }
+
+        .topic-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            border-color: var(--primary);
+            box-shadow: 0 20px 40px rgba(0, 240, 255, 0.2);
+        }
+
+        .topic-number {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3rem;
+            color: var(--primary);
+            opacity: 0.3;
+            position: absolute;
+            top: 10px;
+            right: 20px;
+        }
+
+        .topic-card h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+
+        .topic-card p {
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+        /* Learning Content */
+        .learning-content {
+            background: var(--glass);
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+        }
+
+        .learning-content h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            color: var(--primary);
+        }
+
+        .learning-content h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2rem;
+            margin: 25px 0 15px;
+            color: var(--secondary);
+        }
+
+        .learning-content p, .learning-content li {
+            color: rgba(255, 255, 255, 0.85);
+            line-height: 1.8;
+            font-size: 1rem;
+        }
+
+        .learning-content ul {
+            margin-left: 25px;
+            margin-bottom: 20px;
+        }
+
+        .learning-content li {
+            margin-bottom: 10px;
+        }
+
+        .formula-box {
+            background: rgba(0, 240, 255, 0.1);
+            border: 1px solid var(--primary);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            text-align: center;
+        }
+
+        .highlight {
+            color: var(--accent);
+            font-weight: bold;
+        }
+
+        .mnemonic {
+            background: linear-gradient(90deg, rgba(255, 0, 170, 0.2), rgba(0, 240, 255, 0.2));
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid var(--secondary);
+        }
+
+        /* Quiz Section */
+        .quiz-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .quiz-progress {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 30px;
+            height: 10px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .quiz-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 30px;
+            transition: width 0.5s ease;
+        }
+
+        .quiz-question {
+            background: var(--glass);
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 20px;
+        }
+
+        .quiz-question h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            color: var(--secondary);
+            margin-bottom: 15px;
+        }
+
+        .quiz-question p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .quiz-option {
+            padding: 20px 25px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            text-align: left;
+        }
+
+        .quiz-option:hover {
+            border-color: var(--primary);
+            background: rgba(0, 240, 255, 0.1);
+        }
+
+        .quiz-option.correct {
+            border-color: #00ff88;
+            background: rgba(0, 255, 136, 0.2);
+        }
+
+        .quiz-option.incorrect {
+            border-color: #ff4444;
+            background: rgba(255, 68, 68, 0.2);
+        }
+
+        .quiz-option.disabled {
+            pointer-events: none;
+        }
+
+        .quiz-btn {
+            padding: 15px 40px;
+            border: none;
+            border-radius: 30px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            cursor: pointer;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            color: #000;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .quiz-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(0, 240, 255, 0.4);
+        }
+
+        .quiz-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .score-display {
+            text-align: center;
+            padding: 60px;
+        }
+
+        .score-display h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        .score-circle {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            border: 8px solid var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 40px auto;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3rem;
+            background: rgba(0, 240, 255, 0.1);
+        }
+
+        /* Hot Topics */
+        .hot-topics {
+            margin-top: 40px;
+        }
+
+        .hot-topics h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            color: var(--accent);
+            text-align: center;
+        }
+
+        .hot-topic-card {
+            background: linear-gradient(145deg, rgba(255, 255, 0, 0.1), rgba(255, 0, 170, 0.1));
+            border: 2px solid var(--accent);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+
+        .hot-topic-card h3 {
+            color: var(--accent);
+            font-family: 'Orbitron', sans-serif;
+            margin-bottom: 15px;
+        }
+
+        /* Reference Tables */
+        .reference-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        .reference-table th, .reference-table td {
+            padding: 15px;
+            text-align: left;
+            border: 1px solid rgba(0, 240, 255, 0.2);
+        }
+
+        .reference-table th {
+            background: rgba(0, 240, 255, 0.1);
+            font-family: 'Orbitron', sans-serif;
+            color: var(--primary);
+        }
+
+        .reference-table tr:hover {
+            background: rgba(0, 240, 255, 0.05);
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            header {
+                padding: 15px 20px;
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            nav {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            nav button {
+                padding: 10px 18px;
+                font-size: 0.75rem;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .topics-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .section {
+                padding: 20px;
+            }
+
+            .learning-content {
+                padding: 25px;
+            }
+
+            .quiz-question {
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation">
+        <div class="molecule" style="width: 300px; height: 300px; background: radial-gradient(circle, var(--primary), transparent); top: 10%; left: 5%;"></div>
+        <div class="molecule" style="width: 200px; height: 200px; background: radial-gradient(circle, var(--secondary), transparent); top: 60%; right: 10%; animation-delay: -5s;"></div>
+        <div class="molecule" style="width: 400px; height: 400px; background: radial-gradient(circle, var(--accent), transparent); bottom: 10%; left: 30%; animation-delay: -10s;"></div>
+    </div>
+
+    <header>
+        <div class="logo">CHEM MASTERY</div>
+        <nav>
+            <button class="active" onclick="showSection('home')">HOME</button>
+            <button onclick="showSection('learn')">LEARN</button>
+            <button onclick="showSection('test')">TEST</button>
+            <button onclick="showSection('hot')">LIKELY Q's</button>
+        </nav>
+    </header>
+
+    <main>
+        <!-- HOME SECTION -->
+        <section id="home" class="section active">
+            <div class="hero">
+                <h1>CHEMISTRY REACTIONS</h1>
+                <p>Master chemical equations, reaction types, and ionic equations</p>
+                <div class="stats">
+                    <div class="stat-card">
+                        <h3>9</h3>
+                        <p>Key Topics</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>5</h3>
+                        <p>Reaction Types</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>7</h3>
+                        <p>Diatomic Elements</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="topics-grid">
+                <div class="topic-card" onclick="showSection('learn')">
+                    <span class="topic-number">01</span>
+                    <h3>EQUATION ANATOMY</h3>
+                    <p>Reactants, products, yields, and states of matter symbols (s), (l), (g), (aq)</p>
+                </div>
+                <div class="topic-card" onclick="showSection('learn')">
+                    <span class="topic-number">02</span>
+                    <h3>BrINClHOF TWINS</h3>
+                    <p>The 7 diatomic elements that always travel in pairs</p>
+                </div>
+                <div class="topic-card" onclick="showSection('learn')">
+                    <span class="topic-number">03</span>
+                    <h3>SUBSCRIPTS vs COEFFICIENTS</h3>
+                    <p>The key difference for balancing equations correctly</p>
+                </div>
+                <div class="topic-card" onclick="showSection('learn')">
+                    <span class="topic-number">04</span>
+                    <h3>WORD TO EQUATION</h3>
+                    <p>Converting word equations to chemical formulas</p>
+                </div>
+                <div class="topic-card" onclick="showSection('learn')">
+                    <span class="topic-number">05</span>
+                    <h3>BALANCING EQUATIONS</h3>
+                    <p>Making atoms equal on both sides of the arrow</p>
+                </div>
+                <div class="topic-card" onclick="showSection('learn')">
+                    <span class="topic-number">06</span>
+                    <h3>5 REACTION TYPES</h3>
+                    <p>Synthesis, Decomposition, Single/Double Replacement, Combustion</p>
+                </div>
+                <div class="topic-card" onclick="showSection('learn')">
+                    <span class="topic-number">07</span>
+                    <h3>ACTIVITY SERIES</h3>
+                    <p>Predict if single replacement reactions will occur</p>
+                </div>
+                <div class="topic-card" onclick="showSection('learn')">
+                    <span class="topic-number">08</span>
+                    <h3>PRECIPITATION REACTIONS</h3>
+                    <p>Double replacement and solubility rules</p>
+                </div>
+                <div class="topic-card" onclick="showSection('learn')">
+                    <span class="topic-number">09</span>
+                    <h3>IONIC EQUATIONS</h3>
+                    <p>Complete, Total Ionic, Net Ionic, and Spectator Ions</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- LEARN SECTION -->
+        <section id="learn" class="section">
+            <div class="learning-content">
+                <h2>1. Chemical Equation Anatomy</h2>
+                <p><span class="highlight">Reactants</span> are the starting substances (LEFT side of the arrow). <span class="highlight">Products</span> are what's formed (RIGHT side of the arrow).</p>
+                <div class="formula-box">
+                    REACTANTS ---yields---> PRODUCTS<br><br>
+                    2H2(g) + O2(g) ---> 2H2O(l)
+                </div>
+                <h3>States of Matter Symbols:</h3>
+                <ul>
+                    <li><strong>(s)</strong> = solid</li>
+                    <li><strong>(l)</strong> = liquid</li>
+                    <li><strong>(g)</strong> = gas</li>
+                    <li><strong>(aq)</strong> = aqueous (dissolved in water)</li>
+                </ul>
+            </div>
+
+            <div class="learning-content">
+                <h2>2. BrINClHOF Twins - The Diatomic 7</h2>
+                <div class="mnemonic">
+                    <strong>Memory Trick:</strong> "BrINClHOF" - Bromine, Iodine, Nitrogen, Chlorine, Hydrogen, Oxygen, Fluorine<br>
+                    These 7 elements ALWAYS come in pairs when alone in nature!
+                </div>
+                <div class="formula-box">
+                    Br2, I2, N2, Cl2, H2, O2, F2
+                </div>
+                <p>When writing equations, if any of these elements appear alone (not in a compound), they MUST have a subscript of 2!</p>
+            </div>
+
+            <div class="learning-content">
+                <h2>3. Subscripts vs Coefficients</h2>
+                <div class="formula-box">
+                    <span style="color: var(--accent);">2</span>H<span style="color: var(--primary);">2</span>O
+                </div>
+                <ul>
+                    <li><span class="highlight">Coefficient (yellow 2)</span> = Number BEFORE the formula. Changes how many molecules. CAN be changed when balancing.</li>
+                    <li><span style="color: var(--primary);">Subscript (cyan 2)</span> = Number AFTER an element, slightly lower. Shows atoms in the compound. CANNOT be changed when balancing!</li>
+                </ul>
+                <div class="mnemonic">
+                    <strong>Remember:</strong> Changing a subscript changes the IDENTITY of the compound. Changing a coefficient changes the AMOUNT.
+                </div>
+            </div>
+
+            <div class="learning-content">
+                <h2>4. Writing Equations from Words</h2>
+                <p>Steps to convert word equations:</p>
+                <ul>
+                    <li>1. Identify all reactants and products</li>
+                    <li>2. Write correct chemical formulas for each</li>
+                    <li>3. Remember BrINClHOF for diatomic elements</li>
+                    <li>4. Use proper state symbols</li>
+                </ul>
+                <div class="formula-box">
+                    "Hydrogen gas reacts with oxygen gas to produce water"<br><br>
+                    H2(g) + O2(g) ---> H2O(l)
+                </div>
+            </div>
+
+            <div class="learning-content">
+                <h2>5. Balancing Equations</h2>
+                <p>Rules for balancing:</p>
+                <ul>
+                    <li>1. Count atoms of each element on both sides</li>
+                    <li>2. Add COEFFICIENTS (never change subscripts!)</li>
+                    <li>3. Start with the most complex molecule</li>
+                    <li>4. Save H and O for last</li>
+                    <li>5. Double-check your work!</li>
+                </ul>
+                <div class="formula-box">
+                    UNBALANCED: H2 + O2 ---> H2O<br>
+                    H: 2 = 2 (good) | O: 2 != 1 (bad)<br><br>
+                    BALANCED: 2H2 + O2 ---> 2H2O<br>
+                    H: 4 = 4 | O: 2 = 2
+                </div>
+            </div>
+
+            <div class="learning-content">
+                <h2>6. Five Reaction Types</h2>
+                
+                <h3>1. Synthesis (Combination)</h3>
+                <p>Two or more substances combine to form ONE product</p>
+                <div class="formula-box">A + B ---> AB<br>2Na + Cl2 ---> 2NaCl</div>
+
+                <h3>2. Decomposition</h3>
+                <p>ONE compound breaks down into two or more simpler substances</p>
+                <div class="formula-box">AB ---> A + B<br>2H2O ---> 2H2 + O2</div>
+
+                <h3>3. Single Replacement (Displacement)</h3>
+                <p>One element replaces another in a compound</p>
+                <div class="formula-box">A + BC ---> AC + B<br>Zn + 2HCl ---> ZnCl2 + H2</div>
+
+                <h3>4. Double Replacement (Displacement)</h3>
+                <p>Two compounds exchange partners</p>
+                <div class="formula-box">AB + CD ---> AD + CB<br>NaCl + AgNO3 ---> NaNO3 + AgCl</div>
+
+                <h3>5. Combustion</h3>
+                <p>A substance reacts with O2, producing CO2 and H2O (for hydrocarbons)</p>
+                <div class="formula-box">Hydrocarbon + O2 ---> CO2 + H2O<br>CH4 + 2O2 ---> CO2 + 2H2O</div>
+            </div>
+
+            <div class="learning-content">
+                <h2>7. Activity Series (Single Replacement)</h2>
+                <div class="mnemonic">
+                    <strong>CEO Analogy:</strong> A more active metal (higher on the activity series) can "kick out" a less active metal from its compound - like a CEO taking someone's job!
+                </div>
+                <table class="reference-table">
+                    <tr><th>Most Active (Top)</th><th>Least Active (Bottom)</th></tr>
+                    <tr><td>Li, K, Ba, Ca, Na</td><td>These can replace H from water & acids</td></tr>
+                    <tr><td>Mg, Al, Zn, Fe, Ni</td><td>These can replace H from acids only</td></tr>
+                    <tr><td>Sn, Pb, H</td><td>H is the reference point</td></tr>
+                    <tr><td>Cu, Hg, Ag, Pt, Au</td><td>Cannot replace H - too weak!</td></tr>
+                </table>
+                <div class="formula-box">
+                    Zn + CuSO4 ---> ZnSO4 + Cu (GOES! Zn is above Cu)<br>
+                    Cu + ZnSO4 ---> NO REACTION (Cu is below Zn)
+                </div>
+            </div>
+
+            <div class="learning-content">
+                <h2>8. Double Replacement & Precipitation</h2>
+                <p>A precipitate is an insoluble solid that forms from a reaction in solution.</p>
+                
+                <h3>Solubility Rules (Simplified):</h3>
+                <table class="reference-table">
+                    <tr><th>SOLUBLE (dissolves)</th><th>INSOLUBLE (precipitates)</th></tr>
+                    <tr><td>All Group 1 (Na+, K+, Li+) compounds</td><td>Most carbonates (CO3)</td></tr>
+                    <tr><td>All nitrates (NO3-)</td><td>Most phosphates (PO4)</td></tr>
+                    <tr><td>All ammonium (NH4+) compounds</td><td>Most hydroxides (OH) except Group 1</td></tr>
+                    <tr><td>Most chlorides, bromides, iodides</td><td>Silver halides (AgCl, AgBr, AgI)</td></tr>
+                </table>
+            </div>
+
+            <div class="learning-content">
+                <h2>9. Complete, Total Ionic & Net Ionic Equations</h2>
+                
+                <h3>Complete Equation (CE)</h3>
+                <p>Shows all reactants and products as complete formulas</p>
+                <div class="formula-box">NaCl(aq) + AgNO3(aq) ---> NaNO3(aq) + AgCl(s)</div>
+
+                <h3>Total Ionic Equation (TIE)</h3>
+                <p>Break apart all aqueous (aq) compounds into ions. Keep solids, liquids, and gases together!</p>
+                <div class="formula-box">Na+(aq) + Cl-(aq) + Ag+(aq) + NO3-(aq) ---> Na+(aq) + NO3-(aq) + AgCl(s)</div>
+
+                <h3>Net Ionic Equation (NIE)</h3>
+                <p>Remove spectator ions (ions that appear unchanged on both sides)</p>
+                <div class="formula-box">Ag+(aq) + Cl-(aq) ---> AgCl(s)</div>
+
+                <div class="mnemonic">
+                    <strong>Spectator Ions:</strong> Na+ and NO3- are spectators - they watch but don't participate! They appear identical on both sides.
+                </div>
+            </div>
+        </section>
+
+        <!-- TEST SECTION -->
+        <section id="test" class="section">
+            <div class="quiz-container">
+                <div class="quiz-progress">
+                    <div class="quiz-progress-bar" id="progressBar" style="width: 0%"></div>
+                </div>
+                <div id="quizContent"></div>
+            </div>
+        </section>
+
+        <!-- HOT TOPICS SECTION -->
+        <section id="hot" class="section">
+            <div class="hot-topics">
+                <h2>MOST LIKELY TEST QUESTIONS</h2>
+                
+                <div class="hot-topic-card">
+                    <h3>1. Balance This Equation & Classify</h3>
+                    <p>You'll likely see: "Balance the following equation and identify the reaction type"</p>
+                    <div class="formula-box">
+                        __Fe + __O2 ---> __Fe2O3<br><br>
+                        Answer: 4Fe + 3O2 ---> 2Fe2O3 (Synthesis)
+                    </div>
+                </div>
+
+                <div class="hot-topic-card">
+                    <h3>2. Word Equation to Balanced Formula</h3>
+                    <p>Example: "Magnesium metal reacts with hydrochloric acid to produce magnesium chloride and hydrogen gas"</p>
+                    <div class="formula-box">
+                        Mg(s) + 2HCl(aq) ---> MgCl2(aq) + H2(g)<br>
+                        Type: Single Replacement
+                    </div>
+                </div>
+
+                <div class="hot-topic-card">
+                    <h3>3. Activity Series - Will It React?</h3>
+                    <p>Example: "Will copper react with silver nitrate solution?"</p>
+                    <div class="formula-box">
+                        Cu + AgNO3 ---> ?<br>
+                        YES! Cu is above Ag in activity series<br>
+                        Cu + 2AgNO3 ---> Cu(NO3)2 + 2Ag
+                    </div>
+                </div>
+
+                <div class="hot-topic-card">
+                    <h3>4. Write CE, TIE, and NIE</h3>
+                    <p>Example: "Sodium sulfate reacts with barium chloride"</p>
+                    <div class="formula-box">
+                        CE: Na2SO4(aq) + BaCl2(aq) ---> 2NaCl(aq) + BaSO4(s)<br><br>
+                        TIE: 2Na+ + SO4^2- + Ba^2+ + 2Cl- ---> 2Na+ + 2Cl- + BaSO4(s)<br><br>
+                        NIE: Ba^2+(aq) + SO4^2-(aq) ---> BaSO4(s)<br><br>
+                        Spectator Ions: Na+, Cl-
+                    </div>
+                </div>
+
+                <div class="hot-topic-card">
+                    <h3>5. Identify Precipitate Using Solubility Rules</h3>
+                    <p>Example: "What precipitates when mixing lead(II) nitrate and potassium iodide?"</p>
+                    <div class="formula-box">
+                        Pb(NO3)2 + 2KI ---> PbI2 + 2KNO3<br><br>
+                        PbI2 is INSOLUBLE (lead iodide precipitates as yellow solid)<br>
+                        KNO3 is SOLUBLE (all nitrates are soluble)
+                    </div>
+                </div>
+
+                <div class="hot-topic-card">
+                    <h3>6. BrINClHOF Application</h3>
+                    <p>Example: "Write the balanced equation for hydrogen reacting with nitrogen to form ammonia"</p>
+                    <div class="formula-box">
+                        Remember: H2 and N2 (both are diatomic!)<br><br>
+                        3H2(g) + N2(g) ---> 2NH3(g)<br>
+                        Type: Synthesis
+                    </div>
+                </div>
+
+                <div class="hot-topic-card">
+                    <h3>7. Combustion Reactions</h3>
+                    <p>Example: "Write the balanced combustion equation for propane (C3H8)"</p>
+                    <div class="formula-box">
+                        C3H8 + 5O2 ---> 3CO2 + 4H2O<br><br>
+                        All hydrocarbon combustion: CxHy + O2 ---> CO2 + H2O
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Navigation
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+            event.target.classList.add('active');
+            
+            if (sectionId === 'test') {
+                startQuiz();
+            }
+        }
+
+        // Quiz Data
+        const quizQuestions = [
+            {
+                question: "In a chemical equation, where are the REACTANTS located?",
+                options: ["Right side of the arrow", "Left side of the arrow", "Above the arrow", "Below the arrow"],
+                correct: 1
+            },
+            {
+                question: "What does the state symbol (aq) mean?",
+                options: ["Solid", "Liquid", "Gas", "Dissolved in water"],
+                correct: 3
+            },
+            {
+                question: "Which of the following is the correct way to write oxygen as an element in an equation?",
+                options: ["O", "O2", "O3", "2O"],
+                correct: 1
+            },
+            {
+                question: "What can you change when balancing an equation?",
+                options: ["Subscripts only", "Coefficients only", "Both subscripts and coefficients", "Neither"],
+                correct: 1
+            },
+            {
+                question: "What type of reaction is: 2Na + Cl2 --> 2NaCl",
+                options: ["Decomposition", "Single Replacement", "Synthesis", "Combustion"],
+                correct: 2
+            },
+            {
+                question: "What type of reaction is: AB --> A + B",
+                options: ["Synthesis", "Decomposition", "Single Replacement", "Double Replacement"],
+                correct: 1
+            },
+            {
+                question: "In single replacement, a metal will replace another metal if it is:",
+                options: ["Lower on the activity series", "Higher on the activity series", "The same on the activity series", "It always replaces"],
+                correct: 1
+            },
+            {
+                question: "Which of these is ALWAYS soluble in water?",
+                options: ["Carbonates", "Phosphates", "Nitrates", "Hydroxides"],
+                correct: 2
+            },
+            {
+                question: "What are spectator ions?",
+                options: ["Ions that form the precipitate", "Ions that appear unchanged on both sides", "Ions that are solid", "Ions that evaporate"],
+                correct: 1
+            },
+            {
+                question: "Which diatomic element is NOT in BrINClHOF?",
+                options: ["Bromine", "Chlorine", "Helium", "Fluorine"],
+                correct: 2
+            },
+            {
+                question: "Balance: __H2 + __O2 --> __H2O. The coefficients are:",
+                options: ["1, 1, 1", "2, 1, 2", "2, 2, 2", "1, 2, 2"],
+                correct: 1
+            },
+            {
+                question: "Combustion of a hydrocarbon ALWAYS produces:",
+                options: ["H2 and O2", "CO2 and H2O", "CO and H2", "Only CO2"],
+                correct: 1
+            },
+            {
+                question: "Will Cu + ZnSO4 react?",
+                options: ["Yes, copper is more active", "No, copper is less active than zinc", "Yes, they always react", "Only with heat"],
+                correct: 1
+            },
+            {
+                question: "In the Net Ionic Equation, what do we remove?",
+                options: ["All ions", "Precipitates", "Spectator ions", "Water"],
+                correct: 2
+            },
+            {
+                question: "NaCl(aq) + AgNO3(aq) --> NaNO3(aq) + AgCl(s). What is the precipitate?",
+                options: ["NaCl", "AgNO3", "NaNO3", "AgCl"],
+                correct: 3
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let answered = false;
+
+        function startQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            answered = false;
+            showQuestion();
+        }
+
+        function showQuestion() {
+            if (currentQuestion >= quizQuestions.length) {
+                showResults();
+                return;
+            }
+
+            const q = quizQuestions[currentQuestion];
+            const progress = ((currentQuestion) / quizQuestions.length) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+
+            let html = '<div class="quiz-question">';
+            html += '<h3>Question ' + (currentQuestion + 1) + ' of ' + quizQuestions.length + '</h3>';
+            html += '<p>' + q.question + '</p>';
+            html += '<div class="quiz-options">';
+            
+            q.options.forEach((opt, i) => {
+                html += '<div class="quiz-option" onclick="checkAnswer(' + i + ')" id="opt' + i + '">' + opt + '</div>';
+            });
+            
+            html += '</div>';
+            html += '<button class="quiz-btn" id="nextBtn" onclick="nextQuestion()" disabled>Next Question</button>';
+            html += '</div>';
+
+            document.getElementById('quizContent').innerHTML = html;
+            answered = false;
+        }
+
+        function checkAnswer(selected) {
+            if (answered) return;
+            answered = true;
+
+            const q = quizQuestions[currentQuestion];
+            const options = document.querySelectorAll('.quiz-option');
+            
+            options.forEach((opt, i) => {
+                opt.classList.add('disabled');
+                if (i === q.correct) {
+                    opt.classList.add('correct');
+                } else if (i === selected && selected !== q.correct) {
+                    opt.classList.add('incorrect');
+                }
+            });
+
+            if (selected === q.correct) {
+                score++;
+            }
+
+            document.getElementById('nextBtn').disabled = false;
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            showQuestion();
+        }
+
+        function showResults() {
+            document.getElementById('progressBar').style.width = '100%';
+            const percentage = Math.round((score / quizQuestions.length) * 100);
+            
+            let message = '';
+            let color = '';
+            if (percentage >= 90) { message = 'EXCELLENT!'; color = '#00ff88'; }
+            else if (percentage >= 70) { message = 'GOOD JOB!'; color = 'var(--primary)'; }
+            else if (percentage >= 50) { message = 'KEEP PRACTICING!'; color = 'var(--accent)'; }
+            else { message = 'REVIEW THE MATERIAL'; color = '#ff4444'; }
+
+            let html = '<div class="score-display">';
+            html += '<h2 style="color: ' + color + '">' + message + '</h2>';
+            html += '<div class="score-circle" style="border-color: ' + color + '">' + percentage + '%</div>';
+            html += '<p style="font-size: 1.3rem;">You got ' + score + ' out of ' + quizQuestions.length + ' correct!</p>';
+            html += '<button class="quiz-btn" onclick="startQuiz()" style="margin-top: 30px;">Try Again</button>';
+            html += '</div>';
+
+            document.getElementById('quizContent').innerHTML = html;
+        }
+    </script>
+</body>
+</html>

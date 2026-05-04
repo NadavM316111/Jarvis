@@ -1,6 +1,34 @@
 {
   "updates": [
     {
+      "id": 1777897734988,
+      "message": "🌅 Good morning, Nadav! Morning Briefing — May 4, 2026\n\n🌦️ WEATHER ALERT — Fort Lauderdale:\nCurrently 73°F, humidity 96%. Showers & thunderstorms likely today (60% chance), high near 80°F. Gusty winds up to 20 mph. Grab an umbrella — rain hits in waves all day and into tonight.\n\n🤖 TECH NEWS YOU SHOULD KNOW:\n• DeepSeek V4 Flash & Pro just dropped — massive context windows, undercutting frontier AI pricing. Worth watching for JARVIS/Sokr stack.\n• Big Tech AI spending hit $725B — startup demand and exits are riding this wave.\n• Meta acquired humanoid robotics startup (Assured Robot Intelligence) to power AI robots.\n\n✅ ACTION: Google OAuth token is expired — re-auth needed to restore Gmail + Calendar briefings. Run: node auth.js in C:/Users/nadav/jarvis-web",
+      "time": "8:28:54 AM",
+      "date": "5/4/2026",
+      "read": false
+    },
+    {
+      "id": 1777896081276,
+      "message": "🌅 MORNING BRIEFING — Monday, May 4, 2026 | 8:00 AM\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━\n☁️ WEATHER — FORT LAUDERDALE\n━━━━━━━━━━━━━━━━━━━━━━━━━━━\nCurrently 73°F (RealFeel 81°F) — Mostly cloudy & humid\n⚠️ THUNDERSTORM ALERT: Heavy thunderstorms expected this morning through this evening. High of 81°, Low of 72°.\nAir Quality: POOR — reduce outdoor time if sensitive.\n10-Day Outlook: Stormy week ahead — T-storms expected Tue, Wed, Sat, Mon, Tue, Wed.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━\n📧 GMAIL — UNREAD INBOX\n━━━━━━━━━━━━━━━━━━━━━━━━━━━\n⚠️ ACTION REQUIRED: Google OAuth token has expired — JARVIS cannot access Gmail or Google Calendar until you re-authenticate.\nTo fix: Run 'node auth.js' in C:/Users/nadav/jarvis-web to refresh the token, then I'll pull your full inbox & calendar on next briefing.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━\n📅 CALENDAR\n━━━━━━━━━━━━━━━━━━━━━━━━━━━\n⚠️ Same token issue — calendar events unavailable until re-auth.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━\n🔧 ACTION ITEMS\n━━━━━━━━━━━━━━━━━━━━━━━━━━━\n1. ⚡ URGENT: Re-authenticate Google (Gmail + Calendar access lost)\n2. 🌩️ Bring an umbrella — heavy thunderstorms today\n3. 🌬️ Air quality is Poor — limit outdoor exposure\n\nHave a productive Monday, Nadav. — JARVIS",
+      "time": "8:01:21 AM",
+      "date": "5/4/2026",
+      "read": false
+    },
+    {
+      "id": 1777812059780,
+      "message": "🌅 Good morning! Quick briefing for Sunday, May 3rd — On the AI front: OpenAI is evolving into a full business platform layer (beyond just models), and vertical AI agents are now one of the hottest startup categories in enterprise software — both relevant if you're positioning JARVIS or any of your ventures in that space.",
+      "time": "8:40:59 AM",
+      "date": "5/3/2026",
+      "read": false
+    },
+    {
+      "id": 1777812056656,
+      "message": "⛈️ Weather Alert — Fort Lauderdale: Storms incoming today. 90% chance of showers and thunderstorms after 8AM, high near 81°F with up to ¾ inch of rain possible. Keep an umbrella handy and plan outdoor activities accordingly.",
+      "time": "8:40:56 AM",
+      "date": "5/3/2026",
+      "read": false
+    },
+    {
       "id": 1777738536947,
       "message": "Sir, you've completed the Advanced SAT Triangles & Trigonometry quiz with 8 out of 15 correct at 53% accuracy - I'd recommend clicking \"Analyze my performance\" to identify which specific concepts need reinforcement before your next practice session.",
       "time": "12:15:36 PM",
@@ -671,34 +699,6 @@
       "time": "5:47:49 PM",
       "date": "4/27/2026",
       "read": false
-    },
-    {
-      "id": 1777326090035,
-      "message": "Unrecognized person detected at computer",
-      "time": "5:41:30 PM",
-      "date": "4/27/2026",
-      "read": true
-    },
-    {
-      "id": 1777326089742,
-      "message": "Unrecognized person detected at computer",
-      "time": "5:41:29 PM",
-      "date": "4/27/2026",
-      "read": true
-    },
-    {
-      "id": 1777325959869,
-      "message": "Nadav detected at computer — neutral mood",
-      "time": "5:39:19 PM",
-      "date": "4/27/2026",
-      "read": true
-    },
-    {
-      "id": 1777325959855,
-      "message": "Nadav detected at computer — neutral mood",
-      "time": "5:39:19 PM",
-      "date": "4/27/2026",
-      "read": true
     }
   ]
 }

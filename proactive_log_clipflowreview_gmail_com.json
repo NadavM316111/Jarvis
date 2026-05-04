@@ -1,6 +1,48 @@
 {
   "updates": [
     {
+      "id": 1777897720123,
+      "message": "Good morning, Nadav! It's 8:28 AM — hope you slept well. Have a great and productive Monday! 🌅",
+      "time": "8:28:40 AM",
+      "date": "5/4/2026",
+      "read": true
+    },
+    {
+      "id": 1777819165599,
+      "message": "Hey Nadav! Good Sunday morning from your Miami kitchen. Quick heads up: heavy thunderstorms are rolling into Miami this afternoon, so wrap up any outdoor plans before 1 PM. The F1 Miami Grand Prix has already moved its start time up to 1 PM today specifically because of the incoming storms — so if you're watching, it starts NOW (or very soon). Stay dry!",
+      "time": "10:39:25 AM",
+      "date": "5/3/2026",
+      "read": true
+    },
+    {
+      "id": 1777817365159,
+      "message": "Good morning Nadav! Miami weather alert: Heavy rainstorms expected this afternoon. The F1 Miami Grand Prix actually moved their race start UP to 1:00 PM today because of it — so if you're planning to be outside, do it before ~2 PM. Highs around 83-88°F this morning before it gets messy.",
+      "time": "10:09:25 AM",
+      "date": "5/3/2026",
+      "read": true
+    },
+    {
+      "id": 1777815565686,
+      "message": "Good morning Nadav! Looks like a beautiful Sunday in Miami — 84F and sunny today, typical gorgeous May weather. Enjoy that kitchen and the tropical view, nothing urgent to flag this morning!",
+      "time": "9:39:25 AM",
+      "date": "5/3/2026",
+      "read": true
+    },
+    {
+      "id": 1777813763447,
+      "message": "Good morning, Nadav! Nice kitchen by the way. Hope the Sunday is off to a great start! Nothing urgent breaking this morning — top story is Trump clarifying the US naval blockade on Iran doesn't contradict his \"hostilities terminated\" claim, so geopolitics are still simmering. Enjoy your Sunday morning coffee!",
+      "time": "9:09:23 AM",
+      "date": "5/3/2026",
+      "read": true
+    },
+    {
+      "id": 1777811961292,
+      "message": "Good morning Nadav! Hope you slept well — it's Sunday May 3rd, 8:39 AM. I'm already on the case fixing your Movie Studio app right now!",
+      "time": "8:39:21 AM",
+      "date": "5/3/2026",
+      "read": true
+    },
+    {
       "id": 1777760752900,
       "message": "Evening check-in, Nadav! Nothing major has changed since earlier — the Iran-US standoff is still the top story. Hope you're winding down and enjoying your Saturday night!",
       "time": "6:25:52 PM",
