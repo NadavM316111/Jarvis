@@ -217,6 +217,28 @@ function VoiceModeModal({
   }, [sendToJarvis]);
 
   // Wake word loop — runs continuously in background
+  const playWakeChime = useCallback(() => {
+    try {
+      const ctx = new AudioContext();
+      const now = ctx.currentTime;
+      const notes = [880, 1320];
+      notes.forEach((freq, i) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, now + i * 0.12);
+        gain.gain.setValueAtTime(0, now + i * 0.12);
+        gain.gain.linearRampToValueAtTime(0.18, now + i * 0.12 + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.12 + 0.22);
+        osc.start(now + i * 0.12);
+        osc.stop(now + i * 0.12 + 0.25);
+      });
+      setTimeout(() => ctx.close(), 800);
+    } catch {}
+  }, []);
+
   const startWakeLoop = useCallback(() => {
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SpeechRecognition) return;
@@ -224,7 +246,6 @@ function VoiceModeModal({
 
     const loop = () => {
       if (!wakeLoopRef.current) return;
-      // Don't run wake detection if already listening/thinking/speaking
       if (['listening', 'thinking', 'speaking'].includes(voiceStateRef.current)) {
         setTimeout(loop, 800);
         return;
@@ -236,12 +257,11 @@ function VoiceModeModal({
       rec.lang = 'en-US';
       rec.onresult = (e: any) => {
         const said = (e.results[0]?.[0]?.transcript || '').toLowerCase().trim();
-        // Detect "hey jarvis" or close variants
-        if (said.includes('hey jarvis') || said.includes('jarvis') && said.startsWith('hey')) {
-          // Small delay so user can finish saying the wake word
+        if (said.includes('hey jarvis') || (said.includes('jarvis') && said.startsWith('hey'))) {
+          playWakeChime();
           setTimeout(() => {
             if (wakeLoopRef.current) startListening();
-          }, 300);
+          }, 350);
         }
       };
       rec.onend = () => { if (wakeLoopRef.current) setTimeout(loop, 200); };
@@ -249,7 +269,7 @@ function VoiceModeModal({
       try { rec.start(); } catch {}
     };
     loop();
-  }, [startListening]);
+  }, [startListening, playWakeChime]);
 
   useEffect(() => {
     wakeLoopRef.current = true;
