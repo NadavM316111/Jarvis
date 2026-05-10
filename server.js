@@ -225,7 +225,7 @@ async function executeCode(code, language = 'node', description = '') {
 
   try {
     let cmd;
-    if (language === 'python') cmd = `python -X utf8 "${tmpFile}"`;
+    if (language === 'python') cmd = `python3 -X utf8 "${tmpFile}"`;
     else if (language === 'powershell') cmd = `powershell -ExecutionPolicy Bypass -File "${tmpFile}"`;
     else if (language === 'bash') cmd = `bash "${tmpFile}"`;
     else cmd = `node --no-experimental-detect-module "${tmpFile}"`;
@@ -967,7 +967,7 @@ app.get('/system-info', authMiddleware, async (req, res) => {
 let voiceProcess = null;
 app.post('/voice/start', (req, res) => {
   if (voiceProcess) return res.json({ ok: true, already: true });
-  voiceProcess = spawn('python', ['voice.py'], { cwd: __dirname, stdio: 'inherit' });
+  voiceProcess = spawn('python3', ['voice.py'], { cwd: __dirname, stdio: 'inherit' });
   voiceProcess.on('exit', () => { voiceProcess = null; });
   res.json({ ok: true });
 });
@@ -979,7 +979,7 @@ let faceProcess = null;
 function startFaceMonitor() {
   if (faceProcess) return;
   console.log('[FACE] Starting face_monitor.py...');
-  faceProcess = spawn('python', ['face_monitor.py'], { cwd: __dirname, stdio: 'inherit' });
+  faceProcess = spawn('python3', ['face_monitor.py'], { cwd: __dirname, stdio: 'inherit' });
   faceProcess.on('exit', (code) => {
     console.log(`[FACE] face_monitor.py exited (${code}), restarting in 5s...`);
     faceProcess = null;
