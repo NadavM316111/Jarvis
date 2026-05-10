@@ -164,10 +164,12 @@ function VoiceModeModal({
 
     const doSpeak = () => {
       const utt = new SpeechSynthesisUtterance(clean);
-      utt.rate = 1.05; utt.pitch = 0.85; utt.volume = 1.0;
       const voices = window.speechSynthesis.getVoices();
       const daniel = voices.find(v => v.name === 'Daniel');
       if (daniel) utt.voice = daniel;
+      utt.rate = 0.9;
+      utt.pitch = 0.7;
+      utt.volume = 1.0;
       utt.onend = () => {
         if (inConversationRef.current && wakeLoopRef.current) {
           setTimeout(() => startListeningRef.current(), 400);
