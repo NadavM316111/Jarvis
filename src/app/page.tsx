@@ -163,6 +163,22 @@ function VoiceModeModal({
     const clean = text.replace(/<[^>]*>/g, '').replace(/\*\*/g, '').replace(/\*/g, '');
     const utt = new SpeechSynthesisUtterance(clean);
     utt.rate = 1.05; utt.pitch = 0.85; utt.volume = 1.0;
+
+    // Pick best British male voice
+    const voices = window.speechSynthesis.getVoices();
+    const preferred = ['Daniel', 'Arthur', 'Malcolm'];
+    let chosen = null;
+    for (const name of preferred) {
+      chosen = voices.find(v => v.name === name) || null;
+      if (chosen) break;
+    }
+    if (!chosen) {
+      chosen = voices.find(v => v.lang === 'en-GB' && v.name.toLowerCase().includes('male'))
+        || voices.find(v => v.lang === 'en-GB')
+        || null;
+    }
+    if (chosen) utt.voice = chosen;
+
     utt.onend = () => {
       if (inConversationRef.current && wakeLoopRef.current) {
         setTimeout(() => startListeningRef.current(), 400);
