@@ -157,19 +157,38 @@ function VoiceModeModal({
   const startListeningRef = useRef<() => void>(() => {});
   const sendToJarvisRef = useRef<(text: string) => void>(() => {});
 
-  const speak = useCallback((text: string) => {
+  const speak = useCallback(async (text: string) => {
     if (typeof window === 'undefined') return;
     window.speechSynthesis.cancel();
     const clean = text.replace(/<[^>]*>/g, '').replace(/\*\*/g, '').replace(/\*/g, '');
-
-    const doSpeak = () => {
+    setVoiceState('speaking');
+    try {
+      const res = await fetch(`${API}/api/tts`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: clean }),
+      });
+      if (!res.ok) throw new Error('TTS failed');
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const audio = new Audio(url);
+      audio.onended = () => {
+        URL.revokeObjectURL(url);
+        if (inConversationRef.current && wakeLoopRef.current) {
+          setTimeout(() => startListeningRef.current(), 400);
+        } else {
+          setVoiceState('idle');
+        }
+      };
+      audio.onerror = () => {
+        URL.revokeObjectURL(url);
+        setVoiceState('idle');
+      };
+      await audio.play();
+    } catch {
+      // Fallback to browser TTS
       const utt = new SpeechSynthesisUtterance(clean);
-      const voices = window.speechSynthesis.getVoices();
-      const daniel = voices.find(v => v.name === 'Daniel');
-      if (daniel) utt.voice = daniel;
-      utt.rate = 0.9;
-      utt.pitch = 0.7;
-      utt.volume = 1.0;
+      utt.rate = 0.9; utt.pitch = 0.7; utt.volume = 1.0;
       utt.onend = () => {
         if (inConversationRef.current && wakeLoopRef.current) {
           setTimeout(() => startListeningRef.current(), 400);
@@ -177,16 +196,7 @@ function VoiceModeModal({
           setVoiceState('idle');
         }
       };
-      synthRef.current = utt;
-      setVoiceState('speaking');
       window.speechSynthesis.speak(utt);
-    };
-
-    const voices = window.speechSynthesis.getVoices();
-    if (voices.length > 0) {
-      doSpeak();
-    } else {
-      window.speechSynthesis.onvoiceschanged = () => { doSpeak(); };
     }
   }, []);
 
