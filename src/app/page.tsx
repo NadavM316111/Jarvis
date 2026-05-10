@@ -1,5 +1,5 @@
 "use client";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 
 interface Message {
   role: "user" | "assistant";
@@ -48,8 +48,6 @@ function formatMessage(text: string) {
 
 function renderMessageExtras(content: string, onContinue: (prompt: string) => void) {
   const extras: React.ReactNode[] = [];
-  
-  // Progress bar: [PROGRESS:45%]Building routes...[/PROGRESS]
   const progressMatch = content.match(/\[PROGRESS:(\d+)%\](.*?)\[\/PROGRESS\]/);
   if (progressMatch) {
     const pct = parseInt(progressMatch[1]);
@@ -63,8 +61,6 @@ function renderMessageExtras(content: string, onContinue: (prompt: string) => vo
       </div>
     );
   }
-
-  // Continue button: [CONTINUE_BUTTON:continue building the frontend]
   const continueMatch = content.match(/\[CONTINUE_BUTTON:(.*?)\]/);
   if (continueMatch) {
     const prompt = continueMatch[1].trim();
@@ -88,7 +84,6 @@ function renderMessageExtras(content: string, onContinue: (prompt: string) => vo
       </button>
     );
   }
-
   return extras.length > 0 ? <div>{extras}</div> : null;
 }
 
@@ -99,6 +94,389 @@ function generateId() {
 const API = typeof window !== 'undefined' && window.location.hostname !== 'localhost'
   ? 'https://api.heyjarvis.me'
   : 'http://localhost:3001';
+
+// ============ VOICE MODE MODAL ============
+function VoiceModeModal({
+  token,
+  userName,
+  onClose,
+  onMessageSent,
+}: {
+  token: string;
+  userName: string;
+  onClose: () => void;
+  onMessageSent: (userMsg: string, assistantMsg: string) => void;
+}) {
+  const [voiceState, setVoiceState] = useState<'idle' | 'listening' | 'thinking' | 'speaking'>('idle');
+  const [transcript, setTranscript] = useState('');
+  const [response, setResponse] = useState('');
+  const [audioLevel, setAudioLevel] = useState(0);
+  const [orbAngle, setOrbAngle] = useState(0);
+  const recognitionRef = useRef<any>(null);
+  const animRef = useRef<number>(0);
+  const analyserRef = useRef<AnalyserNode | null>(null);
+  const audioCtxRef = useRef<AudioContext | null>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+  const synthRef = useRef<SpeechSynthesisUtterance | null>(null);
+  const isListeningRef = useRef(false);
+
+  // Animate orb rotation
+  useEffect(() => {
+    let frame: number;
+    const tick = () => {
+      setOrbAngle(a => (a + 0.8) % 360);
+      frame = requestAnimationFrame(tick);
+    };
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, []);
+
+  // Audio level analyzer
+  useEffect(() => {
+    let frame: number;
+    navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+      streamRef.current = stream;
+      const ctx = new AudioContext();
+      audioCtxRef.current = ctx;
+      const source = ctx.createMediaStreamSource(stream);
+      const analyser = ctx.createAnalyser();
+      analyser.fftSize = 256;
+      source.connect(analyser);
+      analyserRef.current = analyser;
+      const tick = () => {
+        const data = new Uint8Array(analyser.frequencyBinCount);
+        analyser.getByteFrequencyData(data);
+        setAudioLevel(data.reduce((a, b) => a + b, 0) / data.length);
+        frame = requestAnimationFrame(tick);
+      };
+      tick();
+    }).catch(() => {});
+    return () => {
+      cancelAnimationFrame(frame);
+      streamRef.current?.getTracks().forEach(t => t.stop());
+      audioCtxRef.current?.close();
+    };
+  }, []);
+
+  const speak = useCallback((text: string, onDone?: () => void) => {
+    if (typeof window === 'undefined') return;
+    window.speechSynthesis.cancel();
+    const clean = text.replace(/<[^>]*>/g, '').replace(/\*\*/g, '').replace(/\*/g, '');
+    const utt = new SpeechSynthesisUtterance(clean);
+    utt.rate = 1.05;
+    utt.pitch = 0.85;
+    utt.volume = 1.0;
+    utt.onend = () => { setVoiceState('idle'); onDone?.(); };
+    synthRef.current = utt;
+    setVoiceState('speaking');
+    window.speechSynthesis.speak(utt);
+  }, []);
+
+  const sendToJarvis = useCallback(async (text: string) => {
+    if (!text.trim()) return;
+    setVoiceState('thinking');
+    setTranscript(text);
+    try {
+      const res = await fetch(`${API}/chat`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ message: text }),
+      });
+      const data = await res.json();
+      const reply = data.message || 'Done.';
+      setResponse(reply);
+      onMessageSent(text, reply);
+      speak(reply);
+    } catch {
+      setVoiceState('idle');
+    }
+  }, [token, speak, onMessageSent]);
+
+  const startListening = useCallback(() => {
+    if (isListeningRef.current) return;
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) return;
+    const rec = new SpeechRecognition();
+    rec.continuous = false;
+    rec.interimResults = true;
+    rec.lang = 'en-US';
+    recognitionRef.current = rec;
+    isListeningRef.current = true;
+    setVoiceState('listening');
+    setTranscript('');
+    setResponse('');
+
+    rec.onresult = (e: any) => {
+      const t = Array.from(e.results).map((r: any) => r[0].transcript).join('');
+      setTranscript(t);
+    };
+    rec.onend = () => {
+      isListeningRef.current = false;
+      if (transcript || recognitionRef.current?._finalTranscript) {
+        // handled in onspeechend
+      }
+    };
+    rec.onspeechend = () => {
+      const final = recognitionRef.current?._finalTranscript || transcript;
+      rec.stop();
+      isListeningRef.current = false;
+    };
+    rec.onerror = () => { isListeningRef.current = false; setVoiceState('idle'); };
+
+    // Use result to get final
+    let finalTranscript = '';
+    rec.onresult = (e: any) => {
+      let interim = '';
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        if (e.results[i].isFinal) finalTranscript += e.results[i][0].transcript;
+        else interim += e.results[i][0].transcript;
+      }
+      setTranscript(finalTranscript || interim);
+    };
+    rec.onend = () => {
+      isListeningRef.current = false;
+      if (finalTranscript.trim()) sendToJarvis(finalTranscript.trim());
+      else setVoiceState('idle');
+    };
+
+    rec.start();
+  }, [sendToJarvis, transcript]);
+
+  const handleOrbClick = () => {
+    if (voiceState === 'listening') {
+      recognitionRef.current?.stop();
+      isListeningRef.current = false;
+      setVoiceState('idle');
+    } else if (voiceState === 'speaking') {
+      window.speechSynthesis.cancel();
+      setVoiceState('idle');
+    } else if (voiceState === 'idle') {
+      startListening();
+    }
+  };
+
+  // Orb visual config per state
+  const orbConfig = {
+    idle: {
+      gradient: `conic-gradient(from ${orbAngle}deg, #1d4ed8, #3b82f6, #60a5fa, #93c5fd, #1d4ed8)`,
+      glow: '0 0 40px rgba(96,165,250,0.4), 0 0 80px rgba(59,130,246,0.2)',
+      scale: 1,
+      pulseRings: false,
+    },
+    listening: {
+      gradient: `conic-gradient(from ${orbAngle}deg, #065f46, #10b981, #34d399, #6ee7b7, #065f46)`,
+      glow: `0 0 ${40 + audioLevel / 3}px rgba(52,211,153,0.7), 0 0 ${80 + audioLevel / 2}px rgba(16,185,129,0.3)`,
+      scale: 1 + (audioLevel / 255) * 0.25,
+      pulseRings: true,
+      ringColor: 'rgba(52,211,153,0.15)',
+    },
+    thinking: {
+      gradient: `conic-gradient(from ${orbAngle * 2}deg, #4c1d95, #7c3aed, #a78bfa, #c4b5fd, #4c1d95)`,
+      glow: '0 0 50px rgba(167,139,250,0.6), 0 0 100px rgba(124,58,237,0.3)',
+      scale: 1.05,
+      pulseRings: true,
+      ringColor: 'rgba(167,139,250,0.12)',
+    },
+    speaking: {
+      gradient: `conic-gradient(from ${orbAngle * 1.5}deg, #831843, #db2777, #f472b6, #fbcfe8, #831843)`,
+      glow: '0 0 50px rgba(244,114,182,0.6), 0 0 100px rgba(219,39,119,0.3)',
+      scale: 1 + Math.sin(Date.now() / 200) * 0.05,
+      pulseRings: true,
+      ringColor: 'rgba(244,114,182,0.12)',
+    },
+  }[voiceState];
+
+  const stateLabel = {
+    idle: 'Tap to speak',
+    listening: 'Listening...',
+    thinking: 'Thinking...',
+    speaking: 'Speaking...',
+  }[voiceState];
+
+  return (
+    <div
+      style={{
+        position: 'fixed', inset: 0, zIndex: 100,
+        background: 'rgba(4,4,6,0.97)',
+        backdropFilter: 'blur(20px)',
+        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+        gap: '0',
+      }}
+    >
+      {/* Close */}
+      <button
+        onClick={onClose}
+        style={{
+          position: 'absolute', top: 20, right: 20,
+          width: 40, height: 40, borderRadius: 12,
+          background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)',
+          color: 'rgba(255,255,255,0.4)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+          transition: 'all 0.2s',
+        }}
+        onMouseOver={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.color = 'rgba(255,255,255,0.7)'; }}
+        onMouseOut={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; e.currentTarget.style.color = 'rgba(255,255,255,0.4)'; }}
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+
+      {/* Header */}
+      <div style={{ textAlign: 'center', marginBottom: 48 }}>
+        <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: 18, fontWeight: 600, letterSpacing: '0.02em' }}>JARVIS Voice</div>
+        <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 13, marginTop: 4 }}>Hey {userName}</div>
+      </div>
+
+      {/* Orb container */}
+      <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 40 }}>
+        {/* Pulse rings */}
+        {orbConfig.pulseRings && (
+          <>
+            <div style={{
+              position: 'absolute',
+              width: 240, height: 240, borderRadius: '50%',
+              background: (orbConfig as any).ringColor,
+              animation: 'voicePulse1 2s ease-out infinite',
+            }} />
+            <div style={{
+              position: 'absolute',
+              width: 200, height: 200, borderRadius: '50%',
+              background: (orbConfig as any).ringColor,
+              animation: 'voicePulse1 2s ease-out infinite 0.5s',
+            }} />
+          </>
+        )}
+
+        {/* Main orb */}
+        <div
+          onClick={handleOrbClick}
+          style={{
+            width: 140, height: 140, borderRadius: '50%',
+            background: orbConfig.gradient,
+            boxShadow: orbConfig.glow,
+            transform: `scale(${orbConfig.scale})`,
+            transition: 'transform 0.1s ease, box-shadow 0.2s ease',
+            cursor: 'pointer',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            position: 'relative', overflow: 'hidden',
+          }}
+        >
+          {/* Inner shine */}
+          <div style={{
+            position: 'absolute', top: '15%', left: '20%',
+            width: '35%', height: '30%',
+            background: 'rgba(255,255,255,0.18)',
+            borderRadius: '50%',
+            filter: 'blur(8px)',
+          }} />
+
+          {/* State icon */}
+          {voiceState === 'idle' && (
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.9)" strokeWidth="1.8">
+              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+              <line x1="12" y1="19" x2="12" y2="23"/>
+              <line x1="8" y1="23" x2="16" y2="23"/>
+            </svg>
+          )}
+          {voiceState === 'listening' && (
+            <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+              {[0, 1, 2, 3, 4].map(i => (
+                <div key={i} style={{
+                  width: 4, borderRadius: 2,
+                  background: 'rgba(255,255,255,0.95)',
+                  height: `${8 + (audioLevel / 255) * 28 * (0.4 + Math.abs(Math.sin(Date.now() / 100 + i * 0.9)) * 0.6)}px`,
+                  transition: 'height 0.05s',
+                  animation: `voiceBar${i % 3} 0.6s ease-in-out infinite`,
+                  animationDelay: `${i * 0.1}s`,
+                }} />
+              ))}
+            </div>
+          )}
+          {voiceState === 'thinking' && (
+            <div style={{ display: 'flex', gap: 6 }}>
+              {[0, 1, 2].map(i => (
+                <div key={i} style={{
+                  width: 8, height: 8, borderRadius: '50%',
+                  background: 'rgba(255,255,255,0.9)',
+                  animation: 'voiceBounce 1.2s ease-in-out infinite',
+                  animationDelay: `${i * 0.2}s`,
+                }} />
+              ))}
+            </div>
+          )}
+          {voiceState === 'speaking' && (
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.9)" strokeWidth="1.8">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+              <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+              <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+            </svg>
+          )}
+        </div>
+      </div>
+
+      {/* State label */}
+      <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: 15, fontWeight: 500, marginBottom: 24, letterSpacing: '0.02em', height: 22 }}>
+        {stateLabel}
+      </div>
+
+      {/* Transcript / Response */}
+      <div style={{ width: '100%', maxWidth: 400, padding: '0 24px', minHeight: 80, textAlign: 'center' }}>
+        {transcript && (
+          <div style={{
+            background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
+            borderRadius: 16, padding: '12px 16px', marginBottom: 12,
+          }}>
+            <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.08em' }}>You</div>
+            <div style={{ color: 'rgba(255,255,255,0.75)', fontSize: 14, lineHeight: 1.5 }}>{transcript}</div>
+          </div>
+        )}
+        {response && voiceState !== 'idle' && (
+          <div style={{
+            background: 'rgba(59,130,246,0.08)', border: '1px solid rgba(59,130,246,0.15)',
+            borderRadius: 16, padding: '12px 16px',
+          }}>
+            <div style={{ color: 'rgba(96,165,250,0.6)', fontSize: 11, marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.08em' }}>JARVIS</div>
+            <div style={{ color: 'rgba(255,255,255,0.7)', fontSize: 14, lineHeight: 1.5 }}
+              dangerouslySetInnerHTML={{ __html: formatMessage(response.substring(0, 200) + (response.length > 200 ? '...' : '')) }}
+            />
+          </div>
+        )}
+        {voiceState === 'idle' && !transcript && (
+          <div style={{ color: 'rgba(255,255,255,0.2)', fontSize: 13 }}>
+            Tap the orb to start speaking
+          </div>
+        )}
+        {voiceState === 'idle' && transcript && (
+          <button
+            onClick={startListening}
+            style={{
+              marginTop: 16, padding: '10px 24px', borderRadius: 12,
+              background: 'rgba(59,130,246,0.2)', border: '1px solid rgba(59,130,246,0.3)',
+              color: '#60a5fa', fontSize: 13, fontWeight: 500, cursor: 'pointer',
+            }}
+          >
+            Ask again
+          </button>
+        )}
+      </div>
+
+      <style>{`
+        @keyframes voicePulse1 {
+          0% { transform: scale(0.8); opacity: 0.8; }
+          100% { transform: scale(1.4); opacity: 0; }
+        }
+        @keyframes voiceBounce {
+          0%, 100% { transform: translateY(0); opacity: 0.6; }
+          50% { transform: translateY(-6px); opacity: 1; }
+        }
+        @keyframes voiceBar0 { 0%, 100% { height: 8px; } 50% { height: 28px; } }
+        @keyframes voiceBar1 { 0%, 100% { height: 14px; } 50% { height: 8px; } }
+        @keyframes voiceBar2 { 0%, 100% { height: 20px; } 50% { height: 36px; } }
+      `}</style>
+    </div>
+  );
+}
 
 export default function Home() {
   const [token, setToken] = useState<string | null>(null);
@@ -129,6 +507,7 @@ export default function Home() {
   const [attachedFile, setAttachedFile] = useState<{data: string, type: string, name: string} | null>(null);
   const [voiceBubbleVisible, setVoiceBubbleVisible] = useState(false);
   const [googleConnected, setGoogleConnected] = useState(false);
+  const [voiceModeOpen, setVoiceModeOpen] = useState(false);
 
   const bottomRef = useRef<HTMLDivElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -145,10 +524,10 @@ export default function Home() {
   useEffect(() => { activeIdRef.current = activeId; }, [activeId]);
   useEffect(() => { tokenRef.current = token; }, [token]);
   useEffect(() => {
-  if (!token) return;
-  fetch(`${API}/auth/google/status`, { headers: { Authorization: `Bearer ${token}` } })
-    .then(r => r.json()).then(d => setGoogleConnected(d.connected)).catch(() => {});
-}, [token]);
+    if (!token) return;
+    fetch(`${API}/auth/google/status`, { headers: { Authorization: `Bearer ${token}` } })
+      .then(r => r.json()).then(d => setGoogleConnected(d.connected)).catch(() => {});
+  }, [token]);
 
   const activeConv = conversations.find(c => c.id === activeId);
   const messages = activeConv?.messages || [];
@@ -165,7 +544,6 @@ export default function Home() {
         if (convs.length > 0) setActiveId(convs[0].id);
       } catch {}
     }
-    // Only open sidebar by default on desktop
     if (window.innerWidth >= 768) setSidebarOpen(true);
   }, []);
 
@@ -178,6 +556,25 @@ export default function Home() {
   function addMessageToConv(convId: string, msg: Message) {
     setConversations(prev => prev.map(c => c.id === convId ? { ...c, messages: [...c.messages, msg] } : c));
   }
+
+  const handleVoiceModeMessage = useCallback((userMsg: string, assistantMsg: string) => {
+    let convId = activeIdRef.current;
+    if (!convId) {
+      convId = generateId();
+      const conv: Conversation = { id: convId, title: userMsg.slice(0, 40), messages: [], createdAt: Date.now() };
+      setConversations(prev => [conv, ...prev]);
+      setActiveId(convId);
+      activeIdRef.current = convId;
+    }
+    setConversations(prev => prev.map(c => c.id === convId ? {
+      ...c,
+      messages: [
+        ...c.messages,
+        { role: 'user', content: userMsg, source: 'voice', timestamp: Date.now() },
+        { role: 'assistant', content: assistantMsg, source: 'voice', timestamp: Date.now() },
+      ]
+    } : c));
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(async () => {
@@ -198,9 +595,9 @@ export default function Home() {
           }
           addMessageToConv(convId, { role: "assistant", content: r.message, source: "text", timestamp: r.timestamp ?? Date.now() });
           const urlMatch2 = r.message.match(/https:\/\/api\.heyjarvis\.me\/view\/[^\s)]+/);
-if (urlMatch2) setTimeout(() => window.open(urlMatch2[0], '_blank'), 500);
-const ytMatch2 = r.message.match(/https:\/\/(www\.)?youtube\.com\/watch\?[^\s<>"')]+/);
-if (ytMatch2) setTimeout(() => window.open(ytMatch2[0], '_blank'), 500);
+          if (urlMatch2) setTimeout(() => window.open(urlMatch2[0], '_blank'), 500);
+          const ytMatch2 = r.message.match(/https:\/\/(www\.)?youtube\.com\/watch\?[^\s<>"')]+/);
+          if (ytMatch2) setTimeout(() => window.open(ytMatch2[0], '_blank'), 500);
         }
       } catch {}
     }, 800);
@@ -413,7 +810,6 @@ if (ytMatch2) setTimeout(() => window.open(ytMatch2[0], '_blank'), 500);
 
   const send = async () => {
     if (!input.trim() || loading) return;
-
     const userMsg = input.trim();
     const fileToSend = attachedFile;
     setInput(""); setAttachedFile(null);
@@ -439,9 +835,9 @@ if (ytMatch2) setTimeout(() => window.open(ytMatch2[0], '_blank'), 500);
       } else if (data.message) {
         addMessageToConv(finalConvId, { role: "assistant", content: data.message, source: "text", timestamp: Date.now() });
         const urlMatch = data.message.match(/https:\/\/api\.heyjarvis\.me\/view\/[^\s)]+/);
-if (urlMatch) setTimeout(() => window.open(urlMatch[0], '_blank'), 500);
-const ytMatch = data.message.match(/https:\/\/(www\.)?youtube\.com\/watch\?[^\s<>"')]+/);
-if (ytMatch) { const w = window.open(ytMatch[0], '_blank'); if (w) w.focus(); }
+        if (urlMatch) setTimeout(() => window.open(urlMatch[0], '_blank'), 500);
+        const ytMatch = data.message.match(/https:\/\/(www\.)?youtube\.com\/watch\?[^\s<>"')]+/);
+        if (ytMatch) { const w = window.open(ytMatch[0], '_blank'); if (w) w.focus(); }
         if (typeof window !== 'undefined' && window.speechSynthesis) {
           window.speechSynthesis.cancel();
           const utterance = new SpeechSynthesisUtterance(data.message.replace(/<[^>]*>/g, '').replace(/\*\*/g, '').replace(/\*/g, ''));
@@ -449,9 +845,7 @@ if (ytMatch) { const w = window.open(ytMatch[0], '_blank'); if (w) w.focus(); }
           window.speechSynthesis.speak(utterance);
         }
       }
-    } catch {
-      // Server may still be processing in background — don't show error
-    }
+    } catch {}
     setLoading(false);
   };
 
@@ -464,8 +858,6 @@ if (ytMatch) { const w = window.open(ytMatch[0], '_blank'); if (w) w.focus(); }
     return (
       <div style={{ minHeight: '100dvh' }} className="bg-[#060608] flex items-center justify-center p-4">
         <div className="w-full max-w-4xl flex gap-8 items-center">
-          
-          {/* Left side — product info */}
           <div className="hidden md:flex flex-col flex-1 pr-8">
             <div className="flex items-center gap-3 mb-8">
               <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-700" style={{ boxShadow: "0 0 24px rgba(96,165,250,0.5)" }} />
@@ -483,9 +875,7 @@ if (ytMatch) { const w = window.open(ytMatch[0], '_blank'); if (w) w.focus(); }
               ].map((item, i) => (
                 <div key={i} className="flex items-start gap-3">
                   <div className="w-8 h-8 rounded-lg bg-blue-600/15 border border-blue-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" strokeWidth="1.8">
-                      <path d={item.icon}/>
-                    </svg>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" strokeWidth="1.8"><path d={item.icon}/></svg>
                   </div>
                   <div>
                     <div className="text-white/80 text-xs font-medium">{item.label}</div>
@@ -495,8 +885,6 @@ if (ytMatch) { const w = window.open(ytMatch[0], '_blank'); if (w) w.focus(); }
               ))}
             </div>
           </div>
-
-          {/* Right side — auth form */}
           <div className="w-full max-w-sm bg-[rgba(8,8,12,0.97)] border border-white/10 rounded-2xl overflow-hidden shadow-2xl flex-shrink-0">
             <div className="px-8 pt-8 pb-6 text-center border-b border-white/5">
               <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-blue-700 mx-auto mb-4 md:hidden" style={{ boxShadow: "0 0 24px rgba(96,165,250,0.5)" }} />
@@ -519,32 +907,32 @@ if (ytMatch) { const w = window.open(ytMatch[0], '_blank'); if (w) w.focus(); }
               </div>
             </div>
           </div>
-
         </div>
       </div>
     );
   }
 
   return (
-    <div
-      style={{ height: '100dvh', fontFamily: "-apple-system, 'SF Pro Display', sans-serif" }}
-      className="bg-[#060608] flex overflow-hidden"
-    >
-      {/* Sidebar overlay (mobile) */}
+    <div style={{ height: '100dvh', fontFamily: "-apple-system, 'SF Pro Display', sans-serif" }} className="bg-[#060608] flex overflow-hidden">
+      {/* Voice Mode Modal */}
+      {voiceModeOpen && token && (
+        <VoiceModeModal
+          token={token}
+          userName={userName}
+          onClose={() => setVoiceModeOpen(false)}
+          onMessageSent={handleVoiceModeMessage}
+        />
+      )}
+
       {sidebarOpen && (
         <div className="fixed inset-0 bg-black/70 z-30 md:hidden" onClick={() => setSidebarOpen(false)} />
       )}
 
-      {/* SIDEBAR — left panel desktop, slide-in on mobile */}
+      {/* SIDEBAR */}
       <div
         className="fixed md:relative inset-y-0 left-0 z-40 md:z-auto flex flex-col bg-[#07070a] border-r border-white/5 transition-transform duration-300"
-        style={{
-          width: '260px',
-          transform: sidebarOpen ? 'translateX(0)' : 'translateX(-100%)',
-          height: '100dvh',
-        }}
+        style={{ width: '260px', transform: sidebarOpen ? 'translateX(0)' : 'translateX(-100%)', height: '100dvh' }}
       >
-        {/* Sidebar header */}
         <div className="flex items-center justify-between px-4 py-4 border-b border-white/5 flex-shrink-0">
           <div className="flex items-center gap-2.5">
             <div className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-400 to-blue-700" style={{ boxShadow: "0 0 12px rgba(96,165,250,0.5)" }} />
@@ -557,30 +945,45 @@ if (ytMatch) { const w = window.open(ytMatch[0], '_blank'); if (w) w.focus(); }
           </button>
         </div>
 
-        {/* Sidebar actions */}
-<div className="px-3 pt-3 pb-2 flex-shrink-0">
-  <button onClick={newConversation} className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/20 text-blue-300 text-xs font-medium transition-all mb-2">
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-      <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-    </svg>
-    New conversation
-  </button>
-  
-  <a
-    href={`${API}/auth/google?token=${token}`}
-  target="_blank"
-  rel="noopener noreferrer"
-  className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl border text-xs font-medium transition-all mb-2 ${googleConnected ? 'bg-green-500/15 border-green-500/30 text-green-400' : 'bg-white/5 border-white/10 text-white/50 hover:text-white/70'}`}
->
-  <div className={`w-2 h-2 rounded-full ${googleConnected ? 'bg-green-400' : 'bg-white/20'}`} />
-  {googleConnected ? 'Google connected' : 'Connect Google'}
-</a>
-  {typeof window !== 'undefined' && window.location.hostname === 'localhost' && (
-    <button onClick={toggleVoice} className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl border text-xs font-medium transition-all mb-2 ${voiceRunning ? 'bg-green-500/15 border-green-500/30 text-green-400' : 'bg-white/5 border-white/10 text-white/50 hover:text-white/70'}`}>
-      <div className={`w-2 h-2 rounded-full ${voiceRunning ? 'bg-green-400 animate-pulse' : 'bg-white/20'}`} />
-      {voiceRunning ? 'Voice active — stop' : 'Start voice'}
-    </button>
-  )}
+        <div className="px-3 pt-3 pb-2 flex-shrink-0">
+          <button onClick={newConversation} className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/20 text-blue-300 text-xs font-medium transition-all mb-2">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+            New conversation
+          </button>
+
+          {/* Voice Mode Button */}
+          <button
+            onClick={() => { setVoiceModeOpen(true); setSidebarOpen(false); }}
+            className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl border text-xs font-medium transition-all mb-2 bg-gradient-to-r from-blue-600/20 via-purple-600/15 to-pink-600/20 border-white/10 text-white/70 hover:text-white hover:border-white/20"
+          >
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+              <line x1="12" y1="19" x2="12" y2="23"/>
+              <line x1="8" y1="23" x2="16" y2="23"/>
+            </svg>
+            Voice mode
+          </button>
+
+          <a
+            href={`${API}/auth/google?token=${token}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl border text-xs font-medium transition-all mb-2 ${googleConnected ? 'bg-green-500/15 border-green-500/30 text-green-400' : 'bg-white/5 border-white/10 text-white/50 hover:text-white/70'}`}
+          >
+            <div className={`w-2 h-2 rounded-full ${googleConnected ? 'bg-green-400' : 'bg-white/20'}`} />
+            {googleConnected ? 'Google connected' : 'Connect Google'}
+          </a>
+
+          {typeof window !== 'undefined' && window.location.hostname === 'localhost' && (
+            <button onClick={toggleVoice} className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl border text-xs font-medium transition-all mb-2 ${voiceRunning ? 'bg-green-500/15 border-green-500/30 text-green-400' : 'bg-white/5 border-white/10 text-white/50 hover:text-white/70'}`}>
+              <div className={`w-2 h-2 rounded-full ${voiceRunning ? 'bg-green-400 animate-pulse' : 'bg-white/20'}`} />
+              {voiceRunning ? 'Voice active — stop' : 'Start voice'}
+            </button>
+          )}
+
           <button
             onClick={async () => {
               const res = await fetch(`${API}/voice/spoken-updates`, { method: 'POST', headers: { 'Content-Type': 'application/json' } });
@@ -594,7 +997,6 @@ if (ytMatch) { const w = window.open(ytMatch[0], '_blank'); if (w) w.focus(); }
           </button>
         </div>
 
-        {/* Conversations list */}
         <div className="flex-1 overflow-y-auto px-3 py-2 min-h-0">
           <div className="text-white/20 text-xs uppercase tracking-widest mb-2 px-1">Conversations</div>
           {conversations.length === 0 && <div className="text-white/20 text-xs px-1 py-2">No conversations yet</div>}
@@ -617,7 +1019,6 @@ if (ytMatch) { const w = window.open(ytMatch[0], '_blank'); if (w) w.focus(); }
           ))}
         </div>
 
-        {/* User info */}
         <div className="px-4 py-3 border-t border-white/5 flex items-center gap-2.5 flex-shrink-0">
           <div className="w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
             {userName.charAt(0).toUpperCase()}
@@ -636,18 +1037,13 @@ if (ytMatch) { const w = window.open(ytMatch[0], '_blank'); if (w) w.focus(); }
 
       {/* MAIN CONTENT */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden" style={{ height: '100dvh' }}>
-
         {/* Top bar */}
         <div className="px-3 py-3 flex items-center gap-2 border-b border-white/5 flex-shrink-0 bg-[#060608]">
-          <button
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-white/5 transition-all text-white/40 hover:text-white/70 flex-shrink-0"
-          >
+          <button onClick={() => setSidebarOpen(!sidebarOpen)} className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-white/5 transition-all text-white/40 hover:text-white/70 flex-shrink-0">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/>
             </svg>
           </button>
-
           <div className="flex items-center gap-2 flex-1 min-w-0">
             <div className="w-6 h-6 rounded-full flex-shrink-0 transition-all duration-100" style={{ background: orbBg, boxShadow: orbGlow, transform: `scale(${orbScale})` }} />
             <div className="min-w-0">
@@ -655,28 +1051,32 @@ if (ytMatch) { const w = window.open(ytMatch[0], '_blank'); if (w) w.focus(); }
               <div className="text-white/30 text-xs mt-0.5">{statusText}</div>
             </div>
           </div>
-
           {cameraActive && (
             <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-white/5 flex-shrink-0">
               <div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
               <span className="text-white/30 text-xs">cam</span>
             </div>
           )}
-
+          {/* Voice mode button in top bar (mobile shortcut) */}
           <button
-            onClick={logout}
-            className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-white/5 transition-all text-white/30 hover:text-white/60 flex-shrink-0"
+            onClick={() => setVoiceModeOpen(true)}
+            className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-white/5 transition-all flex-shrink-0"
+            title="Voice mode"
           >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.35)" strokeWidth="2">
+              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+              <line x1="12" y1="19" x2="12" y2="23"/>
+              <line x1="8" y1="23" x2="16" y2="23"/>
+            </svg>
+          </button>
+          <button onClick={logout} className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-white/5 transition-all text-white/30 hover:text-white/60 flex-shrink-0">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
               <polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
             </svg>
           </button>
-
-          <button
-            onClick={() => { setShowUpdates(!showUpdates); if (!showUpdates) markAllRead(); }}
-            className="relative w-10 h-10 flex items-center justify-center rounded-xl hover:bg-white/5 transition-all flex-shrink-0"
-          >
+          <button onClick={() => { setShowUpdates(!showUpdates); if (!showUpdates) markAllRead(); }} className="relative w-10 h-10 flex items-center justify-center rounded-xl hover:bg-white/5 transition-all flex-shrink-0">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.35)" strokeWidth="2">
               <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
               <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
@@ -808,11 +1208,11 @@ if (ytMatch) { const w = window.open(ytMatch[0], '_blank'); if (w) w.focus(); }
                     </div>
                   )}
                   <span dangerouslySetInnerHTML={{ __html: formatMessage(msg.content) }} />
-{msg.imageUrl && <img src={msg.imageUrl} alt={msg.fileName || 'attachment'} className="mt-2 rounded-xl max-w-full" style={{ maxHeight: '200px', objectFit: 'contain' }} />}
-{msg.role === 'assistant' && renderMessageExtras(msg.content, (prompt) => {
-  setInput(prompt);
-  setTimeout(() => send(), 50);
-})}
+                  {msg.imageUrl && <img src={msg.imageUrl} alt={msg.fileName || 'attachment'} className="mt-2 rounded-xl max-w-full" style={{ maxHeight: '200px', objectFit: 'contain' }} />}
+                  {msg.role === 'assistant' && renderMessageExtras(msg.content, (prompt) => {
+                    setInput(prompt);
+                    setTimeout(() => send(), 50);
+                  })}
                 </div>
               </div>
             ))}
@@ -850,14 +1250,11 @@ if (ytMatch) { const w = window.open(ytMatch[0], '_blank'); if (w) w.focus(); }
           </div>
         )}
 
-        {/* Input bar — always visible, never moves */}
+        {/* Input bar */}
         <div className="flex-shrink-0 bg-[#060608] border-t border-white/5 px-3 py-3" style={{ paddingBottom: 'max(12px, env(safe-area-inset-bottom))' }}>
           <input ref={fileInputRef} type="file" accept="image/*,.pdf,.txt,.js,.ts,.py,.md,.json,.csv,.doc,.docx" onChange={handleFileAttach} className="hidden" />
           <div className="flex items-center gap-2">
-            <button
-              onClick={() => fileInputRef.current?.click()}
-              className="w-11 h-11 flex items-center justify-center rounded-xl hover:bg-white/5 transition-all flex-shrink-0 text-white/30 hover:text-white/60"
-            >
+            <button onClick={() => fileInputRef.current?.click()} className="w-11 h-11 flex items-center justify-center rounded-xl hover:bg-white/5 transition-all flex-shrink-0 text-white/30 hover:text-white/60">
               <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
               </svg>
