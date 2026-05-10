@@ -153,13 +153,23 @@ function VoiceModeModal({
     return () => { cancelAnimationFrame(frame); streamRef.current?.getTracks().forEach(t => t.stop()); audioCtxRef.current?.close(); };
   }, []);
 
+  const inConversationRef = useRef(false);
+  const startListeningRef = useRef<() => void>(() => {});
+  const sendToJarvisRef = useRef<(text: string) => void>(() => {});
+
   const speak = useCallback((text: string) => {
     if (typeof window === 'undefined') return;
     window.speechSynthesis.cancel();
     const clean = text.replace(/<[^>]*>/g, '').replace(/\*\*/g, '').replace(/\*/g, '');
     const utt = new SpeechSynthesisUtterance(clean);
     utt.rate = 1.05; utt.pitch = 0.85; utt.volume = 1.0;
-    utt.onend = () => setVoiceState('idle');
+    utt.onend = () => {
+      if (inConversationRef.current && wakeLoopRef.current) {
+        setTimeout(() => startListeningRef.current(), 400);
+      } else {
+        setVoiceState('idle');
+      }
+    };
     synthRef.current = utt;
     setVoiceState('speaking');
     window.speechSynthesis.speak(utt);
@@ -167,6 +177,19 @@ function VoiceModeModal({
 
   const sendToJarvis = useCallback(async (text: string) => {
     if (!text.trim()) return;
+    const lower = text.toLowerCase().trim();
+    if (lower.includes('goodbye jarvis') || lower === 'goodbye' || lower === 'bye jarvis' || lower === 'stop jarvis') {
+      inConversationRef.current = false;
+      window.speechSynthesis.cancel();
+      const utt = new SpeechSynthesisUtterance('Goodbye.');
+      utt.rate = 1.05; utt.pitch = 0.85; utt.volume = 1.0;
+      utt.onend = () => setVoiceState('idle');
+      window.speechSynthesis.speak(utt);
+      setVoiceState('speaking');
+      setTranscript(text);
+      return;
+    }
+    inConversationRef.current = true;
     setVoiceState('thinking');
     setTranscript(text);
     try {
@@ -187,7 +210,6 @@ function VoiceModeModal({
     if (isListeningRef.current) return;
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SpeechRecognition) return;
-    // Stop wake word detection while listening
     wakeRecRef.current?.abort();
     const rec = new SpeechRecognition();
     rec.continuous = false;
@@ -209,12 +231,16 @@ function VoiceModeModal({
     };
     rec.onend = () => {
       isListeningRef.current = false;
-      if (finalTranscript.trim()) sendToJarvis(finalTranscript.trim());
+      if (finalTranscript.trim()) sendToJarvisRef.current(finalTranscript.trim());
       else setVoiceState('idle');
     };
     rec.onerror = () => { isListeningRef.current = false; setVoiceState('idle'); };
     rec.start();
   }, [sendToJarvis]);
+
+  // Keep refs in sync so circular deps don't matter
+  useEffect(() => { startListeningRef.current = startListening; }, [startListening]);
+  useEffect(() => { sendToJarvisRef.current = sendToJarvis; }, [sendToJarvis]);
 
   // Wake word loop — runs continuously in background
   const playWakeChime = useCallback(() => {
@@ -260,7 +286,10 @@ function VoiceModeModal({
         if (said.includes('hey jarvis') || (said.includes('jarvis') && said.startsWith('hey'))) {
           playWakeChime();
           setTimeout(() => {
-            if (wakeLoopRef.current) startListening();
+            if (wakeLoopRef.current) {
+              inConversationRef.current = true;
+              startListening();
+            }
           }, 350);
         }
       };
@@ -284,11 +313,14 @@ function VoiceModeModal({
     if (voiceState === 'listening') {
       recognitionRef.current?.stop();
       isListeningRef.current = false;
+      inConversationRef.current = false;
       setVoiceState('idle');
     } else if (voiceState === 'speaking') {
       window.speechSynthesis.cancel();
+      inConversationRef.current = false;
       setVoiceState('idle');
     } else if (voiceState === 'idle') {
+      inConversationRef.current = true;
       startListening();
     }
   };
@@ -324,7 +356,7 @@ function VoiceModeModal({
   const stateLabel = {
     idle: 'Tap to speak or say "Hey JARVIS"',
     wake: 'Tap to speak or say "Hey JARVIS"',
-    listening: 'Listening...',
+    listening: 'Listening... say "Goodbye JARVIS" to end',
     thinking: 'Thinking...',
     speaking: 'Speaking...',
   }[voiceState];

@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hawaii Adventure 2026 - Minkowitz Family Trip</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .hero {
+            background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), 
+                        url('https://images.unsplash.com/photo-1559494007-9f5847c49d94?w=1600') center/cover;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: white;
+            padding: 20px;
+            position: relative;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 150px;
+            background: linear-gradient(transparent, #1a1a2e);
+        }
+        
+        .hero h1 {
+            font-family: 'Pacifico', cursive;
+            font-size: clamp(3rem, 10vw, 6rem);
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.5);
+            margin-bottom: 10px;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .hero h2 {
+            font-size: clamp(1.2rem, 4vw, 2rem);
+            font-weight: 300;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .trip-stats {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 30px;
+            z-index: 1;
+        }
+        
+        .stat {
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            padding: 20px 30px;
+            border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #ffd700;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        .content {
+            background: #1a1a2e;
+            padding: 60px 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .section-title {
+            font-family: 'Pacifico', cursive;
+            font-size: clamp(2rem, 6vw, 3rem);
+            text-align: center;
+            color: #ffd700;
+            margin-bottom: 50px;
+        }
+        
+        .day-card {
+            background: linear-gradient(145deg, #16213e, #1f3460);
+            border-radius: 25px;
+            margin-bottom: 40px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            transition: transform 0.3s ease;
+        }
+        
+        .day-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .day-header {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            padding: 25px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .day-number {
+            font-family: 'Pacifico', cursive;
+            font-size: 2rem;
+            color: white;
+        }
+        
+        .day-date {
+            background: rgba(255,255,255,0.2);
+            padding: 8px 20px;
+            border-radius: 20px;
+            color: white;
+            font-weight: 600;
+        }
+        
+        .day-content {
+            padding: 30px;
+            color: white;
+        }
+        
+        .activity {
+            display: flex;
+            gap: 20px;
+            padding: 20px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            margin-bottom: 15px;
+            align-items: flex-start;
+            transition: background 0.3s ease;
+        }
+        
+        .activity:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .activity-time {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 10px 15px;
+            border-radius: 10px;
+            font-weight: 600;
+            min-width: 80px;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+        
+        .activity-details h4 {
+            color: #ffd700;
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+        }
+        
+        .activity-details p {
+            color: rgba(255,255,255,0.8);
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+        
+        .activity-tag {
+            display: inline-block;
+            background: rgba(255,215,0,0.2);
+            color: #ffd700;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            margin-top: 10px;
+            margin-right: 8px;
+        }
+        
+        .tag-adventure { background: rgba(255,107,107,0.2); color: #ff6b6b; }
+        .tag-relax { background: rgba(78,205,196,0.2); color: #4ecdc4; }
+        .tag-food { background: rgba(255,190,118,0.2); color: #ffbe76; }
+        .tag-culture { background: rgba(162,155,254,0.2); color: #a29bfe; }
+        
+        .budget-section {
+            background: linear-gradient(145deg, #16213e, #1f3460);
+            border-radius: 25px;
+            padding: 40px;
+            margin-top: 60px;
+        }
+        
+        .budget-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+        
+        .budget-item {
+            background: rgba(255,255,255,0.05);
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            color: white;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .budget-item h4 {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            color: rgba(255,255,255,0.8);
+        }
+        
+        .budget-item .amount {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #4ecdc4;
+        }
+        
+        .budget-total {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            margin-top: 30px;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            color: white;
+        }
+        
+        .budget-total h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .budget-total .total-amount {
+            font-size: 3rem;
+            font-weight: 700;
+        }
+        
+        .budget-total .under-budget {
+            font-size: 1.1rem;
+            margin-top: 10px;
+            color: #90EE90;
+        }
+        
+        .tips-section {
+            margin-top: 60px;
+        }
+        
+        .tips-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+        
+        .tip-card {
+            background: linear-gradient(145deg, #16213e, #1f3460);
+            padding: 30px;
+            border-radius: 20px;
+            color: white;
+            border-left: 4px solid #ffd700;
+        }
+        
+        .tip-card h4 {
+            color: #ffd700;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+        
+        .tip-card p {
+            color: rgba(255,255,255,0.8);
+            line-height: 1.7;
+        }
+        
+        .island-divider {
+            text-align: center;
+            padding: 60px 20px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            margin: 40px 0;
+            border-radius: 25px;
+        }
+        
+        .island-divider h2 {
+            font-family: 'Pacifico', cursive;
+            font-size: clamp(2rem, 6vw, 3.5rem);
+            color: white;
+            margin-bottom: 10px;
+        }
+        
+        .island-divider p {
+            color: rgba(255,255,255,0.9);
+            font-size: 1.2rem;
+        }
+        
+        .scroll-arrow {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: bounce 2s infinite;
+            z-index: 2;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
+            40% { transform: translateX(-50%) translateY(-20px); }
+            60% { transform: translateX(-50%) translateY(-10px); }
+        }
+        
+        .scroll-arrow svg {
+            width: 40px;
+            height: 40px;
+            fill: white;
+            opacity: 0.8;
+        }
+        
+        footer {
+            background: #0f0f1a;
+            padding: 40px 20px;
+            text-align: center;
+            color: rgba(255,255,255,0.6);
+        }
+        
+        footer p {
+            font-family: 'Pacifico', cursive;
+            font-size: 1.5rem;
+            color: #ffd700;
+            margin-bottom: 10px;
+        }
+        
+        @media (max-width: 600px) {
+            .activity {
+                flex-direction: column;
+            }
+            
+            .activity-time {
+                align-self: flex-start;
+            }
+            
+            .day-header {
+                justify-content: center;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <section class="hero">
+        <h1>Aloha Hawaii!</h1>
+        <h2>Minkowitz Family Adventure 2026</h2>
+        <div class="trip-stats">
+            <div class="stat">
+                <div class="stat-number">10</div>
+                <div class="stat-label">Days of Paradise</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">6</div>
+                <div class="stat-label">Travelers</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">2</div>
+                <div class="stat-label">Islands</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">$19.4K</div>
+                <div class="stat-label">Total Budget</div>
+            </div>
+        </div>
+        <div class="scroll-arrow">
+            <svg viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
+        </div>
+    </section>
+    
+    <section class="content">
+        <div class="container">
+            <h2 class="section-title">Your Island Adventure</h2>
+            
+            <div class="island-divider">
+                <h2>Oahu - Days 1-5</h2>
+                <p>The Gathering Place - Beaches, Culture and Adventure</p>
+            </div>
+            
+            <!-- Day 1 -->
+            <div class="day-card">
+                <div class="day-header">
+                    <span class="day-number">Day 1</span>
+                    <span class="day-date">Arrival Day</span>
+                </div>
+                <div class="day-content">
+                    <div class="activity">
+                        <div class="activity-time">2:00 PM</div>
+                        <div class="activity-details">
+                            <h4>Arrive at Honolulu International Airport</h4>
+                            <p>Lei greeting at the airport! Pick up your rental minivan and head to your beachfront Airbnb in Waikiki. Stop for shave ice at Matsumoto's on the way!</p>
+                            <span class="activity-tag">Arrival</span>
+                        </div>
+                    </div>
+                    <div class="activity">
+                        <div class="activity-time">5:00 PM</div>
+                        <div class="activity-details">
+                            <h4>Waikiki Beach Sunset</h4>
+                            <p>Settle in and hit the beach right outside your rental. Watch the sunset paint the sky while the teens try their hand at boogie boarding.</p>
+                            <span class="activity-tag tag-relax">Relax</span>
+                        </div>
+                    </div>
+                    <div class="activity">
+                        <div class="activity-time">7:30 PM</div>
+                        <div class="activity-details">
+                            <h4>Dinner at Duke's Waikiki</h4>
+                            <p>Legendary beachfront restaurant with live music, amazing fish tacos, and hula pie that'll blow everyone's minds. Perfect first night vibes!</p>
+                            <span class="activity-tag tag-food">Food</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Day 2 -->
+            <div class="day-card">
+                <div class="day-header">
+                    <span class="day-number">Day 2</span>
+                    <span class="day-date">Adventure Day</span>
+                </div>
+                <div class="day-content">
+                    <div class="activity">
+                        <div class="activity-time">7:00 AM</div>
+                        <div class="activity-details">
+                            <h4>Diamond Head Crater Hike</h4>
+                            <p>Beat the crowds and the heat! 1.6-mile roundtrip hike up this iconic volcanic crater. The panoramic views from the top are absolutely insane - perfect for family photos!</p>
+                            <span class="activity-tag tag-adventure">Adventure</span>
+                        </div>
+                    </div>
+                    <div class="activity">
+                        <div class="activity-time">11:00 AM</div>
+                        <div class="activity-details">
+                            <h4>Surf Lessons at Waikiki</h4>
+                            <p>2-hour group surf lesson for all 6 of you! Waikiki has the gentlest waves - perfect for beginners. The teens will be catching waves by the end!</p>
+                            <span class="activity-tag tag-adventure">Adventure</span>
+                        </div>
+                    </div>
+                    <div class="activity">
+                        <div class="activity-time">2:00 PM</div>
+                        <div class="activity-details">
+                            <h4>Pool and Beach Time</h4>
+                            <p>Grab poke bowls from Ono Seafood and chill at the beach or pool. Let those surfing muscles recover while soaking up the Hawaiian sun.</p>
+                            <span class="activity-tag tag-relax">Relax</span>
+                        </div>
+                    </div>
+                    <div class="activity">
+                        <div class="activity-time">6:00 PM</div>
+                        <div class="activity-details">
+                            <h4>Luau at Paradise Cove</h4>
+                            <p>The ultimate Hawaiian experience! Traditional pig roasting ceremony, hula dancing, fire knife performance, and an all-you-can-eat Hawaiian feast. The teens will love the fire dancers!</p>
+                            <span class="activity-tag tag-culture">Culture</span>
+                            <span class="activity-tag tag-food">Food</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Day 3 -->
+            <div class="day-card">
+                <div class="day-header">
+                    <span class="day-number">Day 3</span>
+                    <span class="day-date">Jurassic Park Day</span>
+                </div>
+                <div class="day-content">
+                    <div class="activity">
+                        <div class="activity-time">8:00 AM</div>
+                        <div class="activity-details">
+                            <h4>Kualoa Ranch - UTV Raptor Tour</h4>
+                            <p>THIS IS THE ONE! 2-hour UTV adventure through the valleys where Jurassic Park, Jumanji, and 50 First Dates were filmed. The teens can take turns driving (with permits). Absolutely epic!</p>
+                            <span class="activity-tag tag-adventure">Adventure</span>
+                        </div>
+                    </div>
+                    <div class="activity">
+                        <div class="activity-time">11:30 AM</div>
+                        <div class="activity-details">
+                            <h4>Kualoa Ranch Zipline</h4>
+                            <p>8 ziplines across the mountains with insane valley views. Soar over the same landscapes dinosaurs "roamed" in the movies!</p>
+                            <span class="activity-tag tag-adventure">Adventure</span>
+                        </div>
+                    </div>
+                    <div class="activity">
+                        <div class="activity-time">3:00 PM</div>
+                        <div class="activity-details">
+                            <h4>Lanikai Beach</h4>
+                            <p>Wind down at one of the world's most beautiful beaches. Crystal clear turquoise water, soft white sand, and those iconic Mokulua Islands in the distance. Pure paradise!</p>
+                            <span class="activity-tag tag-relax">Relax</span>
+                        </div>
+                    </div>
+                    <div class="activity">
+                        <div class="activity-time">7:00 PM</div>
+                        <div class="activity-details">
+                            <h4>Giovanni's Shrimp Truck</h4>
+                            <p>Famous North Shore shrimp truck! Get the garlic butter shrimp - messy, delicious, and totally worth it. Eat at the picnic tables like locals.</p>
+                            <span class="activity-tag tag-food">Food</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Day 4 -->
+            <div class="day-card">
+                <div class="day-header">
+                    <span class="day-number">Day 4</span>
+                    <span class="day-date">North Shore Day</span>
+                </div>
+                <div class="day-content">
+                    <div class="activity">
+                        <div class="activity-time">8:30 AM</div>
+                        <div class="activity-details">
+                            <h4>Shark Cage Diving</h4>
+                            <p>For the brave ones! Get up close with Galapagos and sandbar sharks in a secure cage. Non-swimmers can stay on the boat and watch. Absolutely unforgettable experience!</p>
+                            <span class="activity-tag tag-adventure">Adventure</span>
+                        </div>
+                    </div>
+                    <div class="activity">
+                        <div class="activity-time">12:00 PM</div>
+                        <div class="activity-details">
+                            <h4>Haleiwa Town Exploration</h4>
+                            <p>Cute surf town with amazing food trucks, boutique shops, and legendary Matsumoto Shave Ice. Perfect for lunch and exploring the laid-back North Shore vibe.</p>
+                            <span class="activity-tag tag-culture">Culture</span>
+                            <span class="activity-tag tag-food">Food</span>
+                        </div>
+                    </div>
+                    <div class="activity">
+                        <div class="activity-time">2:30 PM</div>
+                        <div class="activity-details">
+                            <h4>Waimea Bay Beach</h4>
+                            <p>Famous big wave beach! In summer, it's calm enough to swim and jump off the famous rock. The teens will want to do it over and over!</p>
+                            <span class="activity-tag tag-relax">Relax</span>
+                            <span class="activity-tag tag-adventure">Adventure</span>
+                        </div>
+                    </div>
+                    <div class="activity">
+                        <div class="activity-time">6:00 PM</div>
+                        <div class="activity-details">
+                            <h4>Sunset at Turtle Bay</h4>
+                            <p>Watch sea turtles come to shore at sunset! Grab dinner at the resort's Lei Lei's Bar and Grill overlooking the ocean.</p>
+                            <span class="activity-tag tag-relax">Relax</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Day 5 -->
+            <div class="day-card">
+                <div class="day-header">
+                    <span class="day-number">Day 5</span>
+                    <span class="day-date">Pearl Harbor and Culture</span>
+                </div>
+                <div class="day-content">
+                    <div class="activity">
+                        <div class="activity-time">7:30 AM</div>
+                        <div class="activity-details">
+                            <h4>Pearl Harbor National Memorial</h4>
+                            <p>Powerful and moving experience for the whole family. Visit the USS Arizona Memorial, USS Missouri battleship, and the museums. Book tickets in advance - they sell out fast!</p>
+                            <span class="activity-tag tag-culture">Culture</span>
+                        </div>
+                    </div>
+                    <div class="activity">
+                        <div class="activity-time">1:00 PM</div>
+                        <div class="activity-details">
+                            <h4>Ala Moana Center</h4>
+                            <p>World's largest open-air shopping center! Great for lunch at the food court, some shopping, and air-conditioned relief. Teens will love it.</p>
+                            <span class="activity-tag tag-relax">Relax</span>
+                        </div>
+                    </div>
+                    <div class="activity">
+                        <div class="activity-time">4:00 PM</div>
+                        <div class="activity-details">
+                            <h4>Pack and Relax</h4>
+                            <p>Easy afternoon at the beach or pool. Pack for Maui tomorrow - you're island hopping!</p>
+                            <span class="activity-tag tag-relax">Relax</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="island-divider">
+                <h2>Maui - Days 6-10</h2>
+                <p>The Valley Isle - Road to Hana, Volcanoes and Water Sports</p>
+            </div>
+            
+            <!-- Day 6 -->
+            <div class="day-card">
+                <div class="day-header">
+                    <span class="day-number">Day 6</span>
+                    <span class="day-date">Fly to Maui</span>
+                </div>
+                <div class="day-content">
+                    <div class="activity">
+                        <div class="activity-time">10:00 AM</div>
+                        <div class="activity-details">
+                            <h4>Inter-Island Flight to Maui</h4>
+                            <p>Quick 35-minute flight from Honolulu to Kahului. Window seats are a must - the aerial views of the islands are incredible!</p>
+                            <span class="activity-tag">Travel</span>
+                        </div>
+                    </div>
+                    <div class="activity">
+                        <div class="activity-time">12:00 PM</div>
+                        <div class="activity-details">
+                            <h4>Check into Wailea Resort</h4>
+                            <p>Your beachfront condo in Wailea - the sunny side of Maui. Multiple pools, direct beach access, and stunning sunset views. This is luxury!</p>
+                            <span class="activity-tag tag-relax">Relax</span>
+                        </div>
+                    </div>
+                    <div class="activity">
+                        <div class="activity-time">2:00 PM</div>
+                        <div class="activity-details">
+                            <h4>Snorkel at Ulua Beach</h4>
+                            <p>Walk right from your resort to incredible snorkeling. Sea turtles, tropical fish, and crystal clear water. Rent snorkel gear nearby or bring your own!</p>
+                            <span class="activity-tag tag-adventure">Adventure</span>
+                        </div>
+                    </div>
+                    <div class="activity">
+                        <div class="activity-time">6:30 PM</div>
+                        <div class="activity-details">
+                            <h4>Dinner at Monkeypod Kitchen</h4>
+                            <p>Famous for their happy hour, craft cocktails (mocktails for teens!), and wood-fired pizzas. Live music and incredible mai tais for the adults!</p>
+                            <span class="activity-tag tag-food">Food</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Day 7 -->
+            <div class="day-card">
+                <div class="day-header">
+                    <span class="day-number">Day 7</span>
+                    <span class="day-date">Road to Hana</span>
+                </div>
+                <div class="day-content">
+                    <div class="activity">
+                        <div class="activity-time">6:30 AM</div>
+                        <div class="activity-details">
+                            <h4>Road to Hana Adventure</h4>
+                            <p>THE legendary drive! 620 curves, 59 bridges, and endless waterfalls. Stop at Twin Falls for a swim, Halfway to Hana for banana bread, and Waianapanapa for the black sand beach!</p>
+                            <span class="activity-tag tag-adventure">Adventure</span>
+                        </div>
+                    </div>
+                    <div class="activity">
+                        <div class="activity-time">12:00 PM</div>
+                        <div class="activity-details">
+                            <h4>Waianapanapa State Park</h4>
+                            <p>Stunning black sand beach with sea caves, blowholes, and dramatic lava cliffs. The contrast of black sand and blue water is insane for photos!</p>
+                            <span class="activity-tag tag-adventure">Adventure</span>
+                        </div>
+                    </div>
+                    <div class="activity">
+                        <div class="activity-time">2:00 PM</div>
+                        <div class="activity-details">
+                            <h4>Seven Sacred Pools</h4>
+                            <p>Technically called Oheo Gulch at Haleakala National Park. Swim in the freshwater pools surrounded by bamboo forest. Magical!</p>
+                            <span class="activity-tag tag-adventure">Adventure</span>
+                        </div>
+                    </div>
+                    <div class="activity">
+                        <div class="activity-time">5:00 PM</div>
+                        <div class="activity-details">
+                            <h4>Return via Piilani Highway</h4>
+                            <p>Take the "back way" home - less curvy, equally beautiful. Stop at Grandma's Coffee House in Kula for the best coffee and banana bread on the island!</p>
+                            <span class="activity-tag tag-food">Food</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Day 8 -->
+            <div class="day-card">
+                <div class="day-header">
+                    <span class="day-number">Day 8</span>
+                    <span class="day-date">Volcano Day</span>
+                </div>
+                <div class="day-content">
+                    <div class="activity">
+                        <div class="activity-time">3:00 AM</div>
+                        <div class="activity-details">
+                            <h4>Haleakala Sunrise</h4>
+                            <p>Yes, 3 AM! Drive to the 10,023-foot summit of Haleakala volcano to watch the most incredible sunrise on Earth. Above the clouds, it's like being on Mars. Bring WARM clothes - it's 40F up there!</p>
+                            <span class="activity-tag tag-adventure">Adventure</span>
+                        </div>
+                    </div>
+                    <div class="activity">
+                        <div class="activity-time">8:00 AM</div>
+                        <div class="activity-details">
+                            <h4>Bike Down the Volcano</h4>
+                            <p>Coast 23 miles downhill from the volcano through eucalyptus forests and upcountry farms. Guided tour with stops at lavender farms and local bakeries. The teens will LOVE this!</p>
+                            <span class="activity-tag tag-adventure">Adventure</span>
+                        </div>
+                    </div>
+                    <div class="activity">
+                        <div class="activity-time">1:00 PM</div>
+                        <div class="activity-details">
+                            <h4>Afternoon at the Pool</h4>
+                            <p>You earned it after that early wake-up! Relax at the resort pools, order poolside food, and maybe take a well-deserved nap.</p>
+                            <span class="activity-tag tag-relax">Relax</span>
+                        </div>
+                    </div>
+                    <div class="activity">
+                        <div class="activity-time">6:00 PM</div>
+                        <div class="activity-details">
+                            <h4>Old Lahaina Luau</h4>
+                            <p>The most authentic luau in Hawaii! Oceanfront setting, traditional Hawaiian food, and incredible fire knife dancing. Better than the Oahu one - save the best for last!</p>
+                            <span class="activity-tag tag-culture">Culture</span>
+                            <span class="activity-tag tag-food">Food</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Day 9 -->
+            <div class="day-card">
+                <div class="day-header">
+                    <span class="day-number">Day 9</span>
+                    <span class="day-date">Ocean Adventure</span>
+                </div>
+                <div class="day-content">
+                    <div class="activity">
+                        <div class="activity-time">7:00 AM</div>
+                        <div class="activity-details">
+                            <h4>Molokini Crater Snorkel Tour</h4>
+                            <p>Boat trip to the famous crescent-shaped volcanic crater! 250+ species of tropical fish, 100-foot visibility, and possible sea turtle and dolphin sightings. Breakfast and lunch included on the boat!</p>
+                            <span class="activity-tag tag-adventure">Adventure</span>
+                        </div>
+                    </div>
+                    <div class="activity">
+                        <div class="activity-time">1:00 PM</div>
+                        <div class="activity-details">
+                            <h4>Paddleboard or Kayak</h4>
+                            <p>Rent SUPs or kayaks at Makena Beach. Paddle along the coastline, spot sea turtles, and enjoy the crystal clear water at your own pace.</p>
+                            <span class="activity-tag tag-adventure">Adventure</span>
+                        </div>
+                    </div>
+                    <div class="activity">
+                        <div class="activity-time">4:00 PM</div>
+                        <div class="activity-details">
+                            <h4>Big Beach (Makena Beach)</h4>
+                            <p>One of Maui's best beaches! Massive waves for boogie boarding, golden sand, and epic sunset views. Perfect way to spend your last full afternoon.</p>
+                            <span class="activity-tag tag-relax">Relax</span>
+                        </div>
+                    </div>
+                    <div class="activity">
+                        <div class="activity-time">7:00 PM</div>
+                        <div class="activity-details">
+                            <h4>Farewell Dinner at Mama's Fish House</h4>
+                            <p>The most famous restaurant in Hawaii! Splurge-worthy oceanfront dining with the freshest fish (menu tells you who caught it!). The perfect finale to your Hawaiian adventure.</p>
+                            <span class="activity-tag tag-food">Food</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Day 10 -->
+            <div class="day-card">
+                <div class="day-header">
+                    <span class="day-number">Day 10</span>
+                    <span class="day-date">Departure Day</span>
+                </div>
+                <div class="day-content">
+                    <div class="activity">
+                        <div class="activity-time">7:00 AM</div>
+                        <div class="activity-details">
+                            <h4>Sunrise Beach Walk</h4>
+                            <p>One last peaceful morning on Wailea Beach. Watch the sunrise, collect some shells (just small ones - leave the big ones!), and soak in those final Hawaiian moments.</p>
+                            <span class="activity-tag tag-relax">Relax</span>
+                        </div>
+                    </div>
+                    <div class="activity">
+                        <div class="activity-time">9:00 AM</div>
+                        <div class="activity-details">
+                            <h4>Brunch at Kihei Caffe</h4>
+                            <p>Local favorite for massive, delicious breakfasts. Get the macadamia nut pancakes - the perfect fuel for your flight home!</p>
+                            <span class="activity-tag tag-food">Food</span>
+                        </div>
+                    </div>
+                    <div class="activity">
+                        <div class="activity-time">12:00 PM</div>
+                        <div class="activity-details">
+                            <h4>Airport and Departure</h4>
+                            <p>Head to Kahului Airport with plenty of time. Pro tip: Stop at Costco for cheaper Hawaiian souvenirs and macadamia nuts! A hui hou - until we meet again!</p>
+                            <span class="activity-tag">Departure</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Budget Section -->
+            <div class="budget-section">
+                <h2 class="section-title">Budget Breakdown</h2>
+                <div class="budget-grid">
+                    <div class="budget-item">
+                        <h4>Flights (6 people roundtrip + inter-island)</h4>
+                        <div class="amount">$5,400</div>
+                    </div>
+                    <div class="budget-item">
+                        <h4>Accommodations (9 nights - 2 condos)</h4>
+                        <div class="amount">$4,500</div>
+                    </div>
+                    <div class="budget-item">
+                        <h4>Rental Vehicles (Minivan x 10 days)</h4>
+                        <div class="amount">$1,200</div>
+                    </div>
+                    <div class="budget-item">
+                        <h4>Activities and Tours</h4>
+                        <div class="amount">$4,800</div>
+                    </div>
+                    <div class="budget-item">
+                        <h4>Food and Dining</h4>
+                        <div class="amount">$2,500</div>
+                    </div>
+                    <div class="budget-item">
+                        <h4>Miscellaneous and Souvenirs</h4>
+                        <div class="amount">$1,000</div>
+                    </div>
+                </div>
+                <div class="budget-total">
+                    <h3>Total Trip Cost</h3>
+                    <div class="total-amount">$19,400</div>
+                    <div class="under-budget">$600 under budget!</div>
+                </div>
+            </div>
+            
+            <!-- Tips Section -->
+            <div class="tips-section">
+                <h2 class="section-title">Pro Tips for the Family</h2>
+                <div class="tips-grid">
+                    <div class="tip-card">
+                        <h4>Book Early</h4>
+                        <p>Reserve Haleakala sunrise permits, Pearl Harbor tickets, and Kualoa Ranch tours at least 2-3 months in advance. They sell out fast!</p>
+                    </div>
+                    <div class="tip-card">
+                        <h4>Pack Smart</h4>
+                        <p>Bring reef-safe sunscreen (required by law!), water shoes for rocky beaches, and layers for the volcano. Leave room for souvenirs!</p>
+                    </div>
+                    <div class="tip-card">
+                        <h4>Timing is Everything</h4>
+                        <p>Hit popular spots early morning (before 9 AM) or late afternoon. Midday crowds are intense, plus you'll avoid the hottest sun.</p>
+                    </div>
+                    <div class="tip-card">
+                        <h4>Respect the Aina</h4>
+                        <p>Hawaiian word for "land." Don't touch sea turtles, stay on marked trails, and never stack rocks (it's culturally disrespectful).</p>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </section>
+    
+    <footer>
+        <p>Aloha, Minkowitz Family!</p>
+        <span>Created with love by JARVIS | 2026</span>
+    </footer>
+</body>
+</html>
