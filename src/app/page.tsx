@@ -107,26 +107,26 @@ function VoiceModeModal({
   onClose: () => void;
   onMessageSent: (userMsg: string, assistantMsg: string) => void;
 }) {
-  const [voiceState, setVoiceState] = useState<'idle' | 'listening' | 'thinking' | 'speaking'>('idle');
+  const [voiceState, setVoiceState] = useState<'idle' | 'wake' | 'listening' | 'thinking' | 'speaking'>('idle');
   const [transcript, setTranscript] = useState('');
   const [response, setResponse] = useState('');
   const [audioLevel, setAudioLevel] = useState(0);
   const [orbAngle, setOrbAngle] = useState(0);
+  const [wakeActive, setWakeActive] = useState(false);
   const recognitionRef = useRef<any>(null);
-  const animRef = useRef<number>(0);
-  const analyserRef = useRef<AnalyserNode | null>(null);
+  const wakeRecRef = useRef<any>(null);
   const audioCtxRef = useRef<AudioContext | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const synthRef = useRef<SpeechSynthesisUtterance | null>(null);
   const isListeningRef = useRef(false);
+  const wakeLoopRef = useRef(true);
+  const voiceStateRef = useRef(voiceState);
+  useEffect(() => { voiceStateRef.current = voiceState; }, [voiceState]);
 
   // Animate orb rotation
   useEffect(() => {
     let frame: number;
-    const tick = () => {
-      setOrbAngle(a => (a + 0.8) % 360);
-      frame = requestAnimationFrame(tick);
-    };
+    const tick = () => { setOrbAngle(a => (a + 0.8) % 360); frame = requestAnimationFrame(tick); };
     frame = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(frame);
   }, []);
@@ -142,7 +142,6 @@ function VoiceModeModal({
       const analyser = ctx.createAnalyser();
       analyser.fftSize = 256;
       source.connect(analyser);
-      analyserRef.current = analyser;
       const tick = () => {
         const data = new Uint8Array(analyser.frequencyBinCount);
         analyser.getByteFrequencyData(data);
@@ -151,22 +150,16 @@ function VoiceModeModal({
       };
       tick();
     }).catch(() => {});
-    return () => {
-      cancelAnimationFrame(frame);
-      streamRef.current?.getTracks().forEach(t => t.stop());
-      audioCtxRef.current?.close();
-    };
+    return () => { cancelAnimationFrame(frame); streamRef.current?.getTracks().forEach(t => t.stop()); audioCtxRef.current?.close(); };
   }, []);
 
-  const speak = useCallback((text: string, onDone?: () => void) => {
+  const speak = useCallback((text: string) => {
     if (typeof window === 'undefined') return;
     window.speechSynthesis.cancel();
     const clean = text.replace(/<[^>]*>/g, '').replace(/\*\*/g, '').replace(/\*/g, '');
     const utt = new SpeechSynthesisUtterance(clean);
-    utt.rate = 1.05;
-    utt.pitch = 0.85;
-    utt.volume = 1.0;
-    utt.onend = () => { setVoiceState('idle'); onDone?.(); };
+    utt.rate = 1.05; utt.pitch = 0.85; utt.volume = 1.0;
+    utt.onend = () => setVoiceState('idle');
     synthRef.current = utt;
     setVoiceState('speaking');
     window.speechSynthesis.speak(utt);
@@ -187,15 +180,15 @@ function VoiceModeModal({
       setResponse(reply);
       onMessageSent(text, reply);
       speak(reply);
-    } catch {
-      setVoiceState('idle');
-    }
+    } catch { setVoiceState('idle'); }
   }, [token, speak, onMessageSent]);
 
   const startListening = useCallback(() => {
     if (isListeningRef.current) return;
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SpeechRecognition) return;
+    // Stop wake word detection while listening
+    wakeRecRef.current?.abort();
     const rec = new SpeechRecognition();
     rec.continuous = false;
     rec.interimResults = true;
@@ -205,25 +198,6 @@ function VoiceModeModal({
     setVoiceState('listening');
     setTranscript('');
     setResponse('');
-
-    rec.onresult = (e: any) => {
-      const t = Array.from(e.results).map((r: any) => r[0].transcript).join('');
-      setTranscript(t);
-    };
-    rec.onend = () => {
-      isListeningRef.current = false;
-      if (transcript || recognitionRef.current?._finalTranscript) {
-        // handled in onspeechend
-      }
-    };
-    rec.onspeechend = () => {
-      const final = recognitionRef.current?._finalTranscript || transcript;
-      rec.stop();
-      isListeningRef.current = false;
-    };
-    rec.onerror = () => { isListeningRef.current = false; setVoiceState('idle'); };
-
-    // Use result to get final
     let finalTranscript = '';
     rec.onresult = (e: any) => {
       let interim = '';
@@ -238,9 +212,53 @@ function VoiceModeModal({
       if (finalTranscript.trim()) sendToJarvis(finalTranscript.trim());
       else setVoiceState('idle');
     };
-
+    rec.onerror = () => { isListeningRef.current = false; setVoiceState('idle'); };
     rec.start();
-  }, [sendToJarvis, transcript]);
+  }, [sendToJarvis]);
+
+  // Wake word loop — runs continuously in background
+  const startWakeLoop = useCallback(() => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) return;
+    setWakeActive(true);
+
+    const loop = () => {
+      if (!wakeLoopRef.current) return;
+      // Don't run wake detection if already listening/thinking/speaking
+      if (['listening', 'thinking', 'speaking'].includes(voiceStateRef.current)) {
+        setTimeout(loop, 800);
+        return;
+      }
+      const rec = new SpeechRecognition();
+      wakeRecRef.current = rec;
+      rec.continuous = false;
+      rec.interimResults = false;
+      rec.lang = 'en-US';
+      rec.onresult = (e: any) => {
+        const said = (e.results[0]?.[0]?.transcript || '').toLowerCase().trim();
+        // Detect "hey jarvis" or close variants
+        if (said.includes('hey jarvis') || said.includes('jarvis') && said.startsWith('hey')) {
+          // Small delay so user can finish saying the wake word
+          setTimeout(() => {
+            if (wakeLoopRef.current) startListening();
+          }, 300);
+        }
+      };
+      rec.onend = () => { if (wakeLoopRef.current) setTimeout(loop, 200); };
+      rec.onerror = () => { if (wakeLoopRef.current) setTimeout(loop, 500); };
+      try { rec.start(); } catch {}
+    };
+    loop();
+  }, [startListening]);
+
+  useEffect(() => {
+    wakeLoopRef.current = true;
+    startWakeLoop();
+    return () => {
+      wakeLoopRef.current = false;
+      wakeRecRef.current?.abort();
+    };
+  }, [startWakeLoop]);
 
   const handleOrbClick = () => {
     if (voiceState === 'listening') {
@@ -255,39 +273,37 @@ function VoiceModeModal({
     }
   };
 
-  // Orb visual config per state
   const orbConfig = {
     idle: {
       gradient: `conic-gradient(from ${orbAngle}deg, #1d4ed8, #3b82f6, #60a5fa, #93c5fd, #1d4ed8)`,
       glow: '0 0 40px rgba(96,165,250,0.4), 0 0 80px rgba(59,130,246,0.2)',
-      scale: 1,
-      pulseRings: false,
+      scale: 1, pulseRings: false,
+    },
+    wake: {
+      gradient: `conic-gradient(from ${orbAngle}deg, #1d4ed8, #3b82f6, #60a5fa, #93c5fd, #1d4ed8)`,
+      glow: '0 0 40px rgba(96,165,250,0.4), 0 0 80px rgba(59,130,246,0.2)',
+      scale: 1, pulseRings: false,
     },
     listening: {
       gradient: `conic-gradient(from ${orbAngle}deg, #065f46, #10b981, #34d399, #6ee7b7, #065f46)`,
       glow: `0 0 ${40 + audioLevel / 3}px rgba(52,211,153,0.7), 0 0 ${80 + audioLevel / 2}px rgba(16,185,129,0.3)`,
-      scale: 1 + (audioLevel / 255) * 0.25,
-      pulseRings: true,
-      ringColor: 'rgba(52,211,153,0.15)',
+      scale: 1 + (audioLevel / 255) * 0.25, pulseRings: true, ringColor: 'rgba(52,211,153,0.15)',
     },
     thinking: {
       gradient: `conic-gradient(from ${orbAngle * 2}deg, #4c1d95, #7c3aed, #a78bfa, #c4b5fd, #4c1d95)`,
       glow: '0 0 50px rgba(167,139,250,0.6), 0 0 100px rgba(124,58,237,0.3)',
-      scale: 1.05,
-      pulseRings: true,
-      ringColor: 'rgba(167,139,250,0.12)',
+      scale: 1.05, pulseRings: true, ringColor: 'rgba(167,139,250,0.12)',
     },
     speaking: {
       gradient: `conic-gradient(from ${orbAngle * 1.5}deg, #831843, #db2777, #f472b6, #fbcfe8, #831843)`,
       glow: '0 0 50px rgba(244,114,182,0.6), 0 0 100px rgba(219,39,119,0.3)',
-      scale: 1 + Math.sin(Date.now() / 200) * 0.05,
-      pulseRings: true,
-      ringColor: 'rgba(244,114,182,0.12)',
+      scale: 1 + Math.sin(Date.now() / 200) * 0.05, pulseRings: true, ringColor: 'rgba(244,114,182,0.12)',
     },
   }[voiceState];
 
   const stateLabel = {
-    idle: 'Tap to speak',
+    idle: 'Tap to speak or say "Hey JARVIS"',
+    wake: 'Tap to speak or say "Hey JARVIS"',
     listening: 'Listening...',
     thinking: 'Thinking...',
     speaking: 'Speaking...',
