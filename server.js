@@ -521,7 +521,7 @@ async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame
 '1. First call getVideoDetails(userId, videoId) to get duration.',
 '2. Parse duration from ISO 8601 format (PT1H2M3S = 1hr 2min 3sec).',
 '3. If duration < 20 minutes: respond with a brief 3-5 sentence text summary in chat. NO slideshow.',
-'4. If duration >= 20 minutes: get transcript, then build a full dark-themed expandable slideshow HTML page.',
+'4. If duration >= 20 minutes: you MUST build a full dark-themed expandable slideshow HTML page using run_code with node + fs.writeFileSync. Do NOT give a text summary.',
 '   - Save to /Users/nadavminkowitz/Jarvis/public/summary-[videoid].html',
 '   - Serve at https://api.heyjarvis.me/view/summary-[videoid].html',
 '   - Design: dark navy #060A14 background, sections as expandable cards, key quotes highlighted',
@@ -923,7 +923,7 @@ app.post('/chat', authMiddleware, async (req, res) => {
       try { const buf = await screenshot({ format: 'png' }); screenshotBase64 = buf.toString('base64'); } catch (e) {}
     }
 
-    const isLongTask = /play|connect|sonos|tv|call|email|create|open|print|turn|buy|order|install|build|design|scan|monitor|write|send|download|execute|organize/i.test(message);
+    const isLongTask = /play|connect|sonos|tv|call|email|create|open|print|turn|buy|order|install|build|design|scan|monitor|write|send|download|execute|organize|summarize|summary/i.test(message);
 
     if (isLongTask) {
       res.json({ success: true, message: 'On it.', actions: [] });
