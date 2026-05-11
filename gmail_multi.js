@@ -15,15 +15,18 @@ function getAuthUrl(userId) {
   return auth.generateAuthUrl({
     access_type: 'offline',
     scope: [
-  'https://www.googleapis.com/auth/gmail.readonly',
-  'https://www.googleapis.com/auth/gmail.send',
-  'https://www.googleapis.com/auth/calendar.readonly',
-  'https://www.googleapis.com/auth/calendar.events',
-  'https://www.googleapis.com/auth/drive',
-  'https://www.googleapis.com/auth/documents',
-  'https://www.googleapis.com/auth/spreadsheets',
-  'https://www.googleapis.com/auth/presentations',
-],
+      'https://www.googleapis.com/auth/gmail.readonly',
+      'https://www.googleapis.com/auth/gmail.send',
+      'https://www.googleapis.com/auth/calendar.readonly',
+      'https://www.googleapis.com/auth/calendar.events',
+      'https://www.googleapis.com/auth/drive',
+      'https://www.googleapis.com/auth/documents',
+      'https://www.googleapis.com/auth/spreadsheets',
+      'https://www.googleapis.com/auth/presentations',
+      'https://www.googleapis.com/auth/youtube.readonly',
+      'https://www.googleapis.com/auth/youtube.upload',
+      'https://www.googleapis.com/auth/youtube.force-ssl',
+    ],
     state: userId,
     prompt: 'consent'
   });
@@ -118,6 +121,7 @@ async function createCalendarEvent(userId, title, startTime, endTime, descriptio
   });
   return `Event created: ${event.data.htmlLink}`;
 }
+
 async function listDriveFiles(userId, query = '', maxResults = 20) {
   const auth = await getAuthForUser(userId);
   if (!auth) return 'Not connected to Google Drive.';
@@ -162,9 +166,165 @@ async function createDriveDocument(userId, title, content) {
   });
   return { id: doc.data.documentId, link: `https://docs.google.com/document/d/${doc.data.documentId}` };
 }
+
 async function isConnected(userId) {
   const rows = await sql`SELECT google_access_token FROM user_oauth WHERE user_id = ${userId}`;
   return rows.length > 0 && !!rows[0].google_access_token;
 }
 
-module.exports = { getAuthUrl, saveTokens, getRecentEmails, sendEmail, getCalendarEvents, createCalendarEvent, listDriveFiles, readDriveFile, createDriveDocument, isConnected };
+// ============ YOUTUBE ============
+
+async function youtubeSearch(userId, query, maxResults = 10) {
+  const auth = await getAuthForUser(userId);
+  if (!auth) return 'Not connected to Google. Connect at https://api.heyjarvis.me/auth/google';
+  const yt = google.youtube({ version: 'v3', auth });
+  const res = await yt.search.list({
+    part: ['snippet'],
+    q: query,
+    maxResults,
+    type: ['video'],
+    order: 'relevance'
+  });
+  return (res.data.items || []).map(item => ({
+    videoId: item.id.videoId,
+    title: item.snippet.title,
+    channel: item.snippet.channelTitle,
+    description: item.snippet.description,
+    publishedAt: item.snippet.publishedAt,
+    thumbnail: item.snippet.thumbnails?.medium?.url,
+    url: `https://www.youtube.com/watch?v=${item.id.videoId}`
+  }));
+}
+
+async function getVideoTranscript(videoId) {
+  // Uses a public transcript API — no auth needed
+  try {
+    const axios = require('axios');
+    const res = await axios.get(`https://www.youtube.com/watch?v=${videoId}`);
+    const captionMatch = res.data.match(/"captionTracks":\s*(\[.*?\])/);
+    if (!captionMatch) return null;
+    const tracks = JSON.parse(captionMatch[1]);
+    const englishTrack = tracks.find(t => t.languageCode === 'en') || tracks[0];
+    if (!englishTrack) return null;
+    const captionRes = await axios.get(englishTrack.baseUrl);
+    const text = captionRes.data
+      .replace(/<[^>]+>/g, ' ')
+      .replace(/&amp;/g, '&')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&#39;/g, "'")
+      .replace(/&quot;/g, '"')
+      .replace(/\s+/g, ' ')
+      .trim();
+    return text.substring(0, 15000);
+  } catch (e) {
+    return null;
+  }
+}
+
+async function getVideoDetails(userId, videoId) {
+  const auth = await getAuthForUser(userId);
+  if (!auth) return 'Not connected to Google.';
+  const yt = google.youtube({ version: 'v3', auth });
+  const res = await yt.videos.list({
+    part: ['snippet', 'statistics', 'contentDetails'],
+    id: [videoId]
+  });
+  const v = res.data.items?.[0];
+  if (!v) return null;
+  return {
+    title: v.snippet.title,
+    channel: v.snippet.channelTitle,
+    description: v.snippet.description?.substring(0, 500),
+    views: v.statistics.viewCount,
+    likes: v.statistics.likeCount,
+    duration: v.contentDetails.duration,
+    publishedAt: v.snippet.publishedAt,
+    thumbnail: v.snippet.thumbnails?.high?.url,
+    url: `https://www.youtube.com/watch?v=${videoId}`
+  };
+}
+
+async function getMySubscriptions(userId, maxResults = 25) {
+  const auth = await getAuthForUser(userId);
+  if (!auth) return 'Not connected to Google.';
+  const yt = google.youtube({ version: 'v3', auth });
+  const res = await yt.subscriptions.list({
+    part: ['snippet'],
+    mine: true,
+    maxResults,
+    order: 'alphabetical'
+  });
+  return (res.data.items || []).map(sub => ({
+    channelId: sub.snippet.resourceId.channelId,
+    channelTitle: sub.snippet.title,
+    description: sub.snippet.description?.substring(0, 100),
+    thumbnail: sub.snippet.thumbnails?.default?.url
+  }));
+}
+
+async function getChannelLatestVideos(userId, channelId, maxResults = 5) {
+  const auth = await getAuthForUser(userId);
+  if (!auth) return 'Not connected to Google.';
+  const yt = google.youtube({ version: 'v3', auth });
+  const res = await yt.search.list({
+    part: ['snippet'],
+    channelId,
+    maxResults,
+    order: 'date',
+    type: ['video']
+  });
+  return (res.data.items || []).map(item => ({
+    videoId: item.id.videoId,
+    title: item.snippet.title,
+    publishedAt: item.snippet.publishedAt,
+    thumbnail: item.snippet.thumbnails?.medium?.url,
+    url: `https://www.youtube.com/watch?v=${item.id.videoId}`
+  }));
+}
+
+async function uploadYouTubeVideo(userId, { filePath, title, description, tags = [], privacyStatus = 'public' }) {
+  const auth = await getAuthForUser(userId);
+  if (!auth) return 'Not connected to Google.';
+  const yt = google.youtube({ version: 'v3', auth });
+  const fs = require('fs');
+  const res = await yt.videos.insert({
+    part: ['snippet', 'status'],
+    requestBody: {
+      snippet: { title, description, tags, categoryId: '22' },
+      status: { privacyStatus }
+    },
+    media: { body: fs.createReadStream(filePath) }
+  });
+  return {
+    videoId: res.data.id,
+    url: `https://www.youtube.com/watch?v=${res.data.id}`,
+    title: res.data.snippet.title
+  };
+}
+
+async function postYouTubeComment(userId, videoId, comment) {
+  const auth = await getAuthForUser(userId);
+  if (!auth) return 'Not connected to Google.';
+  const yt = google.youtube({ version: 'v3', auth });
+  await yt.commentThreads.insert({
+    part: ['snippet'],
+    requestBody: {
+      snippet: {
+        videoId,
+        topLevelComment: { snippet: { textOriginal: comment } }
+      }
+    }
+  });
+  return 'Comment posted!';
+}
+
+module.exports = {
+  getAuthUrl, saveTokens, getRecentEmails, sendEmail,
+  getCalendarEvents, createCalendarEvent,
+  listDriveFiles, readDriveFile, createDriveDocument,
+  isConnected,
+  youtubeSearch, getVideoTranscript, getVideoDetails,
+  getMySubscriptions, getChannelLatestVideos,
+  uploadYouTubeVideo, postYouTubeComment
+};

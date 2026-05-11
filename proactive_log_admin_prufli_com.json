@@ -1,3 +1,18 @@
 {
-  "updates": []
+  "updates": [
+    {
+      "id": 1778457769440,
+      "message": "Evening briefing, Nadav! Here's what matters tonight: Trump has rejected Iran's response to a US peace proposal as \"totally unacceptable,\" putting the ceasefire under serious strain. Meanwhile, Russia is breaching its 3-day Ukraine ceasefire according to Zelenskyy. Big geopolitical tensions to keep an eye on tonight.",
+      "time": "8:02:49 PM",
+      "date": "5/10/2026",
+      "read": false
+    },
+    {
+      "id": 1778456089582,
+      "message": "Good evening Nadav! A few things worth knowing tonight: Russia has breached the Ukraine ceasefire despite Trump's announcement, and the US-Iran ceasefire talks have hit a wall after Trump rejected Iran's latest proposal. It's a tense evening on the world stage.",
+      "time": "7:34:49 PM",
+      "date": "5/10/2026",
+      "read": true
+    }
+  ]
 }
