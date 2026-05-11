@@ -5,59 +5,48 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Whiteboard</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #f0f0f0;
-            overflow: hidden;
+            font-family: -apple-system, sans-serif;
+            background: #1a1a2e;
             height: 100vh;
             display: flex;
             flex-direction: column;
+            overflow: hidden;
         }
         .toolbar {
             display: flex;
             gap: 10px;
-            padding: 10px 15px;
-            background: #333;
+            padding: 12px;
+            background: #16213e;
             align-items: center;
             flex-wrap: wrap;
+            justify-content: center;
         }
-        .toolbar button, .toolbar input[type="color"] {
-            min-width: 44px;
-            min-height: 44px;
+        .toolbar button, .toolbar input {
+            padding: 10px 16px;
             border: none;
             border-radius: 8px;
             cursor: pointer;
             font-size: 16px;
+            min-height: 44px;
         }
         .toolbar button {
-            background: #555;
+            background: #0f3460;
             color: white;
-            padding: 10px 15px;
         }
-        .toolbar button:hover {
-            background: #666;
-        }
-        .toolbar button.active {
-            background: #007bff;
-        }
-        .toolbar input[type="color"] {
-            padding: 5px;
-            background: #555;
-        }
-        .toolbar input[type="range"] {
-            width: 80px;
+        .toolbar button:hover { background: #e94560; }
+        .toolbar button.active { background: #e94560; }
+        input[type="color"] {
+            width: 50px;
             height: 44px;
+            padding: 2px;
         }
-        .toolbar label {
-            color: white;
-            font-size: 14px;
+        input[type="range"] {
+            width: 80px;
         }
-        #canvas {
+        .size-label { color: white; font-size: 14px; }
+        canvas {
             flex: 1;
             background: white;
             cursor: crosshair;
@@ -67,42 +56,36 @@
 </head>
 <body>
     <div class="toolbar">
-        <input type="color" id="colorPicker" value="#000000" title="Color">
-        <label>Size:</label>
-        <input type="range" id="brushSize" min="1" max="50" value="5">
-        <button id="penBtn" class="active">Pen</button>
-        <button id="eraserBtn">Eraser</button>
-        <button id="clearBtn">Clear</button>
+        <input type="color" id="colorPicker" value="#000000">
+        <span class="size-label">Size:</span>
+        <input type="range" id="sizeSlider" min="1" max="50" value="5">
+        <button id="eraser">Eraser</button>
+        <button id="clear">Clear</button>
     </div>
     <canvas id="canvas"></canvas>
-    
+
     <script>
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
         const colorPicker = document.getElementById('colorPicker');
-        const brushSize = document.getElementById('brushSize');
-        const penBtn = document.getElementById('penBtn');
-        const eraserBtn = document.getElementById('eraserBtn');
-        const clearBtn = document.getElementById('clearBtn');
-        
+        const sizeSlider = document.getElementById('sizeSlider');
+        const eraserBtn = document.getElementById('eraser');
+        const clearBtn = document.getElementById('clear');
+
         let drawing = false;
+        let currentColor = '#000000';
         let isEraser = false;
-        let lastX = 0;
-        let lastY = 0;
-        
+
         function resize() {
             const rect = canvas.getBoundingClientRect();
-            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
             canvas.width = rect.width;
             canvas.height = rect.height;
-            ctx.putImageData(imageData, 0, 0);
-            ctx.lineCap = 'round';
-            ctx.lineJoin = 'round';
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
         }
-        
         resize();
         window.addEventListener('resize', resize);
-        
+
         function getPos(e) {
             const rect = canvas.getBoundingClientRect();
             if (e.touches) {
@@ -110,56 +93,43 @@
             }
             return { x: e.clientX - rect.left, y: e.clientY - rect.top };
         }
-        
+
         function startDraw(e) {
             e.preventDefault();
             drawing = true;
             const pos = getPos(e);
-            lastX = pos.x;
-            lastY = pos.y;
+            ctx.beginPath();
+            ctx.moveTo(pos.x, pos.y);
         }
-        
+
         function draw(e) {
             if (!drawing) return;
             e.preventDefault();
             const pos = getPos(e);
-            
-            ctx.beginPath();
-            ctx.moveTo(lastX, lastY);
             ctx.lineTo(pos.x, pos.y);
             ctx.strokeStyle = isEraser ? 'white' : colorPicker.value;
-            ctx.lineWidth = brushSize.value;
+            ctx.lineWidth = sizeSlider.value;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
             ctx.stroke();
-            
-            lastX = pos.x;
-            lastY = pos.y;
         }
-        
-        function stopDraw() {
-            drawing = false;
-        }
-        
+
+        function stopDraw() { drawing = false; }
+
         canvas.addEventListener('mousedown', startDraw);
         canvas.addEventListener('mousemove', draw);
         canvas.addEventListener('mouseup', stopDraw);
         canvas.addEventListener('mouseout', stopDraw);
-        
+
         canvas.addEventListener('touchstart', startDraw);
         canvas.addEventListener('touchmove', draw);
         canvas.addEventListener('touchend', stopDraw);
-        
-        penBtn.addEventListener('click', () => {
-            isEraser = false;
-            penBtn.classList.add('active');
-            eraserBtn.classList.remove('active');
-        });
-        
+
         eraserBtn.addEventListener('click', () => {
-            isEraser = true;
-            eraserBtn.classList.add('active');
-            penBtn.classList.remove('active');
+            isEraser = !isEraser;
+            eraserBtn.classList.toggle('active', isEraser);
         });
-        
+
         clearBtn.addEventListener('click', () => {
             ctx.fillStyle = 'white';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
