@@ -473,6 +473,8 @@ async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame
 `- Serve at https://api.heyjarvis.me/view/filename.pdf`,
 '- NEVER make plain boring PDFs — always styled with colors, boxes, and visual hierarchy',
 '- Install if needed: pip install reportlab --break-system-packages',
+'- CRITICAL: Write ALL reportlab code inside ONE run_code block with language=python and execute it directly. Do NOT save a separate .py file.',
+`- Save PDF directly to: ${PUBLIC_DIR}/filename.pdf`,
       '═══ VISION ═══',
       `Screen is provided on every message.${latestCameraFrame ? ' Camera feed also attached as second image.' : ''}`,
       `Recent observations: ${visionObservations.slice(-5).join(' | ') || 'None'}`,
@@ -935,8 +937,7 @@ app.post('/chat', authMiddleware, async (req, res) => {
       try { const buf = await screenshot({ format: 'png' }); screenshotBase64 = buf.toString('base64'); } catch (e) {}
     }
 
-    const isLongTask = /play|connect|sonos|tv|call|email|create|open|print|turn|buy|order|install|build|design|scan|monitor|write|send|download|execute|organize/i.test(message);
-
+    const isLongTask = /play|connect|sonos|tv|call|email|create|open|print|turn|buy|order|install|build|design|scan|monitor|write|send|download|execute|organize|pdf|study|guide|make/i.test(message);
     if (isLongTask) {
       res.json({ success: true, message: 'On it.', actions: [] });
       runAgenticLoop(message, screenshotBase64, userId, cameraFrame, attachedFile).then(response => {
@@ -1025,7 +1026,7 @@ function startFaceMonitor() {
 app.post('/face/start', (req, res) => { startFaceMonitor(); res.json({ ok: true }); });
 app.post('/face/stop', (req, res) => { if (faceProcess) { faceProcess.kill(); faceProcess = null; } res.json({ ok: true }); });
 app.get('/face/running', (req, res) => res.json({ running: !!faceProcess }));
-setTimeout(startFaceMonitor, 10000);
+if (process.platform !== 'darwin') setTimeout(startFaceMonitor, 10000);
 
 // ============ IPHONE (Nadav-only) ============
 const iPhoneActions = {};

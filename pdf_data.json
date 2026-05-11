@@ -1,0 +1,191 @@
+{
+  "concepts": [
+    [
+      "Ethics & Morals",
+      "The set of rules, ideas, and principles that define the difference between right and wrong."
+    ],
+    [
+      "Ethical Monotheism",
+      "The belief that a single God is the transcendent source of objective morality AND that His primary demand is ethical conduct toward other human beings, not ritual service."
+    ],
+    [
+      "Objective Morality",
+      "Moral standards that are real and binding regardless of personal opinion, culture, or era. They exist independently of human preference."
+    ],
+    [
+      "Tora (Torah)",
+      "Literally means to teach, guide, instruct. The Tora is not a restrictive law code but a guide for living freely and well in God's world. It is the Jewish moral compass."
+    ],
+    [
+      "Misvot (Mitzvot)",
+      "Legal responsibilities or legal instructions, NOT commandments. God never coerces. They are a framework for functioning happily and freely in God's world, keeping emotions from overriding intelligence."
+    ],
+    [
+      "Imago Dei",
+      "The belief that every human being is made in the image of God, grounding the absolute, inviolable worth of every human life."
+    ],
+    [
+      "Values",
+      "The decision-making tools for every task in life. Values override impulses and feelings. Without strong values, society degrades into theft, violence, and chaos."
+    ],
+    [
+      "Reason (as a tool)",
+      "A morally neutral instrument that can be aimed at good OR evil. Reason optimizes for whatever goal is set without providing a moral goal or its legitimacy."
+    ],
+    [
+      "The Enlightenment Fallacy",
+      "The incorrect belief that reason alone leads to a good world and that evil is irrational. In reality, evil often proceeds through calculated, rational logic."
+    ],
+    [
+      "Relativism",
+      "The view that morality is subjective or culturally determined. Jewish thought rejects this. Morality is objective and divine in origin, not subject to change."
+    ]
+  ],
+  "rules": [
+    [
+      "1",
+      "God, not Moses, not any human, is the SOLE source and issuer of the moral code.",
+      "NAVY"
+    ],
+    [
+      "2",
+      "The Tora's purpose is to GUIDE, not restrict. It enables freedom through moral self-control.",
+      "DEEP_BLUE"
+    ],
+    [
+      "3",
+      "Jewish ethics are NEVER enforced through fear or coercion. We follow them out of reverence and gratitude.",
+      "GREEN"
+    ],
+    [
+      "4",
+      "God's primary demand: treat other humans ethically. Human-to-human ethics ranks ABOVE ritual service to God.",
+      "NAVY"
+    ],
+    [
+      "5",
+      "Misvot = Legal instructions/responsibilities, NOT commandments. There is no submit or else.",
+      "DEEP_BLUE"
+    ],
+    [
+      "6",
+      "Reason is a TOOL, not a moral compass. It can justify both good and evil. Never treat rationality as morality.",
+      "RED"
+    ],
+    [
+      "7",
+      "In Judaism: THE MEANS JUSTIFY THE ENDS. In secular society: The ends justify the means. This is the key distinction.",
+      "GREEN"
+    ],
+    [
+      "8",
+      "If you do not choose the system of God, you default to the system of fallible, selfish humans.",
+      "RED"
+    ],
+    [
+      "9",
+      "God and His Laws NEVER change. Human-derived ethics shift with culture, power, and self-interest.",
+      "NAVY"
+    ],
+    [
+      "10",
+      "Values must OVERRIDE feelings and impulses. The best people fight their impulses daily and choose values.",
+      "DEEP_BLUE"
+    ],
+    [
+      "11",
+      "Every human life has unique, intrinsic preciousness (Imago Dei). No utilitarian calculus can override this.",
+      "GREEN"
+    ],
+    [
+      "12",
+      "The Ten Commandments are rooted in LIBERATION. God cites the Exodus, not creation, to establish moral authority.",
+      "NAVY"
+    ],
+    [
+      "13",
+      "Freedom is not permissiveness. True freedom equals moral self-control. Laws are guardrails that ENABLE freedom.",
+      "DEEP_BLUE"
+    ],
+    [
+      "14",
+      "Fear is used by human leaders to make people surrender control and obey immoral orders. God's system needs no fear.",
+      "RED"
+    ],
+    [
+      "15",
+      "Evil must be called evil, not irrational. Mislabeling it externalizes blame and obscures moral agency.",
+      "RED"
+    ]
+  ],
+  "qas": [
+    [
+      "What are ethics and morals?",
+      "The set of rules, ideas, and principles that define the difference between right and wrong."
+    ],
+    [
+      "What is Ethical Monotheism and what are its two pillars?",
+      "Ethical Monotheism is the Jewish concept that (1) God is the single transcendent source of objective morality, and (2) God's primary demand is ethical conduct toward other humans, not ritual service."
+    ],
+    [
+      "What is the difference between Jewish ethics and secular ethics?",
+      "Jewish ethics are sourced from God (the Torah), who is the infallible Creator of humans. Secular ethics are derived from fallible, self-interested humans or shifting human reason. God's laws never change; human-derived ethics do."
+    ],
+    [
+      "Why is reason NOT a reliable foundation for morality?",
+      "Reason is a morally neutral tool. It can be used to plan both charity and murder equally effectively. It optimizes for whatever goal you set, without providing a moral goal. Evil acts like genocide can be logically justified through reason."
+    ],
+    [
+      "What does The Means Justify the Ends mean in Judaism?",
+      "In Judaism, HOW you do something matters as much as the outcome. You cannot commit an immoral act to achieve a moral goal. This contrasts with secular thinking where the ends justify the means, meaning any means is acceptable if the outcome is good."
+    ],
+    [
+      "Why does God cite the Exodus in the first commandment rather than creation?",
+      "Because power alone (creating the world) is impressive but does not establish trust. Care and liberation (freeing slaves from Egypt) establishes a relationship of moral obligation. It also signals God's hatred of slavery and the primacy of freedom."
+    ],
+    [
+      "What is the correct translation of Misvot and why does it matter?",
+      "Misvot means legal responsibilities or legal instructions, NOT commandments. The word commandment implies coercion. God never forces compliance. Misvot are tools that help us function freely and happily in God's world."
+    ],
+    [
+      "Why are Jewish ethics NOT enforced through fear?",
+      "Because God's system is designed to benefit the individual. There is no need for coercion when the system genuinely helps you. We follow it out of reverence and gratitude. Fear is a human leadership tool used to make people submit to immoral orders."
+    ],
+    [
+      "What is the danger of calling evil irrational instead of evil?",
+      "It externalizes blame, obscures moral agency, and allows organizations to drift into amoral pragmatism. Leaders must diagnose evil correctly as evil, not madness, in order to establish clear moral boundaries."
+    ],
+    [
+      "Why does utilitarianism fail as a moral system?",
+      "Utilitarianism (greatest good for greatest number) can justify gross injustice. If 90% of a population benefits from enslaving the other 10%, utilitarianism calls it moral. It has no inviolable moral limits."
+    ],
+    [
+      "Why does evolution fail as a source of morality?",
+      "Evolution only describes change, not improvement. If morality is merely evolving, it is relative. We need a standard ABOVE evolutionary trends to judge whether change is good or bad. Without such a standard, we cannot condemn past atrocities."
+    ],
+    [
+      "What is the purpose of the Tora?",
+      "The Tora's purpose is to teach, guide, and instruct, not to restrict. It provides a compass for living freely and well in God's world, keeping emotions from overwhelming intelligence."
+    ],
+    [
+      "What is the purpose of morals and ethics in society?",
+      "To create a stable society that protects people from conflict-induced violence, division, and chaos. Without widely practiced moral values, trust collapses and communities become unsafe."
+    ],
+    [
+      "What does values over feelings mean and why is it important?",
+      "Our impulses and feelings pull toward immediate gratification, which often leads to destructive outcomes. Values impose higher-order constraints. The best people are those who fight their impulses daily and consistently choose values."
+    ],
+    [
+      "Give three examples of values overriding impulses.",
+      "(1) Health discipline: choosing not to eat junk food to preserve health. (2) Life triage: saving a drowning stranger over a drowning dog because human life has unique value. (3) Academic integrity: choosing not to cheat even when you might not get caught."
+    ],
+    [
+      "What is the connection between freedom and the Ten Commandments?",
+      "True freedom is not permissiveness but moral self-control. The commandments are guardrails that ENABLE a free society, not constrain it. Freedom without moral discipline decays into chaos."
+    ],
+    [
+      "Why is conscience an unreliable sole source of morality?",
+      "Conscience is subjective and fallible. Himmler appealed to his subordinates' consciences to compel them to commit mass murder. Without an objective standard above individual conscience, there is no basis to say one person's conscience is right and another's wrong."
+    ]
+  ]
+}
