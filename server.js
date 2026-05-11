@@ -627,7 +627,7 @@ async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame
   while (iterations < 25) {
     iterations++;
 
-    const isComplexTask = /build|website|html|code|program|script|3d model|generate image|luma|video|spreadsheet|presentation|app|clone|platform|saas/i.test(userMessage);
+    const isComplexTask = /build|website|html|code|program|script|3d model|generate image|luma|video|spreadsheet|presentation|app|clone|platform|saas|pdf|study guide/i.test(userMessage);
     const response = await anthropic.messages.create({
       model: isComplexTask ? 'claude-opus-4-5' : 'claude-sonnet-4-6',
 

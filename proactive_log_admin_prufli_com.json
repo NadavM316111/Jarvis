@@ -1,11 +1,18 @@
 {
   "updates": [
     {
+      "id": 1778535110773,
+      "message": "Hey Nadav! Evening check-in — one major heads-up: the US-Iran ceasefire is on \"massive life support\" today, with Trump rejecting Iran's latest counterproposal and tensions rising in the Strait of Hormuz. This could impact oil prices and markets tomorrow, so worth keeping an eye on. On a lighter note, the S&P 500 and Russell 2000 both hit record highs today despite the geopolitical noise.",
+      "time": "5:31:50 PM",
+      "date": "5/11/2026",
+      "read": false
+    },
+    {
       "id": 1778534897989,
       "message": "Evening check-in, Nadav. Major geopolitical tension tonight — the U.S.-Iran ceasefire is reportedly on \"life support\" with Trump calling Iran's response \"totally unacceptable,\" and conflict is escalating in the Middle East including strikes in Lebanon. Worth keeping an eye on if that affects anything for you.",
       "time": "5:28:17 PM",
       "date": "5/11/2026",
-      "read": false
+      "read": true
     },
     {
       "id": 1778533910862,
