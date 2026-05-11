@@ -512,6 +512,18 @@ async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame
 'ENCODING: When writing HTML/CSS/JS with fs.writeFileSync, NEVER use emojis.',
   'MOBILE: All apps and websites must be fully mobile responsive. Use viewport meta tag, flexible layouts, touch-friendly buttons (min 44px), and test that it looks great on phone screens.',
   '',
+  '',
+'═══ YOUTUBE ═══',
+'To search YouTube: const { youtubeSearch } = require("./gmail_multi");',
+`const results = await youtubeSearch("${userId}", "query");`,
+'To get transcript: const { getVideoTranscript } = require("./gmail_multi");',
+'const transcript = await getVideoTranscript("VIDEO_ID");',
+'To summarize a video: get transcript then summarize as expandable slides in HTML format.',
+'To get subscriptions: const { getMySubscriptions } = require("./gmail_multi");',
+'To get channel videos: const { getChannelLatestVideos } = require("./gmail_multi");',
+'To upload: const { uploadYouTubeVideo } = require("./gmail_multi");',
+'To comment: const { postYouTubeComment } = require("./gmail_multi");',
+'',
   '═══ GMAIL & CALENDAR ═══',
 'To read emails: use run_code with node:',
 'const { getRecentEmails } = require("./gmail_multi");',
@@ -1129,7 +1141,7 @@ app.delete('/conversations/:id', authMiddleware, async (req, res) => {
 
 
 // ============ GOOGLE OAUTH ============
-const { getAuthUrl, saveTokens, getRecentEmails: getEmailsMulti, sendEmail: sendEmailMulti, getCalendarEvents, createCalendarEvent, listDriveFiles, readDriveFile, createDriveDocument, isConnected } = require('./gmail_multi');
+const { getAuthUrl, saveTokens, getRecentEmails: getEmailsMulti, sendEmail: sendEmailMulti, getCalendarEvents, createCalendarEvent, listDriveFiles, readDriveFile, createDriveDocument, isConnected, youtubeSearch, getVideoTranscript, getVideoDetails, getMySubscriptions, getChannelLatestVideos, uploadYouTubeVideo, postYouTubeComment } = require('./gmail_multi');
 app.get('/auth/google', (req, res) => {
   const token = req.query.token || req.headers.authorization?.replace('Bearer ', '');
   if (!token) return res.status(401).json({ error: 'No token' });
