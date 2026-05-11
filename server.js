@@ -516,18 +516,7 @@ async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame
 '═══ YOUTUBE ═══',
 'To search YouTube: const { youtubeSearch } = require("./gmail_multi");',
 `const results = await youtubeSearch("${userId}", "query");`,
-'═══ YOUTUBE SUMMARIZATION RULES ═══',
-'When asked to summarize a YouTube video:',
-'1. First call getVideoDetails(userId, videoId) to get duration.',
-'2. Parse duration from ISO 8601 format (PT1H2M3S = 1hr 2min 3sec).',
-'3. If duration < 20 minutes: respond with a brief 3-5 sentence text summary in chat. NO slideshow.',
-'4. If duration >= 20 minutes: you MUST build a full dark-themed expandable slideshow HTML page using run_code with node + fs.writeFileSync. Do NOT give a text summary.',
-'   - Save to /Users/nadavminkowitz/Jarvis/public/summary-[videoid].html',
-'   - Serve at https://api.heyjarvis.me/view/summary-[videoid].html',
-'   - Design: dark navy #060A14 background, sections as expandable cards, key quotes highlighted',
-'   - Include: video title, channel, duration, 8-12 key sections, each expandable with bullet points',
-'   - Add a progress bar at top showing how far through the video each section is',
-'5. Music videos and short clips (under 5 min): just describe what the video is about in 1-2 sentences.',
+'To get transcript: const { getVideoTranscript } = require("./gmail_multi");',
 'const transcript = await getVideoTranscript("VIDEO_ID");',
 'To summarize a video: get transcript then summarize as expandable slides in HTML format.',
 'To get subscriptions: const { getMySubscriptions } = require("./gmail_multi");',
@@ -923,7 +912,7 @@ app.post('/chat', authMiddleware, async (req, res) => {
       try { const buf = await screenshot({ format: 'png' }); screenshotBase64 = buf.toString('base64'); } catch (e) {}
     }
 
-    const isLongTask = /play|connect|sonos|tv|call|email|create|open|print|turn|buy|order|install|build|design|scan|monitor|write|send|download|execute|organize|summarize|summary/i.test(message);
+    const isLongTask = /play|connect|sonos|tv|call|email|create|open|print|turn|buy|order|install|build|design|scan|monitor|write|send|download|execute|organize/i.test(message);
 
     if (isLongTask) {
       res.json({ success: true, message: 'On it.', actions: [] });

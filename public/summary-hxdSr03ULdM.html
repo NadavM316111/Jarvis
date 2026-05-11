@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The ENTIRE History of the United States - Summary</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #060A14;
+            color: #E8ECF4;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+        
+        .progress-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: rgba(255,255,255,0.1);
+            z-index: 1000;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #3B82F6, #8B5CF6);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .header {
+            padding: 60px 20px 40px;
+            text-align: center;
+            background: linear-gradient(180deg, rgba(59,130,246,0.1) 0%, transparent 100%);
+        }
+        
+        .thumbnail {
+            width: 100%;
+            max-width: 600px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+        
+        .video-title {
+            font-size: clamp(1.5rem, 4vw, 2.2rem);
+            font-weight: 700;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #fff, #94A3B8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .video-meta {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            color: #64748B;
+            font-size: 0.9rem;
+            margin-bottom: 16px;
+        }
+        
+        .video-meta span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .duration-badge {
+            background: linear-gradient(135deg, #3B82F6, #8B5CF6);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            display: inline-block;
+            margin-top: 10px;
+        }
+        
+        .content {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .section-card {
+            background: linear-gradient(145deg, #0F1629, #0A0F1A);
+            border: 1px solid rgba(59,130,246,0.2);
+            border-radius: 16px;
+            margin-bottom: 16px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .section-card:hover {
+            border-color: rgba(59,130,246,0.4);
+            transform: translateY(-2px);
+        }
+        
+        .section-header {
+            padding: 20px 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+        
+        .section-info {
+            flex: 1;
+        }
+        
+        .section-time {
+            font-size: 0.75rem;
+            color: #3B82F6;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+        }
+        
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #F1F5F9;
+        }
+        
+        .section-progress {
+            width: 60px;
+            height: 4px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        
+        .section-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3B82F6, #8B5CF6);
+        }
+        
+        .expand-icon {
+            font-size: 1.5rem;
+            color: #64748B;
+            transition: transform 0.3s ease;
+        }
+        
+        .section-card.expanded .expand-icon {
+            transform: rotate(180deg);
+        }
+        
+        .section-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease;
+        }
+        
+        .section-card.expanded .section-content {
+            max-height: 2000px;
+        }
+        
+        .section-body {
+            padding: 0 24px 24px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        .bullet-point {
+            padding: 12px 0;
+            padding-left: 20px;
+            position: relative;
+            color: #CBD5E1;
+            font-size: 0.95rem;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+        }
+        
+        .bullet-point:last-child {
+            border-bottom: none;
+        }
+        
+        .bullet-point::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 6px;
+            height: 6px;
+            background: #3B82F6;
+            border-radius: 50%;
+        }
+        
+        .key-quote {
+            background: linear-gradient(135deg, rgba(139,92,246,0.15), rgba(59,130,246,0.15));
+            border-left: 3px solid #8B5CF6;
+            padding: 16px 20px;
+            margin: 16px 0;
+            border-radius: 0 8px 8px 0;
+            font-style: italic;
+            color: #E2E8F0;
+        }
+        
+        .era-divider {
+            text-align: center;
+            padding: 30px 20px;
+            margin: 20px 0;
+        }
+        
+        .era-divider h2 {
+            font-size: 1.3rem;
+            color: #8B5CF6;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: #475569;
+            font-size: 0.85rem;
+        }
+        
+        .footer a {
+            color: #3B82F6;
+            text-decoration: none;
+        }
+        
+        @media (max-width: 600px) {
+            .section-header {
+                padding: 16px;
+            }
+            .section-title {
+                font-size: 1rem;
+            }
+            .section-progress {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+    
+    <header class="header">
+        <img src="https://i.ytimg.com/vi/hxdSr03ULdM/maxresdefault.jpg" alt="Documentary Thumbnail" class="thumbnail" onerror="this.src='https://i.ytimg.com/vi/hxdSr03ULdM/hqdefault.jpg'">
+        <h1 class="video-title">The ENTIRE History of the United States of America</h1>
+        <div class="video-meta">
+            <span>Beginning To Now</span>
+            <span>2.8M views</span>
+            <span>45K likes</span>
+        </div>
+        <div class="duration-badge">4 Hours 13 Minutes</div>
+    </header>
+    
+    <main class="content">
+        <div class="era-divider">
+            <h2>Colonial America (1492-1775)</h2>
+        </div>
+        
+        <div class="section-card" data-progress="2">
+            <div class="section-header" onclick="toggleSection(this)">
+                <div class="section-info">
+                    <div class="section-time">0:00 - 0:25</div>
+                    <div class="section-title">The Age of Exploration & Columbus</div>
+                </div>
+                <div class="section-progress"><div class="section-progress-fill" style="width: 2%"></div></div>
+                <span class="expand-icon">+</span>
+            </div>
+            <div class="section-content">
+                <div class="section-body">
+                    <div class="bullet-point">In 1492, Christopher Columbus sailed under the Spanish crown, landing in the Caribbean and initiating European contact with the Americas</div>
+                    <div class="bullet-point">Columbus made four voyages between 1492-1504, believing he had reached Asia rather than a "New World"</div>
+                    <div class="bullet-point">The Columbian Exchange began - transferring plants, animals, diseases, and people between continents</div>
+                    <div class="bullet-point">European diseases devastated indigenous populations, killing an estimated 90% of Native Americans</div>
+                    <div class="key-quote">"In 1492, Christopher Columbus discovered The Americas. Millions died."</div>
+                    <div class="bullet-point">Spain, Portugal, France, England, and the Netherlands all competed for New World territory</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section-card" data-progress="8">
+            <div class="section-header" onclick="toggleSection(this)">
+                <div class="section-info">
+                    <div class="section-time">0:25 - 0:50</div>
+                    <div class="section-title">Early Colonization & Jamestown</div>
+                </div>
+                <div class="section-progress"><div class="section-progress-fill" style="width: 8%"></div></div>
+                <span class="expand-icon">+</span>
+            </div>
+            <div class="section-content">
+                <div class="section-body">
+                    <div class="bullet-point">Jamestown, Virginia established in 1607 - the first permanent English settlement in North America</div>
+                    <div class="bullet-point">The "starving time" of 1609-1610 nearly destroyed the colony, with only 60 of 500 settlers surviving</div>
+                    <div class="bullet-point">John Smith's leadership and relations with the Powhatan Confederacy proved crucial to survival</div>
+                    <div class="bullet-point">Tobacco cultivation transformed Virginia's economy and introduced large-scale slavery</div>
+                    <div class="bullet-point">The House of Burgesses (1619) became the first representative assembly in the Americas</div>
+                    <div class="bullet-point">1619 also saw the arrival of the first enslaved Africans in English North America</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section-card" data-progress="14">
+            <div class="section-header" onclick="toggleSection(this)">
+                <div class="section-info">
+                    <div class="section-time">0:50 - 1:10</div>
+                    <div class="section-title">The Pilgrims, Puritans & New England</div>
+                </div>
+                <div class="section-progress"><div class="section-progress-fill" style="width: 14%"></div></div>
+                <span class="expand-icon">+</span>
+            </div>
+            <div class="section-content">
+                <div class="section-body">
+                    <div class="bullet-point">The Pilgrims arrived on the Mayflower in 1620, establishing Plymouth Colony in Massachusetts</div>
+                    <div class="bullet-point">The Mayflower Compact created a form of self-government and majority rule</div>
+                    <div class="bullet-point">Puritans founded Massachusetts Bay Colony in 1630 under John Winthrop's "City Upon a Hill" vision</div>
+                    <div class="key-quote">"We shall be as a city upon a hill, the eyes of all people are upon us." - John Winthrop</div>
+                    <div class="bullet-point">Religious dissenters like Roger Williams (Rhode Island) and Anne Hutchinson challenged Puritan authority</div>
+                    <div class="bullet-point">King Philip's War (1675-1678) was the bloodiest conflict per capita in American history</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section-card" data-progress="20">
+            <div class="section-header" onclick="toggleSection(this)">
+                <div class="section-info">
+                    <div class="section-time">1:10 - 1:30</div>
+                    <div class="section-title">Colonial Growth & The 13 Colonies</div>
+                </div>
+                <div class="section-progress"><div class="section-progress-fill" style="width: 20%"></div></div>
+                <span class="expand-icon">+</span>
+            </div>
+            <div class="section-content">
+                <div class="section-body">
+                    <div class="bullet-point">William Penn founded Pennsylvania in 1681 as a haven for Quakers and religious tolerance</div>
+                    <div class="bullet-point">The Southern colonies developed plantation economies dependent on enslaved labor</div>
+                    <div class="bullet-point">The Middle Colonies became the "breadbasket" with diverse populations and economies</div>
+                    <div class="bullet-point">By 1750, approximately 1.2 million colonists lived in British North America</div>
+                    <div class="bullet-point">The Great Awakening (1730s-1740s) sparked religious revival and challenged traditional authority</div>
+                    <div class="bullet-point">Colonial assemblies developed traditions of self-government rooted in English common law</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section-card" data-progress="26">
+            <div class="section-header" onclick="toggleSection(this)">
+                <div class="section-info">
+                    <div class="section-time">1:30 - 1:45</div>
+                    <div class="section-title">French & Indian War (Seven Years' War)</div>
+                </div>
+                <div class="section-progress"><div class="section-progress-fill" style="width: 26%"></div></div>
+                <span class="expand-icon">+</span>
+            </div>
+            <div class="section-content">
+                <div class="section-body">
+                    <div class="bullet-point">The French and Indian War (1754-1763) was the North American theater of the global Seven Years' War</div>
+                    <div class="bullet-point">Young George Washington's mission to the Ohio Valley helped spark the conflict</div>
+                    <div class="bullet-point">Britain's victory in 1763 expelled France from North America but left massive war debt</div>
+                    <div class="bullet-point">The Proclamation of 1763 forbade colonial expansion west of the Appalachians, angering settlers</div>
+                    <div class="key-quote">"The war left Britain in control of eastern North America, but the cost of victory would soon tear the empire apart."</div>
+                    <div class="bullet-point">Britain sought to tax colonists to pay war debts, setting the stage for revolution</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="era-divider">
+            <h2>Revolution & Early Republic (1765-1815)</h2>
+        </div>
+        
+        <div class="section-card" data-progress="32">
+            <div class="section-header" onclick="toggleSection(this)">
+                <div class="section-info">
+                    <div class="section-time">1:45 - 2:05</div>
+                    <div class="section-title">Road to Revolution</div>
+                </div>
+                <div class="section-progress"><div class="section-progress-fill" style="width: 32%"></div></div>
+                <span class="expand-icon">+</span>
+            </div>
+            <div class="section-content">
+                <div class="section-body">
+                    <div class="bullet-point">The Stamp Act (1765) imposed direct taxes on colonists, sparking "No Taxation Without Representation"</div>
+                    <div class="bullet-point">The Boston Massacre (1770) killed five colonists and became a powerful propaganda tool</div>
+                    <div class="bullet-point">The Boston Tea Party (1773) protested the Tea Act, leading to the Intolerable Acts</div>
+                    <div class="bullet-point">The First Continental Congress met in 1774 to coordinate colonial resistance</div>
+                    <div class="bullet-point">Thomas Paine's "Common Sense" (1776) galvanized public opinion toward independence</div>
+                    <div class="key-quote">"These are the times that try men's souls." - Thomas Paine</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section-card" data-progress="40">
+            <div class="section-header" onclick="toggleSection(this)">
+                <div class="section-info">
+                    <div class="section-time">2:05 - 2:25</div>
+                    <div class="section-title">The Revolutionary War</div>
+                </div>
+                <div class="section-progress"><div class="section-progress-fill" style="width: 40%"></div></div>
+                <span class="expand-icon">+</span>
+            </div>
+            <div class="section-content">
+                <div class="section-body">
+                    <div class="bullet-point">"The shot heard round the world" at Lexington and Concord (April 1775) began armed conflict</div>
+                    <div class="bullet-point">The Declaration of Independence was adopted July 4, 1776, written primarily by Thomas Jefferson</div>
+                    <div class="bullet-point">George Washington's crossing of the Delaware and victory at Trenton (1776) saved the revolution</div>
+                    <div class="bullet-point">The American victory at Saratoga (1777) convinced France to enter the war as an ally</div>
+                    <div class="bullet-point">The brutal winter at Valley Forge (1777-1778) forged a professional Continental Army</div>
+                    <div class="bullet-point">British surrender at Yorktown (1781) effectively ended the war; Treaty of Paris signed 1783</div>
+                    <div class="key-quote">"We hold these truths to be self-evident, that all men are created equal."</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section-card" data-progress="48">
+            <div class="section-header" onclick="toggleSection(this)">
+                <div class="section-info">
+                    <div class="section-time">2:25 - 2:40</div>
+                    <div class="section-title">Constitution & New Government</div>
+                </div>
+                <div class="section-progress"><div class="section-progress-fill" style="width: 48%"></div></div>
+                <span class="expand-icon">+</span>
+            </div>
+            <div class="section-content">
+                <div class="section-body">
+                    <div class="bullet-point">The Articles of Confederation proved too weak, with no power to tax or regulate commerce</div>
+                    <div class="bullet-point">Shays' Rebellion (1786-1787) exposed the need for a stronger central government</div>
+                    <div class="bullet-point">The Constitutional Convention (1787) created a new framework balancing federal and state power</div>
+                    <div class="bullet-point">The Great Compromise established bicameral Congress; the 3/5 Compromise addressed slavery</div>
+                    <div class="bullet-point">The Federalist Papers, written by Hamilton, Madison, and Jay, argued for ratification</div>
+                    <div class="bullet-point">The Bill of Rights (first 10 amendments) was added in 1791 to protect individual liberties</div>
+                    <div class="bullet-point">George Washington became the first President, establishing precedents still followed today</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="era-divider">
+            <h2>Expansion & Civil War (1815-1877)</h2>
+        </div>
+        
+        <div class="section-card" data-progress="55">
+            <div class="section-header" onclick="toggleSection(this)">
+                <div class="section-info">
+                    <div class="section-time">2:40 - 2:55</div>
+                    <div class="section-title">Westward Expansion & Manifest Destiny</div>
+                </div>
+                <div class="section-progress"><div class="section-progress-fill" style="width: 55%"></div></div>
+                <span class="expand-icon">+</span>
+            </div>
+            <div class="section-content">
+                <div class="section-body">
+                    <div class="bullet-point">The Louisiana Purchase (1803) doubled the nation's size for $15 million from France</div>
+                    <div class="bullet-point">Lewis and Clark's expedition (1804-1806) explored the vast western territories</div>
+                    <div class="bullet-point">The War of 1812 against Britain confirmed American independence and sparked nationalism</div>
+                    <div class="bullet-point">The Monroe Doctrine (1823) declared the Western Hemisphere closed to European colonization</div>
+                    <div class="bullet-point">Indian Removal Act (1830) led to the Trail of Tears, forcing Native Americans from ancestral lands</div>
+                    <div class="key-quote">"Manifest Destiny" - the belief Americans were destined to expand across the continent</div>
+                    <div class="bullet-point">Texas annexed in 1845; Mexican-American War (1846-1848) added California and the Southwest</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section-card" data-progress="62">
+            <div class="section-header" onclick="toggleSection(this)">
+                <div class="section-info">
+                    <div class="section-time">2:55 - 3:10</div>
+                    <div class="section-title">Slavery & The Road to Civil War</div>
+                </div>
+                <div class="section-progress"><div class="section-progress-fill" style="width: 62%"></div></div>
+                <span class="expand-icon">+</span>
+            </div>
+            <div class="section-content">
+                <div class="section-body">
+                    <div class="bullet-point">The Missouri Compromise (1820) attempted to balance free and slave states</div>
+                    <div class="bullet-point">The abolitionist movement grew, with figures like Frederick Douglass and Harriet Tubman</div>
+                    <div class="bullet-point">The Compromise of 1850 and Fugitive Slave Act intensified sectional tensions</div>
+                    <div class="bullet-point">The Kansas-Nebraska Act (1854) led to violent "Bleeding Kansas" conflicts</div>
+                    <div class="bullet-point">The Dred Scott decision (1857) ruled enslaved people had no rights as citizens</div>
+                    <div class="bullet-point">John Brown's raid on Harpers Ferry (1859) heightened fears of slave rebellion</div>
+                    <div class="bullet-point">Abraham Lincoln's election in 1860 prompted Southern secession</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section-card" data-progress="72">
+            <div class="section-header" onclick="toggleSection(this)">
+                <div class="section-info">
+                    <div class="section-time">3:10 - 3:30</div>
+                    <div class="section-title">The Civil War (1861-1865)</div>
+                </div>
+                <div class="section-progress"><div class="section-progress-fill" style="width: 72%"></div></div>
+                <span class="expand-icon">+</span>
+            </div>
+            <div class="section-content">
+                <div class="section-body">
+                    <div class="bullet-point">Fort Sumter (April 1861) marked the beginning of America's bloodiest conflict</div>
+                    <div class="bullet-point">The Union initially struggled, losing early battles like Bull Run and facing skilled Confederate generals</div>
+                    <div class="bullet-point">The Emancipation Proclamation (1863) declared slaves in rebel states free, transforming the war's purpose</div>
+                    <div class="key-quote">"Four score and seven years ago our fathers brought forth on this continent, a new nation, conceived in Liberty." - Lincoln at Gettysburg</div>
+                    <div class="bullet-point">Gettysburg (July 1863) marked the turning point, ending Lee's invasion of the North</div>
+                    <div class="bullet-point">General Grant's war of attrition and Sherman's March to the Sea devastated the South</div>
+                    <div class="bullet-point">Lee surrendered at Appomattox Court House on April 9, 1865; 620,000 Americans died in the war</div>
+                    <div class="bullet-point">Lincoln was assassinated by John Wilkes Booth just days after the war ended</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section-card" data-progress="78">
+            <div class="section-header" onclick="toggleSection(this)">
+                <div class="section-info">
+                    <div class="section-time">3:30 - 3:40</div>
+                    <div class="section-title">Reconstruction Era</div>
+                </div>
+                <div class="section-progress"><div class="section-progress-fill" style="width: 78%"></div></div>
+                <span class="expand-icon">+</span>
+            </div>
+            <div class="section-content">
+                <div class="section-body">
+                    <div class="bullet-point">The 13th, 14th, and 15th Amendments abolished slavery and guaranteed citizenship and voting rights</div>
+                    <div class="bullet-point">Freedmen's Bureau helped former slaves transition to freedom with education and aid</div>
+                    <div class="bullet-point">Black Americans briefly held political office and exercised new rights in the South</div>
+                    <div class="bullet-point">The KKK and white supremacist violence terrorized Black communities</div>
+                    <div class="bullet-point">The Compromise of 1877 ended Reconstruction, withdrawing federal troops from the South</div>
+                    <div class="bullet-point">Jim Crow laws soon established legal segregation that would last nearly a century</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="era-divider">
+            <h2>Industrial Age to World Power (1877-1945)</h2>
+        </div>
+        
+        <div class="section-card" data-progress="84">
+            <div class="section-header" onclick="toggleSection(this)">
+                <div class="section-info">
+                    <div class="section-time">3:40 - 3:50</div>
+                    <div class="section-title">The Gilded Age & Industrialization</div>
+                </div>
+                <div class="section-progress"><div class="section-progress-fill" style="width: 84%"></div></div>
+                <span class="expand-icon">+</span>
+            </div>
+            <div class="section-content">
+                <div class="section-body">
+                    <div class="bullet-point">Rapid industrialization transformed America into the world's leading manufacturing nation</div>
+                    <div class="bullet-point">Robber barons like Rockefeller, Carnegie, and Vanderbilt amassed unprecedented wealth</div>
+                    <div class="bullet-point">Mass immigration brought millions from Southern and Eastern Europe to American cities</div>
+                    <div class="bullet-point">Labor unions formed to fight for workers' rights against dangerous conditions and low wages</div>
+                    <div class="bullet-point">The transcontinental railroad (completed 1869) connected the nation coast to coast</div>
+                    <div class="bullet-point">The Progressive Era brought reforms: trust-busting, food safety laws, and women's suffrage</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section-card" data-progress="90">
+            <div class="section-header" onclick="toggleSection(this)">
+                <div class="section-info">
+                    <div class="section-time">3:50 - 4:00</div>
+                    <div class="section-title">World Wars & The Great Depression</div>
+                </div>
+                <div class="section-progress"><div class="section-progress-fill" style="width: 90%"></div></div>
+                <span class="expand-icon">+</span>
+            </div>
+            <div class="section-content">
+                <div class="section-body">
+                    <div class="bullet-point">America entered WWI in 1917; over 116,000 Americans died helping turn the tide against Germany</div>
+                    <div class="bullet-point">The Roaring Twenties brought jazz, flappers, prohibition, and economic boom</div>
+                    <div class="bullet-point">The Stock Market Crash of 1929 triggered the Great Depression - 25% unemployment</div>
+                    <div class="bullet-point">FDR's New Deal created Social Security, banking reforms, and massive public works programs</div>
+                    <div class="key-quote">"The only thing we have to fear is fear itself." - FDR, 1933</div>
+                    <div class="bullet-point">Pearl Harbor (December 7, 1941) brought America into World War II</div>
+                    <div class="bullet-point">D-Day, the Pacific island-hopping campaign, and atomic bombs on Japan ended WWII in 1945</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="era-divider">
+            <h2>Modern America (1945-Present)</h2>
+        </div>
+        
+        <div class="section-card" data-progress="95">
+            <div class="section-header" onclick="toggleSection(this)">
+                <div class="section-info">
+                    <div class="section-time">4:00 - 4:08</div>
+                    <div class="section-title">Cold War, Civil Rights & Vietnam</div>
+                </div>
+                <div class="section-progress"><div class="section-progress-fill" style="width: 95%"></div></div>
+                <span class="expand-icon">+</span>
+            </div>
+            <div class="section-content">
+                <div class="section-body">
+                    <div class="bullet-point">The Cold War pitted America against the Soviet Union in an ideological and nuclear standoff</div>
+                    <div class="bullet-point">McCarthyism and the Red Scare led to widespread fear of communist infiltration</div>
+                    <div class="bullet-point">Brown v. Board of Education (1954) declared school segregation unconstitutional</div>
+                    <div class="bullet-point">MLK Jr. led the Civil Rights Movement; the Civil Rights Act (1964) and Voting Rights Act (1965) passed</div>
+                    <div class="key-quote">"I have a dream that my four little children will one day live in a nation where they will not be judged by the color of their skin but by the content of their character."</div>
+                    <div class="bullet-point">JFK's assassination (1963), moon landing (1969), and Vietnam War defined the 1960s</div>
+                    <div class="bullet-point">Watergate scandal forced Nixon's resignation in 1974</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section-card" data-progress="100">
+            <div class="section-header" onclick="toggleSection(this)">
+                <div class="section-info">
+                    <div class="section-time">4:08 - 4:13</div>
+                    <div class="section-title">Contemporary America (1980s-Present)</div>
+                </div>
+                <div class="section-progress"><div class="section-progress-fill" style="width: 100%"></div></div>
+                <span class="expand-icon">+</span>
+            </div>
+            <div class="section-content">
+                <div class="section-body">
+                    <div class="bullet-point">Reagan's presidency marked a conservative shift; Cold War ended with Soviet collapse (1991)</div>
+                    <div class="bullet-point">The tech revolution and rise of Silicon Valley transformed the economy and daily life</div>
+                    <div class="bullet-point">September 11, 2001 attacks led to the War on Terror, Afghanistan, and Iraq wars</div>
+                    <div class="bullet-point">The 2008 financial crisis triggered the worst recession since the Great Depression</div>
+                    <div class="bullet-point">Barack Obama elected as the first African American president in 2008</div>
+                    <div class="bullet-point">COVID-19 pandemic (2020) caused unprecedented health and economic challenges</div>
+                    <div class="bullet-point">America continues to grapple with issues of inequality, division, and its role in a changing world</div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <footer class="footer">
+        <p>Summary generated by JARVIS</p>
+        <p><a href="https://www.youtube.com/watch?v=hxdSr03ULdM" target="_blank">Watch the full documentary on YouTube</a></p>
+    </footer>
+    
+    <script>
+        function toggleSection(header) {
+            const card = header.parentElement;
+            card.classList.toggle('expanded');
+            const icon = header.querySelector('.expand-icon');
+            icon.textContent = card.classList.contains('expanded') ? '-' : '+';
+        }
+        
+        // Update progress bar on scroll
+        window.addEventListener('scroll', () => {
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (winScroll / height) * 100;
+            document.getElementById('progressBar').style.width = scrolled + '%';
+        });
+        
+        // Expand first section by default
+        document.addEventListener('DOMContentLoaded', () => {
+            const firstCard = document.querySelector('.section-card');
+            if (firstCard) {
+                firstCard.classList.add('expanded');
+                firstCard.querySelector('.expand-icon').textContent = '-';
+            }
+        });
+    </script>
+</body>
+</html>
