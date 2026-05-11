@@ -474,6 +474,8 @@ async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame
 '- NEVER make plain boring PDFs — always styled with colors, boxes, and visual hierarchy',
 '- Install if needed: pip install reportlab --break-system-packages',
 '- CRITICAL: Write ALL reportlab code inside ONE run_code block with language=python and execute it directly. Do NOT save a separate .py file.',
+'- IMPORTANT: This is Mac. Use pip3 not pip. Or skip the install entirely since reportlab is already installed.',
+'- NEVER run subprocess pip install inside the Python code. reportlab is already available, just import it directly.',
 `- Save PDF directly to: ${PUBLIC_DIR}/filename.pdf`,
       '═══ VISION ═══',
       `Screen is provided on every message.${latestCameraFrame ? ' Camera feed also attached as second image.' : ''}`,
