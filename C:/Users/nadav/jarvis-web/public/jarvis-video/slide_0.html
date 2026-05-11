@@ -1,0 +1,163 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;500;700&display=swap');
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    width: 1920px;
+    height: 1080px;
+    background: radial-gradient(ellipse at center, #0a1628 0%, #000508 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Orbitron', monospace;
+    overflow: hidden;
+    position: relative;
+}
+.grid {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        linear-gradient(rgba(0, 170, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 170, 255, 0.03) 1px, transparent 1px);
+    background-size: 50px 50px;
+    animation: gridMove 20s linear infinite;
+}
+@keyframes gridMove {
+    0% { transform: perspective(500px) rotateX(60deg) translateY(0); }
+    100% { transform: perspective(500px) rotateX(60deg) translateY(50px); }
+}
+.particles {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+.particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: #00aaff;
+    border-radius: 50%;
+    box-shadow: 0 0 20px #00aaff, 0 0 40px #00aaff;
+    animation: float 8s infinite ease-in-out;
+}
+@keyframes float {
+    0%, 100% { transform: translateY(0) translateX(0); opacity: 0.3; }
+    50% { transform: translateY(-100px) translateX(50px); opacity: 1; }
+}
+.arc-reactor {
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    border: 3px solid rgba(0, 170, 255, 0.3);
+    border-radius: 50%;
+    animation: pulse 2s infinite ease-in-out;
+}
+.arc-reactor::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 200px;
+    height: 200px;
+    border: 2px solid rgba(0, 170, 255, 0.5);
+    border-radius: 50%;
+}
+.arc-reactor::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100px;
+    height: 100px;
+    background: radial-gradient(circle, rgba(0, 170, 255, 0.8) 0%, transparent 70%);
+    border-radius: 50%;
+    box-shadow: 0 0 60px #00aaff, 0 0 120px #00aaff;
+}
+@keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 0.5; }
+    50% { transform: scale(1.1); opacity: 0.8; }
+}
+.content {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+}
+.title {
+    font-size: 120px;
+    font-weight: 900;
+    color: #00aaff;
+    text-shadow: 0 0 30px #00aaff, 0 0 60px #00aaff, 0 0 90px #0066cc;
+    letter-spacing: 20px;
+    margin-bottom: 30px;
+    animation: glowPulse 2s infinite;
+}
+@keyframes glowPulse {
+    0%, 100% { text-shadow: 0 0 30px #00aaff, 0 0 60px #00aaff, 0 0 90px #0066cc; }
+    50% { text-shadow: 0 0 50px #00aaff, 0 0 100px #00aaff, 0 0 150px #0066cc; }
+}
+.subtitle {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 48px;
+    font-weight: 300;
+    color: #ffffff;
+    text-shadow: 0 0 20px rgba(255,255,255,0.5);
+    letter-spacing: 8px;
+    text-transform: uppercase;
+}
+.scanline {
+    position: absolute;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, transparent, #00aaff, transparent);
+    animation: scan 3s infinite linear;
+    opacity: 0.3;
+}
+@keyframes scan {
+    0% { top: 0; }
+    100% { top: 100%; }
+}
+.corner {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    border: 3px solid rgba(0, 170, 255, 0.5);
+}
+.corner.tl { top: 50px; left: 50px; border-right: none; border-bottom: none; }
+.corner.tr { top: 50px; right: 50px; border-left: none; border-bottom: none; }
+.corner.bl { bottom: 50px; left: 50px; border-right: none; border-top: none; }
+.corner.br { bottom: 50px; right: 50px; border-left: none; border-top: none; }
+.slide-number {
+    position: absolute;
+    bottom: 60px;
+    right: 80px;
+    font-size: 24px;
+    color: rgba(0, 170, 255, 0.6);
+    letter-spacing: 5px;
+}
+</style>
+</head>
+<body>
+<div class="grid"></div>
+<div class="particles">
+    <div class="particle" style="left: 40.36066266653342%; top: 84.94940582882879%; animation-delay: 7.212209211378127s;"></div><div class="particle" style="left: 6.356942791161746%; top: 69.61225973038584%; animation-delay: 5.177875830645713s;"></div><div class="particle" style="left: 8.734111342349738%; top: 83.2950158246106%; animation-delay: 0.4693409253767413s;"></div><div class="particle" style="left: 81.69693241864364%; top: 74.0187211597314%; animation-delay: 0.532200184885582s;"></div><div class="particle" style="left: 47.52902647854225%; top: 47.910522763062424%; animation-delay: 6.391794363714347s;"></div><div class="particle" style="left: 45.80182897009723%; top: 24.76052822678313%; animation-delay: 2.1909794957886755s;"></div><div class="particle" style="left: 66.9962598377282%; top: 99.71322855532063%; animation-delay: 4.901963913283385s;"></div><div class="particle" style="left: 32.99262260052763%; top: 89.18966745291728%; animation-delay: 5.017077053645114s;"></div><div class="particle" style="left: 91.6822202727996%; top: 91.91880379340489%; animation-delay: 1.6582964231825157s;"></div><div class="particle" style="left: 29.101526609096307%; top: 75.30149983532826%; animation-delay: 4.04034898773041s;"></div><div class="particle" style="left: 81.91968142967953%; top: 72.85399855857607%; animation-delay: 2.4726890796663517s;"></div><div class="particle" style="left: 67.4204353260669%; top: 52.19258480455964%; animation-delay: 4.836934336403125s;"></div><div class="particle" style="left: 74.440603378959%; top: 57.65369460244024%; animation-delay: 5.789615737535236s;"></div><div class="particle" style="left: 78.78922652293332%; top: 54.58684527861502%; animation-delay: 4.3144028484705s;"></div><div class="particle" style="left: 75.33499289237841%; top: 71.90746671637058%; animation-delay: 4.77692472415082s;"></div><div class="particle" style="left: 73.43945890935206%; top: 58.094709291653935%; animation-delay: 6.876955997979602s;"></div><div class="particle" style="left: 91.5343719074716%; top: 14.737404301089663%; animation-delay: 3.6792552963295284s;"></div><div class="particle" style="left: 6.237956861505667%; top: 61.20942819265808%; animation-delay: 3.3367423193487236s;"></div><div class="particle" style="left: 72.6014161380735%; top: 54.05603967135607%; animation-delay: 6.872498360571297s;"></div><div class="particle" style="left: 22.127411915520657%; top: 59.96880837693449%; animation-delay: 5.7741349643050235s;"></div>
+</div>
+<div class="arc-reactor"></div>
+<div class="scanline"></div>
+<div class="corner tl"></div>
+<div class="corner tr"></div>
+<div class="corner bl"></div>
+<div class="corner br"></div>
+<div class="content">
+    <div class="title">J.A.R.V.I.S.</div>
+    <div class="subtitle">Just A Rather Very Intelligent System</div>
+</div>
+<div class="slide-number">01 / 08</div>
+</body>
+</html>

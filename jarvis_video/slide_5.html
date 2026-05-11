@@ -1,0 +1,68 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: 1920px;
+      height: 1080px;
+      background: #102a4c;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      color: white;
+      background: linear-gradient(135deg, #102a4c 0%, #000510 100%);
+    }
+    .glow {
+      position: absolute;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(0,150,255,0.15) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+    .title {
+      font-size: 84px;
+      font-weight: 700;
+      text-align: center;
+      color: #00bfff;
+      text-shadow: 0 0 40px rgba(0,191,255,0.5);
+      z-index: 1;
+    }
+    .subtitle {
+      font-size: 42px;
+      font-weight: 300;
+      margin-top: 30px;
+      color: #a0d4ff;
+      text-align: center;
+      z-index: 1;
+    }
+    .arc-reactor {
+      width: 120px;
+      height: 120px;
+      border: 4px solid #00bfff;
+      border-radius: 50%;
+      margin-bottom: 40px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 0 30px rgba(0,191,255,0.6), inset 0 0 30px rgba(0,191,255,0.3);
+      z-index: 1;
+    }
+    .arc-inner {
+      width: 60px;
+      height: 60px;
+      background: radial-gradient(circle, #ffffff 0%, #00bfff 50%, transparent 70%);
+      border-radius: 50%;
+    }
+  </style>
+</head>
+<body>
+  <div class="glow"></div>
+  
+  <div class="title">Build Websites</div>
+  <div class="subtitle">Full HTML/CSS/JS apps in seconds</div>
+</body>
+</html>
