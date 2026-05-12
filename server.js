@@ -2,9 +2,11 @@ require('dotenv').config({ path: '.env.local' });
 const express = require('express');
 const cors = require('cors');
 const Anthropic = require('@anthropic-ai/sdk');
-const screenshot = require('screenshot-desktop');
+let screenshot;
+try { screenshot = require('screenshot-desktop'); } catch(e) { screenshot = null; }
 const { execSync, exec, spawn } = require('child_process');
-const robot = require('@jitsi/robotjs');
+let robot;
+try { robot = require('@jitsi/robotjs'); } catch(e) { robot = null; }
 const axios = require('axios');
 const cheerio = require('cheerio');
 const fs = require('fs');
@@ -636,7 +638,7 @@ async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame
       tools,
       messages
     });
-    
+
 
     messages.push({ role: 'assistant', content: response.content });
 
