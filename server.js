@@ -22,6 +22,7 @@ app.use(express.json({ limit: '100mb' }));
 const chatLimiter = rateLimit({
   windowMs: 60 * 1000,
   max: 20,
+  trustProxy: 1,
   message: { error: 'Too many requests, slow down.' },
   keyGenerator: (req) => {
     const token = req.headers.authorization?.replace('Bearer ', '');
@@ -1031,8 +1032,7 @@ function startFaceMonitor() {
 app.post('/face/start', (req, res) => { startFaceMonitor(); res.json({ ok: true }); });
 app.post('/face/stop', (req, res) => { if (faceProcess) { faceProcess.kill(); faceProcess = null; } res.json({ ok: true }); });
 app.get('/face/running', (req, res) => res.json({ running: !!faceProcess }));
-if (process.platform !== 'darwin') setTimeout(startFaceMonitor, 10000);
-
+if (process.platform === 'win32') setTimeout(startFaceMonitor, 10000);
 // ============ IPHONE (Nadav-only) ============
 const iPhoneActions = {};
 app.post('/iphone/register', (req, res) => { iPhoneActions.ip = req.body.ip; iPhoneActions.port = req.body.port || 8080; res.json({ ok: true }); });
