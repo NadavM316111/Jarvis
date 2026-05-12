@@ -636,6 +636,7 @@ async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame
       tools,
       messages
     });
+    
 
     messages.push({ role: 'assistant', content: response.content });
 

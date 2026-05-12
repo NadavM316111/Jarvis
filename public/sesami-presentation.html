@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Presentation - Sesami</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --pastel-pink: #FFD6E0;
+            --pastel-blue: #C5E8FF;
+            --pastel-yellow: #FFF5CC;
+            --pastel-mint: #C8F7DC;
+            --pastel-lavender: #E8D5F2;
+            --soft-coral: #FFB5A7;
+            --cream: #FFF9F0;
+            --text-dark: #4A4A6A;
+            --text-light: #6B6B8D;
+        }
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, var(--cream) 0%, var(--pastel-pink) 50%, var(--pastel-blue) 100%);
+            min-height: 100vh;
+            color: var(--text-dark);
+        }
+        .back-btn {
+            position: fixed;
+            top: 30px;
+            left: 30px;
+            background: white;
+            padding: 12px 25px;
+            border-radius: 50px;
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 600;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+        .back-btn:hover { transform: translateY(-3px); }
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 100px 40px;
+        }
+        h1 {
+            font-family: 'Quicksand', sans-serif;
+            font-size: 3.5rem;
+            text-align: center;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, var(--text-dark), #8B5A8B);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .subtitle {
+            text-align: center;
+            font-size: 1.2rem;
+            color: var(--text-light);
+            margin-bottom: 60px;
+        }
+        .slide-viewer {
+            background: white;
+            border-radius: 30px;
+            padding: 40px;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.1);
+            margin-bottom: 40px;
+        }
+        .current-slide {
+            background: linear-gradient(135deg, #2D1B4E, #1A1A2E);
+            border-radius: 20px;
+            aspect-ratio: 16/9;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        .slide-number {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            color: rgba(255,255,255,0.5);
+            font-size: 0.9rem;
+        }
+        .slide-title {
+            font-family: 'Quicksand', sans-serif;
+            font-size: 2.5rem;
+            color: white;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        .slide-content {
+            color: rgba(255,255,255,0.8);
+            font-size: 1.2rem;
+            text-align: center;
+            max-width: 700px;
+            line-height: 1.8;
+        }
+        .slide-bullets {
+            text-align: left;
+            margin-top: 20px;
+        }
+        .slide-bullets li {
+            margin: 12px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+        .slide-bullets li:before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 10px;
+            width: 8px;
+            height: 8px;
+            background: var(--pastel-pink);
+            border-radius: 50%;
+        }
+        .slide-nav {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            align-items: center;
+        }
+        .nav-btn {
+            background: linear-gradient(135deg, var(--pastel-pink), var(--pastel-lavender));
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--text-dark);
+        }
+        .nav-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(255,182,193,0.4);
+        }
+        .slide-indicator {
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+        .slides-overview {
+            background: white;
+            border-radius: 30px;
+            padding: 40px;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.1);
+        }
+        .slides-overview h2 {
+            font-family: 'Quicksand', sans-serif;
+            font-size: 2rem;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .slides-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+        }
+        .slide-thumb {
+            background: linear-gradient(135deg, #2D1B4E, #1A1A2E);
+            border-radius: 12px;
+            aspect-ratio: 16/9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 15px;
+        }
+        .slide-thumb:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+        }
+        .slide-thumb.active {
+            border: 3px solid var(--pastel-pink);
+        }
+        .slide-thumb span {
+            color: white;
+            font-size: 0.85rem;
+            text-align: center;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <a href="sesami.html" class="back-btn">Back to Home</a>
+    
+    <div class="container">
+        <h1>Sesami Presentation</h1>
+        <p class="subtitle">CIJE Innovation Day 2026</p>
+        
+        <div class="slide-viewer">
+            <div class="current-slide" id="slideDisplay">
+                <span class="slide-number">1 / 10</span>
+                <h2 class="slide-title">Introducing Sesami</h2>
+                <p class="slide-content">Your Child's First Friend - An interactive early childhood educational companion designed to revolutionize how children learn and grow.</p>
+            </div>
+            <div class="slide-nav">
+                <button class="nav-btn" onclick="prevSlide()">Previous</button>
+                <span class="slide-indicator" id="slideNum">1 / 10</span>
+                <button class="nav-btn" onclick="nextSlide()">Next</button>
+            </div>
+        </div>
+        
+        <div class="slides-overview">
+            <h2>All Slides</h2>
+            <div class="slides-grid">
+                <div class="slide-thumb active" onclick="goToSlide(0)"><span>1. Introduction</span></div>
+                <div class="slide-thumb" onclick="goToSlide(1)"><span>2. The Problem</span></div>
+                <div class="slide-thumb" onclick="goToSlide(2)"><span>3. Our Solution</span></div>
+                <div class="slide-thumb" onclick="goToSlide(3)"><span>4. How It Works</span></div>
+                <div class="slide-thumb" onclick="goToSlide(4)"><span>5. Voice Cloning</span></div>
+                <div class="slide-thumb" onclick="goToSlide(5)"><span>6. Developmental Focus</span></div>
+                <div class="slide-thumb" onclick="goToSlide(6)"><span>7. Parent Dashboard</span></div>
+                <div class="slide-thumb" onclick="goToSlide(7)"><span>8. Market Opportunity</span></div>
+                <div class="slide-thumb" onclick="goToSlide(8)"><span>9. Our Team</span></div>
+                <div class="slide-thumb" onclick="goToSlide(9)"><span>10. Call to Action</span></div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const slides = [
+            { title: "Introducing Sesami", content: "Your Child's First Friend - An interactive early childhood educational companion designed to revolutionize how children learn and grow." },
+            { title: "The Problem", content: "87% of parents worry about screen time. Children spend 4+ hours daily on passive media. Critical developmental windows are being missed during ages 1-6." },
+            { title: "Our Solution", content: "Sesami is an AI-powered teddy bear that speaks with the parent's cloned voice, creating familiar, engaging interactions that promote active learning instead of passive consumption." },
+            { title: "How It Works", content: "Parents record voice samples via our app. Our AI creates a natural-sounding voice clone. Sesami uses this voice to guide educational activities, tell stories, and encourage exploration." },
+            { title: "Voice Cloning Technology", content: "Using advanced neural voice synthesis, we capture the emotional warmth of a parent's voice. Only 3 minutes of recordings needed. 94% of children recognize it as their parent." },
+            { title: "Developmental Focus Areas", content: "Language Development - Motor Skills - Problem Solving - Emotional Intelligence - Curiosity & Observation - Early Mathematics - Social Skills" },
+            { title: "Parent Dashboard", content: "Real-time insights into your child's progress. Track developmental milestones. Receive personalized activity recommendations. All data encrypted and private." },
+            { title: "Market Opportunity", content: "$42B global educational toy market. 78% of parents willing to pay premium for developmental tools. First-mover advantage in AI companion space for toddlers." },
+            { title: "Our Team", content: "Passionate innovators combining expertise in child development, AI/ML engineering, product design, and early childhood education." },
+            { title: "Join the Journey", content: "Help us shape the future of early childhood education. Sesami - Because every moment is a learning moment." }
+        ];
+        
+        let currentSlide = 0;
+        
+        function updateSlide() {
+            const display = document.getElementById('slideDisplay');
+            const slideNum = document.getElementById('slideNum');
+            display.innerHTML = '<span class="slide-number">' + (currentSlide + 1) + ' / 10</span><h2 class="slide-title">' + slides[currentSlide].title + '</h2><p class="slide-content">' + slides[currentSlide].content + '</p>';
+            slideNum.textContent = (currentSlide + 1) + ' / 10';
+            
+            document.querySelectorAll('.slide-thumb').forEach((thumb, i) => {
+                thumb.classList.toggle('active', i === currentSlide);
+            });
+        }
+        
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % slides.length;
+            updateSlide();
+        }
+        
+        function prevSlide() {
+            currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+            updateSlide();
+        }
+        
+        function goToSlide(index) {
+            currentSlide = index;
+            updateSlide();
+        }
+    </script>
+</body>
+</html>

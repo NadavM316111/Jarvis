@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Software & API Stack - Sesami</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, #fdf6f0 0%, #fce4ec 50%, #e8f5e9 100%);
+            min-height: 100vh;
+        }
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+        }
+        .logo {
+            font-family: 'Quicksand', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: #8d6e63;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .logo-bear { width: 45px; height: 45px; }
+        .back-btn {
+            background: linear-gradient(135deg, #ffcc80, #ffab91);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .back-btn:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(255, 171, 145, 0.4); }
+        .content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 120px 50px 80px;
+        }
+        .page-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        .page-header h1 {
+            font-family: 'Quicksand', sans-serif;
+            font-size: 3rem;
+            color: #5d4037;
+            margin-bottom: 20px;
+        }
+        .page-header p {
+            font-size: 1.2rem;
+            color: #8d6e63;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        .diagram-container {
+            background: white;
+            border-radius: 30px;
+            padding: 50px;
+            margin-bottom: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+        }
+        .diagram-title {
+            font-family: 'Quicksand', sans-serif;
+            font-size: 1.8rem;
+            color: #5d4037;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+        .info-card {
+            background: linear-gradient(135deg, #fff8f5 0%, #fce4ec 100%);
+            padding: 30px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+        .info-card:hover { transform: translateY(-5px); box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1); }
+        .info-card h3 {
+            color: #5d4037;
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .info-card p { color: #6d4c41; line-height: 1.7; }
+        .icon-circle {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #ffcc80, #ffab91);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .svg-diagram { width: 100%; max-width: 900px; margin: 0 auto; display: block; }
+        .stats-row {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+            margin-top: 40px;
+        }
+        .stat-item {
+            text-align: center;
+            padding: 25px;
+            background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+            border-radius: 20px;
+            min-width: 150px;
+        }
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #2e7d32;
+        }
+        .stat-label { color: #388e3c; font-weight: 600; }
+        .code-block {
+            background: #2d2d2d;
+            border-radius: 15px;
+            padding: 30px;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+        .code-block pre {
+            color: #f8f8f2;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+        .keyword { color: #ff79c6; }
+        .string { color: #f1fa8c; }
+        .comment { color: #6272a4; }
+        .function { color: #50fa7b; }
+        footer {
+            background: linear-gradient(135deg, #5d4037, #4e342e);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            margin-top: 60px;
+        }
+        @media (max-width: 768px) {
+            .content { padding: 100px 20px 60px; }
+            .page-header h1 { font-size: 2rem; }
+            nav { padding: 15px 20px; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="sesami.html" class="logo">
+            <svg class="logo-bear" viewBox="0 0 100 100">
+                <circle cx="25" cy="25" r="15" fill="#d7a574"/>
+                <circle cx="75" cy="25" r="15" fill="#d7a574"/>
+                <circle cx="25" cy="25" r="8" fill="#c49358"/>
+                <circle cx="75" cy="25" r="8" fill="#c49358"/>
+                <circle cx="50" cy="55" r="35" fill="#d7a574"/>
+                <ellipse cx="50" cy="62" rx="18" ry="14" fill="#f5e1c0"/>
+                <circle cx="38" cy="48" r="5" fill="#4a3520"/>
+                <circle cx="62" cy="48" r="5" fill="#4a3520"/>
+                <ellipse cx="50" cy="58" rx="6" ry="4" fill="#4a3520"/>
+                <path d="M 44 66 Q 50 72 56 66" stroke="#4a3520" stroke-width="2" fill="none"/>
+            </svg>
+            Sesami
+        </a>
+        <a href="sesami.html" class="back-btn">Back to Home</a>
+    </nav>
+    <div class="content">
+        
+<div class="page-header">
+    <h1>Software & API Stack</h1>
+    <p>The technology foundation powering Sesami's seamless experience across all platforms.</p>
+</div>
+<div class="diagram-container">
+    <h2 class="diagram-title">Technology Stack</h2>
+    <svg class="svg-diagram" viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg">
+        <!-- Frontend Layer -->
+        <rect x="50" y="30" width="700" height="80" rx="15" fill="#e3f2fd" stroke="#2196f3" stroke-width="2"/>
+        <text x="400" y="55" text-anchor="middle" font-family="Quicksand" font-weight="700" font-size="14" fill="#1565c0">FRONTEND</text>
+        <text x="150" y="85" text-anchor="middle" font-size="11" fill="#1976d2">React Native</text>
+        <text x="300" y="85" text-anchor="middle" font-size="11" fill="#1976d2">TypeScript</text>
+        <text x="450" y="85" text-anchor="middle" font-size="11" fill="#1976d2">Redux</text>
+        <text x="600" y="85" text-anchor="middle" font-size="11" fill="#1976d2">Expo</text>
+        
+        <!-- API Gateway -->
+        <rect x="50" y="130" width="700" height="80" rx="15" fill="#fff3e0" stroke="#ff9800" stroke-width="2"/>
+        <text x="400" y="155" text-anchor="middle" font-family="Quicksand" font-weight="700" font-size="14" fill="#e65100">API GATEWAY</text>
+        <text x="150" y="185" text-anchor="middle" font-size="11" fill="#f57c00">AWS API Gateway</text>
+        <text x="300" y="185" text-anchor="middle" font-size="11" fill="#f57c00">REST/GraphQL</text>
+        <text x="450" y="185" text-anchor="middle" font-size="11" fill="#f57c00">WebSocket</text>
+        <text x="600" y="185" text-anchor="middle" font-size="11" fill="#f57c00">OAuth 2.0</text>
+        
+        <!-- Backend Services -->
+        <rect x="50" y="230" width="700" height="80" rx="15" fill="#e8f5e9" stroke="#4caf50" stroke-width="2"/>
+        <text x="400" y="255" text-anchor="middle" font-family="Quicksand" font-weight="700" font-size="14" fill="#2e7d32">BACKEND SERVICES</text>
+        <text x="120" y="285" text-anchor="middle" font-size="11" fill="#388e3c">Node.js</text>
+        <text x="240" y="285" text-anchor="middle" font-size="11" fill="#388e3c">Python FastAPI</text>
+        <text x="380" y="285" text-anchor="middle" font-size="11" fill="#388e3c">AWS Lambda</text>
+        <text x="520" y="285" text-anchor="middle" font-size="11" fill="#388e3c">Docker</text>
+        <text x="660" y="285" text-anchor="middle" font-size="11" fill="#388e3c">Kubernetes</text>
+        
+        <!-- AI/ML Layer -->
+        <rect x="50" y="330" width="340" height="80" rx="15" fill="#f3e5f5" stroke="#9c27b0" stroke-width="2"/>
+        <text x="220" y="355" text-anchor="middle" font-family="Quicksand" font-weight="700" font-size="14" fill="#7b1fa2">AI/ML SERVICES</text>
+        <text x="120" y="385" text-anchor="middle" font-size="11" fill="#8e24aa">OpenAI API</text>
+        <text x="220" y="385" text-anchor="middle" font-size="11" fill="#8e24aa">Coqui TTS</text>
+        <text x="320" y="385" text-anchor="middle" font-size="11" fill="#8e24aa">Whisper</text>
+        
+        <!-- Database Layer -->
+        <rect x="410" y="330" width="340" height="80" rx="15" fill="#fce4ec" stroke="#e91e63" stroke-width="2"/>
+        <text x="580" y="355" text-anchor="middle" font-family="Quicksand" font-weight="700" font-size="14" fill="#c2185b">DATA LAYER</text>
+        <text x="480" y="385" text-anchor="middle" font-size="11" fill="#ad1457">PostgreSQL</text>
+        <text x="580" y="385" text-anchor="middle" font-size="11" fill="#ad1457">Redis</text>
+        <text x="680" y="385" text-anchor="middle" font-size="11" fill="#ad1457">S3</text>
+    </svg>
+</div>
+<div class="info-grid">
+    <div class="info-card">
+        <h3><div class="icon-circle"><svg width="20" height="20" fill="white" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div>Scalable Architecture</h3>
+        <p>Microservices architecture allows independent scaling of voice processing, activity management, and analytics services.</p>
+    </div>
+    <div class="info-card">
+        <h3><div class="icon-circle"><svg width="20" height="20" fill="white" viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2z"/></svg></div>Security First</h3>
+        <p>All data encrypted at rest and in transit. HIPAA and COPPA compliant infrastructure with regular security audits.</p>
+    </div>
+    <div class="info-card">
+        <h3><div class="icon-circle"><svg width="20" height="20" fill="white" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg></div>Real-time Processing</h3>
+        <p>WebSocket connections enable instant voice interaction with sub-200ms latency for natural conversations.</p>
+    </div>
+</div>
+    </div>
+    <footer>
+        <p>CIJE Innovation Day 2026 - Sesami by Nadav Minkowitz</p>
+    </footer>
+</body>
+</html>

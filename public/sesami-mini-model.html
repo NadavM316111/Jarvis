@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini-Scale Product Model - Sesami</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, #fdf6f0 0%, #fce4ec 50%, #e8f5e9 100%);
+            min-height: 100vh;
+        }
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+        }
+        .logo {
+            font-family: 'Quicksand', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: #8d6e63;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .logo-bear { width: 45px; height: 45px; }
+        .back-btn {
+            background: linear-gradient(135deg, #ffcc80, #ffab91);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .back-btn:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(255, 171, 145, 0.4); }
+        .content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 120px 50px 80px;
+        }
+        .page-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        .page-header h1 {
+            font-family: 'Quicksand', sans-serif;
+            font-size: 3rem;
+            color: #5d4037;
+            margin-bottom: 20px;
+        }
+        .page-header p {
+            font-size: 1.2rem;
+            color: #8d6e63;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        .diagram-container {
+            background: white;
+            border-radius: 30px;
+            padding: 50px;
+            margin-bottom: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+        }
+        .diagram-title {
+            font-family: 'Quicksand', sans-serif;
+            font-size: 1.8rem;
+            color: #5d4037;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+        .info-card {
+            background: linear-gradient(135deg, #fff8f5 0%, #fce4ec 100%);
+            padding: 30px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+        .info-card:hover { transform: translateY(-5px); box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1); }
+        .info-card h3 {
+            color: #5d4037;
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .info-card p { color: #6d4c41; line-height: 1.7; }
+        .icon-circle {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #ffcc80, #ffab91);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .video-placeholder {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            border-radius: 20px;
+            padding: 80px;
+            text-align: center;
+            color: white;
+        }
+        .video-placeholder h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+        .play-btn {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #ff8a65, #f48fb1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 30px auto;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .play-btn:hover { transform: scale(1.1); }
+        .timeline {
+            position: relative;
+            padding: 20px 0;
+        }
+        .timeline-item {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 40px;
+            align-items: flex-start;
+        }
+        .timeline-number {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #ff8a65, #f48fb1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+        .timeline-content {
+            flex: 1;
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        }
+        .timeline-content h4 {
+            color: #5d4037;
+            margin-bottom: 10px;
+        }
+        .timeline-content p {
+            color: #8d6e63;
+            line-height: 1.6;
+        }
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        .tech-item {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+        .tech-item:hover { transform: translateY(-5px); }
+        .tech-item h4 { color: #5d4037; margin-bottom: 8px; }
+        .tech-item p { color: #8d6e63; font-size: 0.9rem; }
+        footer {
+            background: linear-gradient(135deg, #5d4037, #4e342e);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            margin-top: 60px;
+        }
+        @media (max-width: 768px) {
+            .content { padding: 100px 20px 60px; }
+            .page-header h1 { font-size: 2rem; }
+            nav { padding: 15px 20px; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="sesami.html" class="logo">
+            <svg class="logo-bear" viewBox="0 0 100 100">
+                <circle cx="25" cy="25" r="15" fill="#d7a574"/>
+                <circle cx="75" cy="25" r="15" fill="#d7a574"/>
+                <circle cx="25" cy="25" r="8" fill="#c49358"/>
+                <circle cx="75" cy="25" r="8" fill="#c49358"/>
+                <circle cx="50" cy="55" r="35" fill="#d7a574"/>
+                <ellipse cx="50" cy="62" rx="18" ry="14" fill="#f5e1c0"/>
+                <circle cx="38" cy="48" r="5" fill="#4a3520"/>
+                <circle cx="62" cy="48" r="5" fill="#4a3520"/>
+                <ellipse cx="50" cy="58" rx="6" ry="4" fill="#4a3520"/>
+                <path d="M 44 66 Q 50 72 56 66" stroke="#4a3520" stroke-width="2" fill="none"/>
+            </svg>
+            Sesami
+        </a>
+        <a href="sesami.html" class="back-btn">Back to Home</a>
+    </nav>
+    <div class="content">
+        
+<div class="page-header">
+    <h1>Mini-Scale Product Model / Interface Demo</h1>
+    <p>Experience a working demonstration of Sesami's core functionality.</p>
+</div>
+<div class="diagram-container">
+    <div class="video-placeholder">
+        <h3>Live Interface Demo</h3>
+        <p>Interactive walkthrough of the Sesami system</p>
+        <div class="play-btn">
+            <svg width="30" height="30" fill="white" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        </div>
+        <p style="opacity: 0.7; font-size: 0.9rem;">Duration: 5:30</p>
+    </div>
+</div>
+<div class="info-grid">
+    <div class="info-card">
+        <h3><div class="icon-circle"><svg width="20" height="20" fill="white" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg></div>Physical Prototype</h3>
+        <p>Working teddy bear with embedded Raspberry Pi, microphone array, and speaker. Soft, child-safe materials with washable cover.</p>
+    </div>
+    <div class="info-card">
+        <h3><div class="icon-circle"><svg width="20" height="20" fill="white" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg></div>App Interface</h3>
+        <p>Fully functional React Native app with voice recording, dashboard, and progress tracking. Available on iOS and Android.</p>
+    </div>
+    <div class="info-card">
+        <h3><div class="icon-circle"><svg width="20" height="20" fill="white" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg></div>Cloud Backend</h3>
+        <p>Complete AWS infrastructure handling voice processing, AI inference, and data storage with 99.9% uptime.</p>
+    </div>
+</div>
+<div class="diagram-container">
+    <h2 class="diagram-title">Demo Specifications</h2>
+    <div class="tech-grid">
+        <div class="tech-item">
+            <h4>Response Time</h4>
+            <p>Under 200ms</p>
+        </div>
+        <div class="tech-item">
+            <h4>Voice Accuracy</h4>
+            <p>95% similarity</p>
+        </div>
+        <div class="tech-item">
+            <h4>Battery Life</h4>
+            <p>8+ hours active</p>
+        </div>
+        <div class="tech-item">
+            <h4>WiFi Range</h4>
+            <p>Standard home coverage</p>
+        </div>
+        <div class="tech-item">
+            <h4>Activities</h4>
+            <p>200+ included</p>
+        </div>
+        <div class="tech-item">
+            <h4>Languages</h4>
+            <p>English + Spanish</p>
+        </div>
+    </div>
+</div>
+    </div>
+    <footer>
+        <p>CIJE Innovation Day 2026 - Sesami by Nadav Minkowitz</p>
+    </footer>
+</body>
+</html>

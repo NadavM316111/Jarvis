@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Flow Schematic - Sesami</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, #fdf6f0 0%, #fce4ec 50%, #e8f5e9 100%);
+            min-height: 100vh;
+        }
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+        }
+        .logo {
+            font-family: 'Quicksand', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: #8d6e63;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .logo-bear { width: 45px; height: 45px; }
+        .back-btn {
+            background: linear-gradient(135deg, #ffcc80, #ffab91);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .back-btn:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(255, 171, 145, 0.4); }
+        .content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 120px 50px 80px;
+        }
+        .page-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        .page-header h1 {
+            font-family: 'Quicksand', sans-serif;
+            font-size: 3rem;
+            color: #5d4037;
+            margin-bottom: 20px;
+        }
+        .page-header p {
+            font-size: 1.2rem;
+            color: #8d6e63;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        .diagram-container {
+            background: white;
+            border-radius: 30px;
+            padding: 50px;
+            margin-bottom: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+        }
+        .diagram-title {
+            font-family: 'Quicksand', sans-serif;
+            font-size: 1.8rem;
+            color: #5d4037;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+        .info-card {
+            background: linear-gradient(135deg, #fff8f5 0%, #fce4ec 100%);
+            padding: 30px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+        .info-card:hover { transform: translateY(-5px); box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1); }
+        .info-card h3 {
+            color: #5d4037;
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .info-card p { color: #6d4c41; line-height: 1.7; }
+        .icon-circle {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #ffcc80, #ffab91);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .svg-diagram { width: 100%; max-width: 900px; margin: 0 auto; display: block; }
+        .stats-row {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+            margin-top: 40px;
+        }
+        .stat-item {
+            text-align: center;
+            padding: 25px;
+            background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+            border-radius: 20px;
+            min-width: 150px;
+        }
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #2e7d32;
+        }
+        .stat-label { color: #388e3c; font-weight: 600; }
+        .code-block {
+            background: #2d2d2d;
+            border-radius: 15px;
+            padding: 30px;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+        .code-block pre {
+            color: #f8f8f2;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+        .keyword { color: #ff79c6; }
+        .string { color: #f1fa8c; }
+        .comment { color: #6272a4; }
+        .function { color: #50fa7b; }
+        footer {
+            background: linear-gradient(135deg, #5d4037, #4e342e);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            margin-top: 60px;
+        }
+        @media (max-width: 768px) {
+            .content { padding: 100px 20px 60px; }
+            .page-header h1 { font-size: 2rem; }
+            nav { padding: 15px 20px; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="sesami.html" class="logo">
+            <svg class="logo-bear" viewBox="0 0 100 100">
+                <circle cx="25" cy="25" r="15" fill="#d7a574"/>
+                <circle cx="75" cy="25" r="15" fill="#d7a574"/>
+                <circle cx="25" cy="25" r="8" fill="#c49358"/>
+                <circle cx="75" cy="25" r="8" fill="#c49358"/>
+                <circle cx="50" cy="55" r="35" fill="#d7a574"/>
+                <ellipse cx="50" cy="62" rx="18" ry="14" fill="#f5e1c0"/>
+                <circle cx="38" cy="48" r="5" fill="#4a3520"/>
+                <circle cx="62" cy="48" r="5" fill="#4a3520"/>
+                <ellipse cx="50" cy="58" rx="6" ry="4" fill="#4a3520"/>
+                <path d="M 44 66 Q 50 72 56 66" stroke="#4a3520" stroke-width="2" fill="none"/>
+            </svg>
+            Sesami
+        </a>
+        <a href="sesami.html" class="back-btn">Back to Home</a>
+    </nav>
+    <div class="content">
+        
+<div class="page-header">
+    <h1>Data Flow Schematic</h1>
+    <p>Understanding how data moves through Sesami's system from child interaction to parent insights.</p>
+</div>
+<div class="diagram-container">
+    <h2 class="diagram-title">Real-Time Data Flow</h2>
+    <svg class="svg-diagram" viewBox="0 0 800 500" xmlns="http://www.w3.org/2000/svg">
+        <!-- Child speaks -->
+        <circle cx="100" cy="100" r="50" fill="#fce4ec" stroke="#f48fb1" stroke-width="3"/>
+        <text x="100" y="95" text-anchor="middle" font-size="12" fill="#c2185b">Child</text>
+        <text x="100" y="110" text-anchor="middle" font-size="12" fill="#c2185b">Speaks</text>
+        
+        <!-- Sesami Bear -->
+        <circle cx="250" cy="100" r="50" fill="#fff3e0" stroke="#ffb74d" stroke-width="3"/>
+        <text x="250" y="95" text-anchor="middle" font-size="12" fill="#e65100">Sesami</text>
+        <text x="250" y="110" text-anchor="middle" font-size="12" fill="#e65100">Captures</text>
+        
+        <!-- Cloud Processing -->
+        <rect x="350" y="50" width="150" height="100" rx="20" fill="#e3f2fd" stroke="#64b5f6" stroke-width="3"/>
+        <text x="425" y="85" text-anchor="middle" font-size="12" fill="#1565c0">Cloud</text>
+        <text x="425" y="105" text-anchor="middle" font-size="12" fill="#1565c0">Processing</text>
+        <text x="425" y="125" text-anchor="middle" font-size="10" fill="#1976d2">STT + NLP + TTS</text>
+        
+        <!-- Response -->
+        <circle cx="600" cy="100" r="50" fill="#e8f5e9" stroke="#81c784" stroke-width="3"/>
+        <text x="600" y="95" text-anchor="middle" font-size="12" fill="#2e7d32">Response</text>
+        <text x="600" y="110" text-anchor="middle" font-size="12" fill="#2e7d32">Generated</text>
+        
+        <!-- Sesami Responds -->
+        <circle cx="700" cy="100" r="50" fill="#f3e5f5" stroke="#ba68c8" stroke-width="3"/>
+        <text x="700" y="95" text-anchor="middle" font-size="12" fill="#7b1fa2">Sesami</text>
+        <text x="700" y="110" text-anchor="middle" font-size="12" fill="#7b1fa2">Speaks</text>
+        
+        <!-- Analytics Path -->
+        <rect x="300" y="250" width="200" height="80" rx="15" fill="#fff8e1" stroke="#ffd54f" stroke-width="2"/>
+        <text x="400" y="285" text-anchor="middle" font-size="12" fill="#f57f17">Session Analytics</text>
+        <text x="400" y="305" text-anchor="middle" font-size="10" fill="#ff8f00">Words, Duration, Topics</text>
+        
+        <!-- Database -->
+        <rect x="300" y="370" width="200" height="80" rx="15" fill="#e0f2f1" stroke="#4db6ac" stroke-width="2"/>
+        <text x="400" y="400" text-anchor="middle" font-size="12" fill="#00695c">Secure Database</text>
+        <text x="400" y="420" text-anchor="middle" font-size="10" fill="#00897b">Encrypted Storage</text>
+        
+        <!-- Parent App -->
+        <circle cx="600" cy="400" r="60" fill="#fce4ec" stroke="#f48fb1" stroke-width="3"/>
+        <text x="600" y="395" text-anchor="middle" font-size="12" fill="#c2185b">Parent</text>
+        <text x="600" y="415" text-anchor="middle" font-size="12" fill="#c2185b">Dashboard</text>
+        
+        <!-- Arrows -->
+        <path d="M150 100 L200 100" stroke="#90a4ae" stroke-width="3" marker-end="url(#arrow3)"/>
+        <path d="M300 100 L350 100" stroke="#90a4ae" stroke-width="3" marker-end="url(#arrow3)"/>
+        <path d="M500 100 L550 100" stroke="#90a4ae" stroke-width="3" marker-end="url(#arrow3)"/>
+        <path d="M650 100 L700 60" stroke="#90a4ae" stroke-width="3"/>
+        <path d="M700 60 L700 50 L250 50 L250 60" stroke="#90a4ae" stroke-width="2" stroke-dasharray="5,5"/>
+        <path d="M425 150 L425 250" stroke="#ffd54f" stroke-width="2" marker-end="url(#arrow3)"/>
+        <path d="M400 330 L400 370" stroke="#4db6ac" stroke-width="2" marker-end="url(#arrow3)"/>
+        <path d="M500 410 L540 410" stroke="#f48fb1" stroke-width="2" marker-end="url(#arrow3)"/>
+        
+        <defs>
+            <marker id="arrow3" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                <polygon points="0 0, 10 3.5, 0 7" fill="#90a4ae"/>
+            </marker>
+        </defs>
+        
+        <!-- Labels -->
+        <text x="175" y="85" font-size="9" fill="#78909c">Audio</text>
+        <text x="320" y="85" font-size="9" fill="#78909c">Stream</text>
+        <text x="520" y="85" font-size="9" fill="#78909c">Response</text>
+    </svg>
+</div>
+    </div>
+    <footer>
+        <p>CIJE Innovation Day 2026 - Sesami by Nadav Minkowitz</p>
+    </footer>
+</body>
+</html>

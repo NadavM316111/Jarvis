@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Approach Reasoning - Sesami</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Nunito', sans-serif; background: linear-gradient(135deg, #fef6f0 0%, #fdf2f8 50%, #f0f9ff 100%); min-height: 100vh; }
+nav { position: fixed; top: 0; width: 100%; padding: 20px 50px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); box-shadow: 0 2px 20px rgba(0,0,0,0.05); }
+.logo { font-size: 1.8rem; font-weight: 800; background: linear-gradient(135deg, #ec407a, #ab47bc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-decoration: none; }
+.back-btn { padding: 10px 25px; background: linear-gradient(135deg, #ec407a, #ab47bc); color: white; text-decoration: none; border-radius: 25px; font-weight: 600; transition: all 0.3s; }
+.back-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(236,64,122,0.3); }
+.container { max-width: 1000px; margin: 0 auto; padding: 120px 30px 60px; }
+.page-header { text-align: center; margin-bottom: 50px; }
+.page-header h1 { font-size: 2.8rem; font-weight: 800; background: linear-gradient(135deg, #ec407a, #ab47bc, #42a5f5); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 15px; }
+.page-header p { color: #666; font-size: 1.2rem; }
+.content-card { background: white; border-radius: 25px; padding: 40px; margin-bottom: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.08); }
+.content-card h2 { color: #333; font-size: 1.6rem; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 3px solid #fce4ec; }
+.content-card h3 { color: #ec407a; font-size: 1.3rem; margin: 25px 0 15px; }
+.content-card p { color: #555; line-height: 1.8; margin-bottom: 15px; }
+.content-card ul { margin: 15px 0 15px 25px; }
+.content-card li { color: #555; line-height: 1.8; margin-bottom: 10px; }
+.diagram { background: linear-gradient(135deg, #fef6f0, #fdf2f8); border-radius: 20px; padding: 30px; margin: 25px 0; text-align: center; }
+.stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin: 25px 0; }
+.stat-box { background: linear-gradient(135deg, #fce4ec, #f3e5f5); padding: 25px; border-radius: 15px; text-align: center; }
+.stat-box .number { font-size: 2.5rem; font-weight: 800; color: #ec407a; }
+.stat-box .label { color: #666; font-size: 0.95rem; margin-top: 5px; }
+table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+th, td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; }
+th { background: linear-gradient(135deg, #fce4ec, #f3e5f5); color: #333; font-weight: 700; }
+tr:hover { background: #fef6f0; }
+.highlight-box { background: linear-gradient(135deg, #e8f5e9, #e3f2fd); border-left: 4px solid #4caf50; padding: 20px 25px; border-radius: 0 15px 15px 0; margin: 20px 0; }
+.highlight-box.warning { background: linear-gradient(135deg, #fff3e0, #fce4ec); border-left-color: #ff9800; }
+.highlight-box.info { background: linear-gradient(135deg, #e3f2fd, #f3e5f5); border-left-color: #2196f3; }
+.process-step { display: flex; align-items: flex-start; gap: 20px; margin: 20px 0; padding: 20px; background: #fef6f0; border-radius: 15px; }
+.step-num { width: 50px; height: 50px; background: linear-gradient(135deg, #ec407a, #ab47bc); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.3rem; flex-shrink: 0; }
+.step-content h4 { color: #333; margin-bottom: 8px; }
+.step-content p { color: #666; margin: 0; }
+.quote-box { background: linear-gradient(135deg, #fce4ec, #f3e5f5); padding: 30px; border-radius: 20px; margin: 25px 0; position: relative; }
+.quote-box::before { content: '"'; font-size: 4rem; color: #ec407a; opacity: 0.3; position: absolute; top: 10px; left: 20px; }
+.quote-box p { font-style: italic; color: #555; padding-left: 40px; }
+.quote-box .author { font-weight: 700; color: #333; margin-top: 15px; padding-left: 40px; }
+.timeline { position: relative; padding-left: 30px; }
+.timeline::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: linear-gradient(to bottom, #ec407a, #ab47bc, #42a5f5); border-radius: 3px; }
+.timeline-item { position: relative; padding: 20px 0 20px 30px; }
+.timeline-item::before { content: ''; position: absolute; left: -36px; top: 25px; width: 15px; height: 15px; background: white; border: 3px solid #ec407a; border-radius: 50%; }
+.timeline-item h4 { color: #333; margin-bottom: 8px; }
+.timeline-item p { color: #666; }
+</style>
+</head>
+<body>
+<nav>
+<a href="sesami.html" class="logo">Sesami</a>
+<a href="sesami.html" class="back-btn">Back to Home</a>
+</nav>
+<div class="container">
+
+<div class="page-header">
+<h1>Approach Reasoning</h1>
+<p>The strategic thinking behind Sesami's design philosophy</p>
+</div>
+<div class="content-card">
+<h2>Core Design Philosophy</h2>
+<p>Sesami was built on a fundamental belief: technology should enhance human connection, not replace it. Every design decision was filtered through this lens.</p>
+<div class="highlight-box info">
+<strong>Guiding Principle:</strong> "Technology as a bridge, not a barrier, between parent and child."
+</div>
+</div>
+<div class="content-card">
+<h2>Why a Teddy Bear Form Factor?</h2>
+<div class="process-step">
+<div class="step-num">1</div>
+<div class="step-content">
+<h4>Universal Comfort Object</h4>
+<p>Teddy bears have been children's comfort objects for over 100 years. The form factor immediately signals safety, warmth, and companionship to children.</p>
+</div>
+</div>
+<div class="process-step">
+<div class="step-num">2</div>
+<div class="step-content">
+<h4>Tactile Engagement</h4>
+<p>Unlike hard plastic toys or screens, a soft teddy encourages physical interaction - hugging, carrying, sleeping with - which supports emotional development.</p>
+</div>
+</div>
+<div class="process-step">
+<div class="step-num">3</div>
+<div class="step-content">
+<h4>Gender Neutral Appeal</h4>
+<p>Teddy bears are universally loved across genders, cultures, and backgrounds, making Sesami accessible to all families.</p>
+</div>
+</div>
+</div>
+<div class="content-card">
+<h2>Why Parent Voice Cloning?</h2>
+<div class="diagram">
+<svg viewBox="0 0 700 300">
+<circle cx="350" cy="150" r="80" fill="#e8f5e9" stroke="#4caf50" stroke-width="3"/>
+<text x="350" y="145" text-anchor="middle" font-weight="bold" fill="#333">Parent Voice</text>
+<text x="350" y="165" text-anchor="middle" fill="#4caf50" font-size="12">Cloning</text>
+<circle cx="150" cy="100" r="50" fill="#fce4ec"/>
+<text x="150" y="95" text-anchor="middle" fill="#333" font-size="11">Emotional</text>
+<text x="150" y="110" text-anchor="middle" fill="#333" font-size="11">Security</text>
+<line x1="200" y1="110" x2="270" y2="130" stroke="#ec407a" stroke-width="2"/>
+<circle cx="150" cy="200" r="50" fill="#fce4ec"/>
+<text x="150" y="195" text-anchor="middle" fill="#333" font-size="11">Trust &</text>
+<text x="150" y="210" text-anchor="middle" fill="#333" font-size="11">Familiarity</text>
+<line x1="200" y1="190" x2="270" y2="170" stroke="#ec407a" stroke-width="2"/>
+<circle cx="550" cy="100" r="50" fill="#e3f2fd"/>
+<text x="550" y="95" text-anchor="middle" fill="#333" font-size="11">Better</text>
+<text x="550" y="110" text-anchor="middle" fill="#333" font-size="11">Engagement</text>
+<line x1="430" y1="130" x2="500" y2="110" stroke="#2196f3" stroke-width="2"/>
+<circle cx="550" cy="200" r="50" fill="#e3f2fd"/>
+<text x="550" y="195" text-anchor="middle" fill="#333" font-size="11">Deeper</text>
+<text x="550" y="210" text-anchor="middle" fill="#333" font-size="11">Learning</text>
+<line x1="430" y1="170" x2="500" y2="190" stroke="#2196f3" stroke-width="2"/>
+</svg>
+</div>
+<p>Research shows children respond 3x more attentively to their parent's voice compared to unfamiliar voices. By cloning the parent's voice, Sesami leverages this biological connection to maximize learning engagement while providing emotional comfort.</p>
+</div>
+<div class="content-card">
+<h2>Why Screen-Free?</h2>
+<h3>The Case Against Screens (Ages 0-5)</h3>
+<ul>
+<li><strong>AAP Guidelines:</strong> American Academy of Pediatrics recommends limiting screen time for children under 5</li>
+<li><strong>Attention Development:</strong> Rapid visual stimulation from screens can impact developing attention systems</li>
+<li><strong>Language Acquisition:</strong> Face-to-face (or voice-to-voice) interaction is superior for language development</li>
+<li><strong>Imagination:</strong> Audio-only engagement promotes visualization and creative thinking</li>
+</ul>
+<div class="highlight-box">
+<strong>Our Choice:</strong> By intentionally excluding screens, Sesami forces engagement through listening, speaking, and imagining - the core building blocks of early cognitive development.
+</div>
+</div>
+<div class="content-card">
+<h2>Strategic Decision Summary</h2>
+<table>
+<tr><th>Decision</th><th>Alternative Considered</th><th>Reasoning</th></tr>
+<tr><td>Teddy Bear Form</td><td>Robot, Tablet, Smart Speaker</td><td>Maximum emotional connection and tactile comfort</td></tr>
+<tr><td>Voice Cloning</td><td>AI Voice, Celebrity Voice</td><td>Leverages parent-child bond for better outcomes</td></tr>
+<tr><td>Screen-Free</td><td>Small Display, LED Lights</td><td>Promotes imagination and follows AAP guidelines</td></tr>
+<tr><td>On-Device AI</td><td>Cloud Processing</td><td>Privacy-first, works offline, faster response</td></tr>
+<tr><td>Parent Dashboard</td><td>No Tracking</td><td>Parents want insights into child development</td></tr>
+</table>
+</div>
+</div>
+</body>
+</html>

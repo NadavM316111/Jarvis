@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Potential Improvements - Sesami</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, #FFF5F5 0%, #FFF0F5 50%, #F0F8FF 100%);
+            min-height: 100vh;
+            color: #4A4A4A;
+        }
+        nav {
+            background: linear-gradient(135deg, #FFB6C1 0%, #DDA0DD 50%, #87CEEB 100%);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        .back-btn {
+            background: white;
+            color: #FF69B4;
+            padding: 0.6rem 1.5rem;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+        h1 {
+            font-size: 2.5rem;
+            color: #FF69B4;
+            text-align: center;
+            margin-bottom: 2rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        .content-card {
+            background: white;
+            border-radius: 25px;
+            padding: 2.5rem;
+            box-shadow: 0 10px 40px rgba(255,105,180,0.15);
+            margin-bottom: 2rem;
+        }
+        .content-card h2 {
+            color: #9370DB;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid #FFB6C1;
+        }
+        .content-card p {
+            line-height: 1.8;
+            margin-bottom: 1rem;
+            color: #555;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        .stat-box {
+            background: linear-gradient(135deg, #FFE4EC 0%, #E8E4FF 100%);
+            padding: 1.5rem;
+            border-radius: 15px;
+            text-align: center;
+        }
+        .stat-box .number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #FF69B4;
+        }
+        .stat-box .label {
+            color: #666;
+            font-weight: 600;
+        }
+        .video-placeholder {
+            background: linear-gradient(135deg, #2D2D2D 0%, #1A1A1A 100%);
+            border-radius: 20px;
+            padding: 4rem;
+            text-align: center;
+            color: white;
+            margin: 2rem 0;
+        }
+        .video-placeholder svg {
+            width: 80px;
+            height: 80px;
+            fill: #FF69B4;
+            margin-bottom: 1rem;
+        }
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+            margin: 2rem 0;
+        }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(to bottom, #FFB6C1, #87CEEB);
+            border-radius: 2px;
+        }
+        .timeline-item {
+            position: relative;
+            padding: 1rem 0 1rem 1.5rem;
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -34px;
+            top: 1.3rem;
+            width: 12px;
+            height: 12px;
+            background: #FF69B4;
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+        .team-card {
+            background: linear-gradient(135deg, #FFE4EC 0%, #E8E4FF 100%);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+        }
+        .team-avatar {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #FFB6C1 0%, #DDA0DD 100%);
+            border-radius: 50%;
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+        }
+        .list-styled {
+            list-style: none;
+            padding: 0;
+        }
+        .list-styled li {
+            padding: 0.8rem 0 0.8rem 2rem;
+            position: relative;
+            border-bottom: 1px solid #FFE4EC;
+        }
+        .list-styled li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 10px;
+            height: 10px;
+            background: #FF69B4;
+            border-radius: 50%;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 2px solid #FFE4EC;
+        }
+        th {
+            background: linear-gradient(135deg, #FFB6C1 0%, #DDA0DD 100%);
+            color: white;
+        }
+        tr:hover {
+            background: #FFF5F5;
+        }
+        .social-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        .social-card {
+            background: linear-gradient(135deg, #FFE4EC 0%, #E8E4FF 100%);
+            padding: 1.5rem;
+            border-radius: 15px;
+            text-align: center;
+            font-weight: 600;
+        }
+        .improvement-card {
+            background: linear-gradient(135deg, #E8FFE8 0%, #E8F4FF 100%);
+            border-left: 5px solid #4CAF50;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-radius: 0 15px 15px 0;
+        }
+        .quote-box {
+            background: linear-gradient(135deg, #FFF5E6 0%, #FFE4EC 100%);
+            padding: 2rem;
+            border-radius: 15px;
+            font-style: italic;
+            font-size: 1.2rem;
+            text-align: center;
+            margin: 2rem 0;
+            border-left: 5px solid #FFB6C1;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="logo">Sesami</div>
+        <a href="sesami.html" class="back-btn">Back to Home</a>
+    </nav>
+    <div class="container">
+        <h1>Potential Improvements</h1>
+        
+        <div class="content-card">
+            <h2>Roadmap for Future Development</h2>
+            <p>Based on our testing and market research, we've identified key improvements for future versions of Sesami.</p>
+        </div>
+        <div class="content-card">
+            <h2>Version 2.0 Features</h2>
+            <div class="improvement-card">
+                <strong>Multi-Child Support</strong>
+                <p>Allow Sesami to recognize and adapt to multiple children in the same household with personalized profiles.</p>
+            </div>
+            <div class="improvement-card">
+                <strong>Sibling Interaction Mode</strong>
+                <p>Facilitate cooperative play and learning between siblings with shared activities.</p>
+            </div>
+            <div class="improvement-card">
+                <strong>Expanded Activity Library</strong>
+                <p>Grow from 50 to 200+ activities covering more developmental areas and interests.</p>
+            </div>
+        </div>
+        <div class="content-card">
+            <h2>Version 3.0 Vision</h2>
+            <div class="improvement-card">
+                <strong>Camera Integration</strong>
+                <p>Optional camera module for visual learning activities and milestone photo capture.</p>
+            </div>
+            <div class="improvement-card">
+                <strong>Ecosystem Expansion</strong>
+                <p>Additional companion toys that work together for expanded play scenarios.</p>
+            </div>
+            <div class="improvement-card">
+                <strong>School Integration</strong>
+                <p>Classroom version for preschools with teacher dashboard and curriculum alignment.</p>
+            </div>
+        </div>
+        <div class="content-card">
+            <h2>Long-Term Vision</h2>
+            <p>Our ultimate goal is to create an ecosystem of AI-powered educational companions that support children from birth through elementary school, adapting and growing with them at every stage of development.</p>
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="number">2026</div>
+                    <div class="label">V2.0 Launch</div>
+                </div>
+                <div class="stat-box">
+                    <div class="number">2027</div>
+                    <div class="label">School Pilot</div>
+                </div>
+                <div class="stat-box">
+                    <div class="number">2028</div>
+                    <div class="label">Ecosystem Launch</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

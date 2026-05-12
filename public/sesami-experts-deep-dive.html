@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deep Dive of Experts - Sesami</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Nunito', sans-serif; background: linear-gradient(135deg, #fef6f0 0%, #fdf2f8 50%, #f0f9ff 100%); min-height: 100vh; }
+nav { position: fixed; top: 0; width: 100%; padding: 20px 50px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); box-shadow: 0 2px 20px rgba(0,0,0,0.05); }
+.logo { font-size: 1.8rem; font-weight: 800; background: linear-gradient(135deg, #ec407a, #ab47bc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-decoration: none; }
+.back-btn { padding: 10px 25px; background: linear-gradient(135deg, #ec407a, #ab47bc); color: white; text-decoration: none; border-radius: 25px; font-weight: 600; transition: all 0.3s; }
+.back-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(236,64,122,0.3); }
+.container { max-width: 1000px; margin: 0 auto; padding: 120px 30px 60px; }
+.page-header { text-align: center; margin-bottom: 50px; }
+.page-header h1 { font-size: 2.8rem; font-weight: 800; background: linear-gradient(135deg, #ec407a, #ab47bc, #42a5f5); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 15px; }
+.page-header p { color: #666; font-size: 1.2rem; }
+.content-card { background: white; border-radius: 25px; padding: 40px; margin-bottom: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.08); }
+.content-card h2 { color: #333; font-size: 1.6rem; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 3px solid #fce4ec; }
+.content-card h3 { color: #ec407a; font-size: 1.3rem; margin: 25px 0 15px; }
+.content-card p { color: #555; line-height: 1.8; margin-bottom: 15px; }
+.content-card ul { margin: 15px 0 15px 25px; }
+.content-card li { color: #555; line-height: 1.8; margin-bottom: 10px; }
+.diagram { background: linear-gradient(135deg, #fef6f0, #fdf2f8); border-radius: 20px; padding: 30px; margin: 25px 0; text-align: center; }
+.stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin: 25px 0; }
+.stat-box { background: linear-gradient(135deg, #fce4ec, #f3e5f5); padding: 25px; border-radius: 15px; text-align: center; }
+.stat-box .number { font-size: 2.5rem; font-weight: 800; color: #ec407a; }
+.stat-box .label { color: #666; font-size: 0.95rem; margin-top: 5px; }
+table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+th, td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; }
+th { background: linear-gradient(135deg, #fce4ec, #f3e5f5); color: #333; font-weight: 700; }
+tr:hover { background: #fef6f0; }
+.highlight-box { background: linear-gradient(135deg, #e8f5e9, #e3f2fd); border-left: 4px solid #4caf50; padding: 20px 25px; border-radius: 0 15px 15px 0; margin: 20px 0; }
+.highlight-box.warning { background: linear-gradient(135deg, #fff3e0, #fce4ec); border-left-color: #ff9800; }
+.highlight-box.info { background: linear-gradient(135deg, #e3f2fd, #f3e5f5); border-left-color: #2196f3; }
+.process-step { display: flex; align-items: flex-start; gap: 20px; margin: 20px 0; padding: 20px; background: #fef6f0; border-radius: 15px; }
+.step-num { width: 50px; height: 50px; background: linear-gradient(135deg, #ec407a, #ab47bc); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.3rem; flex-shrink: 0; }
+.step-content h4 { color: #333; margin-bottom: 8px; }
+.step-content p { color: #666; margin: 0; }
+.quote-box { background: linear-gradient(135deg, #fce4ec, #f3e5f5); padding: 30px; border-radius: 20px; margin: 25px 0; position: relative; }
+.quote-box::before { content: '"'; font-size: 4rem; color: #ec407a; opacity: 0.3; position: absolute; top: 10px; left: 20px; }
+.quote-box p { font-style: italic; color: #555; padding-left: 40px; }
+.quote-box .author { font-weight: 700; color: #333; margin-top: 15px; padding-left: 40px; }
+.timeline { position: relative; padding-left: 30px; }
+.timeline::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: linear-gradient(to bottom, #ec407a, #ab47bc, #42a5f5); border-radius: 3px; }
+.timeline-item { position: relative; padding: 20px 0 20px 30px; }
+.timeline-item::before { content: ''; position: absolute; left: -36px; top: 25px; width: 15px; height: 15px; background: white; border: 3px solid #ec407a; border-radius: 50%; }
+.timeline-item h4 { color: #333; margin-bottom: 8px; }
+.timeline-item p { color: #666; }
+</style>
+</head>
+<body>
+<nav>
+<a href="sesami.html" class="logo">Sesami</a>
+<a href="sesami.html" class="back-btn">Back to Home</a>
+</nav>
+<div class="container">
+
+<div class="page-header">
+<h1>Deep Dive of Experts</h1>
+<p>Insights from child development specialists, AI researchers, and product designers</p>
+</div>
+<div class="content-card">
+<h2>Expert Advisory Panel</h2>
+<p>Sesami's development was guided by a diverse panel of experts across multiple disciplines, ensuring our product meets the highest standards for child development, safety, and technological innovation.</p>
+</div>
+<div class="content-card">
+<h2>Dr. Sarah Mitchell - Child Developmental Psychologist</h2>
+<div class="quote-box">
+<p>The parent voice element is transformative. Children's brains are wired to respond to their caregiver's voice from birth. By using voice cloning technology, Sesami creates a bridge of familiarity that allows children to feel safe while exploring new learning activities.</p>
+<div class="author">Dr. Sarah Mitchell, PhD - Stanford Early Childhood Development Lab</div>
+</div>
+<h3>Key Recommendations Implemented:</h3>
+<ul>
+<li>Activities structured around developmental milestones (CDC guidelines)</li>
+<li>Calm, encouraging tone patterns to build confidence</li>
+<li>Pause-and-wait methodology to encourage child response</li>
+<li>Positive reinforcement without over-stimulation</li>
+</ul>
+</div>
+<div class="content-card">
+<h2>Prof. James Chen - AI/ML Specialist</h2>
+<div class="quote-box">
+<p>The voice cloning technology Sesami uses is cutting-edge but implemented responsibly. We've achieved 94% voice similarity while maintaining strict ethical boundaries - the AI only learns from parent-provided samples and never generates content outside approved scripts.</p>
+<div class="author">Prof. James Chen - MIT Media Lab</div>
+</div>
+<h3>Technical Contributions:</h3>
+<ul>
+<li>Developed proprietary voice cloning algorithm requiring only 5 minutes of samples</li>
+<li>Created emotion-adaptive response system</li>
+<li>Designed privacy-first architecture with on-device processing</li>
+<li>Built developmental tracking ML models</li>
+</ul>
+</div>
+<div class="content-card">
+<h2>Maria Rodriguez - Pediatric Safety Consultant</h2>
+<div class="quote-box">
+<p>Every component of Sesami was evaluated for safety from a pediatric perspective. The materials are hypoallergenic, the electronics are fully enclosed, and there are no small parts. This exceeds CPSC standards for children ages 0-5.</p>
+<div class="author">Maria Rodriguez - Consumer Product Safety Commission (Former)</div>
+</div>
+<h3>Safety Features Implemented:</h3>
+<ul>
+<li>CPSIA-compliant materials throughout</li>
+<li>Volume limiter (max 70dB to protect hearing)</li>
+<li>Automatic shutoff after extended use</li>
+<li>Machine-washable outer shell</li>
+<li>No choking hazard components</li>
+</ul>
+</div>
+<div class="content-card">
+<h2>Expert Validation Summary</h2>
+<div class="stat-grid">
+<div class="stat-box"><div class="number">12</div><div class="label">Expert Consultants</div></div>
+<div class="stat-box"><div class="number">400+</div><div class="label">Hours of Consultation</div></div>
+<div class="stat-box"><div class="number">100%</div><div class="label">Safety Compliance</div></div>
+<div class="stat-box"><div class="number">5</div><div class="label">Academic Partnerships</div></div>
+</div>
+</div>
+</div>
+</body>
+</html>

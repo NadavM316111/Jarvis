@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>End User Profiles - Sesami</title>
+  <style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #FFF5F6 0%, #F0F8FF 50%, #FFF0F5 100%);
+    min-height: 100vh;
+    color: #333;
+  }
+  .back-btn {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background: linear-gradient(135deg, #FFB6C1, #87CEEB);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: 600;
+    box-shadow: 0 4px 15px rgba(255,182,193,0.4);
+    transition: transform 0.3s, box-shadow 0.3s;
+    z-index: 100;
+  }
+  .back-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255,182,193,0.6);
+  }
+  .hero-section {
+    text-align: center;
+    padding: 80px 20px 40px;
+    background: linear-gradient(180deg, rgba(255,182,193,0.2) 0%, transparent 100%);
+  }
+  .hero-section h1 {
+    font-size: 2.5rem;
+    background: linear-gradient(135deg, #FF69B4, #87CEEB);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 10px;
+  }
+  .hero-section .subtitle {
+    font-size: 1.2rem;
+    color: #888;
+  }
+  .content-card {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    margin: 20px auto;
+    max-width: 900px;
+    box-shadow: 0 10px 40px rgba(255,182,193,0.2);
+  }
+  .content-card h2 {
+    color: #FF69B4;
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+  }
+  /* Problem Grid */
+  .problem-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+  .problem-item { text-align: center; padding: 20px; background: #FFF5F6; border-radius: 15px; }
+  .problem-icon { margin-bottom: 15px; }
+  .problem-item h3 { color: #e74c3c; margin-bottom: 10px; }
+  /* Purpose Statement */
+  .purpose-statement { position: relative; padding: 30px 50px; background: linear-gradient(135deg, #FFF0F5, #F0F8FF); border-radius: 15px; font-size: 1.2rem; line-height: 1.8; text-align: center; }
+  .quote-mark { font-size: 4rem; color: #FFB6C1; position: absolute; top: 10px; left: 20px; font-family: Georgia, serif; }
+  .quote-mark.closing { top: auto; bottom: -20px; right: 20px; left: auto; }
+  /* Pillars */
+  .pillars-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+  .pillar { padding: 25px; background: linear-gradient(135deg, #FFF5F6, #F0F8FF); border-radius: 15px; }
+  .pillar-number { font-size: 2rem; font-weight: bold; color: #FFB6C1; margin-bottom: 10px; }
+  .pillar h3 { color: #FF69B4; margin-bottom: 10px; }
+  /* Impact Stats */
+  .impact-stats { display: flex; justify-content: space-around; flex-wrap: wrap; gap: 20px; }
+  .stat-item { text-align: center; }
+  .stat-number { font-size: 3rem; font-weight: bold; background: linear-gradient(135deg, #FF69B4, #87CEEB); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .stat-label { color: #666; margin-top: 5px; }
+  /* Goals Grid */
+  .goals-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+  .goal-card { padding: 25px; background: white; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); text-align: center; }
+  .goal-icon { display: inline-block; padding: 10px 20px; border-radius: 20px; color: white; font-weight: bold; margin-bottom: 15px; }
+  .goal-icon.safe { background: #e74c3c; }
+  .goal-icon.engage { background: #3498db; }
+  .goal-icon.develop { background: #2ecc71; }
+  .goal-icon.comfort { background: #9b59b6; }
+  /* Criteria Table */
+  .criteria-table { width: 100%; border-collapse: collapse; }
+  .criteria-table th, .criteria-table td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; }
+  .criteria-table th { background: #FFF5F6; color: #FF69B4; }
+  .priority { padding: 5px 12px; border-radius: 15px; font-size: 0.8rem; font-weight: 600; }
+  .priority.high { background: #ffe6e6; color: #e74c3c; }
+  .priority.med { background: #fff3e6; color: #f39c12; }
+  /* Regulation List */
+  .regulation-list { display: flex; flex-direction: column; gap: 15px; }
+  .regulation-item { display: flex; align-items: center; gap: 15px; padding: 15px; background: #F9F9F9; border-radius: 10px; }
+  .reg-badge { background: linear-gradient(135deg, #FF69B4, #87CEEB); color: white; padding: 8px 15px; border-radius: 20px; font-weight: bold; font-size: 0.85rem; }
+  /* Method Stats */
+  .method-stats { display: flex; justify-content: space-around; flex-wrap: wrap; gap: 20px; padding: 20px; }
+  .method-item { text-align: center; }
+  .method-number { font-size: 2.5rem; font-weight: bold; color: #FF69B4; }
+  .method-label { color: #666; }
+  /* Interview Cards */
+  .interview-card { background: #FAFAFA; border-radius: 15px; padding: 25px; margin-bottom: 20px; border-left: 4px solid #FFB6C1; }
+  .interview-header { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
+  .interview-avatar { width: 50px; height: 50px; background: linear-gradient(135deg, #FFB6C1, #87CEEB); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; }
+  .interview-info h3 { color: #333; margin: 0; }
+  .interview-info p { color: #888; margin: 0; font-size: 0.9rem; }
+  .interview-quote { font-style: italic; font-size: 1.1rem; color: #555; line-height: 1.6; margin-bottom: 15px; padding-left: 20px; border-left: 3px solid #FFB6C1; }
+  .interview-insight { background: #FFF5F6; padding: 12px 15px; border-radius: 10px; font-size: 0.95rem; }
+  /* Themes Chart */
+  .themes-chart { display: flex; flex-direction: column; gap: 15px; }
+  .theme-bar { display: flex; align-items: center; gap: 15px; }
+  .theme-label { width: 200px; font-size: 0.9rem; color: #555; }
+  .theme-progress { height: 30px; background: linear-gradient(90deg, #FFB6C1, #FF69B4); border-radius: 15px; display: flex; align-items: center; justify-content: flex-end; padding-right: 15px; color: white; font-weight: bold; font-size: 0.85rem; }
+  /* Thesis */
+  .thesis-main { background: linear-gradient(135deg, #FFF5F6, #F0F8FF); }
+  .thesis-container { display: flex; align-items: center; gap: 30px; flex-wrap: wrap; justify-content: center; }
+  .thesis-text { flex: 1; min-width: 300px; }
+  .thesis-statement { font-size: 1.2rem; line-height: 1.8; color: #444; font-style: italic; }
+  .components-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+  .component-card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+  .component-card h3 { color: #FF69B4; margin-bottom: 10px; }
+  /* Evidence Timeline */
+  .evidence-timeline { position: relative; padding-left: 40px; }
+  .evidence-item { position: relative; padding-bottom: 30px; border-left: 3px solid #FFB6C1; padding-left: 30px; }
+  .evidence-marker { position: absolute; left: -15px; width: 30px; height: 30px; background: linear-gradient(135deg, #FF69B4, #87CEEB); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; }
+  .evidence-content h4 { color: #FF69B4; margin-bottom: 5px; }
+  /* Hypothesis */
+  .hypothesis-box { background: #F9F9F9; border-radius: 15px; padding: 25px; }
+  .hyp-item { display: flex; gap: 15px; padding: 15px 0; border-bottom: 1px solid #eee; }
+  .hyp-item:last-child { border-bottom: none; }
+  .hyp-label { background: linear-gradient(135deg, #FF69B4, #87CEEB); color: white; padding: 5px 12px; border-radius: 15px; font-weight: bold; font-size: 0.85rem; }
+  /* Persona Cards */
+  .persona-card { background: #FAFAFA; border-radius: 20px; padding: 30px; margin-bottom: 25px; }
+  .persona-header { display: flex; align-items: center; gap: 20px; margin-bottom: 20px; }
+  .persona-avatar { width: 80px; height: 80px; }
+  .persona-info h3 { margin: 0; color: #333; }
+  .persona-type { color: #888; margin: 5px 0 0; }
+  .persona-stats { display: flex; gap: 30px; margin-bottom: 20px; padding: 15px; background: white; border-radius: 10px; }
+  .persona-stats .stat { text-align: center; }
+  .stat-val { display: block; font-size: 1.5rem; font-weight: bold; color: #FF69B4; }
+  .stat-desc { font-size: 0.85rem; color: #888; }
+  .persona-details { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+  .detail-section h4 { color: #FF69B4; margin-bottom: 10px; }
+  .detail-section ul { list-style: none; }
+  .detail-section li { padding: 5px 0; padding-left: 20px; position: relative; }
+  .detail-section li::before { content: ''; position: absolute; left: 0; top: 12px; width: 8px; height: 8px; background: #FFB6C1; border-radius: 50%; }
+  .persona-quote { margin-top: 20px; padding: 20px; background: linear-gradient(135deg, #FFF5F6, #F0F8FF); border-radius: 15px; font-style: italic; color: #555; border-left: 4px solid #FFB6C1; }
+  /* Journey Map */
+  .journey-map { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 10px; padding: 20px 0; }
+  .journey-stage { background: white; border-radius: 15px; padding: 20px; width: 180px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+  .stage-header { background: linear-gradient(135deg, #FF69B4, #87CEEB); color: white; padding: 10px; border-radius: 10px; text-align: center; font-weight: bold; margin-bottom: 15px; }
+  .stage-content p { font-size: 0.85rem; color: #555; margin-bottom: 10px; }
+  .emotion { padding: 8px 12px; border-radius: 20px; font-size: 0.75rem; text-align: center; }
+  .emotion.positive { background: #e8f5e9; color: #2e7d32; }
+  .emotion.neutral { background: #fff3e0; color: #f57c00; }
+  .emotion.very-positive { background: #e3f2fd; color: #1565c0; }
+  .journey-arrow { font-size: 2rem; color: #FFB6C1; }
+  @media (max-width: 768px) {
+    .hero-section h1 { font-size: 1.8rem; }
+    .content-card { margin: 15px; padding: 20px; }
+    .theme-label { width: 120px; font-size: 0.8rem; }
+    .journey-map { flex-direction: column; }
+    .journey-arrow { transform: rotate(90deg); }
+  }
+</style>
+</head>
+<body>
+  <a href="sesami.html" class="back-btn">Back to Sesami</a>
+  
+      <div class="hero-section">
+        <h1>End User Profiles</h1>
+        <p class="subtitle">Understanding Our Users</p>
+      </div>
+      
+      <div class="content-card">
+        <h2>Primary User: The Child</h2>
+        <div class="persona-card child">
+          <div class="persona-header">
+            <div class="persona-avatar child-avatar">
+              <svg viewBox="0 0 100 100" width="80" height="80">
+                <circle cx="50" cy="50" r="45" fill="#FFE4E1"/>
+                <circle cx="50" cy="40" r="20" fill="#FFB6C1"/>
+                <circle cx="42" cy="38" r="3" fill="#333"/>
+                <circle cx="58" cy="38" r="3" fill="#333"/>
+                <path d="M43 48 Q50 54 57 48" fill="none" stroke="#333" stroke-width="2"/>
+                <path d="M30 25 Q50 15 70 25" fill="none" stroke="#DEB887" stroke-width="8" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="persona-info">
+              <h3>Emma - Age 3</h3>
+              <p class="persona-type">Primary End User</p>
+            </div>
+          </div>
+          <div class="persona-details">
+            <div class="detail-section">
+              <h4>Developmental Stage</h4>
+              <ul>
+                <li>Rapidly expanding vocabulary (200-1000 words)</li>
+                <li>Beginning to form complex sentences</li>
+                <li>Developing fine motor skills</li>
+                <li>Learning cause and effect</li>
+                <li>Strong attachment to comfort objects</li>
+              </ul>
+            </div>
+            <div class="detail-section">
+              <h4>Needs</h4>
+              <ul>
+                <li>Engaging, interactive stimulation</li>
+                <li>Familiar, comforting presence</li>
+                <li>Age-appropriate challenges</li>
+                <li>Positive reinforcement</li>
+                <li>Safe exploration opportunities</li>
+              </ul>
+            </div>
+            <div class="detail-section">
+              <h4>How Sesami Helps</h4>
+              <ul>
+                <li>Parent voice provides emotional security</li>
+                <li>Activities adapt to developmental level</li>
+                <li>Teddy bear form invites hugging and bonding</li>
+                <li>Encourages verbal interaction over passive consumption</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="content-card">
+        <h2>Secondary User: The Parent</h2>
+        
+        <div class="persona-card parent">
+          <div class="persona-header">
+            <div class="persona-avatar parent-avatar">
+              <svg viewBox="0 0 100 100" width="80" height="80">
+                <circle cx="50" cy="50" r="45" fill="#E6E6FA"/>
+                <circle cx="50" cy="38" r="18" fill="#DEB887"/>
+                <circle cx="43" cy="36" r="2" fill="#333"/>
+                <circle cx="57" cy="36" r="2" fill="#333"/>
+                <path d="M45 44 Q50 48 55 44" fill="none" stroke="#333" stroke-width="2"/>
+                <path d="M32 70 Q50 55 68 70" fill="#87CEEB" stroke="none"/>
+              </svg>
+            </div>
+            <div class="persona-info">
+              <h3>Jennifer - Age 34</h3>
+              <p class="persona-type">Working Mother, Product Manager</p>
+            </div>
+          </div>
+          <div class="persona-stats">
+            <div class="stat">
+              <span class="stat-val">2</span>
+              <span class="stat-desc">Children (2 & 4)</span>
+            </div>
+            <div class="stat">
+              <span class="stat-val">45hr</span>
+              <span class="stat-desc">Work week</span>
+            </div>
+            <div class="stat">
+              <span class="stat-val">$125k</span>
+              <span class="stat-desc">HH Income</span>
+            </div>
+          </div>
+          <div class="persona-details">
+            <div class="detail-section">
+              <h4>Pain Points</h4>
+              <ul>
+                <li>Guilt over screen time reliance</li>
+                <li>Limited quality time with kids</li>
+                <li>Uncertainty about developmental progress</li>
+                <li>Overwhelmed by parenting advice</li>
+              </ul>
+            </div>
+            <div class="detail-section">
+              <h4>Goals</h4>
+              <ul>
+                <li>Reduce children's screen time</li>
+                <li>Support healthy development</li>
+                <li>Maintain connection even when busy</li>
+                <li>Feel confident in parenting choices</li>
+              </ul>
+            </div>
+          </div>
+          <div class="persona-quote">
+            "I want to be present for my kids' development, but I also have to work. Something that could be 'me' when I can't be there would be incredible."
+          </div>
+        </div>
+        
+        <div class="persona-card parent alt">
+          <div class="persona-header">
+            <div class="persona-avatar parent-avatar">
+              <svg viewBox="0 0 100 100" width="80" height="80">
+                <circle cx="50" cy="50" r="45" fill="#F0FFF0"/>
+                <circle cx="50" cy="38" r="18" fill="#8B4513"/>
+                <circle cx="43" cy="36" r="2" fill="#333"/>
+                <circle cx="57" cy="36" r="2" fill="#333"/>
+                <path d="M45 44 Q50 48 55 44" fill="none" stroke="#333" stroke-width="2"/>
+                <rect x="35" y="55" width="30" height="25" rx="3" fill="#4682B4"/>
+              </svg>
+            </div>
+            <div class="persona-info">
+              <h3>Marcus - Age 38</h3>
+              <p class="persona-type">Stay-at-Home Father, Former Engineer</p>
+            </div>
+          </div>
+          <div class="persona-stats">
+            <div class="stat">
+              <span class="stat-val">1</span>
+              <span class="stat-desc">Child (age 3)</span>
+            </div>
+            <div class="stat">
+              <span class="stat-val">Tech</span>
+              <span class="stat-desc">Savvy</span>
+            </div>
+            <div class="stat">
+              <span class="stat-val">Data</span>
+              <span class="stat-desc">Driven</span>
+            </div>
+          </div>
+          <div class="persona-details">
+            <div class="detail-section">
+              <h4>Pain Points</h4>
+              <ul>
+                <li>Wants structured developmental activities</li>
+                <li>Misses intellectual stimulation</li>
+                <li>Concerned about socialization</li>
+                <li>Seeks validation of parenting effectiveness</li>
+              </ul>
+            </div>
+            <div class="detail-section">
+              <h4>Goals</h4>
+              <ul>
+                <li>Maximize child's potential</li>
+                <li>Track measurable progress</li>
+                <li>Use technology purposefully</li>
+                <li>Prepare child for school success</li>
+              </ul>
+            </div>
+          </div>
+          <div class="persona-quote">
+            "I want to see the data. Show me my son is actually learning, not just being entertained."
+          </div>
+        </div>
+      </div>
+      
+      <div class="content-card">
+        <h2>User Journey Map</h2>
+        <div class="journey-map">
+          <div class="journey-stage">
+            <div class="stage-header">Discovery</div>
+            <div class="stage-content">
+              <p>Parent learns about Sesami through social media or pediatrician recommendation</p>
+              <div class="emotion positive">Curious, Hopeful</div>
+            </div>
+          </div>
+          <div class="journey-arrow">&#8594;</div>
+          <div class="journey-stage">
+            <div class="stage-header">Setup</div>
+            <div class="stage-content">
+              <p>Parent records voice samples, customizes activities, introduces Sesami to child</p>
+              <div class="emotion neutral">Excited, Slightly Anxious</div>
+            </div>
+          </div>
+          <div class="journey-arrow">&#8594;</div>
+          <div class="journey-stage">
+            <div class="stage-header">Adoption</div>
+            <div class="stage-content">
+              <p>Child bonds with Sesami, engages in daily activities, parent monitors progress</p>
+              <div class="emotion positive">Relieved, Impressed</div>
+            </div>
+          </div>
+          <div class="journey-arrow">&#8594;</div>
+          <div class="journey-stage">
+            <div class="stage-header">Advocacy</div>
+            <div class="stage-content">
+              <p>Parent shares results with friends, writes reviews, recommends to other parents</p>
+              <div class="emotion very-positive">Proud, Grateful</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    
+</body>
+</html>

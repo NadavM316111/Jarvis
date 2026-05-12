@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sesami - Development, One Baby At a Time</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Lato:wght@300;400;500&display=swap" rel="stylesheet">
+    <title>Sesami - Your Child's First Friend</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -13,634 +13,592 @@
         }
 
         body {
-            font-family: 'Lato', sans-serif;
-            background: linear-gradient(135deg, #FFF8F0 0%, #FFF0E6 50%, #FFE8D6 100%);
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, #fef6e4 0%, #f8e1f4 50%, #e0f4ff 100%);
             min-height: 100vh;
             overflow-x: hidden;
         }
 
-        /* Floating particles */
-        .particles {
+        /* Intro Animation */
+        .intro-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            pointer-events: none;
-            z-index: 0;
-            overflow: hidden;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            animation: fadeOutIntro 1s ease-in-out 3s forwards;
         }
 
-        .particle {
-            position: absolute;
-            border-radius: 50%;
-            animation: float 15s infinite ease-in-out;
-            opacity: 0.3;
+        .intro-logo {
+            font-family: 'Quicksand', sans-serif;
+            font-size: 5rem;
+            font-weight: 700;
+            color: white;
+            text-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            animation: bounceIn 1s ease-out;
+        }
+
+        .intro-tagline {
+            font-size: 1.5rem;
+            color: rgba(255,255,255,0.9);
+            margin-top: 1rem;
+            animation: slideUp 1s ease-out 0.5s both;
+        }
+
+        .intro-bear {
+            font-size: 8rem;
+            animation: float 2s ease-in-out infinite, bounceIn 1s ease-out;
+        }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0); opacity: 0; }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes fadeOutIntro {
+            to { opacity: 0; visibility: hidden; pointer-events: none; }
         }
 
         @keyframes float {
-            0%, 100% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
-            10% { opacity: 0.3; }
-            90% { opacity: 0.3; }
-            100% { transform: translateY(-100px) rotate(720deg); opacity: 0; }
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(20px);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            box-shadow: 0 4px 30px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            font-family: 'Quicksand', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .nav-item {
+            position: relative;
+        }
+
+        .nav-item > a {
+            text-decoration: none;
+            color: #555;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item > a:hover {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        /* Dropdown Styles */
+        .dropdown {
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-70%);
+            background: white;
+            border-radius: 20px;
+            padding: 1rem;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            min-width: 280px;
+            z-index: 100;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .nav-item:hover .dropdown {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-70%) translateY(10px);
+        }
+
+        .dropdown a {
+            display: block;
+            padding: 0.7rem 1rem;
+            color: #555;
+            text-decoration: none;
+            border-radius: 10px;
+            transition: all 0.2s ease;
+            font-size: 0.95rem;
+        }
+
+        .dropdown a:hover {
+            background: linear-gradient(135deg, #f8e1f4, #e0f4ff);
+            color: #764ba2;
+            transform: translateX(5px);
+        }
+
+        /* Collapsible Section Styles */
+        .dropdown-section {
+            margin-bottom: 0.5rem;
+        }
+
+        .dropdown-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.7rem 1rem;
+            background: linear-gradient(135deg, #667eea20, #764ba220);
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 700;
+            color: #764ba2;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+
+        .dropdown-header:hover {
+            background: linear-gradient(135deg, #667eea40, #764ba240);
+        }
+
+        .dropdown-arrow {
+            transition: transform 0.3s ease;
+            font-size: 0.8rem;
+        }
+
+        .dropdown-section.open .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            padding-left: 0.5rem;
+        }
+
+        .dropdown-section.open .dropdown-content {
+            max-height: 500px;
+        }
+
+        .dropdown-content a {
+            font-size: 0.9rem;
+            padding: 0.5rem 1rem;
+        }
+
+        .section-label {
+            display: block;
+            padding: 0.5rem 1rem;
+            color: #764ba2;
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid #f8e1f4;
+            margin-bottom: 0.5rem;
         }
 
         /* Hero Section */
         .hero {
             min-height: 100vh;
             display: flex;
-            flex-direction: column;
-            justify-content: center;
             align-items: center;
+            justify-content: center;
+            padding: 8rem 2rem 4rem;
+            position: relative;
+        }
+
+        .hero-content {
             text-align: center;
-            padding: 40px 20px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .logo-container {
-            margin-bottom: 40px;
-            animation: fadeInDown 1.2s ease-out;
-        }
-
-        .logo {
-            width: 120px;
-            height: 120px;
-            background: linear-gradient(145deg, #FFB088, #FF8C5A);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 
-                0 20px 60px rgba(255, 140, 90, 0.3),
-                0 0 0 20px rgba(255, 140, 90, 0.1),
-                0 0 0 40px rgba(255, 140, 90, 0.05);
-            margin: 0 auto 20px;
-        }
-
-        .logo svg {
-            width: 60px;
-            height: 60px;
-            fill: white;
-        }
-
-        .est {
-            font-family: 'Playfair Display', serif;
-            font-size: 14px;
-            letter-spacing: 4px;
-            color: #C4937A;
-            text-transform: uppercase;
-        }
-
-        .hero h1 {
-            font-family: 'Playfair Display', serif;
-            font-size: clamp(3rem, 8vw, 6rem);
-            font-weight: 600;
-            color: #5D4037;
-            margin-bottom: 10px;
-            animation: fadeInUp 1s ease-out 0.3s both;
-        }
-
-        .hero h1 span {
-            background: linear-gradient(135deg, #FF8C5A 0%, #FFB088 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .tagline {
-            font-family: 'Playfair Display', serif;
-            font-size: clamp(1.1rem, 3vw, 1.6rem);
-            color: #8D6E63;
-            font-weight: 400;
-            font-style: italic;
-            margin-bottom: 30px;
-            animation: fadeInUp 1s ease-out 0.5s both;
-        }
-
-        .welcome-text {
-            font-size: 1.1rem;
-            color: #6D4C41;
-            max-width: 600px;
-            line-height: 1.8;
-            margin-bottom: 50px;
-            animation: fadeInUp 1s ease-out 0.7s both;
-        }
-
-        .scroll-indicator {
-            animation: bounce 2s infinite;
-            cursor: pointer;
-        }
-
-        .scroll-indicator svg {
-            width: 40px;
-            height: 40px;
-            stroke: #C4937A;
-        }
-
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-            40% { transform: translateY(-20px); }
-            60% { transform: translateY(-10px); }
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(40px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes fadeInDown {
-            from {
-                opacity: 0;
-                transform: translateY(-40px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Main Content Section */
-        .content-section {
-            padding: 100px 20px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .section-container {
-            max-width: 1100px;
-            margin: 0 auto;
-        }
-
-        /* The Problem Section */
-        .problem-section {
-            background: linear-gradient(180deg, rgba(255,255,255,0.8) 0%, rgba(255,248,240,0.9) 100%);
-            border-radius: 40px;
-            padding: 80px 60px;
-            margin-bottom: 60px;
-            box-shadow: 0 30px 80px rgba(139, 90, 60, 0.08);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .problem-section::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -20%;
-            width: 400px;
-            height: 400px;
-            background: radial-gradient(circle, rgba(255,176,136,0.15) 0%, transparent 70%);
-            border-radius: 50%;
-        }
-
-        .section-label {
-            font-size: 12px;
-            letter-spacing: 4px;
-            color: #FF8C5A;
-            text-transform: uppercase;
-            margin-bottom: 20px;
-            font-weight: 500;
-        }
-
-        .section-title {
-            font-family: 'Playfair Display', serif;
-            font-size: clamp(2rem, 4vw, 3rem);
-            color: #5D4037;
-            margin-bottom: 30px;
-            line-height: 1.3;
-        }
-
-        .section-text {
-            font-size: 1.15rem;
-            color: #6D4C41;
-            line-height: 2;
             max-width: 800px;
         }
 
-        .stat-highlight {
-            display: inline-block;
-            background: linear-gradient(135deg, #FFE8D6 0%, #FFD6C0 100%);
-            padding: 5px 15px;
-            border-radius: 30px;
-            font-weight: 600;
-            color: #D4724C;
-            margin: 5px 0;
+        .hero h1 {
+            font-family: 'Quicksand', sans-serif;
+            font-size: 4rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea, #764ba2, #f093fb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1.5rem;
+            animation: slideUp 1s ease-out 3.5s both;
         }
 
-        /* Solution Section */
-        .solution-section {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 40px;
-            margin-bottom: 60px;
-        }
-
-        @media (max-width: 768px) {
-            .solution-section {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .solution-card {
-            background: white;
-            border-radius: 30px;
-            padding: 50px 40px;
-            box-shadow: 0 20px 60px rgba(139, 90, 60, 0.08);
-            transition: transform 0.4s ease, box-shadow 0.4s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .solution-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 30px 80px rgba(139, 90, 60, 0.12);
-        }
-
-        .solution-card::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, #FFB088, #FF8C5A);
-            transform: scaleX(0);
-            transition: transform 0.4s ease;
-        }
-
-        .solution-card:hover::after {
-            transform: scaleX(1);
-        }
-
-        .card-icon {
-            width: 70px;
-            height: 70px;
-            background: linear-gradient(135deg, #FFF0E6 0%, #FFE8D6 100%);
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 25px;
-        }
-
-        .card-icon svg {
-            width: 35px;
-            height: 35px;
-            stroke: #FF8C5A;
-            fill: none;
-            stroke-width: 2;
-        }
-
-        .card-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.5rem;
-            color: #5D4037;
-            margin-bottom: 15px;
-        }
-
-        .card-text {
-            color: #8D6E63;
+        .hero p {
+            font-size: 1.3rem;
+            color: #666;
             line-height: 1.8;
+            margin-bottom: 2rem;
+            animation: slideUp 1s ease-out 3.7s both;
         }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            animation: slideUp 1s ease-out 3.9s both;
+        }
+
+        .btn {
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            box-shadow: 0 10px 40px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 50px rgba(102, 126, 234, 0.5);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #764ba2;
+            border: 2px solid #764ba2;
+        }
+
+        .btn-secondary:hover {
+            background: #764ba2;
+            color: white;
+        }
+
+        /* Floating Elements */
+        .floating-bear {
+            position: absolute;
+            font-size: 6rem;
+            animation: float 3s ease-in-out infinite;
+            opacity: 0.2;
+        }
+
+        .bear-1 { top: 20%; left: 10%; animation-delay: 0s; }
+        .bear-2 { top: 60%; right: 10%; animation-delay: 1s; }
+        .bear-3 { bottom: 10%; left: 20%; animation-delay: 2s; }
 
         /* Features Section */
-        .features-section {
-            background: linear-gradient(145deg, #5D4037 0%, #4E342E 100%);
-            border-radius: 40px;
-            padding: 80px 60px;
-            margin-bottom: 60px;
-            position: relative;
-            overflow: hidden;
+        .features {
+            padding: 6rem 2rem;
+            background: white;
         }
 
-        .features-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-        }
-
-        .features-section .section-label {
-            color: #FFB088;
-        }
-
-        .features-section .section-title {
-            color: #FFF8F0;
+        .features h2 {
+            text-align: center;
+            font-family: 'Quicksand', sans-serif;
+            font-size: 3rem;
+            color: #764ba2;
+            margin-bottom: 4rem;
         }
 
         .features-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 30px;
-            margin-top: 50px;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
-        @media (max-width: 900px) {
-            .features-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .feature-item {
+        .feature-card {
+            background: linear-gradient(135deg, #fef6e4, #f8e1f4);
+            padding: 2.5rem;
+            border-radius: 30px;
             text-align: center;
-            padding: 30px;
-        }
-
-        .feature-icon {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, rgba(255,176,136,0.2) 0%, rgba(255,140,90,0.2) 100%);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 20px;
-            border: 2px solid rgba(255,176,136,0.3);
-        }
-
-        .feature-icon svg {
-            width: 36px;
-            height: 36px;
-            stroke: #FFB088;
-            fill: none;
-            stroke-width: 2;
-        }
-
-        .feature-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.3rem;
-            color: #FFF8F0;
-            margin-bottom: 10px;
-        }
-
-        .feature-text {
-            color: #D7CCC8;
-            font-size: 0.95rem;
-            line-height: 1.7;
-        }
-
-        /* Vision Section */
-        .vision-section {
-            text-align: center;
-            padding: 100px 40px;
-            background: white;
-            border-radius: 40px;
-            box-shadow: 0 30px 80px rgba(139, 90, 60, 0.08);
-        }
-
-        .vision-section .section-title {
-            margin-bottom: 40px;
-        }
-
-        .vision-text {
-            font-size: 1.3rem;
-            color: #6D4C41;
-            line-height: 2;
-            max-width: 700px;
-            margin: 0 auto 50px;
-            font-style: italic;
-        }
-
-        .cta-button {
-            display: inline-flex;
-            align-items: center;
-            gap: 12px;
-            background: linear-gradient(135deg, #FF8C5A 0%, #FFB088 100%);
-            color: white;
-            padding: 18px 40px;
-            border-radius: 50px;
-            font-size: 1.1rem;
-            font-weight: 500;
-            text-decoration: none;
-            box-shadow: 0 15px 40px rgba(255, 140, 90, 0.3);
             transition: all 0.3s ease;
         }
 
-        .cta-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 20px 50px rgba(255, 140, 90, 0.4);
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 60px rgba(118, 75, 162, 0.2);
         }
 
-        .cta-button svg {
-            width: 20px;
-            height: 20px;
-            fill: white;
+        .feature-icon {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-card h3 {
+            font-family: 'Quicksand', sans-serif;
+            font-size: 1.5rem;
+            color: #764ba2;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card p {
+            color: #666;
+            line-height: 1.7;
         }
 
         /* Footer */
         footer {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
             text-align: center;
-            padding: 60px 20px;
-            color: #A1887F;
-            position: relative;
-            z-index: 1;
-        }
-
-        footer .brand {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.5rem;
-            color: #8D6E63;
-            margin-bottom: 10px;
+            padding: 3rem 2rem;
         }
 
         footer p {
-            font-size: 0.9rem;
+            opacity: 0.9;
         }
 
-        /* Reveal animations */
-        .reveal {
-            opacity: 0;
-            transform: translateY(50px);
-            transition: all 0.8s ease;
-        }
-
-        .reveal.active {
-            opacity: 1;
-            transform: translateY(0);
+        /* Mobile */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.5rem; }
+            .hero p { font-size: 1.1rem; }
+            .nav-links { display: none; }
+            .intro-logo { font-size: 3rem; }
+            .intro-bear { font-size: 5rem; }
         }
     </style>
 </head>
 <body>
-    <!-- Floating Particles -->
-    <div class="particles">
-        <div class="particle" style="left: 10%; width: 20px; height: 20px; background: rgba(255,176,136,0.4); animation-delay: 0s;"></div>
-        <div class="particle" style="left: 20%; width: 15px; height: 15px; background: rgba(255,140,90,0.3); animation-delay: 2s;"></div>
-        <div class="particle" style="left: 35%; width: 25px; height: 25px; background: rgba(255,200,170,0.3); animation-delay: 4s;"></div>
-        <div class="particle" style="left: 50%; width: 18px; height: 18px; background: rgba(255,176,136,0.35); animation-delay: 1s;"></div>
-        <div class="particle" style="left: 65%; width: 22px; height: 22px; background: rgba(255,140,90,0.25); animation-delay: 3s;"></div>
-        <div class="particle" style="left: 80%; width: 16px; height: 16px; background: rgba(255,200,170,0.4); animation-delay: 5s;"></div>
-        <div class="particle" style="left: 90%; width: 20px; height: 20px; background: rgba(255,176,136,0.3); animation-delay: 2.5s;"></div>
+    <!-- Intro Animation -->
+    <div class="intro-overlay">
+        <div class="intro-bear">&#x1F9F8;</div>
+        <div class="intro-logo">Sesami</div>
+        <div class="intro-tagline">Your Child's First Friend</div>
     </div>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="logo">Sesami</div>
+        <div class="nav-links">
+            <div class="nav-item">
+                <a href="#">Background</a>
+                <div class="dropdown">
+                    <a href="sesami-preliminary-research.html">Preliminary Research</a>
+                    <a href="sesami-final-research.html">Final Research Paper</a>
+                    <a href="sesami-rfid-technology.html">How RFID Technology Works</a>
+                    <a href="sesami-competitor-chart.html">Competitor Chart</a>
+                    <a href="sesami-expert-sources.html">Consulting Expert Sources</a>
+                    <a href="sesami-end-user.html">Envisioning the End User</a>
+                    <a href="sesami-experts-survey.html">Experts Survey</a>
+                    <a href="sesami-sensors.html">Sensors Writeup</a>
+                    <a href="sesami-business-plan.html">Business Plan</a>
+                    <a href="sesami-financials.html">Financials</a>
+                </div>
+            </div>
+            <div class="nav-item">
+                <a href="#">Engineering Drawings</a>
+                <div class="dropdown">
+                    <a href="sesami-system-architecture.html">System Architecture Diagram</a>
+                    <a href="sesami-ai-ml-components.html">AI/ML Model Components</a>
+                    <a href="sesami-software-api-stack.html">Software & API Stack</a>
+                    <a href="sesami-data-flow.html">Data Flow Schematic</a>
+                    <a href="sesami-pseudocode.html">Pseudocode</a>
+                    <a href="sesami-user-flowchart.html">User Interaction Flowchart</a>
+                    <a href="sesami-app-mockups.html">App UI/UX Mockups</a>
+                    <a href="sesami-demo-voice.html">Demo Video of Voice Interaction</a>
+                    <a href="sesami-demo-tracking.html">Demo Video of Developmental Tracking</a>
+                    <a href="sesami-demo-dashboard.html">Demo Video of Parent Dashboard</a>
+                    <a href="sesami-prototype-iteration.html">Prototype Iteration Process</a>
+                    <a href="sesami-code-explanation.html">Code & Algorithm Explanation</a>
+                    <a href="sesami-tech-selection.html">Technology Selection Process</a>
+                    <a href="sesami-mini-model.html">Mini-Scale Product Model</a>
+                </div>
+            </div>
+            <div class="nav-item">
+                <a href="#">Ideate</a>
+                <div class="dropdown">
+                    <a href="sesami-potential-solutions.html">Potential Solutions to the Problem</a>
+                    <a href="sesami-decision-matrix.html">Decision Matrix</a>
+                    <a href="sesami-competitive-advantage.html">Competitive Advantage</a>
+                    <a href="sesami-iteration-feedback.html">Iteration Based on Prototype Feedback</a>
+                    <a href="sesami-deep-dive-experts.html">Deep Dive of Experts</a>
+                    <a href="sesami-approach-reasoning.html">Approach Reasoning</a>
+                </div>
+            </div>
+            <div class="nav-item">
+                <a href="#">Define</a>
+                <div class="dropdown">
+                    <a href="sesami-purpose-innovation.html">Purpose for Innovation</a>
+                    <a href="sesami-design-goals.html">Design Goals / Criteria / Constraints</a>
+                    <a href="sesami-end-user-interview.html">End User Interview</a>
+                    <a href="sesami-thesis.html">Thesis Statement</a>
+                    <a href="sesami-end-user-profiles.html">End User Profiles</a>
+                </div>
+            </div>
+            <div class="nav-item">
+                <a href="#">More</a>
+                <div class="dropdown">
+                    <!-- Videos Section - Collapsible -->
+                    <div class="dropdown-section">
+                        <div class="dropdown-header" onclick="toggleSection(this)">
+                            Videos
+                            <span class="dropdown-arrow">&#9660;</span>
+                        </div>
+                        <div class="dropdown-content">
+                            <a href="sesami-commercial.html">Commercial</a>
+                        </div>
+                    </div>
+
+                    <!-- Privacy Policy Section - Collapsible -->
+                    <div class="dropdown-section">
+                        <div class="dropdown-header" onclick="toggleSection(this)">
+                            Privacy Policy
+                            <span class="dropdown-arrow">&#9660;</span>
+                        </div>
+                        <div class="dropdown-content">
+                            <a href="sesami-privacy-policy.html">Privacy Policy</a>
+                            <a href="sesami-policy.html">Policy</a>
+                        </div>
+                    </div>
+
+                    <!-- Presentation Section - Collapsible -->
+                    <div class="dropdown-section">
+                        <div class="dropdown-header" onclick="toggleSection(this)">
+                            Presentation
+                            <span class="dropdown-arrow">&#9660;</span>
+                        </div>
+                        <div class="dropdown-content">
+                            <a href="sesami-presentation.html">Presentation</a>
+                            <a href="sesami-business-pitch.html">Business Pitch</a>
+                        </div>
+                    </div>
+
+                    <!-- Prototype Section - Collapsible -->
+                    <div class="dropdown-section">
+                        <div class="dropdown-header" onclick="toggleSection(this)">
+                            Prototype
+                            <span class="dropdown-arrow">&#9660;</span>
+                        </div>
+                        <div class="dropdown-content">
+                            <a href="sesami-prototype.html">Prototype</a>
+                            <a href="sesami-voice-demo.html">Video of Voice Interaction Demo</a>
+                            <a href="sesami-tracking-demo.html">Video of Developmental Tracking Demo</a>
+                            <a href="sesami-dashboard-demo.html">Video of Parent Dashboard Demo</a>
+                        </div>
+                    </div>
+
+                    <!-- Digital Portfolio Section - Collapsible -->
+                    <div class="dropdown-section">
+                        <div class="dropdown-header" onclick="toggleSection(this)">
+                            Digital Portfolio
+                            <span class="dropdown-arrow">&#9660;</span>
+                        </div>
+                        <div class="dropdown-content">
+                            <a href="sesami-abstract.html">Abstract</a>
+                            <a href="sesami-team-bio.html">Team Bio</a>
+                            <a href="sesami-gantt-chart.html">Gantt Chart</a>
+                            <a href="sesami-acknowledgements.html">Acknowledgements</a>
+                            <a href="sesami-social-media.html">Social Media</a>
+                            <a href="sesami-ai-use.html">AI Use in Project</a>
+                        </div>
+                    </div>
+
+                    <!-- Test and Reflect Section - Collapsible -->
+                    <div class="dropdown-section">
+                        <div class="dropdown-header" onclick="toggleSection(this)">
+                            Test and Reflect
+                            <span class="dropdown-arrow">&#9660;</span>
+                        </div>
+                        <div class="dropdown-content">
+                            <a href="sesami-possible-improvements.html">Possible Prototype Improvements</a>
+                            <a href="sesami-iterative-reflections.html">Iterative Reflections</a>
+                            <a href="sesami-elevator-pitch.html">Elevator Pitch</a>
+                            <a href="sesami-reviews-corrections.html">Reviews and Corrections</a>
+                            <a href="sesami-testing-results.html">Prototype Testing Results</a>
+                            <a href="sesami-potential-improvements.html">Potential Improvements</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
 
     <!-- Hero Section -->
     <section class="hero">
-        <div class="logo-container">
-            <div class="logo">
-                <svg viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                </svg>
+        <div class="floating-bear bear-1">&#x1F9F8;</div>
+        <div class="floating-bear bear-2">&#x1F9F8;</div>
+        <div class="floating-bear bear-3">&#x1F9F8;</div>
+        <div class="hero-content">
+            <h1>Meet Sesami, Your Child's First Friend</h1>
+            <p>An interactive early childhood educational companion designed to support children's development through playful, engaging interaction. Built into a teddy bear with an integrated speaker, Sesami communicates using a cloned version of the parent's voice, creating a familiar and personalized experience.</p>
+            <div class="hero-buttons">
+                <a href="#features" class="btn btn-primary">Explore Sesami</a>
+                <a href="#" class="btn btn-secondary">Watch Demo</a>
             </div>
-            <span class="est">Est. 2026</span>
-        </div>
-        <h1>Meet <span>Sesami</span></h1>
-        <p class="tagline">Development, One Baby At a Time</p>
-        <p class="welcome-text">
-            Welcome to a world of care, love, and development. Where every coo, every giggle, 
-            and every curious gaze is met with the warmth of a parent's voice.
-        </p>
-        <div class="scroll-indicator" onclick="document.querySelector('.content-section').scrollIntoView({behavior: 'smooth'})">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M7 13l5 5 5-5M7 6l5 5 5-5"/>
-            </svg>
         </div>
     </section>
 
-    <!-- Main Content -->
-    <section class="content-section">
-        <div class="section-container">
-            
-            <!-- The Challenge -->
-            <div class="problem-section reveal">
-                <span class="section-label">The Challenge</span>
-                <h2 class="section-title">The Words That Shape Tomorrow</h2>
-                <p class="section-text">
-                    Early childhood language exposure is one of the most powerful predictors of long-term cognitive development. 
-                    Research shows that infants who hear <span class="stat-highlight">more words</span> and experience 
-                    <span class="stat-highlight">richer conversations</span> develop stronger neural pathways, better vocabularies, 
-                    and enhanced problem-solving abilities that last a lifetime.
-                    <br><br>
-                    Yet the reality is stark: many infants receive <span class="stat-highlight">limited interactive communication</span> 
-                    during critical developmental windows. Parents are busy. Caregivers are stretched thin. And in those quiet moments, 
-                    when a baby's brain is most hungry for connection, silence often fills the space.
-                    <br><br>
-                    This is the gap Sesami was born to bridge.
-                </p>
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <h2>Why Parents Love Sesami</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">&#x1F3A4;</div>
+                <h3>Parent Voice Cloning</h3>
+                <p>Sesami speaks with your voice, creating a comforting and familiar experience for your child even when you're not there.</p>
             </div>
-
-            <!-- Solution Cards -->
-            <div class="solution-section">
-                <div class="solution-card reveal">
-                    <div class="card-icon">
-                        <svg viewBox="0 0 24 24">
-                            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
-                            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
-                            <line x1="12" y1="19" x2="12" y2="23"/>
-                            <line x1="8" y1="23" x2="16" y2="23"/>
-                        </svg>
-                    </div>
-                    <h3 class="card-title">Parent-Voice AI</h3>
-                    <p class="card-text">
-                        Sesami doesn't speak in a cold, robotic tone. It learns and recreates the familiar, 
-                        comforting cadence of a parent's voice, ensuring every interaction feels like home to your little one.
-                    </p>
-                </div>
-
-                <div class="solution-card reveal">
-                    <div class="card-icon">
-                        <svg viewBox="0 0 24 24">
-                            <circle cx="12" cy="12" r="10"/>
-                            <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
-                            <line x1="9" y1="9" x2="9.01" y2="9"/>
-                            <line x1="15" y1="9" x2="15.01" y2="9"/>
-                        </svg>
-                    </div>
-                    <h3 class="card-title">Adaptive Conversation</h3>
-                    <p class="card-text">
-                        Using advanced AI, Sesami adapts its responses based on your baby's developmental stage, 
-                        responses, and engagement patterns, creating truly personalized developmental support.
-                    </p>
-                </div>
+            <div class="feature-card">
+                <div class="feature-icon">&#x1F9E9;</div>
+                <h3>Developmental Activities</h3>
+                <p>Encourages language development, attention, curiosity, motor skills, and early problem-solving through active play.</p>
             </div>
-
-            <!-- Features Section -->
-            <div class="features-section reveal">
-                <span class="section-label">Core Capabilities</span>
-                <h2 class="section-title">Intelligent Development Companion</h2>
-                
-                <div class="features-grid">
-                    <div class="feature-item">
-                        <div class="feature-icon">
-                            <svg viewBox="0 0 24 24">
-                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-                            </svg>
-                        </div>
-                        <h4 class="feature-title">Language Enrichment</h4>
-                        <p class="feature-text">Dramatically increases daily word exposure through engaging, age-appropriate conversations</p>
-                    </div>
-
-                    <div class="feature-item">
-                        <div class="feature-icon">
-                            <svg viewBox="0 0 24 24">
-                                <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
-                            </svg>
-                        </div>
-                        <h4 class="feature-title">Response Monitoring</h4>
-                        <p class="feature-text">Tracks developmental responses and milestones, providing insights into your baby's growth</p>
-                    </div>
-
-                    <div class="feature-item">
-                        <div class="feature-icon">
-                            <svg viewBox="0 0 24 24">
-                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-                            </svg>
-                        </div>
-                        <h4 class="feature-title">Emotional Connection</h4>
-                        <p class="feature-text">Maintains the warmth and emotional resonance that only a parent's presence can provide</p>
-                    </div>
-                </div>
+            <div class="feature-card">
+                <div class="feature-icon">&#x1F4CA;</div>
+                <h3>Progress Insights</h3>
+                <p>Parents receive detailed insights into their child's developmental progress, supporting healthy cognitive and emotional growth.</p>
             </div>
-
-            <!-- Vision Section -->
-            <div class="vision-section reveal">
-                <span class="section-label">Our Vision</span>
-                <h2 class="section-title">Every Baby Deserves a Voice</h2>
-                <p class="vision-text">
-                    "We believe that every child, regardless of circumstance, deserves the gift of rich language exposure 
-                    and loving interaction. Sesami isn't here to replace parents. It's here to extend their presence, 
-                    amplify their love, and ensure no developmental moment is lost to silence."
-                </p>
-                <a href="#" class="cta-button">
-                    <span>Join the Journey</span>
-                    <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                </a>
-            </div>
-
         </div>
     </section>
 
     <!-- Footer -->
     <footer>
-        <div class="brand">Sesami</div>
-        <p>Development, One Baby At a Time | Est. 2026</p>
+        <p>Sesami - CIJE Innovation Day 2026 | Nurturing Development Through Play</p>
     </footer>
 
     <script>
-        // Scroll reveal animation
-        function reveal() {
-            const reveals = document.querySelectorAll('.reveal');
-            reveals.forEach(element => {
-                const windowHeight = window.innerHeight;
-                const elementTop = element.getBoundingClientRect().top;
-                const elementVisible = 150;
-                
-                if (elementTop < windowHeight - elementVisible) {
-                    element.classList.add('active');
-                }
-            });
+        function toggleSection(header) {
+            const section = header.parentElement;
+            section.classList.toggle('open');
         }
 
-        window.addEventListener('scroll', reveal);
-        reveal(); // Initial check
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
     </script>
 </body>
 </html>

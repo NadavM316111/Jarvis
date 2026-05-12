@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Policy - Sesami</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --pastel-pink: #FFD6E0;
+            --pastel-blue: #C5E8FF;
+            --pastel-yellow: #FFF5CC;
+            --pastel-mint: #C8F7DC;
+            --pastel-lavender: #E8D5F2;
+            --soft-coral: #FFB5A7;
+            --cream: #FFF9F0;
+            --text-dark: #4A4A6A;
+            --text-light: #6B6B8D;
+        }
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, var(--cream) 0%, var(--pastel-pink) 50%, var(--pastel-blue) 100%);
+            min-height: 100vh;
+            color: var(--text-dark);
+        }
+        .back-btn {
+            position: fixed;
+            top: 30px;
+            left: 30px;
+            background: white;
+            padding: 12px 25px;
+            border-radius: 50px;
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 600;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        .back-btn:hover { transform: translateY(-3px); }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 100px 40px;
+        }
+        h1 {
+            font-family: 'Quicksand', sans-serif;
+            font-size: 3.5rem;
+            text-align: center;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, var(--text-dark), #8B5A8B);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .subtitle {
+            text-align: center;
+            font-size: 1.2rem;
+            color: var(--text-light);
+            margin-bottom: 50px;
+        }
+        .policy-card {
+            background: white;
+            border-radius: 25px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.08);
+        }
+        .policy-card h2 {
+            font-family: 'Quicksand', sans-serif;
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            color: var(--text-dark);
+            padding-bottom: 15px;
+            border-bottom: 3px solid var(--pastel-pink);
+        }
+        .policy-card h3 {
+            font-size: 1.3rem;
+            margin: 25px 0 15px;
+            color: var(--text-dark);
+        }
+        .policy-card p {
+            color: var(--text-light);
+            line-height: 1.9;
+            margin-bottom: 15px;
+        }
+        .policy-card ul {
+            list-style: none;
+            margin: 15px 0;
+        }
+        .policy-card li {
+            padding: 10px 0 10px 30px;
+            position: relative;
+            color: var(--text-light);
+        }
+        .policy-card li:before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 16px;
+            width: 10px;
+            height: 10px;
+            background: var(--pastel-pink);
+            border-radius: 50%;
+        }
+        .terms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        .term-box {
+            background: linear-gradient(135deg, var(--cream), white);
+            padding: 25px;
+            border-radius: 20px;
+            border-left: 4px solid var(--pastel-lavender);
+        }
+        .term-box h4 {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            color: var(--text-dark);
+        }
+        .term-box p {
+            font-size: 0.95rem;
+            margin: 0;
+        }
+        .warning-box {
+            background: linear-gradient(135deg, var(--pastel-yellow), #FFE5B4);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 0;
+        }
+        .warning-box h4 {
+            color: #8B6914;
+            margin-bottom: 10px;
+        }
+        .warning-box p {
+            color: #6B5A1E;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <a href="sesami.html" class="back-btn">Back to Home</a>
+    
+    <div class="container">
+        <h1>Terms & Policy</h1>
+        <p class="subtitle">Guidelines for using Sesami responsibly</p>
+        
+        <div class="policy-card">
+            <h2>Terms of Service</h2>
+            <p>By using Sesami, you agree to these terms which govern your use of our interactive educational companion and related services.</p>
+            
+            <h3>Acceptable Use</h3>
+            <p>Sesami is designed for children ages 1-6 under parental supervision. Parents and guardians are responsible for:</p>
+            <ul>
+                <li>Ensuring appropriate use of Sesami by their children</li>
+                <li>Providing accurate voice samples for cloning purposes</li>
+                <li>Monitoring developmental insights and acting on recommendations</li>
+                <li>Maintaining account security and not sharing credentials</li>
+            </ul>
+            
+            <h3>Voice Cloning Consent</h3>
+            <p>By using Sesami's voice cloning feature, you confirm that you are the owner of the voice being cloned or have explicit permission from the voice owner. Voice samples may only be used within your own Sesami device and cannot be exported or transferred.</p>
+            
+            <div class="warning-box">
+                <h4>Important Notice</h4>
+                <p>Sesami is an educational supplement and should not replace direct parent-child interaction. We recommend balanced use as part of a healthy developmental routine.</p>
+            </div>
+        </div>
+        
+        <div class="policy-card">
+            <h2>Usage Guidelines</h2>
+            <div class="terms-grid">
+                <div class="term-box">
+                    <h4>Recommended Duration</h4>
+                    <p>30-60 minutes per day of interactive play, broken into multiple sessions</p>
+                </div>
+                <div class="term-box">
+                    <h4>Age Appropriateness</h4>
+                    <p>Content automatically adjusts based on your child's developmental stage</p>
+                </div>
+                <div class="term-box">
+                    <h4>Supervision</h4>
+                    <p>Adult supervision recommended for children under 3 years old</p>
+                </div>
+                <div class="term-box">
+                    <h4>Physical Safety</h4>
+                    <p>Ensure Sesami is kept clean and away from water or extreme temperatures</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="policy-card">
+            <h2>Intellectual Property</h2>
+            <p>All content, software, designs, and materials associated with Sesami are protected by intellectual property laws. Users may not:</p>
+            <ul>
+                <li>Reverse engineer, decompile, or disassemble Sesami's software</li>
+                <li>Copy, modify, or distribute Sesami's educational content</li>
+                <li>Use Sesami's voice cloning technology for unauthorized purposes</li>
+                <li>Reproduce Sesami's branding or design elements</li>
+            </ul>
+        </div>
+        
+        <div class="policy-card">
+            <h2>Limitation of Liability</h2>
+            <p>Sesami provides developmental insights based on interaction patterns but is not a medical device. These insights are informational only and should not replace professional pediatric assessment. Sesami is not liable for any developmental outcomes and parents should consult healthcare providers for concerns about their child's development.</p>
+        </div>
+    </div>
+</body>
+</html>

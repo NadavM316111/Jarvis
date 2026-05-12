@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Iteration Based on Prototype Feedback - Sesami</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Nunito', sans-serif; background: linear-gradient(135deg, #fef6f0 0%, #fdf2f8 50%, #f0f9ff 100%); min-height: 100vh; }
+nav { position: fixed; top: 0; width: 100%; padding: 20px 50px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); box-shadow: 0 2px 20px rgba(0,0,0,0.05); }
+.logo { font-size: 1.8rem; font-weight: 800; background: linear-gradient(135deg, #ec407a, #ab47bc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-decoration: none; }
+.back-btn { padding: 10px 25px; background: linear-gradient(135deg, #ec407a, #ab47bc); color: white; text-decoration: none; border-radius: 25px; font-weight: 600; transition: all 0.3s; }
+.back-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(236,64,122,0.3); }
+.container { max-width: 1000px; margin: 0 auto; padding: 120px 30px 60px; }
+.page-header { text-align: center; margin-bottom: 50px; }
+.page-header h1 { font-size: 2.8rem; font-weight: 800; background: linear-gradient(135deg, #ec407a, #ab47bc, #42a5f5); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 15px; }
+.page-header p { color: #666; font-size: 1.2rem; }
+.content-card { background: white; border-radius: 25px; padding: 40px; margin-bottom: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.08); }
+.content-card h2 { color: #333; font-size: 1.6rem; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 3px solid #fce4ec; }
+.content-card h3 { color: #ec407a; font-size: 1.3rem; margin: 25px 0 15px; }
+.content-card p { color: #555; line-height: 1.8; margin-bottom: 15px; }
+.content-card ul { margin: 15px 0 15px 25px; }
+.content-card li { color: #555; line-height: 1.8; margin-bottom: 10px; }
+.diagram { background: linear-gradient(135deg, #fef6f0, #fdf2f8); border-radius: 20px; padding: 30px; margin: 25px 0; text-align: center; }
+.stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin: 25px 0; }
+.stat-box { background: linear-gradient(135deg, #fce4ec, #f3e5f5); padding: 25px; border-radius: 15px; text-align: center; }
+.stat-box .number { font-size: 2.5rem; font-weight: 800; color: #ec407a; }
+.stat-box .label { color: #666; font-size: 0.95rem; margin-top: 5px; }
+table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+th, td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; }
+th { background: linear-gradient(135deg, #fce4ec, #f3e5f5); color: #333; font-weight: 700; }
+tr:hover { background: #fef6f0; }
+.highlight-box { background: linear-gradient(135deg, #e8f5e9, #e3f2fd); border-left: 4px solid #4caf50; padding: 20px 25px; border-radius: 0 15px 15px 0; margin: 20px 0; }
+.highlight-box.warning { background: linear-gradient(135deg, #fff3e0, #fce4ec); border-left-color: #ff9800; }
+.highlight-box.info { background: linear-gradient(135deg, #e3f2fd, #f3e5f5); border-left-color: #2196f3; }
+.process-step { display: flex; align-items: flex-start; gap: 20px; margin: 20px 0; padding: 20px; background: #fef6f0; border-radius: 15px; }
+.step-num { width: 50px; height: 50px; background: linear-gradient(135deg, #ec407a, #ab47bc); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.3rem; flex-shrink: 0; }
+.step-content h4 { color: #333; margin-bottom: 8px; }
+.step-content p { color: #666; margin: 0; }
+.quote-box { background: linear-gradient(135deg, #fce4ec, #f3e5f5); padding: 30px; border-radius: 20px; margin: 25px 0; position: relative; }
+.quote-box::before { content: '"'; font-size: 4rem; color: #ec407a; opacity: 0.3; position: absolute; top: 10px; left: 20px; }
+.quote-box p { font-style: italic; color: #555; padding-left: 40px; }
+.quote-box .author { font-weight: 700; color: #333; margin-top: 15px; padding-left: 40px; }
+.timeline { position: relative; padding-left: 30px; }
+.timeline::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: linear-gradient(to bottom, #ec407a, #ab47bc, #42a5f5); border-radius: 3px; }
+.timeline-item { position: relative; padding: 20px 0 20px 30px; }
+.timeline-item::before { content: ''; position: absolute; left: -36px; top: 25px; width: 15px; height: 15px; background: white; border: 3px solid #ec407a; border-radius: 50%; }
+.timeline-item h4 { color: #333; margin-bottom: 8px; }
+.timeline-item p { color: #666; }
+</style>
+</head>
+<body>
+<nav>
+<a href="sesami.html" class="logo">Sesami</a>
+<a href="sesami.html" class="back-btn">Back to Home</a>
+</nav>
+<div class="container">
+
+<div class="page-header">
+<h1>Iteration Based on Prototype Feedback</h1>
+<p>How user testing shaped Sesami's final design</p>
+</div>
+<div class="content-card">
+<h2>Prototype Evolution Timeline</h2>
+<div class="timeline">
+<div class="timeline-item">
+<h4>Prototype v0.1 - Concept Model</h4>
+<p>Basic plush form with external speaker module. Feedback: Speaker too bulky, not integrated enough for natural hugging.</p>
+</div>
+<div class="timeline-item">
+<h4>Prototype v0.5 - Internal Speaker</h4>
+<p>Embedded speaker with basic voice playback. Feedback: Voice sounded robotic, children lost interest after 5 minutes.</p>
+</div>
+<div class="timeline-item">
+<h4>Prototype v1.0 - Voice Cloning Integration</h4>
+<p>First version with parent voice cloning. Feedback: Children engaged 3x longer, but parents wanted more activity variety.</p>
+</div>
+<div class="timeline-item">
+<h4>Prototype v1.5 - Activity Expansion</h4>
+<p>Added 25+ developmental activities. Feedback: Excellent engagement, but bear felt too heavy for toddlers.</p>
+</div>
+<div class="timeline-item">
+<h4>Prototype v2.0 - Weight Optimization</h4>
+<p>Reduced weight by 40% with new battery technology. Feedback: Perfect for hugging, parents requested progress tracking.</p>
+</div>
+<div class="timeline-item">
+<h4>Prototype v2.5 - Final Design</h4>
+<p>Full feature set with parent dashboard app. This is the production-ready Sesami.</p>
+</div>
+</div>
+</div>
+<div class="content-card">
+<h2>Key Feedback-Driven Changes</h2>
+<table>
+<tr><th>Feedback Theme</th><th>Source</th><th>Change Implemented</th><th>Impact</th></tr>
+<tr><td>"Too heavy to carry"</td><td>Parent focus group</td><td>Redesigned internal frame, lighter battery</td><td>-40% weight</td></tr>
+<tr><td>"Voice sounds artificial"</td><td>Child testing</td><td>Upgraded voice cloning AI model</td><td>94% voice match</td></tr>
+<tr><td>"Want to see progress"</td><td>Parent interviews</td><td>Built comprehensive parent dashboard</td><td>+85% satisfaction</td></tr>
+<tr><td>"Seams uncomfortable"</td><td>Child observation</td><td>Hidden all seams inside design</td><td>Zero complaints</td></tr>
+<tr><td>"Battery dies too fast"</td><td>Beta testing</td><td>Implemented smart power management</td><td>12hr to 18hr life</td></tr>
+</table>
+</div>
+<div class="content-card">
+<h2>User Testing Statistics</h2>
+<div class="stat-grid">
+<div class="stat-box"><div class="number">47</div><div class="label">Families in Beta Test</div></div>
+<div class="stat-box"><div class="number">312</div><div class="label">Hours of Observation</div></div>
+<div class="stat-box"><div class="number">89</div><div class="label">Design Iterations</div></div>
+<div class="stat-box"><div class="number">98%</div><div class="label">Would Recommend</div></div>
+</div>
+</div>
+</div>
+</body>
+</html>
