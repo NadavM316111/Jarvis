@@ -403,7 +403,7 @@ async function getSystemInfo() {
 }
 
 // ============ MAIN AGENTIC LOOP ============
-async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame = null, attachedFile = null) {
+async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame = null, attachedFiles = []) {
   const session = getSession(userId);
   const { conversationHistory, userMemory } = session;
   const isNadav = userId === NADAV_USER_ID;
@@ -605,21 +605,22 @@ async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame
   const frame = cameraFrame || latestCameraFrame;
   if (frame) messageContent.push({ type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: frame } });
 
-  if (attachedFile) {
-    if (attachedFile.type.startsWith('image/')) {
-      messageContent.push({ type: 'image', source: { type: 'base64', media_type: attachedFile.type, data: attachedFile.data } });
-    } else if (attachedFile.type === 'application/pdf') {
-      messageContent.push({ type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: attachedFile.data } });
-    }
-    if (attachedFile.type.startsWith('text/') || attachedFile.name.match(/\.(js|ts|py|md|json|csv|txt)$/i)) {
-      try {
-        const textContent = Buffer.from(attachedFile.data, 'base64').toString('utf8');
-        messageContent.push({ type: 'text', text: `[Attached file: ${attachedFile.name}]\n\`\`\`\n${textContent.substring(0, 8000)}\n\`\`\`` });
-      } catch (e) {}
-    } else {
-      messageContent.push({ type: 'text', text: `[User attached file: ${attachedFile.name} (${attachedFile.type})]` });
-    }
+  const files = Array.isArray(attachedFiles) ? attachedFiles : (attachedFiles ? [attachedFiles] : []);
+for (const attachedFile of files) {
+  if (attachedFile.type.startsWith('image/')) {
+    messageContent.push({ type: 'image', source: { type: 'base64', media_type: attachedFile.type, data: attachedFile.data } });
+  } else if (attachedFile.type === 'application/pdf') {
+    messageContent.push({ type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: attachedFile.data } });
   }
+  if (attachedFile.type.startsWith('text/') || attachedFile.name.match(/\.(js|ts|py|md|json|csv|txt)$/i)) {
+    try {
+      const textContent = Buffer.from(attachedFile.data, 'base64').toString('utf8');
+      messageContent.push({ type: 'text', text: `[Attached file: ${attachedFile.name}]\n\`\`\`\n${textContent.substring(0, 8000)}\n\`\`\`` });
+    } catch (e) {}
+  } else if (!attachedFile.type.startsWith('image/') && attachedFile.type !== 'application/pdf') {
+    messageContent.push({ type: 'text', text: `[User attached file: ${attachedFile.name} (${attachedFile.type})]` });
+  }
+}
 
   messageContent.push({ type: 'text', text: userMessage });
 
@@ -905,7 +906,7 @@ app.get('/bg-response', authMiddleware, (req, res) => {
 // ============ MAIN CHAT ============
 app.post('/chat', authMiddleware, async (req, res) => {
   try {
-    const { message, cameraFrame, attachedFile } = req.body;
+    const { message, cameraFrame, attachedFile, attachedFiles } = req.body;
     const userId = req.user.userId;
     const isNadav = userId === NADAV_USER_ID;
     console.log(`\n[${req.user.name}]: ${message}${attachedFile ? ` [+ ${attachedFile.name}]` : ''}`);
@@ -946,7 +947,7 @@ app.post('/chat', authMiddleware, async (req, res) => {
     const isLongTask = /play|connect|sonos|tv|call|email|create|open|print|turn|buy|order|install|build|design|scan|monitor|write|send|download|execute|organize|pdf|study|guide|make/i.test(message);
     if (isLongTask) {
       res.json({ success: true, message: 'On it.', actions: [] });
-      runAgenticLoop(message, screenshotBase64, userId, cameraFrame, attachedFile).then(response => {
+      runAgenticLoop(message, screenshotBase64, userId, cameraFrame, attachedFiles || (attachedFile ? [attachedFile] : [])).then(response => {
         console.log(`JARVIS (bg) → ${req.user.name}: ${response}`);
         queueBgResponse(userId, response);
         if (isNadav && response && response !== 'Done.' && response !== 'On it.' && response.trim().length > 0) {

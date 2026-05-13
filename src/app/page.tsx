@@ -1,6 +1,11 @@
 "use client";
 import { useState, useRef, useEffect, useCallback } from "react";
-
+declare global {
+  interface Window {
+    SpeechRecognition: any;
+    webkitSpeechRecognition: any;
+  }
+}
 interface Message {
   role: "user" | "assistant";
   content: string;
@@ -597,7 +602,7 @@ export default function Home() {
   const [spokenUpdates, setSpokenUpdates] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [cameraActive, setCameraActive] = useState(false);
-  const [attachedFile, setAttachedFile] = useState<{data: string, type: string, name: string} | null>(null);
+  const [attachedFiles, setAttachedFiles] = useState<{data: string, type: string, name: string}[]>([]);
   const [voiceBubbleVisible, setVoiceBubbleVisible] = useState(false);
   const [googleConnected, setGoogleConnected] = useState(false);
   const [voiceModeOpen, setVoiceModeOpen] = useState(false);
@@ -803,16 +808,18 @@ export default function Home() {
   }, [token]);
 
   const handleFileAttach = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const files = Array.from(e.target.files || []);
+  if (!files.length) return;
+  files.forEach(file => {
     const reader = new FileReader();
     reader.onload = () => {
       const base64 = (reader.result as string).split(',')[1];
-      setAttachedFile({ data: base64, type: file.type, name: file.name });
+      setAttachedFiles(prev => [...prev, { data: base64, type: file.type, name: file.name }]);
     };
     reader.readAsDataURL(file);
-    e.target.value = '';
-  };
+  });
+  e.target.value = '';
+};
 
   function newConversation() {
     const id = generateId();
@@ -904,8 +911,8 @@ export default function Home() {
   const send = async () => {
     if (!input.trim() || loading) return;
     const userMsg = input.trim();
-    const fileToSend = attachedFile;
-    setInput(""); setAttachedFile(null);
+    const filesToSend = attachedFiles;
+setInput(""); setAttachedFiles([]);
 
     let convId = activeIdRef.current;
     if (!convId || !conversations.find(c => c.id === convId)) {
@@ -921,7 +928,7 @@ export default function Home() {
 
     setLoading(true);
     try {
-      const res = await fetch(`${API}/chat`, { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` }, body: JSON.stringify({ message: userMsg, attachedFile: fileToSend }) });
+      const res = await fetch(`${API}/chat`, { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` }, body: JSON.stringify({ message: userMsg, attachedFiles: filesToSend })
       const data = await res.json();
       if (data.message === 'On it.') {
         addMessageToConv(finalConvId, { role: "assistant", content: "On it...", source: "text", timestamp: Date.now() });
@@ -1325,27 +1332,31 @@ export default function Home() {
         </div>
 
         {/* Attached file preview */}
-        {attachedFile && (
-          <div className="px-3 pt-2 flex-shrink-0 bg-[#060608]">
-            <div className="flex items-center gap-2">
-              {attachedFile.type.startsWith('image/') ? (
-                <img src={`data:${attachedFile.type};base64,${attachedFile.data}`} alt="preview" className="h-10 w-10 rounded-lg object-cover border border-white/10" />
-              ) : (
-                <div className="h-10 w-10 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center flex-shrink-0">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                </div>
-              )}
-              <span className="text-white/50 text-xs flex-1 truncate">{attachedFile.name}</span>
-              <button onClick={() => setAttachedFile(null)} className="text-white/30 hover:text-white/60 p-1.5">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-              </button>
+        {attachedFiles.length > 0 && (
+  <div className="px-3 pt-2 flex-shrink-0 bg-[#060608]">
+    <div className="flex items-center gap-2 flex-wrap">
+      {attachedFiles.map((f, i) => (
+        <div key={i} className="flex items-center gap-2">
+          {f.type.startsWith('image/') ? (
+            <img src={`data:${f.type};base64,${f.data}`} alt="preview" className="h-10 w-10 rounded-lg object-cover border border-white/10" />
+          ) : (
+            <div className="h-10 px-3 rounded-lg bg-white/5 border border-white/10 flex items-center gap-2">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>
+              <span className="text-white/50 text-xs truncate max-w-[100px]">{f.name}</span>
             </div>
-          </div>
-        )}
+          )}
+          <button onClick={() => setAttachedFiles(prev => prev.filter((_, j) => j !== i))} className="text-white/30 hover:text-white/60 p-1">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+      ))}
+    </div>
+  </div>
+)}
 
         {/* Input bar */}
         <div className="flex-shrink-0 bg-[#060608] border-t border-white/5 px-3 py-3" style={{ paddingBottom: 'max(12px, env(safe-area-inset-bottom))' }}>
-          <input ref={fileInputRef} type="file" accept="image/*,.pdf,.txt,.js,.ts,.py,.md,.json,.csv,.doc,.docx" onChange={handleFileAttach} className="hidden" />
+          <input ref={fileInputRef} type="file" multiple accept="image/*,.pdf,.txt,.js,.ts,.py,.md,.json,.csv,.doc,.docx" onChange={handleFileAttach} className="hidden" />
           <div className="flex items-center gap-2">
             <button onClick={() => fileInputRef.current?.click()} className="w-11 h-11 flex items-center justify-center rounded-xl hover:bg-white/5 transition-all flex-shrink-0 text-white/30 hover:text-white/60">
               <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
