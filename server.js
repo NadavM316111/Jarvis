@@ -1974,6 +1974,56 @@ app.post('/api/tts', async (req, res) => {
     res.send(response.data);
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
+// ============ STRIPE ============
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+
+app.post('/create-checkout', authMiddleware, async (req, res) => {
+  try {
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      mode: 'subscription',
+      line_items: [{ price: 'price_1TWlv6HTCTYICh6akUNPL3In', quantity: 1 }],
+      success_url: 'https://heyjarvis.me?subscribed=true',
+      cancel_url: 'https://heyjarvis.me',
+      client_reference_id: req.user.userId,
+    });
+    res.json({ url: session.url });
+  } catch(e) { res.status(500).json({ error: e.message }); }
+});
+
+app.post('/stripe-webhook', express.raw({ type: 'application/json' }), async (req, res) => {
+  const sig = req.headers['stripe-signature'];
+  let event;
+  try {
+    event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
+  } catch(e) { return res.status(400).send(`Webhook Error: ${e.message}`); }
+  
+  if (event.type === 'checkout.session.completed') {
+    const session = event.data.object;
+    const userId = session.client_reference_id;
+    if (userId) {
+      const userSession = getSession(userId);
+      userSession.userMemory.subscribed = true;
+      saveUserMemory(userId, userSession.userMemory);
+    }
+  }
+  if (event.type === 'customer.subscription.deleted') {
+    const sub = event.data.object;
+    const userId = sub.metadata?.userId;
+    if (userId) {
+      const userSession = getSession(userId);
+      userSession.userMemory.subscribed = false;
+      saveUserMemory(userId, userSession.userMemory);
+    }
+  }
+  res.json({ received: true });
+});
+
+app.get('/subscription-status', authMiddleware, async (req, res) => {
+  const session = getSession(req.user.userId);
+  const isNadav = req.user.userId === NADAV_USER_ID;
+  res.json({ subscribed: isNadav || session.userMemory.subscribed === true });
+});
 app.listen(3001, () => {
   console.log('\n╔════════════════════════════════════════╗');
   console.log('║       J.A.R.V.I.S. ONLINE              ║');

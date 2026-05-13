@@ -606,7 +606,9 @@ export default function Home() {
   const [voiceBubbleVisible, setVoiceBubbleVisible] = useState(false);
   const [googleConnected, setGoogleConnected] = useState(false);
   const [voiceModeOpen, setVoiceModeOpen] = useState(false);
-
+  const [subscribed, setSubscribed] = useState(false);
+const [showSettings, setShowSettings] = useState(false);
+const [checkingOut, setCheckingOut] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const animFrameRef = useRef<number>(0);
@@ -625,6 +627,8 @@ export default function Home() {
     if (!token) return;
     fetch(`${API}/auth/google/status`, { headers: { Authorization: `Bearer ${token}` } })
       .then(r => r.json()).then(d => setGoogleConnected(d.connected)).catch(() => {});
+    fetch(`${API}/subscription-status`, { headers: { Authorization: `Bearer ${token}` } })
+  .then(r => r.json()).then(d => setSubscribed(d.subscribed)).catch(() => {});
   }, [token]);
 
   const activeConv = conversations.find(c => c.id === activeId);
@@ -1022,6 +1026,46 @@ export default function Home() {
   return (
     <div style={{ height: '100dvh', fontFamily: "-apple-system, 'SF Pro Display', sans-serif" }} className="bg-[#060608] flex overflow-hidden">
       {/* Voice Mode Modal */}
+      {showSettings && (
+  <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
+    <div className="bg-[#0a0a0f] border border-white/10 rounded-2xl p-6 w-full max-w-sm">
+      <div className="flex items-center justify-between mb-6">
+        <div className="text-white font-semibold">Settings</div>
+        <button onClick={() => setShowSettings(false)} className="text-white/30 hover:text-white/60">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      <div className="mb-6 p-4 rounded-xl border border-white/10 bg-white/3">
+        <div className="text-white/40 text-xs mb-1">Account</div>
+        <div className="text-white font-medium">{userName}</div>
+        <div className={`text-sm mt-1 ${subscribed ? 'text-green-400' : 'text-yellow-400'}`}>
+          {subscribed ? 'Pro — Active' : 'Free Plan'}
+        </div>
+      </div>
+      {!subscribed && (
+        <div className="mb-4 p-4 rounded-xl border border-blue-500/20 bg-blue-500/5">
+          <div className="text-white font-medium mb-1">Upgrade to Pro</div>
+          <div className="text-white/40 text-xs mb-3">$25/month — unlimited messages, all features</div>
+          <button
+            onClick={async () => {
+              setCheckingOut(true);
+              const res = await fetch(`${API}/create-checkout`, { method: 'POST', headers: { Authorization: `Bearer ${token}` } });
+              const data = await res.json();
+              if (data.url) window.location.href = data.url;
+              setCheckingOut(false);
+            }}
+            disabled={checkingOut}
+            className="w-full py-2.5 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 rounded-xl text-white text-sm font-medium transition-all"
+          >
+            {checkingOut ? 'Loading...' : 'Upgrade Now — $25/mo'}
+          </button>
+        </div>
+      )}
+    </div>
+  </div>
+)}
       {voiceModeOpen && token && (
         <VoiceModeModal
           token={token}
@@ -1127,19 +1171,27 @@ export default function Home() {
         </div>
 
         <div className="px-4 py-3 border-t border-white/5 flex items-center gap-2.5 flex-shrink-0">
-          <div className="w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
-            {userName.charAt(0).toUpperCase()}
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="text-white/70 text-xs font-medium truncate">{userName}</div>
-          </div>
-          <button onClick={logout} className="text-white/25 hover:text-white/50 transition-all p-1">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-              <polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
-            </svg>
-          </button>
-        </div>
+  <div className="w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+    {userName.charAt(0).toUpperCase()}
+  </div>
+  <div className="flex-1 min-w-0">
+    <div className="text-white/70 text-xs font-medium truncate">{userName}</div>
+    <div className={`text-xs ${subscribed ? 'text-green-400' : 'text-yellow-400'}`}>
+      {subscribed ? 'Pro' : 'Free'}
+    </div>
+  </div>
+  <button onClick={() => setShowSettings(true)} className="text-white/25 hover:text-white/50 transition-all p-1">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+    </svg>
+  </button>
+  <button onClick={logout} className="text-white/25 hover:text-white/50 transition-all p-1">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+      <polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+    </svg>
+  </button>
+</div>
       </div>
 
       {/* MAIN CONTENT */}
@@ -1383,14 +1435,15 @@ export default function Home() {
               className="flex-1 bg-white/5 border border-white/10 rounded-2xl text-white px-4 py-3 outline-none placeholder:text-white/25 focus:border-blue-500/40 transition-all min-w-0"
             />
             <button
-              onClick={send}
-              disabled={loading || (!input.trim() && attachedFiles.length === 0)}
-              className="w-11 h-11 bg-blue-600 hover:bg-blue-500 disabled:opacity-30 rounded-xl flex items-center justify-center transition-all flex-shrink-0"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
-                <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
-              </svg>
-            </button>
+  onClick={subscribed ? send : () => setShowSettings(true)}
+  disabled={loading || (!input.trim() && attachedFiles.length === 0)}
+  className="w-11 h-11 bg-blue-600 hover:bg-blue-500 disabled:opacity-30 rounded-xl flex items-center justify-center transition-all flex-shrink-0"
+  title={subscribed ? 'Send' : 'Upgrade to Pro to send messages'}
+>
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
+    <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+  </svg>
+</button>
           </div>
         </div>
       </div>
