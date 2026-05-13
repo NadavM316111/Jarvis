@@ -97,13 +97,27 @@ const THEMES = {
 // ── Fetch image from Unsplash (free, no auth required) ───────
 async function fetchSlideImage(query) {
   try {
-    const url = `https://source.unsplash.com/1200x800/?${encodeURIComponent(query)}`;
-    const resp = await axios.get(url, { responseType: 'arraybuffer', timeout: 8000, maxRedirects: 5 });
-    const ct = resp.headers['content-type'] || 'image/jpeg';
-    const b64 = Buffer.from(resp.data).toString('base64');
-    return `${ct};base64,${b64}`;
+    // Search for image URL using Brave
+    const searchRes = await axios.get('https://api.search.brave.com/res/v1/images/search', {
+      headers: { 'Accept': 'application/json', 'Accept-Encoding': 'gzip', 'X-Subscription-Token': process.env.BRAVE_SEARCH_API_KEY },
+      params: { q: query, count: 3, safesearch: 'strict' }
+    });
+    const results = searchRes.data?.results || [];
+    for (const img of results) {
+      try {
+        const imgUrl = img.properties?.url || img.thumbnail?.src;
+        if (!imgUrl) continue;
+        const resp = await axios.get(imgUrl, { responseType: 'arraybuffer', timeout: 6000, maxRedirects: 3 });
+        const ct = resp.headers['content-type'] || 'image/jpeg';
+        if (!ct.startsWith('image/')) continue;
+        const b64 = Buffer.from(resp.data).toString('base64');
+        console.log('[PPTX] Image fetched:', query);
+        return `${ct};base64,${b64}`;
+      } catch {}
+    }
+    return null;
   } catch (e) {
-    console.log('[PPTX] Image fetch failed for:', query, e.message);
+    console.log('[PPTX] Image search failed:', query, e.message);
     return null;
   }
 }
