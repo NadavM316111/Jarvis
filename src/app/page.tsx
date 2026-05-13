@@ -1371,7 +1371,7 @@ export default function Home() {
             />
             <button
               onClick={send}
-              disabled={loading || (!input.trim() && !attachedFile)}
+              disabled={loading || (!input.trim() && attachedFiles.length === 0)}
               className="w-11 h-11 bg-blue-600 hover:bg-blue-500 disabled:opacity-30 rounded-xl flex items-center justify-center transition-all flex-shrink-0"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
