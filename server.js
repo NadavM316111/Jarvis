@@ -13,6 +13,7 @@ const fs = require('fs');
 const path = require('path');
 const https = require('https');
 const http = require('http');
+const { generatePresentation } = require('./jarvis_presentation_patch');
 const { signup, login, verifyToken, loadUserMemory, saveUserMemory, saveConversation, loadConversations, deleteConversation } = require('./auth');
 const rateLimit = require('express-rate-limit');
 
@@ -423,6 +424,39 @@ async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame
     { name: 'get_system_info', description: 'Get battery, top processes, disk space.', input_schema: { type: 'object', properties: {} } },
     { name: 'capture_screen', description: 'Capture a fresh screenshot.', input_schema: { type: 'object', properties: {} } },
   ] : []),
+  {
+    name: 'generate_presentation',
+    description: 'Generate a beautiful PowerPoint presentation (.pptx) with images, icons, charts, and nice transitions. Always use this instead of run_code when asked to create a presentation, slides, or slideshow.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        title: { type: 'string' },
+        theme: { type: 'string', enum: ['dark', 'light', 'navy', 'minimal'] },
+        slides: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              type: { type: 'string', enum: ['title', 'content', 'two-column', 'image-full', 'stats', 'quote', 'timeline', 'agenda'] },
+              title: { type: 'string' },
+              subtitle: { type: 'string' },
+              body: { type: 'array', items: { type: 'string' } },
+              left: { type: 'array', items: { type: 'string' } },
+              right: { type: 'array', items: { type: 'string' } },
+              stats: { type: 'array', items: { type: 'object', properties: { value: { type: 'string' }, label: { type: 'string' } } } },
+              quote: { type: 'string' },
+              attribution: { type: 'string' },
+              steps: { type: 'array', items: { type: 'string' } },
+              imageSearch: { type: 'string' },
+              speakerNotes: { type: 'string' }
+            }
+          }
+        },
+        filename: { type: 'string' }
+      },
+      required: ['title', 'slides', 'filename']
+    }
+  },
   { name: 'finish', description: 'Task complete. Deliver final response.', input_schema: { type: 'object', properties: { response: { type: 'string' } }, required: ['response'] } }
 ];
 
@@ -675,6 +709,9 @@ for (const attachedFile of files) {
         }
         else if (block.name === 'run_code') {
           result = await executeCode(block.input.code, block.input.language || 'node', block.input.description);
+        }
+        else if (block.name === 'generate_presentation') {
+          result = await generatePresentation(block.input);
         }
         else if (block.name === 'read_file' && isNadav) {
           result = await readFile(block.input.path, block.input.action, block.input.query);
