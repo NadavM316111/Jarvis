@@ -984,10 +984,15 @@ app.post('/chat', authMiddleware, async (req, res) => {
     const isLongTask = /play|connect|sonos|tv|call|email|create|open|print|turn|buy|order|install|build|design|scan|monitor|write|send|download|execute|organize|pdf|study|guide|make|presentation|slides|slideshow/i.test(message);
     if (isLongTask) {
       res.json({ success: true, message: 'On it.', actions: [] });
-      setTimeout(() => queueBgResponse(userId, '[PROGRESS:10%] Planning slides[/PROGRESS]'), 1000);
-      setTimeout(() => queueBgResponse(userId, '[PROGRESS:30%] Fetching images[/PROGRESS]'), 4000);
-      setTimeout(() => queueBgResponse(userId, '[PROGRESS:60%] Building slides[/PROGRESS]'), 10000);
-      setTimeout(() => queueBgResponse(userId, '[PROGRESS:85%] Finalizing presentation[/PROGRESS]'), 18000);
+      
+      const isPresentation = /presentation|slides|slideshow/i.test(message);
+      if (isPresentation) {
+        setTimeout(() => queueBgResponse(userId, '[PROGRESS:5%] Planning your slides[/PROGRESS]'), 500);
+        setTimeout(() => queueBgResponse(userId, '[PROGRESS:20%] Designing slide layouts[/PROGRESS]'), 3000);
+        setTimeout(() => queueBgResponse(userId, '[PROGRESS:45%] Fetching images[/PROGRESS]'), 8000);
+        setTimeout(() => queueBgResponse(userId, '[PROGRESS:70%] Building the deck[/PROGRESS]'), 16000);
+        setTimeout(() => queueBgResponse(userId, '[PROGRESS:90%] Saving your presentation[/PROGRESS]'), 25000);
+      }
       runAgenticLoop(message, screenshotBase64, userId, cameraFrame, attachedFiles || (attachedFile ? [attachedFile] : [])).then(response => {
         console.log(`JARVIS (bg) → ${req.user.name}: ${response}`);
         queueBgResponse(userId, response);
