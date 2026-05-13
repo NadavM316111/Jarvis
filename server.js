@@ -22,7 +22,7 @@ app.use(express.json({ limit: '100mb' }));
 const chatLimiter = rateLimit({
   windowMs: 60 * 1000,
   max: 20,
-  trustProxy: 1,
+  validate: { trustProxy: false },
   message: { error: 'Too many requests, slow down.' },
   keyGenerator: (req) => {
     const token = req.headers.authorization?.replace('Bearer ', '');
@@ -767,7 +767,7 @@ async function runProactiveBrain() {
 
 setInterval(runProactiveBrain, 30 * 60 * 1000);
 setTimeout(runProactiveBrain, 2 * 60 * 1000);
-setTimeout(() => runVisionLoop(), 30000);
+if (process.platform === 'win32') setTimeout(() => runVisionLoop(), 30000);
 
 // ============ MORNING BRIEFING (all-users) ============
 let morningBriefingFiredToday = null;
