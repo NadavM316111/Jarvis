@@ -909,45 +909,39 @@ export default function Home() {
   };
 
   const send = async () => {
-    if (!input.trim() || loading) return;
-    const userMsg = input.trim();
-    const filesToSend = attachedFiles;
-setInput(""); setAttachedFiles([]);
+  if (!input.trim() || loading) return;
+  const userMsg = input.trim();
+  const filesToSend = attachedFiles;
+  setInput(""); setAttachedFiles([]);
 
-    let convId = activeIdRef.current;
-    if (!convId || !conversations.find(c => c.id === convId)) {
-      convId = generateId();
-      setConversations(prev => [{ id: convId!, title: userMsg.slice(0, 40), messages: [], createdAt: Date.now() }, ...prev]);
-      setActiveId(convId); activeIdRef.current = convId;
-    } else {
-      setConversations(prev => prev.map(c => c.id === convId && c.messages.length === 0 ? { ...c, title: userMsg.slice(0, 40) } : c));
+  let convId = activeIdRef.current;
+  if (!convId || !conversations.find(c => c.id === convId)) {
+    convId = generateId();
+    setConversations(prev => [{ id: convId!, title: userMsg.slice(0, 40), messages: [], createdAt: Date.now() }, ...prev]);
+    setActiveId(convId); activeIdRef.current = convId;
+  } else {
+    setConversations(prev => prev.map(c => c.id === convId && c.messages.length === 0 ? { ...c, title: userMsg.slice(0, 40) } : c));
+  }
+  const finalConvId = convId!;
+
+  addMessageToConv(finalConvId, { role: "user", content: userMsg, source: "text", timestamp: Date.now(), imageUrl: filesToSend[0]?.type.startsWith('image/') ? `data:${filesToSend[0].type};base64,${filesToSend[0].data}` : undefined, fileName: filesToSend[0]?.name });
+
+  setLoading(true);
+  try {
+    const res = await fetch(`${API}/chat`, { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` }, body: JSON.stringify({ message: userMsg, attachedFiles: filesToSend }) });
+    const data = await res.json();
+    if (data.message === 'On it.') {
+      addMessageToConv(finalConvId, { role: "assistant", content: "On it...", source: "text", timestamp: Date.now() });
+    } else if (data.message) {
+      addMessageToConv(finalConvId, { role: "assistant", content: data.message, source: "text", timestamp: Date.now() });
+      const urlMatch = data.message.match(/https:\/\/api\.heyjarvis\.me\/view\/[^\s)]+/);
+      if (urlMatch) setTimeout(() => window.open(urlMatch[0], '_blank'), 500);
+      const ytMatch = data.message.match(/https:\/\/(www\.)?youtube\.com\/watch\?[^\s<>"')]+/);
+      if (ytMatch) { const w = window.open(ytMatch[0], '_blank'); if (w) w.focus(); }
     }
-    const finalConvId = convId!;
-
-    addMessageToConv(finalConvId, { role: "user", content: userMsg, source: "text", timestamp: Date.now(), imageUrl: fileToSend?.type.startsWith('image/') ? `data:${fileToSend.type};base64,${fileToSend.data}` : undefined, fileName: fileToSend?.name });
-
-    setLoading(true);
-    try {
-      const res = await fetch(`${API}/chat`, { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` }, body: JSON.stringify({ message: userMsg, attachedFiles: filesToSend })
-      const data = await res.json();
-      if (data.message === 'On it.') {
-        addMessageToConv(finalConvId, { role: "assistant", content: "On it...", source: "text", timestamp: Date.now() });
-      } else if (data.message) {
-        addMessageToConv(finalConvId, { role: "assistant", content: data.message, source: "text", timestamp: Date.now() });
-        const urlMatch = data.message.match(/https:\/\/api\.heyjarvis\.me\/view\/[^\s)]+/);
-        if (urlMatch) setTimeout(() => window.open(urlMatch[0], '_blank'), 500);
-        const ytMatch = data.message.match(/https:\/\/(www\.)?youtube\.com\/watch\?[^\s<>"')]+/);
-        if (ytMatch) { const w = window.open(ytMatch[0], '_blank'); if (w) w.focus(); }
-        if (typeof window !== 'undefined' && window.speechSynthesis) {
-          window.speechSynthesis.cancel();
-          const utterance = new SpeechSynthesisUtterance(data.message.replace(/<[^>]*>/g, '').replace(/\*\*/g, '').replace(/\*/g, ''));
-          utterance.rate = 1.0; utterance.pitch = 0.85; utterance.volume = 1.0;
-          window.speechSynthesis.speak(utterance);
-        }
-      }
-    } catch {}
-    setLoading(false);
-  };
+  } catch {}
+  setLoading(false);
+};
 
   const orbScale = 1 + (audioLevel / 255) * 0.4;
   const orbBg = isListening ? "radial-gradient(circle at 40% 40%, #34d399, #059669)" : isSpeaking ? "radial-gradient(circle at 40% 40%, #a78bfa, #6d28d9)" : loading ? "radial-gradient(circle at 40% 40%, #a78bfa, #6d28d9)" : "radial-gradient(circle at 40% 40%, #60a5fa, #1d4ed8)";
