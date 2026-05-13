@@ -691,6 +691,19 @@ export default function Home() {
             setActiveId(convId);
             activeIdRef.current = convId;
           }
+          const isProgress = r.message.includes('[PROGRESS:');
+  if (isProgress) {
+    setConversations(prev => prev.map(c => {
+      if (c.id !== convId) return c;
+      const msgs = c.messages;
+      const lastMsg = msgs[msgs.length - 1];
+      if (lastMsg?.role === 'assistant' && lastMsg.content.includes('[PROGRESS:')) {
+        return { ...c, messages: [...msgs.slice(0, -1), { ...lastMsg, content: r.message }] };
+      }
+      return { ...c, messages: [...msgs, { role: 'assistant', content: r.message, source: 'text', timestamp: Date.now() }] };
+    }));
+    continue; // ← skip the rest of the loop for progress messages
+  }
           addMessageToConv(convId, { role: "assistant", content: r.message, source: "text", timestamp: r.timestamp ?? Date.now() });
           const urlMatch2 = r.message.match(/https:\/\/api\.heyjarvis\.me\/view\/[^\s)]+/);
           if (urlMatch2) setTimeout(() => window.open(urlMatch2[0], '_blank'), 500);

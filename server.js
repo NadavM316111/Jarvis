@@ -981,9 +981,13 @@ app.post('/chat', authMiddleware, async (req, res) => {
       try { const buf = await screenshot({ format: 'png' }); screenshotBase64 = buf.toString('base64'); } catch (e) {}
     }
 
-    const isLongTask = /play|connect|sonos|tv|call|email|create|open|print|turn|buy|order|install|build|design|scan|monitor|write|send|download|execute|organize|pdf|study|guide|make/i.test(message);
+    const isLongTask = /play|connect|sonos|tv|call|email|create|open|print|turn|buy|order|install|build|design|scan|monitor|write|send|download|execute|organize|pdf|study|guide|make|presentation|slides|slideshow/i.test(message);
     if (isLongTask) {
       res.json({ success: true, message: 'On it.', actions: [] });
+      setTimeout(() => queueBgResponse(userId, '[PROGRESS:10%] Planning slides[/PROGRESS]'), 1000);
+      setTimeout(() => queueBgResponse(userId, '[PROGRESS:30%] Fetching images[/PROGRESS]'), 4000);
+      setTimeout(() => queueBgResponse(userId, '[PROGRESS:60%] Building slides[/PROGRESS]'), 10000);
+      setTimeout(() => queueBgResponse(userId, '[PROGRESS:85%] Finalizing presentation[/PROGRESS]'), 18000);
       runAgenticLoop(message, screenshotBase64, userId, cameraFrame, attachedFiles || (attachedFile ? [attachedFile] : [])).then(response => {
         console.log(`JARVIS (bg) → ${req.user.name}: ${response}`);
         queueBgResponse(userId, response);
