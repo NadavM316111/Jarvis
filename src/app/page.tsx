@@ -1484,7 +1484,7 @@ if (window.location.search.includes('subscribed=true')) {
               className="flex-1 bg-white/5 border border-white/10 rounded-2xl text-white px-4 py-3 outline-none placeholder:text-white/25 focus:border-blue-500/40 transition-all min-w-0"
             />
             <button
-  onClick={subscribed ? send : () => setShowSettings(true)}
+  onClick={send}
   disabled={loading || (!input.trim() && attachedFiles.length === 0)}
   className="w-11 h-11 bg-blue-600 hover:bg-blue-500 disabled:opacity-30 rounded-xl flex items-center justify-center transition-all flex-shrink-0"
   title={subscribed ? 'Send' : 'Upgrade to Pro to send messages'}
