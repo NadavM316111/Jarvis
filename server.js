@@ -584,7 +584,7 @@ const rateLimit = require('express-rate-limit');
 
 const app = express();
 app.use(cors({ origin: true, credentials: true }));
-app.use(express.json({ limit: '100mb' }));
+app.use(express.json({ limit: '500mb' }));
 const chatLimiter = rateLimit({
   windowMs: 60 * 1000,
   max: 20,
@@ -1065,6 +1065,7 @@ async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame
 'When Nadav says "play [song]", always use execute_actions OPEN_URL to open YouTube directly.',
       '',
       'FILE CREATION: ALWAYS use run_code with node + fs.writeFileSync to create files. NEVER use bash heredocs — this is Windows, bash does not support heredocs. Template literals in Node work perfectly. Write the entire HTML in a JS template literal and save with fs.writeFileSync.',
+      'FOLDER UPLOADS: When the user attaches a folder, files arrive with paths like "src/components/Button.tsx". Use the webkitRelativePath as the filename to understand folder structure. Summarize the codebase structure first, then answer the user\'s question.',
 'PDF CREATION: For any PDF request, use run_code with Python and reportlab. Make them beautiful:',
 '- Dark or clean white background with colored accent headers',
 '- Use reportlab Paragraph, Table, TableStyle, colors, and frames',
@@ -1125,6 +1126,7 @@ async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame
   'NEVER use localhost URLs for users — always use https://api.heyjarvis.me/view/...',
   'web_search, browse_url, run_code, remember, proactive_update, search_3d_models all available.',
   'FILE CREATION: ALWAYS use run_code with node + fs.writeFileSync to create files. NEVER use bash heredocs — this is Windows, bash does not support heredocs. Template literals in Node work perfectly. Write the entire HTML in a JS template literal and save with fs.writeFileSync.',
+  'FOLDER UPLOADS: When the user attaches a folder, files arrive with paths like "src/components/Button.tsx". Use the webkitRelativePath as the filename to understand folder structure. Summarize the codebase structure first, then answer the user\'s question.',
 'PDF CREATION: For any PDF request, use run_code with Python and reportlab. Make them beautiful:',
 '- Dark or clean white background with colored accent headers',
 '- Use reportlab Paragraph, Table, TableStyle, colors, and frames',

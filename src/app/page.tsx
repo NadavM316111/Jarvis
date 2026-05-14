@@ -619,6 +619,7 @@ const [checkingOut, setCheckingOut] = useState(false);
   const cameraStreamRef = useRef<MediaStream | null>(null);
   const cameraIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const folderInputRef = useRef<HTMLInputElement>(null);
   const tokenRef = useRef<string | null>(null);
 
   useEffect(() => { activeIdRef.current = activeId; }, [activeId]);
@@ -831,17 +832,32 @@ if (window.location.search.includes('subscribed=true')) {
     };
   }, [token]);
 
-  const handleFileAttach = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileAttach = async (e: React.ChangeEvent<HTMLInputElement>) => {
   const files = Array.from(e.target.files || []);
   if (!files.length) return;
-  files.forEach(file => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      const base64 = (reader.result as string).split(',')[1];
-      setAttachedFiles(prev => [...prev, { data: base64, type: file.type, name: file.name }]);
-    };
-    reader.readAsDataURL(file);
-  });
+  
+  // For large folders, process in batches to avoid freezing UI
+  const MAX = 200;
+  const toProcess = files.slice(0, MAX);
+  
+  for (const file of toProcess) {
+    // Skip files over 10MB
+    if (file.size > 10 * 1024 * 1024) continue;
+    await new Promise<void>(resolve => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const base64 = (reader.result as string).split(',')[1];
+        setAttachedFiles(prev => [...prev, { 
+          data: base64, 
+          type: file.type || 'application/octet-stream', 
+          name: (file as any).webkitRelativePath || file.name 
+        }]);
+        resolve();
+      };
+      reader.onerror = () => resolve(); // skip broken files
+      reader.readAsDataURL(file);
+    });
+  }
   e.target.value = '';
 };
 
@@ -1422,14 +1438,23 @@ if (window.location.search.includes('subscribed=true')) {
 )}
 
         {/* Input bar */}
-        <div className="flex-shrink-0 bg-[#060608] border-t border-white/5 px-3 py-3" style={{ paddingBottom: 'max(12px, env(safe-area-inset-bottom))' }}>
-          <input ref={fileInputRef} type="file" multiple accept="image/*,.pdf,.txt,.js,.ts,.py,.md,.json,.csv,.doc,.docx" onChange={handleFileAttach} className="hidden" />
-          <div className="flex items-center gap-2">
-            <button onClick={() => fileInputRef.current?.click()} className="w-11 h-11 flex items-center justify-center rounded-xl hover:bg-white/5 transition-all flex-shrink-0 text-white/30 hover:text-white/60">
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
-              </svg>
-            </button>
+        {/* Input bar */}
+<div className="flex-shrink-0 bg-[#060608] border-t border-white/5 px-3 py-3" style={{ paddingBottom: 'max(12px, env(safe-area-inset-bottom))' }}>
+  <input ref={fileInputRef} type="file" multiple accept="image/*,.pdf,.txt,.js,.ts,.py,.md,.json,.csv,.doc,.docx" onChange={handleFileAttach} className="hidden" />
+  <input ref={folderInputRef} type="file" multiple onChange={handleFileAttach} className="hidden" {...{ webkitdirectory: 'true' } as any} />
+  <div className="flex items-center gap-2">
+    <div className="flex flex-col gap-1 flex-shrink-0">
+      <button onClick={() => fileInputRef.current?.click()} className="w-11 h-5 flex items-center justify-center rounded-t-xl hover:bg-white/5 transition-all text-white/30 hover:text-white/60" title="Attach files">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
+        </svg>
+      </button>
+      <button onClick={() => folderInputRef.current?.click()} className="w-11 h-5 flex items-center justify-center rounded-b-xl hover:bg-white/5 transition-all text-white/30 hover:text-white/60" title="Attach folder">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+        </svg>
+      </button>
+    </div>
             <input
               value={input}
               onChange={e => setInput(e.target.value)}
