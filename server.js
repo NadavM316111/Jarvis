@@ -2005,6 +2005,7 @@ app.post('/stripe-webhook', express.raw({ type: 'application/json' }), async (re
       const userSession = getSession(userId);
       userSession.userMemory.subscribed = true;
       saveUserMemory(userId, userSession.userMemory);
+      queueBgResponse(userId, '__SUBSCRIBED__');
     }
   }
   if (event.type === 'customer.subscription.deleted') {

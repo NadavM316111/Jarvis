@@ -631,11 +631,17 @@ const [checkingOut, setCheckingOut] = useState(false);
   .then(r => r.json()).then(d => setSubscribed(d.subscribed)).catch(() => {});
   // Re-check if returning from Stripe
 if (window.location.search.includes('subscribed=true')) {
-  setTimeout(() => {
-    fetch(`${API}/subscription-status`, { headers: { Authorization: `Bearer ${token}` } })
-      .then(r => r.json()).then(d => setSubscribed(d.subscribed)).catch(() => {});
-    window.history.replaceState({}, '', '/');
-  }, 2000);
+  window.history.replaceState({}, '', '/');
+  let attempts = 0;
+  const poll = setInterval(async () => {
+    attempts++;
+    try {
+      const r = await fetch(`${API}/subscription-status`, { headers: { Authorization: `Bearer ${token}` } });
+      const d = await r.json();
+      if (d.subscribed) { setSubscribed(true); clearInterval(poll); }
+      else if (attempts >= 12) clearInterval(poll);
+    } catch {}
+  }, 3000);
 }
   }, [token]);
 
@@ -695,6 +701,7 @@ if (window.location.search.includes('subscribed=true')) {
         const data = await res.json();
         if (!data.responses?.length) return;
         for (const r of data.responses) {
+          if (r.message === '__SUBSCRIBED__') { setSubscribed(true); continue; }
           let convId = activeIdRef.current;
           if (!convId) {
             convId = generateId();
