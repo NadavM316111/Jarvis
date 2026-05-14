@@ -1489,16 +1489,11 @@ app.post('/auth/signup', async (req, res) => {
 app.post('/auth/login', async (req, res) => {
   try {
     const result = await login(req.body.email, req.body.password);
-    // Ensure memory has email and name
     const session = getSession(result.userId);
-    if (!session.userMemory.email) {
-      const session = getSession(result.userId);
     session.userMemory.email = req.body.email;
     session.userMemory.userName = result.name;
-    session.userMemory.token = result.token; // ← add this
+    session.userMemory.token = result.token; // always save token
     saveUserMemory(result.userId, session.userMemory);
-    res.json({ success: true, ...result });
-    }
     res.json({ success: true, ...result });
   } catch (e) { res.status(401).json({ error: e.message }); }
 });
