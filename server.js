@@ -1601,7 +1601,7 @@ app.post('/chat', authMiddleware, async (req, res) => {
     }
 
     const hasFolderFiles = (attachedFiles || []).some(f => f.name && f.name.includes('/'));
-    const isLongTask = hasFolderFiles || /play|connect|sonos|tv|call|email|create|open|print|turn|buy|order|install|build|design|scan|monitor|write|send|download|execute|organize|pdf|study|guide|make|presentation|slides|slideshow|analyze|analyse|search|find|look/i.test(message);
+    const isLongTask = hasFolderFiles || /play|connect|sonos|tv|call|email|create|open|print|turn|buy|order|install|build|design|scan|monitor|write|send|download|execute|organize|pdf|study|guide|make|presentation|slides|slideshow|analyze|analyse|search|find|look|document|folder|file|these|those/i.test(message);
     if (isLongTask) {
       res.json({ success: true, message: 'On it.', actions: [] });
       
