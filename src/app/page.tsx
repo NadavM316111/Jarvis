@@ -1056,13 +1056,17 @@ export default function Home() {
                   </div>
                   <button
                     onClick={async () => {
-                      setCheckingOut(true);
-                      localStorage.setItem('jarvis_subscribed', 'true');
-                      const res = await fetch(`${API}/create-checkout`, { method: 'POST', headers: { Authorization: `Bearer ${token}` } });
-                      const data = await res.json();
-                      if (data.url) window.location.href = data.url;
-                      setCheckingOut(false);
-                    }}
+  setCheckingOut(true);
+  localStorage.setItem('jarvis_subscribed', 'true');
+  const res = await fetch(`${API}/create-checkout`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ testCode: 'JARVIS_TEST_2025' }) // ◄ TEST
+  });
+  const data = await res.json();
+  if (data.url) window.location.href = data.url;
+  setCheckingOut(false);
+}}
                     disabled={checkingOut}
                     className="w-full py-2.5 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 rounded-xl text-white text-sm font-medium transition-all"
                   >
