@@ -1586,7 +1586,7 @@ app.post('/chat', authMiddleware, async (req, res) => {
       saveUserMemory(userId, session.userMemory);
     }
     const authToken = req.headers.authorization?.replace('Bearer ', '');
-if (authToken && !session.userMemory.token) {
+if (authToken) {
   session.userMemory.token = authToken;
   saveUserMemory(userId, session.userMemory);
 }
