@@ -1473,10 +1473,10 @@ app.post('/auth/signup', async (req, res) => {
     const { email, password, name } = req.body;
     if (!email || !password || !name) return res.status(400).json({ error: 'Email, password and name required' });
     const result = await signup(email, password, name);
-    // Pre-populate memory with email and name
     const session = getSession(result.userId);
     session.userMemory.email = email;
     session.userMemory.userName = name;
+    session.userMemory.token = result.token; // ← ADD THIS
     saveUserMemory(result.userId, session.userMemory);
     res.json({ success: true, ...result });
   } catch (e) { res.status(400).json({ error: e.message }); }
@@ -1585,6 +1585,11 @@ app.post('/chat', authMiddleware, async (req, res) => {
       session.userMemory.userName = req.user.name;
       saveUserMemory(userId, session.userMemory);
     }
+    const authToken = req.headers.authorization?.replace('Bearer ', '');
+if (authToken && !session.userMemory.token) {
+  session.userMemory.token = authToken;
+  saveUserMemory(userId, session.userMemory);
+}
 
     const isSubscribed = isNadav || session.userMemory.subscribed === true;
     const FREE_LIMIT = 20;
