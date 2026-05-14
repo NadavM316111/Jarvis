@@ -1142,16 +1142,23 @@ async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame
 'MOBILE: All apps and websites must be fully mobile responsive. Use viewport meta tag, flexible layouts, touch-friendly buttons (min 44px), and test that it looks great on phone screens.',
 '',
 '═══ AI-POWERED APPS ═══',
-'When building any app that needs AI (chatbots, assistants, generators):',
-'1. FIRST run_code to call POST https://api.heyjarvis.me/ai-proxy/generate-key',
-'   with header: Authorization: Bearer TOKEN (get from userMemory.token or the session token)',
-'2. Inject the returned key into the built HTML like this:',
-'   fetch("https://api.heyjarvis.me/ai-proxy", {',
-'     method: "POST",',
-'     headers: { "Content-Type": "application/json", "x-api-key": "jvs_xxx" },',
-'     body: JSON.stringify({ prompt: userInput, system: "You are..." })',
-'   })',
-'3. NEVER expose raw Anthropic keys in built apps — always use /ai-proxy',
+'ANY time the user asks to build an app, chatbot, assistant, tool, or website that uses AI — AUTOMATICALLY:',
+'STEP 1: run_code (node) to generate an API key:',
+'  const axios = require("axios");',
+'  const keyRes = await axios.post("https://api.heyjarvis.me/ai-proxy/generate-key", {}, {',
+'    headers: { "Authorization": "Bearer " + process.env.JARVIS_USER_TOKEN || require("fs").readFileSync(require("path").join(__dirname, ".env.local"), "utf8").match(/JARVIS_SESSION_TOKEN=(.+)/)?.[1] || "" }',
+'  });',
+'  const apiKey = keyRes.data.key; // looks like jvs_xxxx',
+'  console.log("API Key:", apiKey);',
+'STEP 2: Write the HTML file with that key hardcoded in every /ai-proxy fetch:',
+'  fetch("https://api.heyjarvis.me/ai-proxy", {',
+'    method: "POST",',
+'    headers: { "Content-Type": "application/json", "x-api-key": "${apiKey}" },',
+'    body: JSON.stringify({ prompt: userInput, system: "You are..." })',
+'  })',
+'STEP 3: Save to public/ and give the user the link.',
+'DO NOT SKIP STEP 1. The chatbot will not work without the key. Never ask the user for a key.',
+'NEVER use the raw Anthropic API key in built apps — always use /ai-proxy with the generated jvs_ key.',
   '',
 '═══ YOUTUBE ═══',
 'To search YouTube: const { youtubeSearch } = require("./gmail_multi");',
@@ -1209,7 +1216,8 @@ async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame
   `Working dir: ${process.cwd()}`,
 ]),
     '',
-    `Memory: ${JSON.stringify(userMemory).substring(0, 1500)}`,
+    `USER_TOKEN: ${userMemory.token || ''} — use this as the Bearer token when calling /ai-proxy/generate-key from run_code`,
+`Memory: ${JSON.stringify(userMemory).substring(0, 1500)}`,
   ].filter(Boolean).join('\n');
 
   const messageContent = [];
@@ -1484,9 +1492,12 @@ app.post('/auth/login', async (req, res) => {
     // Ensure memory has email and name
     const session = getSession(result.userId);
     if (!session.userMemory.email) {
-      session.userMemory.email = req.body.email;
-      session.userMemory.userName = result.name;
-      saveUserMemory(result.userId, session.userMemory);
+      const session = getSession(result.userId);
+    session.userMemory.email = req.body.email;
+    session.userMemory.userName = result.name;
+    session.userMemory.token = result.token; // ← add this
+    saveUserMemory(result.userId, session.userMemory);
+    res.json({ success: true, ...result });
     }
     res.json({ success: true, ...result });
   } catch (e) { res.status(401).json({ error: e.message }); }
