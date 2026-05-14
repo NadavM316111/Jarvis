@@ -1415,26 +1415,59 @@ if (window.location.search.includes('subscribed=true')) {
         </div>
 
         {/* Attached file preview */}
-        {attachedFiles.length > 0 && (
-  <div className="px-3 pt-2 flex-shrink-0 bg-[#060608]">
-    <div className="flex items-center gap-2 flex-wrap">
-      {attachedFiles.map((f, i) => (
-        <div key={i} className="flex items-center gap-2">
-          {f.type.startsWith('image/') ? (
-            <img src={`data:${f.type};base64,${f.data}`} alt="preview" className="h-10 w-10 rounded-lg object-cover border border-white/10" />
-          ) : (
+        {/* Attached file preview */}
+{attachedFiles.length > 0 && (() => {
+  // Group files by folder (webkitRelativePath has a slash if from folder upload)
+  const folderGroups: Record<string, typeof attachedFiles> = {};
+  const looseFiles: typeof attachedFiles = [];
+  for (const f of attachedFiles) {
+    const slashIdx = f.name.indexOf('/');
+    if (slashIdx > -1) {
+      const folderName = f.name.substring(0, slashIdx);
+      if (!folderGroups[folderName]) folderGroups[folderName] = [];
+      folderGroups[folderName].push(f);
+    } else {
+      looseFiles.push(f);
+    }
+  }
+  return (
+    <div className="px-3 pt-2 flex-shrink-0 bg-[#060608]">
+      <div className="flex items-center gap-2 flex-wrap">
+        {/* Folder chips */}
+        {Object.entries(folderGroups).map(([folderName, files]) => (
+          <div key={folderName} className="flex items-center gap-2">
             <div className="h-10 px-3 rounded-lg bg-white/5 border border-white/10 flex items-center gap-2">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>
-              <span className="text-white/50 text-xs truncate max-w-[100px]">{f.name}</span>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2">
+                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+              </svg>
+              <span className="text-white/70 text-xs font-medium">{folderName}</span>
+              <span className="text-white/25 text-xs">{files.length} files</span>
             </div>
-          )}
-          <button onClick={() => setAttachedFiles(prev => prev.filter((_, j) => j !== i))} className="text-white/30 hover:text-white/60 p-1">
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-          </button>
-        </div>
-      ))}
+            <button onClick={() => setAttachedFiles(prev => prev.filter(f => !f.name.startsWith(folderName + '/')))} className="text-white/30 hover:text-white/60 p-1">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+        ))}
+        {/* Loose files (individually uploaded) */}
+        {looseFiles.map((f, i) => (
+          <div key={f.name + i} className="flex items-center gap-2">
+            {f.type.startsWith('image/') ? (
+              <img src={`data:${f.type};base64,${f.data}`} alt="preview" className="h-10 w-10 rounded-lg object-cover border border-white/10" />
+            ) : (
+              <div className="h-10 px-3 rounded-lg bg-white/5 border border-white/10 flex items-center gap-2">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>
+                <span className="text-white/50 text-xs truncate max-w-[100px]">{f.name}</span>
+              </div>
+            )}
+            <button onClick={() => setAttachedFiles(prev => prev.filter(f2 => f2 !== f))} className="text-white/30 hover:text-white/60 p-1">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+        ))}
+      </div>
     </div>
-  </div>
+  );
+})()}
 )}
 
         {/* Input bar */}
