@@ -606,7 +606,7 @@ export default function Home() {
   const [voiceBubbleVisible, setVoiceBubbleVisible] = useState(false);
   const [googleConnected, setGoogleConnected] = useState(false);
   const [voiceModeOpen, setVoiceModeOpen] = useState(false);
-  const [subscribed, setSubscribed] = useState(false);
+  const [subscribed, setSubscribed] = useState(() => localStorage.getItem('jarvis_subscribed') === 'true');
 const [showSettings, setShowSettings] = useState(false);
 const [checkingOut, setCheckingOut] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -1057,7 +1057,7 @@ if (window.location.search.includes('subscribed=true')) {
           <button
             onClick={async () => {
   setCheckingOut(true);
-  setSubscribed(true);
+  localStorage.setItem('jarvis_subscribed', 'true');
   const res = await fetch(`${API}/create-checkout`, { method: 'POST', headers: { Authorization: `Bearer ${token}` } });
   const data = await res.json();
   if (data.url) window.location.href = data.url;
