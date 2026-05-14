@@ -1056,12 +1056,13 @@ if (window.location.search.includes('subscribed=true')) {
           <div className="text-white/40 text-xs mb-3">$25/month — unlimited messages, all features</div>
           <button
             onClick={async () => {
-              setCheckingOut(true);
-              const res = await fetch(`${API}/create-checkout`, { method: 'POST', headers: { Authorization: `Bearer ${token}` } });
-              const data = await res.json();
-              if (data.url) window.location.href = data.url;
-              setCheckingOut(false);
-            }}
+  setCheckingOut(true);
+  setSubscribed(true);
+  const res = await fetch(`${API}/create-checkout`, { method: 'POST', headers: { Authorization: `Bearer ${token}` } });
+  const data = await res.json();
+  if (data.url) window.location.href = data.url;
+  setCheckingOut(false);
+}}
             disabled={checkingOut}
             className="w-full py-2.5 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 rounded-xl text-white text-sm font-medium transition-all"
           >
