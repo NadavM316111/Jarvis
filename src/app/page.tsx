@@ -631,17 +631,8 @@ const [checkingOut, setCheckingOut] = useState(false);
   .then(r => r.json()).then(d => setSubscribed(d.subscribed)).catch(() => {});
   // Re-check if returning from Stripe
 if (window.location.search.includes('subscribed=true')) {
+  setSubscribed(true);
   window.history.replaceState({}, '', '/');
-  let attempts = 0;
-  const poll = setInterval(async () => {
-    attempts++;
-    try {
-      const r = await fetch(`${API}/subscription-status`, { headers: { Authorization: `Bearer ${token}` } });
-      const d = await r.json();
-      if (d.subscribed) { setSubscribed(true); clearInterval(poll); }
-      else if (attempts >= 12) clearInterval(poll);
-    } catch {}
-  }, 3000);
 }
   }, [token]);
 
