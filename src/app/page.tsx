@@ -606,7 +606,7 @@ export default function Home() {
   const [voiceBubbleVisible, setVoiceBubbleVisible] = useState(false);
   const [googleConnected, setGoogleConnected] = useState(false);
   const [voiceModeOpen, setVoiceModeOpen] = useState(false);
-  const [subscribed, setSubscribed] = useState(() => localStorage.getItem('jarvis_subscribed') === 'true');
+  const [subscribed, setSubscribed] = useState(false);
 const [showSettings, setShowSettings] = useState(false);
 const [checkingOut, setCheckingOut] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -643,6 +643,7 @@ if (window.location.search.includes('subscribed=true')) {
     const saved = localStorage.getItem('jarvis_token');
     const savedName = localStorage.getItem('jarvis_name');
     const savedConvs = localStorage.getItem('jarvis_conversations');
+    if (localStorage.getItem('jarvis_subscribed') === 'true') setSubscribed(true);
     if (saved && savedName) { setToken(saved); setUserName(savedName); }
     if (savedConvs) {
       try {
