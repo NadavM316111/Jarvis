@@ -1600,7 +1600,8 @@ app.post('/chat', authMiddleware, async (req, res) => {
       try { const buf = await screenshot({ format: 'png' }); screenshotBase64 = buf.toString('base64'); } catch (e) {}
     }
 
-    const isLongTask = /play|connect|sonos|tv|call|email|create|open|print|turn|buy|order|install|build|design|scan|monitor|write|send|download|execute|organize|pdf|study|guide|make|presentation|slides|slideshow|analyze|analyse|search|find|look/i.test(message);
+    const hasFolderFiles = (attachedFiles || []).some(f => f.name && f.name.includes('/'));
+    const isLongTask = hasFolderFiles || /play|connect|sonos|tv|call|email|create|open|print|turn|buy|order|install|build|design|scan|monitor|write|send|download|execute|organize|pdf|study|guide|make|presentation|slides|slideshow|analyze|analyse|search|find|look/i.test(message);
     if (isLongTask) {
       res.json({ success: true, message: 'On it.', actions: [] });
       
@@ -1612,16 +1613,16 @@ if (isPresentation) {
   setTimeout(() => queueBgResponse(userId, '[PROGRESS:70%] Building the deck[/PROGRESS]'), 16000);
   setTimeout(() => queueBgResponse(userId, '[PROGRESS:90%] Saving your presentation[/PROGRESS]'), 25000);
 }
-
 const hasFolderUpload = (attachedFiles || []).some(f => f.name && f.name.includes('/'));
 if (hasFolderUpload) {
   const fileCount = (attachedFiles || []).length;
   const folderName = (attachedFiles || []).find(f => f.name.includes('/'))?.name.split('/')[0] || 'folder';
   setTimeout(() => queueBgResponse(userId, `[PROGRESS:5%] Reading ${fileCount} files from "${folderName}"[/PROGRESS]`), 300);
-  setTimeout(() => queueBgResponse(userId, `[PROGRESS:25%] Parsing file contents[/PROGRESS]`), 2000);
-  setTimeout(() => queueBgResponse(userId, `[PROGRESS:50%] Analyzing ${fileCount} files[/PROGRESS]`), 5000);
-  setTimeout(() => queueBgResponse(userId, `[PROGRESS:75%] Cross-referencing results[/PROGRESS]`), 10000);
-  setTimeout(() => queueBgResponse(userId, `[PROGRESS:90%] Compiling findings[/PROGRESS]`), 16000);
+  setTimeout(() => queueBgResponse(userId, `[PROGRESS:20%] Parsing file contents[/PROGRESS]`), 8000);
+  setTimeout(() => queueBgResponse(userId, `[PROGRESS:40%] Analyzing ${fileCount} files[/PROGRESS]`), 20000);
+  setTimeout(() => queueBgResponse(userId, `[PROGRESS:60%] Searching for relevant information[/PROGRESS]`), 35000);
+  setTimeout(() => queueBgResponse(userId, `[PROGRESS:80%] Cross-referencing findings[/PROGRESS]`), 50000);
+  setTimeout(() => queueBgResponse(userId, `[PROGRESS:92%] Compiling results[/PROGRESS]`), 65000);
 }
       runAgenticLoop(message, screenshotBase64, userId, cameraFrame, attachedFiles || (attachedFile ? [attachedFile] : [])).then(response => {
         console.log(`JARVIS (bg) → ${req.user.name}: ${response}`);
