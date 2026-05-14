@@ -1207,20 +1207,72 @@ async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame
   if (frame) messageContent.push({ type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: frame } });
 
   const files = Array.isArray(attachedFiles) ? attachedFiles : (attachedFiles ? [attachedFiles] : []);
-for (const attachedFile of files) {
-  if (attachedFile.type.startsWith('image/')) {
-    messageContent.push({ type: 'image', source: { type: 'base64', media_type: attachedFile.type, data: attachedFile.data } });
-  } else if (attachedFile.type === 'application/pdf') {
-    messageContent.push({ type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: attachedFile.data } });
+
+// Separate into images, PDFs, and text files
+const imageFiles = files.filter(f => f.type.startsWith('image/'));
+const pdfFiles = files.filter(f => f.type === 'application/pdf');
+const textFiles = files.filter(f => 
+  !f.type.startsWith('image/') && 
+  f.type !== 'application/pdf' && 
+  (f.type.startsWith('text/') || f.name.match(/\.(js|ts|tsx|jsx|py|md|json|csv|txt|html|css|yaml|yml|env|sh|sql|xml|toml|ini|conf|config|lock|gitignore|dockerfile)$/i))
+);
+const otherFiles = files.filter(f => 
+  !f.type.startsWith('image/') && 
+  f.type !== 'application/pdf' && 
+  !f.type.startsWith('text/') && 
+  !f.name.match(/\.(js|ts|tsx|jsx|py|md|json|csv|txt|html|css|yaml|yml|env|sh|sql|xml|toml|ini|conf|config|lock|gitignore|dockerfile)$/i)
+);
+
+// Images: add up to 5 (API limit per message)
+for (const f of imageFiles.slice(0, 5)) {
+  messageContent.push({ type: 'image', source: { type: 'base64', media_type: f.type, data: f.data } });
+}
+
+// PDFs: add up to 5 (Claude document limit)
+for (const f of pdfFiles.slice(0, 5)) {
+  messageContent.push({ type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: f.data } });
+}
+
+// Text files: batch ALL of them into ONE large text block
+// This is the key fix — instead of truncating each file to 8000 chars,
+// we include ALL files with smart per-file truncation based on total count
+if (textFiles.length > 0) {
+  const isFolderUpload = textFiles.some(f => f.name.includes('/'));
+  const folderName = isFolderUpload ? textFiles[0].name.split('/')[0] : null;
+  
+  // Budget: ~150k chars total across all files
+  const TOTAL_BUDGET = 150000;
+  const perFileBudget = Math.min(8000, Math.floor(TOTAL_BUDGET / textFiles.length));
+  
+  let combined = isFolderUpload 
+    ? `[FOLDER UPLOAD: "${folderName}" — ${textFiles.length} files]\n\n`
+    : `[${textFiles.length} FILE(S) ATTACHED]\n\n`;
+
+  // Build file tree first for folder uploads
+  if (isFolderUpload) {
+    const allPaths = files.map(f => f.name).sort();
+    combined += `FILE TREE:\n${allPaths.map(p => `  ${p}`).join('\n')}\n\n`;
+    combined += `FILE CONTENTS:\n${'─'.repeat(60)}\n\n`;
   }
-  if (attachedFile.type.startsWith('text/') || attachedFile.name.match(/\.(js|ts|py|md|json|csv|txt)$/i)) {
+
+  for (const f of textFiles) {
     try {
-      const textContent = Buffer.from(attachedFile.data, 'base64').toString('utf8');
-      messageContent.push({ type: 'text', text: `[Attached file: ${attachedFile.name}]\n\`\`\`\n${textContent.substring(0, 8000)}\n\`\`\`` });
-    } catch (e) {}
-  } else if (!attachedFile.type.startsWith('image/') && attachedFile.type !== 'application/pdf') {
-    messageContent.push({ type: 'text', text: `[User attached file: ${attachedFile.name} (${attachedFile.type})]` });
+      const textContent = Buffer.from(f.data, 'base64').toString('utf8');
+      const truncated = textContent.length > perFileBudget 
+        ? textContent.substring(0, perFileBudget) + `\n... [truncated, ${textContent.length - perFileBudget} more chars]`
+        : textContent;
+      combined += `FILE: ${f.name}\n${'─'.repeat(40)}\n${truncated}\n\n`;
+    } catch (e) {
+      combined += `FILE: ${f.name} [could not read]\n\n`;
+    }
   }
+
+  messageContent.push({ type: 'text', text: combined });
+}
+
+// Other unknown file types
+for (const f of otherFiles) {
+  messageContent.push({ type: 'text', text: `[Attached file: ${f.name} (${f.type})]` });
 }
 
   messageContent.push({ type: 'text', text: userMessage });
