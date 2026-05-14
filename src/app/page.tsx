@@ -629,6 +629,14 @@ const [checkingOut, setCheckingOut] = useState(false);
       .then(r => r.json()).then(d => setGoogleConnected(d.connected)).catch(() => {});
     fetch(`${API}/subscription-status`, { headers: { Authorization: `Bearer ${token}` } })
   .then(r => r.json()).then(d => setSubscribed(d.subscribed)).catch(() => {});
+  // Re-check if returning from Stripe
+if (window.location.search.includes('subscribed=true')) {
+  setTimeout(() => {
+    fetch(`${API}/subscription-status`, { headers: { Authorization: `Bearer ${token}` } })
+      .then(r => r.json()).then(d => setSubscribed(d.subscribed)).catch(() => {});
+    window.history.replaceState({}, '', '/');
+  }, 2000);
+}
   }, [token]);
 
   const activeConv = conversations.find(c => c.id === activeId);
