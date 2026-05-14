@@ -1565,16 +1565,44 @@ app.post('/chat', authMiddleware, async (req, res) => {
     const { message, cameraFrame, attachedFile, attachedFiles } = req.body;
     const userId = req.user.userId;
     const isNadav = userId === NADAV_USER_ID;
-    console.log(`\n[${req.user.name}]: ${message}${attachedFile ? ` [+ ${attachedFile.name}]` : ''}`);
 
     const session = getSession(userId);
-    // Store name from JWT in session for system prompt
     if (!session.name) session.name = req.user.name;
     if (!session.userMemory.email) {
-  session.userMemory.email = req.user.email;
-  session.userMemory.userName = req.user.name;
-  saveUserMemory(userId, session.userMemory);
-}
+      session.userMemory.email = req.user.email;
+      session.userMemory.userName = req.user.name;
+      saveUserMemory(userId, session.userMemory);
+    }
+
+    const isSubscribed = isNadav || session.userMemory.subscribed === true;
+    const FREE_LIMIT = 20;
+
+    if (!isSubscribed) {
+      const today = new Date().toDateString();
+      if (session.userMemory.lastMessageDate !== today) {
+        session.userMemory.dailyMessageCount = 0;
+        session.userMemory.lastMessageDate = today;
+      }
+      const used = session.userMemory.dailyMessageCount || 0;
+      if (used >= FREE_LIMIT) {
+        return res.json({
+          success: false,
+          limitReached: true,
+          messagesUsed: used,
+          messagesLimit: FREE_LIMIT,
+          message: `You've used all ${FREE_LIMIT} free messages for today. Upgrade to Pro for unlimited messages.`,
+        });
+      }
+      session.userMemory.dailyMessageCount = used + 1;
+      saveUserMemory(userId, session.userMemory);
+    }
+
+    const usageInfo = isSubscribed ? { messagesUsed: null, messagesLimit: null } : {
+      messagesUsed: session.userMemory.dailyMessageCount,
+      messagesLimit: FREE_LIMIT,
+    };
+
+    console.log(`\n[${req.user.name}]: ${message}${attachedFile ? ` [+ ${attachedFile.name}]` : ''}`);
 
     session.conversationHistory = session.conversationHistory.filter(msg => {
       if (!msg.content) return false;
@@ -1594,7 +1622,6 @@ app.post('/chat', authMiddleware, async (req, res) => {
       saveUserMemory(userId, session.userMemory);
     }
 
-    // Only capture screenshot for Nadav (local PC)
     let screenshotBase64 = null;
     if (isNadav) {
       try { const buf = await screenshot({ format: 'png' }); screenshotBase64 = buf.toString('base64'); } catch (e) {}
@@ -1603,27 +1630,27 @@ app.post('/chat', authMiddleware, async (req, res) => {
     const hasFolderFiles = (attachedFiles || []).some(f => f.name && f.name.includes('/'));
     const isLongTask = hasFolderFiles || /play|connect|sonos|tv|call|email|create|open|print|turn|buy|order|install|build|design|scan|monitor|write|send|download|execute|organize|pdf|study|guide|make|presentation|slides|slideshow|analyze|analyse|search|find|look|document|folder|file|these|those/i.test(message);
     if (isLongTask) {
-      res.json({ success: true, message: 'On it.', actions: [] });
-      
+      res.json({ success: true, message: 'On it.', actions: [], ...usageInfo });
+
       const isPresentation = /presentation|slides|slideshow/i.test(message);
-if (isPresentation) {
-  setTimeout(() => queueBgResponse(userId, '[PROGRESS:5%] Planning your slides[/PROGRESS]'), 500);
-  setTimeout(() => queueBgResponse(userId, '[PROGRESS:20%] Designing slide layouts[/PROGRESS]'), 3000);
-  setTimeout(() => queueBgResponse(userId, '[PROGRESS:45%] Fetching images[/PROGRESS]'), 8000);
-  setTimeout(() => queueBgResponse(userId, '[PROGRESS:70%] Building the deck[/PROGRESS]'), 16000);
-  setTimeout(() => queueBgResponse(userId, '[PROGRESS:90%] Saving your presentation[/PROGRESS]'), 25000);
-}
-const hasFolderUpload = (attachedFiles || []).some(f => f.name && f.name.includes('/'));
-if (hasFolderUpload) {
-  const fileCount = (attachedFiles || []).length;
-  const folderName = (attachedFiles || []).find(f => f.name.includes('/'))?.name.split('/')[0] || 'folder';
-  setTimeout(() => queueBgResponse(userId, `[PROGRESS:5%] Reading ${fileCount} files from "${folderName}"[/PROGRESS]`), 300);
-  setTimeout(() => queueBgResponse(userId, `[PROGRESS:20%] Parsing file contents[/PROGRESS]`), 8000);
-  setTimeout(() => queueBgResponse(userId, `[PROGRESS:40%] Analyzing ${fileCount} files[/PROGRESS]`), 20000);
-  setTimeout(() => queueBgResponse(userId, `[PROGRESS:60%] Searching for relevant information[/PROGRESS]`), 35000);
-  setTimeout(() => queueBgResponse(userId, `[PROGRESS:80%] Cross-referencing findings[/PROGRESS]`), 50000);
-  setTimeout(() => queueBgResponse(userId, `[PROGRESS:92%] Compiling results[/PROGRESS]`), 65000);
-}
+      if (isPresentation) {
+        setTimeout(() => queueBgResponse(userId, '[PROGRESS:5%] Planning your slides[/PROGRESS]'), 500);
+        setTimeout(() => queueBgResponse(userId, '[PROGRESS:20%] Designing slide layouts[/PROGRESS]'), 3000);
+        setTimeout(() => queueBgResponse(userId, '[PROGRESS:45%] Fetching images[/PROGRESS]'), 8000);
+        setTimeout(() => queueBgResponse(userId, '[PROGRESS:70%] Building the deck[/PROGRESS]'), 16000);
+        setTimeout(() => queueBgResponse(userId, '[PROGRESS:90%] Saving your presentation[/PROGRESS]'), 25000);
+      }
+      const hasFolderUpload = (attachedFiles || []).some(f => f.name && f.name.includes('/'));
+      if (hasFolderUpload) {
+        const fileCount = (attachedFiles || []).length;
+        const folderName = (attachedFiles || []).find(f => f.name.includes('/'))?.name.split('/')[0] || 'folder';
+        setTimeout(() => queueBgResponse(userId, `[PROGRESS:5%] Reading ${fileCount} files from "${folderName}"[/PROGRESS]`), 300);
+        setTimeout(() => queueBgResponse(userId, `[PROGRESS:20%] Parsing file contents[/PROGRESS]`), 8000);
+        setTimeout(() => queueBgResponse(userId, `[PROGRESS:40%] Analyzing ${fileCount} files[/PROGRESS]`), 20000);
+        setTimeout(() => queueBgResponse(userId, `[PROGRESS:60%] Searching for relevant information[/PROGRESS]`), 35000);
+        setTimeout(() => queueBgResponse(userId, `[PROGRESS:80%] Cross-referencing findings[/PROGRESS]`), 50000);
+        setTimeout(() => queueBgResponse(userId, `[PROGRESS:92%] Compiling results[/PROGRESS]`), 65000);
+      }
       runAgenticLoop(message, screenshotBase64, userId, cameraFrame, attachedFiles || (attachedFile ? [attachedFile] : [])).then(response => {
         console.log(`JARVIS (bg) → ${req.user.name}: ${response}`);
         queueBgResponse(userId, response);
@@ -1639,7 +1666,7 @@ if (hasFolderUpload) {
     } else {
       const response = await runAgenticLoop(message, screenshotBase64, userId, cameraFrame, attachedFile);
       console.log(`JARVIS → ${req.user.name}: ${response}`);
-      res.json({ success: true, message: response, actions: [] });
+      res.json({ success: true, message: response, actions: [], ...usageInfo });
     }
   } catch (error) {
     console.error('Error:', error);
@@ -1647,6 +1674,24 @@ if (hasFolderUpload) {
   }
 });
 
+app.get('/message-usage', authMiddleware, (req, res) => {
+  const userId = req.user.userId;
+  const isNadav = userId === NADAV_USER_ID;
+  const session = getSession(userId);
+  const isSubscribed = isNadav || session.userMemory.subscribed === true;
+  if (isSubscribed) return res.json({ subscribed: true, messagesUsed: null, messagesLimit: null });
+  const today = new Date().toDateString();
+  if (session.userMemory.lastMessageDate !== today) {
+    session.userMemory.dailyMessageCount = 0;
+    session.userMemory.lastMessageDate = today;
+    saveUserMemory(userId, session.userMemory);
+  }
+  res.json({
+    subscribed: false,
+    messagesUsed: session.userMemory.dailyMessageCount || 0,
+    messagesLimit: 20,
+  });
+});
 // ============ VISION CONTROL ============
 app.post('/vision/start', authMiddleware, (req, res) => { if (!visionLoopActive) runVisionLoop(); res.json({ ok: true }); });
 app.post('/vision/stop', (req, res) => { visionLoopActive = false; res.json({ ok: true }); });

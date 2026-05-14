@@ -100,6 +100,73 @@ const API = typeof window !== 'undefined' && window.location.hostname !== 'local
   ? 'https://api.heyjarvis.me'
   : 'http://localhost:3001';
 
+const FREE_LIMIT = 20;
+
+// ── Usage bar component ──────────────────────────────────────
+function UsageBar({ used, limit, onUpgrade }: { used: number; limit: number; onUpgrade: () => void }) {
+  const pct = Math.min((used / limit) * 100, 100);
+  const remaining = limit - used;
+  const isWarning = used >= 15 && used < limit;
+  const isLimit = used >= limit;
+
+  const barColor = isLimit
+    ? 'rgba(239,68,68,0.8)'
+    : isWarning
+    ? 'rgba(245,158,11,0.8)'
+    : 'rgba(59,130,246,0.7)';
+
+  const textColor = isLimit
+    ? 'rgba(252,165,165,0.9)'
+    : isWarning
+    ? 'rgba(253,230,138,0.9)'
+    : 'rgba(147,197,253,0.7)';
+
+  return (
+    <div style={{
+      padding: '6px 12px',
+      background: isLimit
+        ? 'rgba(239,68,68,0.06)'
+        : isWarning
+        ? 'rgba(245,158,11,0.06)'
+        : 'rgba(255,255,255,0.02)',
+      borderBottom: `1px solid ${isLimit ? 'rgba(239,68,68,0.15)' : isWarning ? 'rgba(245,158,11,0.12)' : 'rgba(255,255,255,0.05)'}`,
+      display: 'flex',
+      alignItems: 'center',
+      gap: '10px',
+    }}>
+      {/* Bar */}
+      <div style={{ flex: 1, height: '3px', background: 'rgba(255,255,255,0.07)', borderRadius: '999px', overflow: 'hidden' }}>
+        <div style={{
+          height: '100%',
+          width: `${pct}%`,
+          background: barColor,
+          borderRadius: '999px',
+          transition: 'width 0.4s ease',
+        }} />
+      </div>
+
+      {/* Label */}
+      <span style={{ fontSize: '11px', color: textColor, whiteSpace: 'nowrap', flexShrink: 0 }}>
+        {isLimit ? 'Daily limit reached' : `${remaining} message${remaining === 1 ? '' : 's'} left today`}
+      </span>
+
+      {/* Upgrade link */}
+      <button
+        onClick={onUpgrade}
+        style={{
+          fontSize: '11px', fontWeight: 500,
+          color: isLimit ? 'rgba(252,165,165,1)' : 'rgba(96,165,250,0.8)',
+          background: 'transparent', border: 'none', cursor: 'pointer',
+          padding: '0', textDecoration: 'underline', flexShrink: 0,
+          textUnderlineOffset: '2px',
+        }}
+      >
+        Go Pro
+      </button>
+    </div>
+  );
+}
+
 // ============ VOICE MODE MODAL ============
 function VoiceModeModal({
   token,
@@ -128,7 +195,6 @@ function VoiceModeModal({
   const voiceStateRef = useRef(voiceState);
   useEffect(() => { voiceStateRef.current = voiceState; }, [voiceState]);
 
-  // Animate orb rotation
   useEffect(() => {
     let frame: number;
     const tick = () => { setOrbAngle(a => (a + 0.8) % 360); frame = requestAnimationFrame(tick); };
@@ -136,7 +202,6 @@ function VoiceModeModal({
     return () => cancelAnimationFrame(frame);
   }, []);
 
-  // Audio level analyzer
   useEffect(() => {
     let frame: number;
     navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
@@ -185,13 +250,9 @@ function VoiceModeModal({
           setVoiceState('idle');
         }
       };
-      audio.onerror = () => {
-        URL.revokeObjectURL(url);
-        setVoiceState('idle');
-      };
+      audio.onerror = () => { URL.revokeObjectURL(url); setVoiceState('idle'); };
       await audio.play();
     } catch {
-      // Fallback to browser TTS
       const utt = new SpeechSynthesisUtterance(clean);
       utt.rate = 0.9; utt.pitch = 0.7; utt.volume = 1.0;
       utt.onend = () => {
@@ -268,11 +329,9 @@ function VoiceModeModal({
     rec.start();
   }, [sendToJarvis]);
 
-  // Keep refs in sync so circular deps don't matter
   useEffect(() => { startListeningRef.current = startListening; }, [startListening]);
   useEffect(() => { sendToJarvisRef.current = sendToJarvis; }, [sendToJarvis]);
 
-  // Wake word loop — runs continuously in background
   const playWakeChime = useCallback(() => {
     try {
       const ctx = new AudioContext();
@@ -299,7 +358,6 @@ function VoiceModeModal({
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SpeechRecognition) return;
     setWakeActive(true);
-
     const loop = () => {
       if (!wakeLoopRef.current) return;
       if (['listening', 'thinking', 'speaking'].includes(voiceStateRef.current)) {
@@ -316,10 +374,7 @@ function VoiceModeModal({
         if (said.includes('hey jarvis') || (said.includes('jarvis') && said.startsWith('hey'))) {
           playWakeChime();
           setTimeout(() => {
-            if (wakeLoopRef.current) {
-              inConversationRef.current = true;
-              startListening();
-            }
+            if (wakeLoopRef.current) { inConversationRef.current = true; startListening(); }
           }, 350);
         }
       };
@@ -333,10 +388,7 @@ function VoiceModeModal({
   useEffect(() => {
     wakeLoopRef.current = true;
     startWakeLoop();
-    return () => {
-      wakeLoopRef.current = false;
-      wakeRecRef.current?.abort();
-    };
+    return () => { wakeLoopRef.current = false; wakeRecRef.current?.abort(); };
   }, [startWakeLoop]);
 
   const handleOrbClick = () => {
@@ -392,182 +444,39 @@ function VoiceModeModal({
   }[voiceState];
 
   return (
-    <div
-      style={{
-        position: 'fixed', inset: 0, zIndex: 100,
-        background: 'rgba(4,4,6,0.97)',
-        backdropFilter: 'blur(20px)',
-        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-        gap: '0',
-      }}
-    >
-      {/* Close */}
-      <button
-        onClick={onClose}
-        style={{
-          position: 'absolute', top: 20, right: 20,
-          width: 40, height: 40, borderRadius: 12,
-          background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)',
-          color: 'rgba(255,255,255,0.4)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-          transition: 'all 0.2s',
-        }}
-        onMouseOver={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.color = 'rgba(255,255,255,0.7)'; }}
-        onMouseOut={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; e.currentTarget.style.color = 'rgba(255,255,255,0.4)'; }}
-      >
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-        </svg>
+    <div style={{ position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(4,4,6,0.97)', backdropFilter: 'blur(20px)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0' }}>
+      <button onClick={onClose} style={{ position: 'absolute', top: 20, right: 20, width: 40, height: 40, borderRadius: 12, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.4)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }} onMouseOver={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.color = 'rgba(255,255,255,0.7)'; }} onMouseOut={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; e.currentTarget.style.color = 'rgba(255,255,255,0.4)'; }}>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
-
-      {/* Header */}
       <div style={{ textAlign: 'center', marginBottom: 48 }}>
         <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: 18, fontWeight: 600, letterSpacing: '0.02em' }}>JARVIS Voice</div>
         <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 13, marginTop: 4 }}>Hey {userName}</div>
       </div>
-
-      {/* Orb container */}
       <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 40 }}>
-        {/* Pulse rings */}
         {orbConfig.pulseRings && (
           <>
-            <div style={{
-              position: 'absolute',
-              width: 240, height: 240, borderRadius: '50%',
-              background: (orbConfig as any).ringColor,
-              animation: 'voicePulse1 2s ease-out infinite',
-            }} />
-            <div style={{
-              position: 'absolute',
-              width: 200, height: 200, borderRadius: '50%',
-              background: (orbConfig as any).ringColor,
-              animation: 'voicePulse1 2s ease-out infinite 0.5s',
-            }} />
+            <div style={{ position: 'absolute', width: 240, height: 240, borderRadius: '50%', background: (orbConfig as any).ringColor, animation: 'voicePulse1 2s ease-out infinite' }} />
+            <div style={{ position: 'absolute', width: 200, height: 200, borderRadius: '50%', background: (orbConfig as any).ringColor, animation: 'voicePulse1 2s ease-out infinite 0.5s' }} />
           </>
         )}
-
-        {/* Main orb */}
-        <div
-          onClick={handleOrbClick}
-          style={{
-            width: 140, height: 140, borderRadius: '50%',
-            background: orbConfig.gradient,
-            boxShadow: orbConfig.glow,
-            transform: `scale(${orbConfig.scale})`,
-            transition: 'transform 0.1s ease, box-shadow 0.2s ease',
-            cursor: 'pointer',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            position: 'relative', overflow: 'hidden',
-          }}
-        >
-          {/* Inner shine */}
-          <div style={{
-            position: 'absolute', top: '15%', left: '20%',
-            width: '35%', height: '30%',
-            background: 'rgba(255,255,255,0.18)',
-            borderRadius: '50%',
-            filter: 'blur(8px)',
-          }} />
-
-          {/* State icon */}
-          {voiceState === 'idle' && (
-            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.9)" strokeWidth="1.8">
-              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
-              <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
-              <line x1="12" y1="19" x2="12" y2="23"/>
-              <line x1="8" y1="23" x2="16" y2="23"/>
-            </svg>
-          )}
-          {voiceState === 'listening' && (
-            <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
-              {[0, 1, 2, 3, 4].map(i => (
-                <div key={i} style={{
-                  width: 4, borderRadius: 2,
-                  background: 'rgba(255,255,255,0.95)',
-                  height: `${8 + (audioLevel / 255) * 28 * (0.4 + Math.abs(Math.sin(Date.now() / 100 + i * 0.9)) * 0.6)}px`,
-                  transition: 'height 0.05s',
-                  animation: `voiceBar${i % 3} 0.6s ease-in-out infinite`,
-                  animationDelay: `${i * 0.1}s`,
-                }} />
-              ))}
-            </div>
-          )}
-          {voiceState === 'thinking' && (
-            <div style={{ display: 'flex', gap: 6 }}>
-              {[0, 1, 2].map(i => (
-                <div key={i} style={{
-                  width: 8, height: 8, borderRadius: '50%',
-                  background: 'rgba(255,255,255,0.9)',
-                  animation: 'voiceBounce 1.2s ease-in-out infinite',
-                  animationDelay: `${i * 0.2}s`,
-                }} />
-              ))}
-            </div>
-          )}
-          {voiceState === 'speaking' && (
-            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.9)" strokeWidth="1.8">
-              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
-              <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
-              <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
-            </svg>
-          )}
+        <div onClick={handleOrbClick} style={{ width: 140, height: 140, borderRadius: '50%', background: orbConfig.gradient, boxShadow: orbConfig.glow, transform: `scale(${orbConfig.scale})`, transition: 'transform 0.1s ease, box-shadow 0.2s ease', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', top: '15%', left: '20%', width: '35%', height: '30%', background: 'rgba(255,255,255,0.18)', borderRadius: '50%', filter: 'blur(8px)' }} />
+          {voiceState === 'idle' && (<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.9)" strokeWidth="1.8"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>)}
+          {voiceState === 'listening' && (<div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>{[0, 1, 2, 3, 4].map(i => { const h = (8 + (audioLevel / 255) * 28 * (0.4 + Math.abs(Math.sin(Date.now() / 100 + i * 0.9)) * 0.6)) + 'px'; return (<div key={i} style={{ width: 4, borderRadius: 2, background: 'rgba(255,255,255,0.95)', height: h, transition: 'height 0.05s', animation: 'voiceBar' + (i % 3) + ' 0.6s ease-in-out infinite', animationDelay: (i * 0.1) + 's' }} />); })}</div>)}
+          {voiceState === 'thinking' && (<div style={{ display: 'flex', gap: 6 }}>{[0, 1, 2].map(i => (<div key={i} style={{ width: 8, height: 8, borderRadius: '50%', background: 'rgba(255,255,255,0.9)', animation: 'voiceBounce 1.2s ease-in-out infinite', animationDelay: `${i * 0.2}s` }} />))}</div>)}
+          {voiceState === 'speaking' && (<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.9)" strokeWidth="1.8"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>)}
         </div>
       </div>
-
-      {/* State label */}
-      <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: 15, fontWeight: 500, marginBottom: 24, letterSpacing: '0.02em', height: 22 }}>
-        {stateLabel}
-      </div>
-
-      {/* Transcript / Response */}
+      <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: 15, fontWeight: 500, marginBottom: 24, letterSpacing: '0.02em', height: 22 }}>{stateLabel}</div>
       <div style={{ width: '100%', maxWidth: 400, padding: '0 24px', minHeight: 80, textAlign: 'center' }}>
-        {transcript && (
-          <div style={{
-            background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
-            borderRadius: 16, padding: '12px 16px', marginBottom: 12,
-          }}>
-            <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.08em' }}>You</div>
-            <div style={{ color: 'rgba(255,255,255,0.75)', fontSize: 14, lineHeight: 1.5 }}>{transcript}</div>
-          </div>
-        )}
-        {response && voiceState !== 'idle' && (
-          <div style={{
-            background: 'rgba(59,130,246,0.08)', border: '1px solid rgba(59,130,246,0.15)',
-            borderRadius: 16, padding: '12px 16px',
-          }}>
-            <div style={{ color: 'rgba(96,165,250,0.6)', fontSize: 11, marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.08em' }}>JARVIS</div>
-            <div style={{ color: 'rgba(255,255,255,0.7)', fontSize: 14, lineHeight: 1.5 }}
-              dangerouslySetInnerHTML={{ __html: formatMessage(response.substring(0, 200) + (response.length > 200 ? '...' : '')) }}
-            />
-          </div>
-        )}
-        {voiceState === 'idle' && !transcript && (
-          <div style={{ color: 'rgba(255,255,255,0.2)', fontSize: 13 }}>
-            Tap the orb to start speaking
-          </div>
-        )}
-        {voiceState === 'idle' && transcript && (
-          <button
-            onClick={startListening}
-            style={{
-              marginTop: 16, padding: '10px 24px', borderRadius: 12,
-              background: 'rgba(59,130,246,0.2)', border: '1px solid rgba(59,130,246,0.3)',
-              color: '#60a5fa', fontSize: 13, fontWeight: 500, cursor: 'pointer',
-            }}
-          >
-            Ask again
-          </button>
-        )}
+        {transcript && (<div style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, padding: '12px 16px', marginBottom: 12 }}><div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.08em' }}>You</div><div style={{ color: 'rgba(255,255,255,0.75)', fontSize: 14, lineHeight: 1.5 }}>{transcript}</div></div>)}
+        {response && voiceState !== 'idle' && (<div style={{ background: 'rgba(59,130,246,0.08)', border: '1px solid rgba(59,130,246,0.15)', borderRadius: 16, padding: '12px 16px' }}><div style={{ color: 'rgba(96,165,250,0.6)', fontSize: 11, marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.08em' }}>JARVIS</div><div style={{ color: 'rgba(255,255,255,0.7)', fontSize: 14, lineHeight: 1.5 }} dangerouslySetInnerHTML={{ __html: formatMessage(response.substring(0, 200) + (response.length > 200 ? '...' : '')) }} /></div>)}
+        {voiceState === 'idle' && !transcript && (<div style={{ color: 'rgba(255,255,255,0.2)', fontSize: 13 }}>Tap the orb to start speaking</div>)}
+        {voiceState === 'idle' && transcript && (<button onClick={startListening} style={{ marginTop: 16, padding: '10px 24px', borderRadius: 12, background: 'rgba(59,130,246,0.2)', border: '1px solid rgba(59,130,246,0.3)', color: '#60a5fa', fontSize: 13, fontWeight: 500, cursor: 'pointer' }}>Ask again</button>)}
       </div>
-
       <style>{`
-        @keyframes voicePulse1 {
-          0% { transform: scale(0.8); opacity: 0.8; }
-          100% { transform: scale(1.4); opacity: 0; }
-        }
-        @keyframes voiceBounce {
-          0%, 100% { transform: translateY(0); opacity: 0.6; }
-          50% { transform: translateY(-6px); opacity: 1; }
-        }
+        @keyframes voicePulse1 { 0% { transform: scale(0.8); opacity: 0.8; } 100% { transform: scale(1.4); opacity: 0; } }
+        @keyframes voiceBounce { 0%, 100% { transform: translateY(0); opacity: 0.6; } 50% { transform: translateY(-6px); opacity: 1; } }
         @keyframes voiceBar0 { 0%, 100% { height: 8px; } 50% { height: 28px; } }
         @keyframes voiceBar1 { 0%, 100% { height: 14px; } 50% { height: 8px; } }
         @keyframes voiceBar2 { 0%, 100% { height: 20px; } 50% { height: 36px; } }
@@ -607,8 +516,13 @@ export default function Home() {
   const [googleConnected, setGoogleConnected] = useState(false);
   const [voiceModeOpen, setVoiceModeOpen] = useState(false);
   const [subscribed, setSubscribed] = useState(false);
-const [showSettings, setShowSettings] = useState(false);
-const [checkingOut, setCheckingOut] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
+  const [checkingOut, setCheckingOut] = useState(false);
+
+  // ── Daily message usage ──────────────────────────────────
+  const [messagesUsed, setMessagesUsed] = useState(0);
+  const [limitReached, setLimitReached] = useState(false);
+
   const bottomRef = useRef<HTMLDivElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const animFrameRef = useRef<number>(0);
@@ -624,17 +538,25 @@ const [checkingOut, setCheckingOut] = useState(false);
 
   useEffect(() => { activeIdRef.current = activeId; }, [activeId]);
   useEffect(() => { tokenRef.current = token; }, [token]);
+
   useEffect(() => {
     if (!token) return;
     fetch(`${API}/auth/google/status`, { headers: { Authorization: `Bearer ${token}` } })
       .then(r => r.json()).then(d => setGoogleConnected(d.connected)).catch(() => {});
     fetch(`${API}/subscription-status`, { headers: { Authorization: `Bearer ${token}` } })
-  .then(r => r.json()).then(d => setSubscribed(d.subscribed)).catch(() => {});
-  // Re-check if returning from Stripe
-if (window.location.search.includes('subscribed=true')) {
-  setSubscribed(true);
-  window.history.replaceState({}, '', '/');
-}
+      .then(r => r.json()).then(d => setSubscribed(d.subscribed)).catch(() => {});
+    if (window.location.search.includes('subscribed=true')) {
+      setSubscribed(true);
+      window.history.replaceState({}, '', '/');
+    }
+    // Fetch initial usage
+    fetch(`${API}/message-usage`, { headers: { Authorization: `Bearer ${token}` } })
+      .then(r => r.json()).then(d => {
+        if (!d.subscribed) {
+          setMessagesUsed(d.messagesUsed || 0);
+          setLimitReached((d.messagesUsed || 0) >= FREE_LIMIT);
+        }
+      }).catch(() => {});
   }, [token]);
 
   const activeConv = conversations.find(c => c.id === activeId);
@@ -704,18 +626,18 @@ if (window.location.search.includes('subscribed=true')) {
             activeIdRef.current = convId;
           }
           const isProgress = r.message.includes('[PROGRESS:');
-  if (isProgress) {
-    setConversations(prev => prev.map(c => {
-      if (c.id !== convId) return c;
-      const msgs = c.messages;
-      const lastMsg = msgs[msgs.length - 1];
-      if (lastMsg?.role === 'assistant' && lastMsg.content.includes('[PROGRESS:')) {
-        return { ...c, messages: [...msgs.slice(0, -1), { ...lastMsg, content: r.message }] };
-      }
-      return { ...c, messages: [...msgs, { role: 'assistant', content: r.message, source: 'text', timestamp: Date.now() }] };
-    }));
-    continue; // ← skip the rest of the loop for progress messages
-  }
+          if (isProgress) {
+            setConversations(prev => prev.map(c => {
+              if (c.id !== convId) return c;
+              const msgs = c.messages;
+              const lastMsg = msgs[msgs.length - 1];
+              if (lastMsg?.role === 'assistant' && lastMsg.content.includes('[PROGRESS:')) {
+                return { ...c, messages: [...msgs.slice(0, -1), { ...lastMsg, content: r.message }] };
+              }
+              return { ...c, messages: [...msgs, { role: 'assistant', content: r.message, source: 'text', timestamp: Date.now() }] };
+            }));
+            continue;
+          }
           addMessageToConv(convId, { role: "assistant", content: r.message, source: "text", timestamp: r.timestamp ?? Date.now() });
           const urlMatch2 = r.message.match(/https:\/\/api\.heyjarvis\.me\/view\/[^\s)]+/);
           if (urlMatch2) setTimeout(() => window.open(urlMatch2[0], '_blank'), 500);
@@ -833,33 +755,25 @@ if (window.location.search.includes('subscribed=true')) {
   }, [token]);
 
   const handleFileAttach = async (e: React.ChangeEvent<HTMLInputElement>) => {
-  const files = Array.from(e.target.files || []);
-  if (!files.length) return;
-  
-  // For large folders, process in batches to avoid freezing UI
-  const MAX = 200;
-  const toProcess = files.slice(0, MAX);
-  
-  for (const file of toProcess) {
-    // Skip files over 10MB
-    if (file.size > 10 * 1024 * 1024) continue;
-    await new Promise<void>(resolve => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        const base64 = (reader.result as string).split(',')[1];
-        setAttachedFiles(prev => [...prev, { 
-          data: base64, 
-          type: file.type || 'application/octet-stream', 
-          name: (file as any).webkitRelativePath || file.name 
-        }]);
-        resolve();
-      };
-      reader.onerror = () => resolve(); // skip broken files
-      reader.readAsDataURL(file);
-    });
-  }
-  e.target.value = '';
-};
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
+    const MAX = 200;
+    const toProcess = files.slice(0, MAX);
+    for (const file of toProcess) {
+      if (file.size > 10 * 1024 * 1024) continue;
+      await new Promise<void>(resolve => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const base64 = (reader.result as string).split(',')[1];
+          setAttachedFiles(prev => [...prev, { data: base64, type: file.type || 'application/octet-stream', name: (file as any).webkitRelativePath || file.name }]);
+          resolve();
+        };
+        reader.onerror = () => resolve();
+        reader.readAsDataURL(file);
+      });
+    }
+    e.target.value = '';
+  };
 
   function newConversation() {
     const id = generateId();
@@ -949,44 +863,62 @@ if (window.location.search.includes('subscribed=true')) {
   };
 
   const send = async () => {
-  if (!input.trim() || loading) return;
-  const userMsg = input.trim();
-  const filesToSend = attachedFiles;
-  setInput(""); setAttachedFiles([]);
+    if (!input.trim() || loading) return;
 
-  let convId = activeIdRef.current;
-  if (!convId || !conversations.find(c => c.id === convId)) {
-    convId = generateId();
-    setConversations(prev => [{ id: convId!, title: userMsg.slice(0, 40), messages: [], createdAt: Date.now() }, ...prev]);
-    setActiveId(convId); activeIdRef.current = convId;
-  } else {
-    setConversations(prev => prev.map(c => c.id === convId && c.messages.length === 0 ? { ...c, title: userMsg.slice(0, 40) } : c));
-  }
-  const finalConvId = convId!;
-
-  addMessageToConv(finalConvId, { role: "user", content: userMsg, source: "text", timestamp: Date.now(), imageUrl: filesToSend[0]?.type.startsWith('image/') ? `data:${filesToSend[0].type};base64,${filesToSend[0].data}` : undefined, fileName: filesToSend[0]?.name });
-
-  setLoading(true);
-  try {
-    const res = await fetch(`${API}/chat`, { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` }, body: JSON.stringify({ message: userMsg, attachedFiles: filesToSend }) });
-    const data = await res.json();
-    if (data.message === 'On it.') {
-      addMessageToConv(finalConvId, { role: "assistant", content: "On it...", source: "text", timestamp: Date.now() });
-    } else if (data.message) {
-      addMessageToConv(finalConvId, { role: "assistant", content: data.message, source: "text", timestamp: Date.now() });
-      const urlMatch = data.message.match(/https:\/\/api\.heyjarvis\.me\/view\/[^\s)]+/);
-      if (urlMatch) setTimeout(() => window.open(urlMatch[0], '_blank'), 500);
-      const ytMatch = data.message.match(/https:\/\/(www\.)?youtube\.com\/watch\?[^\s<>"')]+/);
-      if (ytMatch) { const w = window.open(ytMatch[0], '_blank'); if (w) w.focus(); }
+    // Block if limit reached (free users)
+    if (!subscribed && limitReached) {
+      setShowSettings(true);
+      return;
     }
-  } catch {}
-  setLoading(false);
-};
+
+    const userMsg = input.trim();
+    const filesToSend = attachedFiles;
+    setInput(""); setAttachedFiles([]);
+
+    let convId = activeIdRef.current;
+    if (!convId || !conversations.find(c => c.id === convId)) {
+      convId = generateId();
+      setConversations(prev => [{ id: convId!, title: userMsg.slice(0, 40), messages: [], createdAt: Date.now() }, ...prev]);
+      setActiveId(convId); activeIdRef.current = convId;
+    } else {
+      setConversations(prev => prev.map(c => c.id === convId && c.messages.length === 0 ? { ...c, title: userMsg.slice(0, 40) } : c));
+    }
+    const finalConvId = convId!;
+
+    addMessageToConv(finalConvId, { role: "user", content: userMsg, source: "text", timestamp: Date.now(), imageUrl: filesToSend[0]?.type.startsWith('image/') ? `data:${filesToSend[0].type};base64,${filesToSend[0].data}` : undefined, fileName: filesToSend[0]?.name });
+
+    setLoading(true);
+    try {
+      const res = await fetch(`${API}/chat`, { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` }, body: JSON.stringify({ message: userMsg, attachedFiles: filesToSend }) });
+      const data = await res.json();
+
+      // Update usage from response
+      if (!subscribed && data.messagesUsed != null) {
+        setMessagesUsed(data.messagesUsed);
+        setLimitReached(data.limitReached || data.messagesUsed >= FREE_LIMIT);
+      }
+
+      if (data.limitReached) {
+        addMessageToConv(finalConvId, { role: "assistant", content: "You've used all 20 free messages for today. Upgrade to Pro for unlimited messages.", source: "text", timestamp: Date.now() });
+      } else if (data.message === 'On it.') {
+        addMessageToConv(finalConvId, { role: "assistant", content: "On it...", source: "text", timestamp: Date.now() });
+      } else if (data.message) {
+        addMessageToConv(finalConvId, { role: "assistant", content: data.message, source: "text", timestamp: Date.now() });
+        const urlMatch = data.message.match(/https:\/\/api\.heyjarvis\.me\/view\/[^\s)]+/);
+        if (urlMatch) setTimeout(() => window.open(urlMatch[0], '_blank'), 500);
+        const ytMatch = data.message.match(/https:\/\/(www\.)?youtube\.com\/watch\?[^\s<>"')]+/);
+        if (ytMatch) { const w = window.open(ytMatch[0], '_blank'); if (w) w.focus(); }
+      }
+    } catch {}
+    setLoading(false);
+  };
 
   const orbScale = 1 + (audioLevel / 255) * 0.4;
   const orbBg = isListening ? "radial-gradient(circle at 40% 40%, #34d399, #059669)" : isSpeaking ? "radial-gradient(circle at 40% 40%, #a78bfa, #6d28d9)" : loading ? "radial-gradient(circle at 40% 40%, #a78bfa, #6d28d9)" : "radial-gradient(circle at 40% 40%, #60a5fa, #1d4ed8)";
   const orbGlow = isListening ? `0 0 ${20 + audioLevel / 4}px rgba(52,211,153,0.8)` : isSpeaking ? "0 0 24px rgba(167,139,250,0.8)" : loading ? "0 0 20px rgba(167,139,250,0.6)" : "0 0 16px rgba(96,165,250,0.5)";
   const statusText = isListening ? "Listening..." : isSpeaking ? "Speaking..." : loading ? "Thinking..." : "Ready";
+
+  const openUpgrade = () => setShowSettings(true);
 
   if (!token) {
     return (
@@ -1048,55 +980,103 @@ if (window.location.search.includes('subscribed=true')) {
 
   return (
     <div style={{ height: '100dvh', fontFamily: "-apple-system, 'SF Pro Display', sans-serif" }} className="bg-[#060608] flex overflow-hidden">
-      {/* Voice Mode Modal */}
+
+      {/* Settings modal */}
       {showSettings && (
-  <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
-    <div className="bg-[#0a0a0f] border border-white/10 rounded-2xl p-6 w-full max-w-sm">
-      <div className="flex items-center justify-between mb-6">
-        <div className="text-white font-semibold">Settings</div>
-        <button onClick={() => setShowSettings(false)} className="text-white/30 hover:text-white/60">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-          </svg>
-        </button>
-      </div>
-      <div className="mb-6 p-4 rounded-xl border border-white/10 bg-white/3">
-        <div className="text-white/40 text-xs mb-1">Account</div>
-        <div className="text-white font-medium">{userName}</div>
-        <div className={`text-sm mt-1 ${subscribed ? 'text-green-400' : 'text-yellow-400'}`}>
-          {subscribed ? 'Pro — Active' : 'Free Plan'}
-        </div>
-      </div>
-      {!subscribed && (
-        <div className="mb-4 p-4 rounded-xl border border-blue-500/20 bg-blue-500/5">
-          <div className="text-white font-medium mb-1">Upgrade to Pro</div>
-          <div className="text-white/40 text-xs mb-3">$25/month — unlimited messages, all features</div>
-          <button
-            onClick={async () => {
-  setCheckingOut(true);
-  localStorage.setItem('jarvis_subscribed', 'true');
-  const res = await fetch(`${API}/create-checkout`, { method: 'POST', headers: { Authorization: `Bearer ${token}` } });
-  const data = await res.json();
-  if (data.url) window.location.href = data.url;
-  setCheckingOut(false);
-}}
-            disabled={checkingOut}
-            className="w-full py-2.5 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 rounded-xl text-white text-sm font-medium transition-all"
-          >
-            {checkingOut ? 'Loading...' : 'Upgrade Now — $25/mo'}
-          </button>
+        <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
+          <div className="bg-[#0a0a0f] border border-white/10 rounded-2xl p-6 w-full max-w-sm">
+            <div className="flex items-center justify-between mb-6">
+              <div className="text-white font-semibold">Settings</div>
+              <button onClick={() => setShowSettings(false)} className="text-white/30 hover:text-white/60">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+              </button>
+            </div>
+
+            {/* Account info */}
+            <div className="mb-4 p-4 rounded-xl border border-white/10 bg-white/3">
+              <div className="text-white/40 text-xs mb-1">Account</div>
+              <div className="text-white font-medium">{userName}</div>
+              <div className={`text-sm mt-1 font-medium ${subscribed ? 'text-green-400' : 'text-yellow-400/80'}`}>
+                {subscribed ? '✦ Pro — Unlimited messages' : `Free — ${Math.max(0, FREE_LIMIT - messagesUsed)} messages left today`}
+              </div>
+            </div>
+
+            {subscribed ? (
+              // ── PRO USER: show plan details, no upgrade needed ──
+              <div className="mb-4 p-4 rounded-xl border border-green-500/20 bg-green-500/5">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-2 h-2 rounded-full bg-green-400" />
+                  <div className="text-green-300 font-medium text-sm">Pro plan active</div>
+                </div>
+                <div className="text-white/40 text-xs leading-relaxed">
+                  You have unlimited messages, full voice mode, all integrations, and priority access to new features.
+                </div>
+                <div className="mt-3 pt-3 border-t border-white/5 text-white/25 text-xs">
+                  To manage your subscription, visit{' '}
+                  <a href="https://billing.stripe.com/p/login/test_00000" target="_blank" rel="noopener noreferrer" className="text-white/40 underline">billing portal</a>
+                </div>
+              </div>
+            ) : (
+              // ── FREE USER: show upgrade card ──
+              <>
+                {/* Usage bar in modal */}
+                <div className="mb-4 p-4 rounded-xl border border-white/8 bg-white/3">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="text-white/50 text-xs">Daily messages</div>
+                    <div className={`text-xs font-medium ${messagesUsed >= FREE_LIMIT ? 'text-red-400' : messagesUsed >= 15 ? 'text-amber-400' : 'text-white/40'}`}>
+                      {messagesUsed} / {FREE_LIMIT}
+                    </div>
+                  </div>
+                  <div style={{ height: '4px', background: 'rgba(255,255,255,0.07)', borderRadius: '999px', overflow: 'hidden' }}>
+                    <div style={{
+                      height: '100%',
+                      width: `${Math.min((messagesUsed / FREE_LIMIT) * 100, 100)}%`,
+                      background: messagesUsed >= FREE_LIMIT ? 'rgba(239,68,68,0.8)' : messagesUsed >= 15 ? 'rgba(245,158,11,0.8)' : 'rgba(59,130,246,0.7)',
+                      borderRadius: '999px',
+                      transition: 'width 0.4s ease',
+                    }} />
+                  </div>
+                  <div className="text-white/25 text-xs mt-2">Resets at midnight</div>
+                </div>
+
+                <div className="p-4 rounded-xl border border-blue-500/20 bg-blue-500/5">
+                  <div className="text-white font-medium mb-1">Upgrade to Pro</div>
+                  <div className="text-white/40 text-xs mb-3">$25/month — unlimited messages, all features, priority access</div>
+                  <div className="flex flex-col gap-2 mb-4">
+                    {['Unlimited messages every day', 'Full voice mode', 'All integrations (Gmail, Drive, Calendar)', 'Builds websites, PDFs, presentations'].map((f, i) => (
+                      <div key={i} className="flex items-center gap-2 text-xs text-white/60">
+                        <div className="w-3.5 h-3.5 rounded-full bg-blue-500/20 border border-blue-500/40 flex items-center justify-center flex-shrink-0">
+                          <svg width="7" height="7" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#60a5fa" strokeWidth="1.5" strokeLinecap="round"/></svg>
+                        </div>
+                        {f}
+                      </div>
+                    ))}
+                  </div>
+                  <button
+                    onClick={async () => {
+                      setCheckingOut(true);
+                      localStorage.setItem('jarvis_subscribed', 'true');
+                      const res = await fetch(`${API}/create-checkout`, { method: 'POST', headers: { Authorization: `Bearer ${token}` } });
+                      const data = await res.json();
+                      if (data.url) window.location.href = data.url;
+                      setCheckingOut(false);
+                    }}
+                    disabled={checkingOut}
+                    className="w-full py-2.5 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 rounded-xl text-white text-sm font-medium transition-all"
+                  >
+                    {checkingOut ? 'Loading...' : 'Upgrade Now — $25/mo'}
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
         </div>
       )}
-    </div>
-  </div>
-)}
+
       {voiceModeOpen && token && (
-        <VoiceModeModal
-          token={token}
-          userName={userName}
-          onClose={() => setVoiceModeOpen(false)}
-          onMessageSent={handleVoiceModeMessage}
-        />
+        <VoiceModeModal token={token} userName={userName} onClose={() => setVoiceModeOpen(false)} onMessageSent={handleVoiceModeMessage} />
       )}
 
       {sidebarOpen && (
@@ -1114,59 +1094,30 @@ if (window.location.search.includes('subscribed=true')) {
             <span className="text-white text-sm font-semibold tracking-wide">JARVIS</span>
           </div>
           <button onClick={() => setSidebarOpen(false)} className="w-8 h-8 flex items-center justify-center rounded-lg text-white/30 hover:text-white/60 hover:bg-white/5 transition-all">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-            </svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
           </button>
         </div>
 
         <div className="px-3 pt-3 pb-2 flex-shrink-0">
           <button onClick={newConversation} className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/20 text-blue-300 text-xs font-medium transition-all mb-2">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-              <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-            </svg>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             New conversation
           </button>
-
-          {/* Voice Mode Button */}
-          <button
-            onClick={() => { setVoiceModeOpen(true); setSidebarOpen(false); }}
-            className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl border text-xs font-medium transition-all mb-2 bg-gradient-to-r from-blue-600/20 via-purple-600/15 to-pink-600/20 border-white/10 text-white/70 hover:text-white hover:border-white/20"
-          >
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
-              <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
-              <line x1="12" y1="19" x2="12" y2="23"/>
-              <line x1="8" y1="23" x2="16" y2="23"/>
-            </svg>
+          <button onClick={() => { setVoiceModeOpen(true); setSidebarOpen(false); }} className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl border text-xs font-medium transition-all mb-2 bg-gradient-to-r from-blue-600/20 via-purple-600/15 to-pink-600/20 border-white/10 text-white/70 hover:text-white hover:border-white/20">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
             Voice mode
           </button>
-
-          <a
-            href={`${API}/auth/google?token=${token}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl border text-xs font-medium transition-all mb-2 ${googleConnected ? 'bg-green-500/15 border-green-500/30 text-green-400' : 'bg-white/5 border-white/10 text-white/50 hover:text-white/70'}`}
-          >
+          <a href={`${API}/auth/google?token=${token}`} target="_blank" rel="noopener noreferrer" className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl border text-xs font-medium transition-all mb-2 ${googleConnected ? 'bg-green-500/15 border-green-500/30 text-green-400' : 'bg-white/5 border-white/10 text-white/50 hover:text-white/70'}`}>
             <div className={`w-2 h-2 rounded-full ${googleConnected ? 'bg-green-400' : 'bg-white/20'}`} />
             {googleConnected ? 'Google connected' : 'Connect Google'}
           </a>
-
           {typeof window !== 'undefined' && window.location.hostname === 'localhost' && (
             <button onClick={toggleVoice} className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl border text-xs font-medium transition-all mb-2 ${voiceRunning ? 'bg-green-500/15 border-green-500/30 text-green-400' : 'bg-white/5 border-white/10 text-white/50 hover:text-white/70'}`}>
               <div className={`w-2 h-2 rounded-full ${voiceRunning ? 'bg-green-400 animate-pulse' : 'bg-white/20'}`} />
               {voiceRunning ? 'Voice active — stop' : 'Start voice'}
             </button>
           )}
-
-          <button
-            onClick={async () => {
-              const res = await fetch(`${API}/voice/spoken-updates`, { method: 'POST', headers: { 'Content-Type': 'application/json' } });
-              const data = await res.json();
-              setSpokenUpdates(data.enabled);
-            }}
-            className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl border text-xs font-medium transition-all ${spokenUpdates ? 'bg-purple-500/15 border-purple-500/30 text-purple-400' : 'bg-white/5 border-white/10 text-white/50 hover:text-white/70'}`}
-          >
+          <button onClick={async () => { const res = await fetch(`${API}/voice/spoken-updates`, { method: 'POST', headers: { 'Content-Type': 'application/json' } }); const data = await res.json(); setSpokenUpdates(data.enabled); }} className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl border text-xs font-medium transition-all ${spokenUpdates ? 'bg-purple-500/15 border-purple-500/30 text-purple-400' : 'bg-white/5 border-white/10 text-white/50 hover:text-white/70'}`}>
             <div className={`w-2 h-2 rounded-full ${spokenUpdates ? 'bg-purple-400 animate-pulse' : 'bg-white/20'}`} />
             {spokenUpdates ? 'Spoken updates — on' : 'Spoken updates — off'}
           </button>
@@ -1176,46 +1127,33 @@ if (window.location.search.includes('subscribed=true')) {
           <div className="text-white/20 text-xs uppercase tracking-widest mb-2 px-1">Conversations</div>
           {conversations.length === 0 && <div className="text-white/20 text-xs px-1 py-2">No conversations yet</div>}
           {conversations.map(conv => (
-            <div
-              key={conv.id}
-              className={`group flex items-center gap-2 px-3 py-2.5 rounded-xl mb-1 cursor-pointer transition-all ${conv.id === activeId ? 'bg-white/8 text-white/90' : 'text-white/40 hover:bg-white/5 hover:text-white/60'}`}
-              onClick={() => { setActiveId(conv.id); activeIdRef.current = conv.id; setSidebarOpen(false); }}
-            >
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="flex-shrink-0 opacity-50">
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-              </svg>
+            <div key={conv.id} className={`group flex items-center gap-2 px-3 py-2.5 rounded-xl mb-1 cursor-pointer transition-all ${conv.id === activeId ? 'bg-white/8 text-white/90' : 'text-white/40 hover:bg-white/5 hover:text-white/60'}`} onClick={() => { setActiveId(conv.id); activeIdRef.current = conv.id; setSidebarOpen(false); }}>
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="flex-shrink-0 opacity-50"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
               <span className="text-xs flex-1 truncate">{conv.title}</span>
               <button onClick={e => { e.stopPropagation(); deleteConversation(conv.id); }} className="opacity-0 group-hover:opacity-100 transition-opacity text-white/30 hover:text-red-400 p-1 flex-shrink-0">
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-                </svg>
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
               </button>
             </div>
           ))}
         </div>
 
         <div className="px-4 py-3 border-t border-white/5 flex items-center gap-2.5 flex-shrink-0">
-  <div className="w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
-    {userName.charAt(0).toUpperCase()}
-  </div>
-  <div className="flex-1 min-w-0">
-    <div className="text-white/70 text-xs font-medium truncate">{userName}</div>
-    <div className={`text-xs ${subscribed ? 'text-green-400' : 'text-yellow-400'}`}>
-      {subscribed ? 'Pro' : 'Free'}
-    </div>
-  </div>
-  <button onClick={() => setShowSettings(true)} className="text-white/25 hover:text-white/50 transition-all p-1">
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-    </svg>
-  </button>
-  <button onClick={logout} className="text-white/25 hover:text-white/50 transition-all p-1">
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-      <polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
-    </svg>
-  </button>
-</div>
+          <div className="w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+            {userName.charAt(0).toUpperCase()}
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="text-white/70 text-xs font-medium truncate">{userName}</div>
+            <div className={`text-xs ${subscribed ? 'text-green-400' : 'text-yellow-400/70'}`}>
+              {subscribed ? 'Pro — unlimited' : `${Math.max(0, FREE_LIMIT - messagesUsed)} msg left today`}
+            </div>
+          </div>
+          <button onClick={() => setShowSettings(true)} className="text-white/25 hover:text-white/50 transition-all p-1">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          </button>
+          <button onClick={logout} className="text-white/25 hover:text-white/50 transition-all p-1">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          </button>
+        </div>
       </div>
 
       {/* MAIN CONTENT */}
@@ -1223,9 +1161,7 @@ if (window.location.search.includes('subscribed=true')) {
         {/* Top bar */}
         <div className="px-3 py-3 flex items-center gap-2 border-b border-white/5 flex-shrink-0 bg-[#060608]">
           <button onClick={() => setSidebarOpen(!sidebarOpen)} className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-white/5 transition-all text-white/40 hover:text-white/70 flex-shrink-0">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/>
-            </svg>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
           </button>
           <div className="flex items-center gap-2 flex-1 min-w-0">
             <div className="w-6 h-6 rounded-full flex-shrink-0 transition-all duration-100" style={{ background: orbBg, boxShadow: orbGlow, transform: `scale(${orbScale})` }} />
@@ -1240,35 +1176,22 @@ if (window.location.search.includes('subscribed=true')) {
               <span className="text-white/30 text-xs">cam</span>
             </div>
           )}
-          {/* Voice mode button in top bar (mobile shortcut) */}
-          <button
-            onClick={() => setVoiceModeOpen(true)}
-            className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-white/5 transition-all flex-shrink-0"
-            title="Voice mode"
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.35)" strokeWidth="2">
-              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
-              <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
-              <line x1="12" y1="19" x2="12" y2="23"/>
-              <line x1="8" y1="23" x2="16" y2="23"/>
-            </svg>
+          <button onClick={() => setVoiceModeOpen(true)} className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-white/5 transition-all flex-shrink-0" title="Voice mode">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.35)" strokeWidth="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
           </button>
           <button onClick={logout} className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-white/5 transition-all text-white/30 hover:text-white/60 flex-shrink-0">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-              <polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
-            </svg>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
           </button>
           <button onClick={() => { setShowUpdates(!showUpdates); if (!showUpdates) markAllRead(); }} className="relative w-10 h-10 flex items-center justify-center rounded-xl hover:bg-white/5 transition-all flex-shrink-0">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.35)" strokeWidth="2">
-              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-              <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-            </svg>
-            {unreadCount > 0 && (
-              <span className="absolute top-1 right-1 w-3.5 h-3.5 bg-blue-500 rounded-full text-white flex items-center justify-center font-bold" style={{ fontSize: '9px' }}>{unreadCount}</span>
-            )}
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.35)" strokeWidth="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            {unreadCount > 0 && (<span className="absolute top-1 right-1 w-3.5 h-3.5 bg-blue-500 rounded-full text-white flex items-center justify-center font-bold" style={{ fontSize: '9px' }}>{unreadCount}</span>)}
           </button>
         </div>
+
+        {/* Usage bar — only shown for free users */}
+        {!subscribed && (
+          <UsageBar used={messagesUsed} limit={FREE_LIMIT} onUpgrade={openUpgrade} />
+        )}
 
         {/* Updates panel */}
         {showUpdates && (
@@ -1278,21 +1201,16 @@ if (window.location.search.includes('subscribed=true')) {
                 <div className="flex items-center justify-between mb-3">
                   <div className="text-white/40 text-xs uppercase tracking-widest font-medium">Daily Checks</div>
                   <button onClick={() => setShowUpdates(false)} className="text-white/40 hover:text-white/70 text-xs transition-all flex items-center gap-1.5">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-                    </svg>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                     Close
                   </button>
                 </div>
                 {dailyChecks.length === 0 && <div className="text-white/20 text-xs py-2">No checks yet</div>}
                 {dailyChecks.map(check => (
                   <div key={check.id} className="mb-2 rounded-xl border border-white/7 overflow-hidden">
-                    <button onClick={() => setDailyChecks(prev => prev.map(c => c.id === check.id ? { ...c, expanded: !c.expanded } : c))}
-                      className="w-full flex items-center gap-3 px-4 py-3 hover:bg-white/3 transition-all text-left">
+                    <button onClick={() => setDailyChecks(prev => prev.map(c => c.id === check.id ? { ...c, expanded: !c.expanded } : c))} className="w-full flex items-center gap-3 px-4 py-3 hover:bg-white/3 transition-all text-left">
                       <div className="flex-shrink-0 w-5 h-5 flex items-center justify-center">
-                        {check.status === "processing" ? <div className="w-3.5 h-3.5 border border-blue-400 border-t-transparent rounded-full animate-spin" />
-                          : check.status === "done" ? <div className="w-4 h-4 rounded-full bg-green-500/20 border border-green-500/50 flex items-center justify-center"><svg width="8" height="8" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#4ade80" strokeWidth="1.5" strokeLinecap="round"/></svg></div>
-                          : <div className="w-3.5 h-3.5 rounded-full border border-white/20" />}
+                        {check.status === "processing" ? <div className="w-3.5 h-3.5 border border-blue-400 border-t-transparent rounded-full animate-spin" /> : check.status === "done" ? <div className="w-4 h-4 rounded-full bg-green-500/20 border border-green-500/50 flex items-center justify-center"><svg width="8" height="8" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#4ade80" strokeWidth="1.5" strokeLinecap="round"/></svg></div> : <div className="w-3.5 h-3.5 rounded-full border border-white/20" />}
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="text-white/80 text-xs font-medium truncate">{check.label}</div>
@@ -1304,10 +1222,7 @@ if (window.location.search.includes('subscribed=true')) {
                       <div className="px-4 pb-3 border-t border-white/5">
                         {check.lastResult && <div className="text-white/60 text-xs py-3 leading-relaxed" dangerouslySetInnerHTML={{ __html: formatMessage(check.lastResult) }} />}
                         <div className="flex gap-2 mt-1">
-                          <input value={check.followUp} onChange={e => setDailyChecks(prev => prev.map(c => c.id === check.id ? { ...c, followUp: e.target.value } : c))}
-                            onKeyDown={e => e.key === 'Enter' && runFollowUp(check)} placeholder="Ask a follow-up..."
-                            style={{ fontSize: '16px' }}
-                            className="flex-1 bg-white/5 border border-white/8 rounded-lg text-white text-xs px-3 py-2 outline-none placeholder:text-white/20 focus:border-blue-500/30 transition-all" />
+                          <input value={check.followUp} onChange={e => setDailyChecks(prev => prev.map(c => c.id === check.id ? { ...c, followUp: e.target.value } : c))} onKeyDown={e => e.key === 'Enter' && runFollowUp(check)} placeholder="Ask a follow-up..." style={{ fontSize: '16px' }} className="flex-1 bg-white/5 border border-white/8 rounded-lg text-white text-xs px-3 py-2 outline-none placeholder:text-white/20 focus:border-blue-500/30 transition-all" />
                           <button onClick={() => runFollowUp(check)} className="px-3 py-2 bg-blue-600/40 hover:bg-blue-600/60 border border-blue-500/20 rounded-lg text-blue-300 text-xs transition-all">Ask</button>
                         </div>
                         <button onClick={() => setDailyChecks(prev => prev.filter(c => c.id !== check.id))} className="mt-2 text-red-400/40 hover:text-red-400/70 text-xs transition-all">Remove</button>
@@ -1316,23 +1231,19 @@ if (window.location.search.includes('subscribed=true')) {
                   </div>
                 ))}
                 <div className="flex gap-2 mt-3">
-                  <input value={newCheckInput} onChange={e => setNewCheckInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && addDailyCheck()}
-                    placeholder="Check the weather every day..."
-                    style={{ fontSize: '16px' }}
-                    className="flex-1 bg-white/5 border border-white/8 rounded-xl text-white text-xs px-3 py-2.5 outline-none placeholder:text-white/20 focus:border-blue-500/30 transition-all" />
+                  <input value={newCheckInput} onChange={e => setNewCheckInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && addDailyCheck()} placeholder="Check the weather every day..." style={{ fontSize: '16px' }} className="flex-1 bg-white/5 border border-white/8 rounded-xl text-white text-xs px-3 py-2.5 outline-none placeholder:text-white/20 focus:border-blue-500/30 transition-all" />
                   <button onClick={addDailyCheck} disabled={!newCheckInput.trim()} className="px-3 py-2.5 bg-blue-600 hover:bg-blue-500 disabled:opacity-30 rounded-xl text-white text-xs transition-all font-medium">Add</button>
                 </div>
               </div>
               <div className="mx-4 my-3 border-t border-white/5" />
               <div className="px-4 pb-4">
                 <div className="text-white/40 text-xs uppercase tracking-widest mb-3 font-medium">JARVIS Updates</div>
-                {updates.length === 0 ? <div className="text-white/20 text-xs py-2">JARVIS is watching...</div>
-                  : updates.map(update => (
-                    <div key={update.id} className={`mb-2 px-4 py-3 rounded-xl text-xs border leading-relaxed ${update.read ? 'bg-white/2 border-white/5 text-white/40' : 'bg-blue-500/8 border-blue-500/20 text-white/80'}`}>
-                      <div>{update.message}</div>
-                      <div className="mt-1.5 opacity-40">{update.time} · {update.date}</div>
-                    </div>
-                  ))}
+                {updates.length === 0 ? <div className="text-white/20 text-xs py-2">JARVIS is watching...</div> : updates.map(update => (
+                  <div key={update.id} className={`mb-2 px-4 py-3 rounded-xl text-xs border leading-relaxed ${update.read ? 'bg-white/2 border-white/5 text-white/40' : 'bg-blue-500/8 border-blue-500/20 text-white/80'}`}>
+                    <div>{update.message}</div>
+                    <div className="mt-1.5 opacity-40">{update.time} · {update.date}</div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
@@ -1344,18 +1255,8 @@ if (window.location.search.includes('subscribed=true')) {
             {voiceRunning && (
               <div className="flex flex-col items-center justify-center py-16">
                 <div className="relative flex items-center justify-center mb-6">
-                  {isListening && (
-                    <>
-                      <div className="absolute w-40 h-40 rounded-full animate-ping" style={{ background: 'rgba(52,211,153,0.08)', animationDuration: '2s' }} />
-                      <div className="absolute w-28 h-28 rounded-full animate-ping" style={{ background: 'rgba(52,211,153,0.12)', animationDuration: '1.5s' }} />
-                    </>
-                  )}
-                  {isSpeaking && (
-                    <>
-                      <div className="absolute w-40 h-40 rounded-full animate-ping" style={{ background: 'rgba(167,139,250,0.08)', animationDuration: '1.8s' }} />
-                      <div className="absolute w-28 h-28 rounded-full animate-ping" style={{ background: 'rgba(167,139,250,0.12)', animationDuration: '1.2s' }} />
-                    </>
-                  )}
+                  {isListening && (<><div className="absolute w-40 h-40 rounded-full animate-ping" style={{ background: 'rgba(52,211,153,0.08)', animationDuration: '2s' }} /><div className="absolute w-28 h-28 rounded-full animate-ping" style={{ background: 'rgba(52,211,153,0.12)', animationDuration: '1.5s' }} /></>)}
+                  {isSpeaking && (<><div className="absolute w-40 h-40 rounded-full animate-ping" style={{ background: 'rgba(167,139,250,0.08)', animationDuration: '1.8s' }} /><div className="absolute w-28 h-28 rounded-full animate-ping" style={{ background: 'rgba(167,139,250,0.12)', animationDuration: '1.2s' }} /></>)}
                   <div className="w-24 h-24 rounded-full transition-all duration-100" style={{ background: orbBg, boxShadow: `${orbGlow}, inset 0 0 40px rgba(255,255,255,0.05)`, transform: `scale(${1 + (audioLevel / 255) * 0.3})` }} />
                 </div>
                 <div className="text-white/60 text-base font-medium mb-1">{statusText}</div>
@@ -1379,23 +1280,13 @@ if (window.location.search.includes('subscribed=true')) {
 
             {!voiceRunning && messages.map((msg, i) => (
               <div key={i} className={`flex gap-2 ${msg.role === "user" ? "flex-row-reverse" : ""}`}>
-                {msg.role === "assistant" && (
-                  <div className="w-6 h-6 rounded-full flex-shrink-0 mt-1" style={{ background: orbBg, boxShadow: orbGlow }} />
-                )}
+                {msg.role === "assistant" && (<div className="w-6 h-6 rounded-full flex-shrink-0 mt-1" style={{ background: orbBg, boxShadow: orbGlow }} />)}
                 <div className={`max-w-[85%] px-4 py-3 rounded-2xl text-sm leading-relaxed ${msg.role === "assistant" ? "bg-white/5 border border-white/7 text-white/85 rounded-tl-sm" : "bg-blue-600 text-white rounded-tr-sm"}`}>
                   {msg.source === "voice" && <div className="text-xs opacity-40 mb-1">{msg.role === "user" ? "voice" : "spoken"}</div>}
-                  {msg.fileName && !msg.imageUrl && (
-                    <div className="flex items-center gap-1.5 mb-2 opacity-70">
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
-                      <span className="text-xs">{msg.fileName}</span>
-                    </div>
-                  )}
+                  {msg.fileName && !msg.imageUrl && (<div className="flex items-center gap-1.5 mb-2 opacity-70"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg><span className="text-xs">{msg.fileName}</span></div>)}
                   <span dangerouslySetInnerHTML={{ __html: formatMessage(msg.content) }} />
                   {msg.imageUrl && <img src={msg.imageUrl} alt={msg.fileName || 'attachment'} className="mt-2 rounded-xl max-w-full" style={{ maxHeight: '200px', objectFit: 'contain' }} />}
-                  {msg.role === 'assistant' && renderMessageExtras(msg.content, (prompt) => {
-                    setInput(prompt);
-                    setTimeout(() => send(), 50);
-                  })}
+                  {msg.role === 'assistant' && renderMessageExtras(msg.content, (prompt) => { setInput(prompt); setTimeout(() => send(), 50); })}
                 </div>
               </div>
             ))}
@@ -1404,29 +1295,34 @@ if (window.location.search.includes('subscribed=true')) {
               <div className="flex gap-2">
                 <div className="w-6 h-6 rounded-full flex-shrink-0 mt-1" style={{ background: orbBg }} />
                 <div className="bg-white/5 border border-white/7 rounded-2xl rounded-tl-sm px-4 py-3">
-                  <div className="flex gap-1">
-                    {[0, 150, 300].map(delay => <span key={delay} className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: `${delay}ms` }} />)}
-                  </div>
+                  <div className="flex gap-1">{[0, 150, 300].map(delay => <span key={delay} className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: `${delay}ms` }} />)}</div>
                 </div>
               </div>
             )}
+
+            {/* Limit reached inline prompt */}
+            {!subscribed && limitReached && !loading && (
+              <div className="flex justify-center py-4">
+                <div className="px-5 py-4 rounded-2xl border border-red-500/20 bg-red-500/5 text-center max-w-xs">
+                  <div className="text-red-300 text-sm font-medium mb-1">Daily limit reached</div>
+                  <div className="text-white/30 text-xs mb-3">You've used all 20 free messages for today. Resets at midnight.</div>
+                  <button onClick={openUpgrade} className="px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded-xl text-white text-xs font-medium transition-all">Upgrade to Pro</button>
+                </div>
+              </div>
+            )}
+
             <div ref={bottomRef} />
           </div>
         </div>
-{/* Attached file preview */}
+
+        {/* Attached file preview */}
         {attachedFiles.length > 0 && (
           <div className="px-3 pt-2 flex-shrink-0 bg-[#060608]">
             <div className="flex items-center gap-2 flex-wrap">
-              {Array.from(new Set(
-                attachedFiles
-                  .filter(f => f.name.includes('/'))
-                  .map(f => f.name.substring(0, f.name.indexOf('/')))
-              )).map(folderName => (
+              {Array.from(new Set(attachedFiles.filter(f => f.name.includes('/')).map(f => f.name.substring(0, f.name.indexOf('/'))))).map(folderName => (
                 <div key={folderName} className="flex items-center gap-2">
                   <div className="h-10 px-3 rounded-lg bg-white/5 border border-white/10 flex items-center gap-2">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2">
-                      <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
-                    </svg>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
                     <span className="text-white/70 text-xs font-medium">{folderName}</span>
                     <span className="text-white/25 text-xs">{attachedFiles.filter(f => f.name.startsWith(folderName + '/')).length} files</span>
                   </div>
@@ -1437,9 +1333,7 @@ if (window.location.search.includes('subscribed=true')) {
               ))}
               {attachedFiles.filter(f => !f.name.includes('/')).map((f, i) => (
                 <div key={i} className="flex items-center gap-2">
-                  {f.type.startsWith('image/') ? (
-                    <img src={`data:${f.type};base64,${f.data}`} alt="preview" className="h-10 w-10 rounded-lg object-cover border border-white/10" />
-                  ) : (
+                  {f.type.startsWith('image/') ? (<img src={`data:${f.type};base64,${f.data}`} alt="preview" className="h-10 w-10 rounded-lg object-cover border border-white/10" />) : (
                     <div className="h-10 px-3 rounded-lg bg-white/5 border border-white/10 flex items-center gap-2">
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>
                       <span className="text-white/50 text-xs truncate max-w-[100px]">{f.name}</span>
@@ -1455,44 +1349,42 @@ if (window.location.search.includes('subscribed=true')) {
         )}
 
         {/* Input bar */}
-<div className="flex-shrink-0 bg-[#060608] border-t border-white/5 px-3 py-3" style={{ paddingBottom: 'max(12px, env(safe-area-inset-bottom))' }}>
-  <input ref={fileInputRef} type="file" multiple accept="image/*,.pdf,.txt,.js,.ts,.py,.md,.json,.csv,.doc,.docx" onChange={handleFileAttach} className="hidden" />
-  <input ref={folderInputRef} type="file" multiple onChange={handleFileAttach} className="hidden" {...{ webkitdirectory: 'true' } as any} />
-  <div className="flex items-center gap-2">
-    <div className="flex flex-col gap-1 flex-shrink-0">
-      <button onClick={() => fileInputRef.current?.click()} className="w-11 h-5 flex items-center justify-center rounded-t-xl hover:bg-white/5 transition-all text-white/30 hover:text-white/60" title="Attach files">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
-        </svg>
-      </button>
-      <button onClick={() => folderInputRef.current?.click()} className="w-11 h-5 flex items-center justify-center rounded-b-xl hover:bg-white/5 transition-all text-white/30 hover:text-white/60" title="Attach folder">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
-        </svg>
-      </button>
-    </div>
+        <div className="flex-shrink-0 bg-[#060608] border-t border-white/5 px-3 py-3" style={{ paddingBottom: 'max(12px, env(safe-area-inset-bottom))' }}>
+          <input ref={fileInputRef} type="file" multiple accept="image/*,.pdf,.txt,.js,.ts,.py,.md,.json,.csv,.doc,.docx" onChange={handleFileAttach} className="hidden" />
+          <input ref={folderInputRef} type="file" multiple onChange={handleFileAttach} className="hidden" {...{ webkitdirectory: 'true' } as any} />
+          <div className="flex items-center gap-2">
+            <div className="flex flex-col gap-1 flex-shrink-0">
+              <button onClick={() => fileInputRef.current?.click()} className="w-11 h-5 flex items-center justify-center rounded-t-xl hover:bg-white/5 transition-all text-white/30 hover:text-white/60" title="Attach files">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+              </button>
+              <button onClick={() => folderInputRef.current?.click()} className="w-11 h-5 flex items-center justify-center rounded-b-xl hover:bg-white/5 transition-all text-white/30 hover:text-white/60" title="Attach folder">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+              </button>
+            </div>
             <input
               value={input}
               onChange={e => setInput(e.target.value)}
               onKeyDown={e => e.key === "Enter" && !e.shiftKey && send()}
-              placeholder="Message JARVIS..."
-              disabled={loading}
+              placeholder={!subscribed && limitReached ? "Daily limit reached — upgrade to Pro" : "Message JARVIS..."}
+              disabled={loading || (!subscribed && limitReached)}
               autoComplete="off"
               autoCorrect="off"
               autoCapitalize="sentences"
-              style={{ fontSize: '16px' }}
+              style={{ fontSize: '16px', opacity: !subscribed && limitReached ? 0.5 : 1 }}
               className="flex-1 bg-white/5 border border-white/10 rounded-2xl text-white px-4 py-3 outline-none placeholder:text-white/25 focus:border-blue-500/40 transition-all min-w-0"
             />
             <button
-  onClick={send}
-  disabled={loading || (!input.trim() && attachedFiles.length === 0)}
-  className="w-11 h-11 bg-blue-600 hover:bg-blue-500 disabled:opacity-30 rounded-xl flex items-center justify-center transition-all flex-shrink-0"
-  title={subscribed ? 'Send' : 'Upgrade to Pro to send messages'}
->
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
-    <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
-  </svg>
-</button>
+              onClick={!subscribed && limitReached ? openUpgrade : send}
+              disabled={loading || (subscribed ? false : limitReached ? false : !input.trim() && attachedFiles.length === 0)}
+              className={`w-11 h-11 rounded-xl flex items-center justify-center transition-all flex-shrink-0 ${!subscribed && limitReached ? 'bg-blue-600/60 hover:bg-blue-600' : 'bg-blue-600 hover:bg-blue-500 disabled:opacity-30'}`}
+              title={!subscribed && limitReached ? 'Upgrade to Pro' : 'Send'}
+            >
+              {!subscribed && limitReached ? (
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+              ) : (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              )}
+            </button>
           </div>
         </div>
       </div>
