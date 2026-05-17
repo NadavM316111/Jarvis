@@ -655,7 +655,7 @@ if (!convId) {
           const ytMatch2 = r.message.match(/https:\/\/(www\.)?youtube\.com\/watch\?[^\s<>"')]+/);
           if (ytMatch2) setTimeout(() => window.open(ytMatch2[0], '_blank'), 500);
           // Execute Mac actions from bg responses
-          const actionMatches2 = r.message.match(/ACTION:\{[^}]+\}/g);
+          const actionMatches2 = r.message.match(/ACTION:\{[\s\S]*?\}/g);
           if (actionMatches2 && (window as any).__TAURI__) {
             const { invoke } = await import('@tauri-apps/api/core');
             for (const action of actionMatches2) {
@@ -936,7 +936,7 @@ if (!convId) {
         if (ytMatch) { const w = window.open(ytMatch[0], '_blank'); if (w) w.focus(); }
 
         // Execute Mac actions if present
-        const actionMatches = data.message.match(/ACTION:\{[^}]+\}/g);
+        const actionMatches = data.message.match(/ACTION:\{[\s\S]*?\}/g);
         if (actionMatches && (window as any).__TAURI__) {
           const { invoke } = await import('@tauri-apps/api/core');
           for (const action of actionMatches) {
