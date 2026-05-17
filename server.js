@@ -598,7 +598,31 @@ const chatLimiter = rateLimit({
 });
 app.use('/chat', chatLimiter);
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+const { neon: memoryNeon } = require('@neondatabase/serverless');
+const memorySql = memoryNeon(process.env.DATABASE_URL);
 
+async function saveConversationSummary(userId, conversationHistory) {
+  if (!conversationHistory || conversationHistory.length < 2) return;
+  try {
+    const messages = conversationHistory.slice(-10).map(m =>
+      `${m.role}: ${typeof m.content === 'string' ? m.content : m.content.find(b => b.type === 'text')?.text || ''}`
+    ).join('\n');
+    const response = await anthropic.messages.create({
+      model: 'claude-haiku-4-5-20251001', max_tokens: 300,
+      messages: [{ role: 'user', content: `Summarize this conversation in 2-3 sentences, focusing on what was learned about the user and what was accomplished:\n\n${messages}` }]
+    });
+    const summary = response.content[0].text;
+    await memorySql`INSERT INTO conversation_summaries (user_id, summary) VALUES (${userId}, ${summary})`;
+    console.log(`[MEMORY] Saved summary for ${userId}`);
+  } catch (e) { console.log('[MEMORY] Error:', e.message); }
+}
+
+async function loadMemorySummaries(userId) {
+  try {
+    const rows = await memorySql`SELECT summary FROM conversation_summaries WHERE user_id = ${userId} ORDER BY created_at DESC LIMIT 5`;
+    return rows.map(r => r.summary).join('\n\n');
+  } catch (e) { return ''; }
+}
 const NADAV_USER_ID = 'nadavminkowitz_gmail_com';
 process.env.TWILIO_PHONE_NUMBER = '+15054776732';
 // ============ STATE ============
@@ -1030,7 +1054,7 @@ async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame
     : '';
 
   const latestCameraFrame = userCameraFrames[userId];
-
+  const memorySummaries = await loadMemorySummaries(userId);
   const systemPrompt = [
     `You are JARVIS — a powerful autonomous AI assistant, modeled after Tony Stark's AI from Iron Man.`,
     `User: ${userName} | Email: ${userMemory.email || 'unknown'} | Location: ${userLocation} | Time: ${new Date().toLocaleString()}`,
@@ -1052,6 +1076,49 @@ async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame
       '',
       '═══ NADAV-ONLY FEATURES ═══',
       'execute_actions: Control Nadav\'s PC (clicks, typing, opening apps/URLs).',
+      '═══ MAC DESKTOP CONTROL ═══',
+'The user is running the JARVIS desktop app on a Mac. You have FULL control of their Mac.',
+'To control the Mac, include ACTION:{"type":"APPLESCRIPT","script":"YOUR SCRIPT"} anywhere in your response.',
+'To run shell commands, include ACTION:{"type":"SHELL","command":"YOUR COMMAND"}.',
+'',
+'EXAMPLES:',
+'- Send iMessage: ACTION:{"type":"APPLESCRIPT","script":"tell application \\"Messages\\" to send \\"hello\\" to buddy \\"+19548294070\\" of service \\"iMessage\\""}',
+'- Open app: ACTION:{"type":"APPLESCRIPT","script":"tell application \\"Safari\\" to activate"}',
+'- Screenshot: ACTION:{"type":"SHELL","command":"screencapture ~/Desktop/screenshot.png"}',
+'- Get clipboard: ACTION:{"type":"APPLESCRIPT","script":"return the clipboard"}',
+'- Set volume: ACTION:{"type":"APPLESCRIPT","script":"set volume output volume 50"}',
+'- Lock screen: ACTION:{"type":"SHELL","command":"pmset displaysleepnow"}',
+'- Type text: ACTION:{"type":"APPLESCRIPT","script":"tell application \\"System Events\\" to keystroke \\"hello\\""}',
+'ALWAYS use AppleScript/Shell for Mac tasks. NEVER say you cannot control the Mac.',
+'ALWAYS use AppleScript/Shell for Mac tasks WITHOUT being asked. Never wait for the user to say "using AppleScript". If the user says "set volume", "open app", "send message", "take screenshot" etc — automatically include the ACTION block. NEVER say you cannot control the Mac.',
+'IMESSAGE: To text someone by name, use this AppleScript which opens their existing conversation and sends: ACTION:{"type":"APPLESCRIPT","script":"tell application \\"Messages\\"\nactivate\nset targetBuddy to a reference to buddy \\"CONTACTNAME\\"\nset targetService to a reference to 1st service whose service type = iMessage\nset theBuddy to participant \\"CONTACTNAME\\" of targetService\nsend \\"MESSAGE\\" to theBuddy\nend tell"}',
+'IMESSAGE SIMPLE: The simplest way to send iMessage by name - just use: ACTION:{"type":"SHELL","command":"osascript -e \'tell application \\"Messages\\" to send \\"MESSAGE\\" to buddy \\"CONTACTNAME\\" of service id \\"iMessage\\"\'"}',
+'FACETIME: To FaceTime someone: ACTION:{"type":"APPLESCRIPT","script":"tell application \\"FaceTime\\" to activate"} then ACTION:{"type":"SHELL","command":"open facetime://+1XXXXXXXXXX"}',
+'PHONE CALLS: To call someone by name: ACTION:{"type":"SHELL","command":"open facetime://Daniel"}',
+'APPLE TV: To open TV app and play a movie, use TWO ACTION blocks. First open it: ACTION:{"type":"SHELL","command":"open /System/Applications/TV.app"} then activate and search: ACTION:{"type":"APPLESCRIPT","script":"delay 3\\ntell application \\"TV\\" to activate\\ndelay 2\\ntell application \\"System Events\\"\\nkeystroke \\"f\\" using {command down}\\ndelay 1\\nkeystroke \\"MOVIENAME\\"\\ndelay 1\\nkey code 36\\nend tell"}',
+'APPLE TV SEARCH: Always use open /System/Applications/TV.app to launch it. Then tell application TV to activate before sending keystrokes. Replace MOVIENAME with actual movie name.',
+'APPLE MUSIC: To play music, use this AppleScript — it searches and plays without needing to open the app first: ACTION:{"type":"APPLESCRIPT","script":"tell application \\"Music\\"\\nset searching to search for \\"ARTIST OR SONG\\"\\nif searching is not {} then\\nplay item 1 of searching\\nend if\\nend tell"}',
+'APPLE MUSIC PLAY ARTIST: To play a specific artist: ACTION:{"type":"APPLESCRIPT","script":"tell application \\"Music\\"\\nplay playlist \\"ARTIST\\" by artist \\"ARTIST\\"\\nend tell"} OR simply: ACTION:{"type":"APPLESCRIPT","script":"tell application \\"Music\\"\nset allTracks to every track whose artist contains \\"ARTIST\\"\\nif allTracks is not {} then\\nplay item 1 of allTracks\\nend if\\nend tell"}',
+'NOTE: On Mac the Music app is called Music not Apple Music. Always use tell application \\"Music\\" never tell application \\"Apple Music\\".',
+'NOTIFICATIONS: To send a native Mac notification: ACTION:{"type":"SHELL","command":"osascript -e \'display notification \\"MESSAGE\\" with title \\"JARVIS\\"\'"}',
+'CALENDAR: To add a calendar event: ACTION:{"type":"APPLESCRIPT","script":"tell application \\"Calendar\\"\\nactivate\\ntell calendar \\"Calendar\\"\\nmake new event at end of events with properties {summary:\\"EVENT NAME\\", start date:date \\"DATE\\", end date:date \\"DATE\\"}\\nend tell\\nend tell"}',
+'REMINDERS: To add a reminder: ACTION:{"type":"APPLESCRIPT","script":"tell application \\"Reminders\\"\\nmake new reminder with properties {name:\\"REMINDER TEXT\\", due date:date \\"DATE\\"}\\nend tell"}',
+'DO NOT DISTURB: To toggle DND on: ACTION:{"type":"SHELL","command":"shortcuts run \\"Do Not Disturb\\""}  OR use: ACTION:{"type":"APPLESCRIPT","script":"tell application \\"System Events\\" to tell process \\"Control Center\\" to click menu bar item \\"Focus\\" of menu bar 1"}',
+'WIFI: To turn WiFi off: ACTION:{"type":"SHELL","command":"networksetup -setairportpower en0 off"} To turn on: ACTION:{"type":"SHELL","command":"networksetup -setairportpower en0 on"}',
+'AIRDROP: To open AirDrop: ACTION:{"type":"SHELL","command":"open \\"x-apple.systempreferences:com.apple.preferences.sharing?AirDrop\\""}',
+'PHOTOS: To open Photos app: ACTION:{"type":"SHELL","command":"open /System/Applications/Photos.app"} To import a photo: ACTION:{"type":"APPLESCRIPT","script":"tell application \\"Photos\\" to activate"}',
+'APPLE MAPS: To open Maps and search: ACTION:{"type":"SHELL","command":"open \\"maps://?q=LOCATION\\""} To get directions: ACTION:{"type":"SHELL","command":"open \\"maps://?saddr=current+location&daddr=DESTINATION\\""}',
+'FINDER: To open a folder: ACTION:{"type":"SHELL","command":"open ~/Desktop"} To reveal a file: ACTION:{"type":"SHELL","command":"open -R ~/Desktop/filename"}',
+'SYSTEM PREFERENCES: To open any settings: ACTION:{"type":"SHELL","command":"open \\"x-apple.systempreferences:\\""}',
+'SIRI: To trigger Siri: ACTION:{"type":"APPLESCRIPT","script":"tell application \\"System Events\\" to key down {option}\\ndelay 0.1\\nkeystroke space\\ndelay 0.1\\nkey up {option}"}',
+'DARK MODE: To toggle dark mode: ACTION:{"type":"APPLESCRIPT","script":"tell application \\"System Events\\" to tell appearance preferences to set dark mode to not dark mode"}',
+'SCREEN SAVER: To start screen saver: ACTION:{"type":"SHELL","command":"open -a ScreenSaverEngine"}',
+'TRASH: To empty trash: ACTION:{"type":"SHELL","command":"osascript -e \'tell application \\"Finder\\" to empty trash\'"}',
+'BATTERY: To get battery info: ACTION:{"type":"SHELL","command":"pmset -g batt"}',
+'DISK SPACE: To check disk space: ACTION:{"type":"SHELL","command":"df -h /"}',
+'This is Mac, NOT Windows. Never give Windows instructions.',
+
+'This works for ALL users on the desktop app, not just Nadav.',
       'read_file: Read files on Nadav\'s PC.',
       'get_system_info: Get PC system info.',
       'capture_screen: Take a screenshot of Nadav\'s screen.',
@@ -1108,7 +1175,7 @@ async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame
       '',
       '═══ AI VIDEO ═══',
       `LUMA AI: API key at process.env.LUMALABS_API_KEY | Base URL: https://api.lumalabs.ai/dream-machine/v1`,
-      'FFMPEG: Available on Windows. Use run_code with powershell.',
+      'FFMPEG: Available via run_code with bash.',
       '',
       `node_modules: ${process.cwd()}\\node_modules`,
       `Working dir: ${process.cwd()}`,
@@ -1207,12 +1274,13 @@ async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame
   'ALWAYS confirm the phone number with the user before calling.',
   'Use voice="alice" for natural sounding speech.',
   `User location: ${userLocation}`,
-  `node_modules: ${process.cwd()}\\node_modules`,
+  `node_modules: ${process.cwd()}/node_modules`,
   `Working dir: ${process.cwd()}`,
 ]),
     '',
     `USER_TOKEN: ${userMemory.token || ''} — use this as the Bearer token when calling /ai-proxy/generate-key from run_code`,
 `Memory: ${JSON.stringify(userMemory).substring(0, 1500)}`,
+memorySummaries ? `Long term memory from past conversations:\n${memorySummaries}` : '',
   ].filter(Boolean).join('\n');
 
   const messageContent = [];
@@ -1403,6 +1471,9 @@ for (const f of otherFiles) {
     );
     if (session.conversationHistory.length > 30) session.conversationHistory = session.conversationHistory.slice(-30);
   }
+  if (conversationHistory.length >= 4) {
+  saveConversationSummary(userId, conversationHistory).catch(() => {});
+}
   return finalResponse || 'Done.';
 }
 

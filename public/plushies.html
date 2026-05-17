@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plushies</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            min-height: 100vh;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: white;
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .tagline {
+            color: rgba(255,255,255,0.9);
+            font-size: 1.1rem;
+            margin-top: 5px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+        
+        .card-image {
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 80px;
+        }
+        
+        .card-content {
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .card h3 {
+            color: #333;
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+        }
+        
+        .card p {
+            color: #666;
+            font-size: 0.95rem;
+            margin-bottom: 15px;
+        }
+        
+        .price {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #764ba2;
+        }
+        
+        .btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(118, 75, 162, 0.4);
+        }
+        
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: #666;
+        }
+        
+        @media (max-width: 600px) {
+            h1 { font-size: 1.8rem; }
+            .card-image { height: 150px; font-size: 60px; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Plushies</h1>
+        <p class="tagline">Soft, cuddly friends for everyone!</p>
+    </header>
+    
+    <div class="container">
+        <div class="grid">
+            <div class="card">
+                <div class="card-image" style="background: linear-gradient(135deg, #ffd1dc 0%, #ffb6c1 100%);">
+                    <span>&#128059;</span>
+                </div>
+                <div class="card-content">
+                    <h3>Teddy Bear</h3>
+                    <p>Classic cuddly bear with super soft fur</p>
+                    <div class="price">$24.99</div>
+                    <button class="btn">Add to Cart</button>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-image" style="background: linear-gradient(135deg, #c1e1c1 0%, #98d98e 100%);">
+                    <span>&#129419;</span>
+                </div>
+                <div class="card-content">
+                    <h3>Baby Dinosaur</h3>
+                    <p>Adorable dino with tiny arms and big heart</p>
+                    <div class="price">$29.99</div>
+                    <button class="btn">Add to Cart</button>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-image" style="background: linear-gradient(135deg, #b5d3e7 0%, #89c4e8 100%);">
+                    <span>&#128011;</span>
+                </div>
+                <div class="card-content">
+                    <h3>Ocean Whale</h3>
+                    <p>Gentle giant perfect for hugging</p>
+                    <div class="price">$34.99</div>
+                    <button class="btn">Add to Cart</button>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-image" style="background: linear-gradient(135deg, #ffe4b5 0%, #ffd093 100%);">
+                    <span>&#129409;</span>
+                </div>
+                <div class="card-content">
+                    <h3>Lion Cub</h3>
+                    <p>Fluffy mane and brave little heart</p>
+                    <div class="price">$27.99</div>
+                    <button class="btn">Add to Cart</button>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-image" style="background: linear-gradient(135deg, #e6e6fa 0%, #d8bfd8 100%);">
+                    <span>&#129412;</span>
+                </div>
+                <div class="card-content">
+                    <h3>Magic Unicorn</h3>
+                    <p>Sparkly horn and rainbow dreams</p>
+                    <div class="price">$32.99</div>
+                    <button class="btn">Add to Cart</button>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-image" style="background: linear-gradient(135deg, #f0f0f0 0%, #dcdcdc 100%);">
+                    <span>&#128060;</span>
+                </div>
+                <div class="card-content">
+                    <h3>Panda Pal</h3>
+                    <p>Bamboo-loving friend for cozy nights</p>
+                    <div class="price">$26.99</div>
+                    <button class="btn">Add to Cart</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>Made with love - Plushies 2026</p>
+    </footer>
+</body>
+</html>

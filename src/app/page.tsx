@@ -204,7 +204,7 @@ function VoiceModeModal({
 
   useEffect(() => {
     let frame: number;
-    navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+    (navigator.mediaDevices?.getUserMedia({ audio: true }) || Promise.reject('no mic')).then(stream => {
       streamRef.current = stream;
       const ctx = new AudioContext();
       audioCtxRef.current = ctx;
@@ -572,7 +572,10 @@ export default function Home() {
       try {
         const convs = JSON.parse(savedConvs);
         setConversations(convs);
-        if (convs.length > 0) setActiveId(convs[0].id);
+        if (convs.length > 0) {
+  setActiveId(convs[0].id);
+  activeIdRef.current = convs[0].id;
+}
       } catch {}
     }
     if (window.innerWidth >= 768) setSidebarOpen(true);
@@ -609,8 +612,9 @@ export default function Home() {
 
   useEffect(() => {
     const interval = setInterval(async () => {
-      const tok = tokenRef.current;
+      const tok = tokenRef.current || localStorage.getItem('jarvis_token');
       if (!tok) return;
+      console.log('[BG POLL] checking with token:', tok?.slice(0, 10));
       try {
         const res = await fetch(`${API}/bg-response`, { headers: { Authorization: `Bearer ${tok}` } });
         const data = await res.json();
@@ -618,13 +622,20 @@ export default function Home() {
         for (const r of data.responses) {
           if (r.message === '__SUBSCRIBED__') { setSubscribed(true); continue; }
           let convId = activeIdRef.current;
-          if (!convId) {
-            convId = generateId();
-            const conv: Conversation = { id: convId, title: r.message.slice(0, 40), messages: [], createdAt: Date.now() };
-            setConversations(prev => [conv, ...prev]);
-            setActiveId(convId);
-            activeIdRef.current = convId;
-          }
+if (!convId) {
+  const existingConvs = JSON.parse(localStorage.getItem('jarvis_conversations') || '[]');
+  if (existingConvs.length > 0) {
+    convId = existingConvs[0].id;
+    setActiveId(convId);
+    activeIdRef.current = convId;
+  } else {
+    convId = generateId();
+    const conv: Conversation = { id: convId, title: r.message.slice(0, 40), messages: [], createdAt: Date.now() };
+    setConversations(prev => [conv, ...prev]);
+    setActiveId(convId);
+    activeIdRef.current = convId;
+  }
+}
           const isProgress = r.message.includes('[PROGRESS:');
           if (isProgress) {
             setConversations(prev => prev.map(c => {
@@ -638,11 +649,26 @@ export default function Home() {
             }));
             continue;
           }
-          addMessageToConv(convId, { role: "assistant", content: r.message, source: "text", timestamp: r.timestamp ?? Date.now() });
+           if (convId) addMessageToConv(convId, { role: "assistant", content: r.message, source: "text", timestamp: r.timestamp ?? Date.now() });
           const urlMatch2 = r.message.match(/https:\/\/api\.heyjarvis\.me\/view\/[^\s)]+/);
           if (urlMatch2) setTimeout(() => window.open(urlMatch2[0], '_blank'), 500);
           const ytMatch2 = r.message.match(/https:\/\/(www\.)?youtube\.com\/watch\?[^\s<>"')]+/);
           if (ytMatch2) setTimeout(() => window.open(ytMatch2[0], '_blank'), 500);
+          // Execute Mac actions from bg responses
+          const actionMatches2 = r.message.match(/ACTION:\{[^}]+\}/g);
+          if (actionMatches2 && (window as any).__TAURI__) {
+            const { invoke } = await import('@tauri-apps/api/core');
+            for (const action of actionMatches2) {
+              try {
+                const parsed = JSON.parse(action.replace('ACTION:', ''));
+                if (parsed.type === 'APPLESCRIPT') {
+                  await invoke('execute_applescript', { script: parsed.script });
+                } else if (parsed.type === 'SHELL') {
+                  await invoke('execute_shell', { command: parsed.command });
+                }
+              } catch (e) { console.log('Action error:', e); }
+            }
+          }
         }
       } catch {}
     }, 800);
@@ -908,6 +934,22 @@ export default function Home() {
         if (urlMatch) setTimeout(() => window.open(urlMatch[0], '_blank'), 500);
         const ytMatch = data.message.match(/https:\/\/(www\.)?youtube\.com\/watch\?[^\s<>"')]+/);
         if (ytMatch) { const w = window.open(ytMatch[0], '_blank'); if (w) w.focus(); }
+
+        // Execute Mac actions if present
+        const actionMatches = data.message.match(/ACTION:\{[^}]+\}/g);
+        if (actionMatches && (window as any).__TAURI__) {
+          const { invoke } = await import('@tauri-apps/api/core');
+          for (const action of actionMatches) {
+            try {
+              const parsed = JSON.parse(action.replace('ACTION:', ''));
+              if (parsed.type === 'APPLESCRIPT') {
+                await invoke('execute_applescript', { script: parsed.script });
+              } else if (parsed.type === 'SHELL') {
+                await invoke('execute_shell', { command: parsed.command });
+              }
+            } catch (e) { console.log('Action error:', e); }
+          }
+        }
       }
     } catch {}
     setLoading(false);
@@ -1111,16 +1153,21 @@ export default function Home() {
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
             Voice mode
           </button>
-          <a href={`${API}/auth/google?token=${token}`} target="_blank" rel="noopener noreferrer" className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl border text-xs font-medium transition-all mb-2 ${googleConnected ? 'bg-green-500/15 border-green-500/30 text-green-400' : 'bg-white/5 border-white/10 text-white/50 hover:text-white/70'}`}>
-            <div className={`w-2 h-2 rounded-full ${googleConnected ? 'bg-green-400' : 'bg-white/20'}`} />
-            {googleConnected ? 'Google connected' : 'Connect Google'}
-          </a>
-          {typeof window !== 'undefined' && window.location.hostname === 'localhost' && (
-            <button onClick={toggleVoice} className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl border text-xs font-medium transition-all mb-2 ${voiceRunning ? 'bg-green-500/15 border-green-500/30 text-green-400' : 'bg-white/5 border-white/10 text-white/50 hover:text-white/70'}`}>
-              <div className={`w-2 h-2 rounded-full ${voiceRunning ? 'bg-green-400 animate-pulse' : 'bg-white/20'}`} />
-              {voiceRunning ? 'Voice active — stop' : 'Start voice'}
-            </button>
-          )}
+          <button
+  onClick={async () => {
+  const url = `${API}/auth/google?token=${token}`;
+  if ((window as any).__TAURI__) {
+    const { invoke } = await import('@tauri-apps/api/core');
+    await invoke('execute_shell', { command: `open "${url}"` });
+  } else {
+    window.open(url, '_blank');
+  }
+}}
+  className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl border text-xs font-medium transition-all mb-2 ${googleConnected ? 'bg-green-500/15 border-green-500/30 text-green-400' : 'bg-white/5 border-white/10 text-white/50 hover:text-white/70'}`}
+>
+  <div className={`w-2 h-2 rounded-full ${googleConnected ? 'bg-green-400' : 'bg-white/20'}`} />
+  {googleConnected ? 'Google connected' : 'Connect Google'}
+</button>
           <button onClick={async () => { const res = await fetch(`${API}/voice/spoken-updates`, { method: 'POST', headers: { 'Content-Type': 'application/json' } }); const data = await res.json(); setSpokenUpdates(data.enabled); }} className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl border text-xs font-medium transition-all ${spokenUpdates ? 'bg-purple-500/15 border-purple-500/30 text-purple-400' : 'bg-white/5 border-white/10 text-white/50 hover:text-white/70'}`}>
             <div className={`w-2 h-2 rounded-full ${spokenUpdates ? 'bg-purple-400 animate-pulse' : 'bg-white/20'}`} />
             {spokenUpdates ? 'Spoken updates — on' : 'Spoken updates — off'}

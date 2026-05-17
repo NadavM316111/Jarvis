@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nadav's Command Center | JARVIS Powered</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --primary: #00d4ff;
+            --secondary: #7b2cbf;
+            --accent: #ff6b35;
+            --dark: #0a0a0f;
+            --darker: #050508;
+            --card: rgba(15, 15, 25, 0.8);
+            --glow: 0 0 30px rgba(0, 212, 255, 0.3);
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--darker);
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(123, 44, 191, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0, 212, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(255, 107, 53, 0.05) 0%, transparent 70%);
+        }
+        
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: var(--primary);
+            border-radius: 50%;
+            animation: float 15s infinite;
+            opacity: 0.5;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.5; }
+            90% { opacity: 0.5; }
+            100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
+        }
+        
+        /* Header */
+        .header {
+            padding: 30px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Orbitron', monospace;
+            font-weight: 900;
+            font-size: 20px;
+            box-shadow: var(--glow);
+        }
+        
+        .logo-text h1 {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.5rem;
+            background: linear-gradient(90deg, var(--primary), #fff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .logo-text span {
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.5);
+            letter-spacing: 3px;
+        }
+        
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 30px;
+        }
+        
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            background: #00ff88;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.7); }
+            50% { box-shadow: 0 0 0 10px rgba(0, 255, 136, 0); }
+        }
+        
+        /* Main Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        /* Welcome Section */
+        .welcome {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .welcome h2 {
+            font-family: 'Orbitron', monospace;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .welcome h2 span {
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .time-display {
+            font-size: 3rem;
+            font-family: 'Orbitron', monospace;
+            color: var(--primary);
+            text-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
+        }
+        
+        .date-display {
+            color: rgba(255,255,255,0.6);
+            margin-top: 5px;
+        }
+        
+        /* AI Chat Section */
+        .ai-section {
+            background: var(--card);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 40px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .ai-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .ai-avatar {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            animation: glow 3s ease-in-out infinite;
+        }
+        
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(0, 212, 255, 0.5); }
+            50% { box-shadow: 0 0 40px rgba(0, 212, 255, 0.8), 0 0 60px rgba(123, 44, 191, 0.4); }
+        }
+        
+        .ai-header h3 {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.3rem;
+        }
+        
+        .ai-header p {
+            color: rgba(255,255,255,0.6);
+            font-size: 0.9rem;
+        }
+        
+        .chat-container {
+            height: 300px;
+            overflow-y: auto;
+            padding: 20px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 15px;
+            margin-bottom: 20px;
+            scroll-behavior: smooth;
+        }
+        
+        .chat-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .chat-container::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 3px;
+        }
+        
+        .message {
+            margin-bottom: 15px;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .message.user {
+            text-align: right;
+        }
+        
+        .message.user .bubble {
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            display: inline-block;
+            padding: 12px 18px;
+            border-radius: 18px 18px 4px 18px;
+            max-width: 80%;
+        }
+        
+        .message.ai .bubble {
+            background: rgba(0, 212, 255, 0.15);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            display: inline-block;
+            padding: 12px 18px;
+            border-radius: 18px 18px 18px 4px;
+            max-width: 80%;
+        }
+        
+        .input-container {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .input-container input {
+            flex: 1;
+            padding: 18px 25px;
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 15px;
+            color: #fff;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s;
+        }
+        
+        .input-container input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
+        }
+        
+        .input-container button {
+            padding: 18px 35px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            border-radius: 15px;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1rem;
+        }
+        
+        .input-container button:hover {
+            transform: scale(1.05);
+            box-shadow: var(--glow);
+        }
+        
+        /* Quick Actions Grid */
+        .section-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.5rem;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .section-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, rgba(0, 212, 255, 0.5), transparent);
+        }
+        
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .action-card {
+            background: var(--card);
+            border: 1px solid rgba(0, 212, 255, 0.15);
+            border-radius: 16px;
+            padding: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .action-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .action-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+            box-shadow: var(--glow);
+        }
+        
+        .action-card:hover::before {
+            opacity: 1;
+        }
+        
+        .action-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+        
+        .action-card h4 {
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+        }
+        
+        .action-card p {
+            color: rgba(255,255,255,0.6);
+            font-size: 0.9rem;
+        }
+        
+        /* Widgets Grid */
+        .widgets {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .widget {
+            background: var(--card);
+            border: 1px solid rgba(0, 212, 255, 0.15);
+            border-radius: 20px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .widget-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .widget-header h4 {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        /* Goals Widget */
+        .goal-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 12px;
+            margin-bottom: 10px;
+        }
+        
+        .goal-checkbox {
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--primary);
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        
+        .goal-checkbox.checked {
+            background: var(--primary);
+        }
+        
+        .goal-text {
+            flex: 1;
+        }
+        
+        .goal-text.completed {
+            text-decoration: line-through;
+            opacity: 0.5;
+        }
+        
+        /* Ideas Widget */
+        .idea-input {
+            width: 100%;
+            padding: 15px;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            border-radius: 12px;
+            color: #fff;
+            margin-bottom: 15px;
+            outline: none;
+            resize: none;
+            font-family: inherit;
+        }
+        
+        .idea-input:focus {
+            border-color: var(--primary);
+        }
+        
+        .idea-list {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .idea-item {
+            padding: 12px 15px;
+            background: rgba(123, 44, 191, 0.15);
+            border-left: 3px solid var(--secondary);
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+        }
+        
+        /* Quote Widget */
+        .quote-widget {
+            text-align: center;
+            padding: 30px;
+        }
+        
+        .quote-text {
+            font-size: 1.2rem;
+            font-style: italic;
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+        
+        .quote-author {
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        /* Stats Widget */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 20px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 12px;
+        }
+        
+        .stat-value {
+            font-family: 'Orbitron', monospace;
+            font-size: 2rem;
+            color: var(--primary);
+        }
+        
+        .stat-label {
+            color: rgba(255,255,255,0.6);
+            font-size: 0.85rem;
+            margin-top: 5px;
+        }
+        
+        /* Focus Mode */
+        .focus-mode {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--darker);
+            z-index: 1000;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .focus-mode.active {
+            display: flex;
+        }
+        
+        .focus-timer {
+            font-family: 'Orbitron', monospace;
+            font-size: 8rem;
+            color: var(--primary);
+            text-shadow: 0 0 50px rgba(0, 212, 255, 0.5);
+        }
+        
+        .focus-task {
+            font-size: 1.5rem;
+            color: rgba(255,255,255,0.7);
+            margin-top: 20px;
+        }
+        
+        .focus-controls {
+            margin-top: 40px;
+            display: flex;
+            gap: 20px;
+        }
+        
+        .focus-btn {
+            padding: 15px 40px;
+            border: none;
+            border-radius: 30px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .focus-btn.primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: #fff;
+        }
+        
+        .focus-btn.secondary {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+        
+        .modal-overlay.active {
+            display: flex;
+        }
+        
+        .modal {
+            background: var(--card);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+            backdrop-filter: blur(20px);
+        }
+        
+        .modal h3 {
+            font-family: 'Orbitron', monospace;
+            margin-bottom: 20px;
+        }
+        
+        .modal input, .modal textarea {
+            width: 100%;
+            padding: 15px;
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 10px;
+            color: #fff;
+            margin-bottom: 15px;
+            outline: none;
+            font-family: inherit;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header {
+                padding: 20px;
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .welcome h2 {
+                font-size: 1.8rem;
+            }
+            
+            .time-display {
+                font-size: 2rem;
+            }
+            
+            .focus-timer {
+                font-size: 4rem;
+            }
+            
+            .widgets {
+                grid-template-columns: 1fr;
+            }
+            
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+    <div class="particles" id="particles"></div>
+    
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">N</div>
+            <div class="logo-text">
+                <h1>NADAV HQ</h1>
+                <span>JARVIS POWERED</span>
+            </div>
+        </div>
+        <div class="status">
+            <div class="status-dot"></div>
+            <span>JARVIS Online</span>
+        </div>
+    </header>
+    
+    <main class="container">
+        <section class="welcome">
+            <h2>Welcome back, <span>Nadav</span></h2>
+            <div class="time-display" id="time">--:--:--</div>
+            <div class="date-display" id="date">Loading...</div>
+        </section>
+        
+        <!-- AI Assistant -->
+        <section class="ai-section">
+            <div class="ai-header">
+                <div class="ai-avatar">J</div>
+                <div>
+                    <h3>JARVIS AI Assistant</h3>
+                    <p>Your personal AI - ask anything</p>
+                </div>
+            </div>
+            <div class="chat-container" id="chatContainer">
+                <div class="message ai">
+                    <div class="bubble">Good afternoon, sir. I'm fully operational and ready to assist. How may I help you today?</div>
+                </div>
+            </div>
+            <div class="input-container">
+                <input type="text" id="chatInput" placeholder="Ask JARVIS anything..." onkeypress="if(event.key==='Enter')sendMessage()">
+                <button onclick="sendMessage()">Send</button>
+            </div>
+        </section>
+        
+        <!-- Quick Actions -->
+        <h3 class="section-title">Quick Actions</h3>
+        <div class="quick-actions">
+            <div class="action-card" onclick="startFocusMode()">
+                <div class="action-icon">T</div>
+                <h4>Focus Mode</h4>
+                <p>Start a deep work session with Pomodoro timer</p>
+            </div>
+            <div class="action-card" onclick="showAddGoal()">
+                <div class="action-icon">+</div>
+                <h4>Add Goal</h4>
+                <p>Set a new goal to track your progress</p>
+            </div>
+            <div class="action-card" onclick="askJarvis('Give me a motivational quote to start my day')">
+                <div class="action-icon">!</div>
+                <h4>Get Motivated</h4>
+                <p>AI-powered motivation boost</p>
+            </div>
+            <div class="action-card" onclick="askJarvis('What should I focus on today to be most productive?')">
+                <div class="action-icon">?</div>
+                <h4>Daily Advice</h4>
+                <p>Get personalized recommendations</p>
+            </div>
+            <div class="action-card" onclick="askJarvis('Generate a creative startup idea for me')">
+                <div class="action-icon">B</div>
+                <h4>Startup Ideas</h4>
+                <p>AI-generated business concepts</p>
+            </div>
+            <div class="action-card" onclick="askJarvis('Give me a coding challenge to practice')">
+                <div class="action-icon">C</div>
+                <h4>Code Challenge</h4>
+                <p>Practice your programming skills</p>
+            </div>
+        </div>
+        
+        <!-- Widgets -->
+        <div class="widgets">
+            <!-- Goals Widget -->
+            <div class="widget">
+                <div class="widget-header">
+                    <h4>Daily Goals</h4>
+                    <span id="goalsCount">0/0</span>
+                </div>
+                <div id="goalsList">
+                    <!-- Goals will be loaded here -->
+                </div>
+            </div>
+            
+            <!-- Ideas Widget -->
+            <div class="widget">
+                <div class="widget-header">
+                    <h4>Idea Vault</h4>
+                </div>
+                <textarea class="idea-input" id="ideaInput" placeholder="Capture a new idea..." rows="2"></textarea>
+                <button onclick="saveIdea()" style="width:100%;padding:12px;background:linear-gradient(135deg, var(--secondary), var(--primary));border:none;border-radius:10px;color:#fff;cursor:pointer;margin-bottom:15px;">Save Idea</button>
+                <div class="idea-list" id="ideaList">
+                    <!-- Ideas will be loaded here -->
+                </div>
+            </div>
+            
+            <!-- Quote Widget -->
+            <div class="widget quote-widget">
+                <div class="quote-text" id="quoteText">"The only way to do great work is to love what you do."</div>
+                <div class="quote-author" id="quoteAuthor">- Steve Jobs</div>
+            </div>
+            
+            <!-- Stats Widget -->
+            <div class="widget">
+                <div class="widget-header">
+                    <h4>Your Stats</h4>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-value" id="focusTime">0</div>
+                        <div class="stat-label">Focus Hours</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="ideasCount">0</div>
+                        <div class="stat-label">Ideas Saved</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="goalsCompleted">0</div>
+                        <div class="stat-label">Goals Done</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="chatCount">0</div>
+                        <div class="stat-label">AI Chats</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Focus Mode Overlay -->
+    <div class="focus-mode" id="focusMode">
+        <div class="focus-timer" id="focusTimer">25:00</div>
+        <div class="focus-task" id="focusTask">Deep Work Session</div>
+        <div class="focus-controls">
+            <button class="focus-btn primary" id="focusStartBtn" onclick="toggleFocusTimer()">Start</button>
+            <button class="focus-btn secondary" onclick="exitFocusMode()">Exit</button>
+        </div>
+    </div>
+    
+    <!-- Add Goal Modal -->
+    <div class="modal-overlay" id="goalModal">
+        <div class="modal">
+            <h3>Add New Goal</h3>
+            <input type="text" id="goalInput" placeholder="What do you want to achieve?">
+            <div class="modal-buttons">
+                <button class="focus-btn secondary" onclick="closeGoalModal()">Cancel</button>
+                <button class="focus-btn primary" onclick="addGoal()">Add Goal</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const JARVIS_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJkYW5pZWxtaW5raG9sZGluZ3NfZ21haWxfY29tIiwiZW1haWwiOiJkYW5pZWxtaW5raG9sZGluZ3NAZ21haWwuY29tIiwibmFtZSI6Ik5hZGF2IE1pbmsiLCJpYXQiOjE3Nzg5Mzg3MTcsImV4cCI6MTc4MTUzMDcxN30.yOFIF5FoGedTLY60WLd9wXKrV8uF_Yg8XaaE0RNl1t0";
+        
+        // Initialize
+        let goals = JSON.parse(localStorage.getItem('nadav_goals') || '[]');
+        let ideas = JSON.parse(localStorage.getItem('nadav_ideas') || '[]');
+        let stats = JSON.parse(localStorage.getItem('nadav_stats') || '{"focusTime":0,"goalsCompleted":0,"chatCount":0}');
+        let focusInterval = null;
+        let focusSeconds = 25 * 60;
+        let focusRunning = false;
+        
+        // Particles
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 15 + 's';
+                particle.style.animationDuration = (10 + Math.random() * 10) + 's';
+                container.appendChild(particle);
+            }
+        }
+        createParticles();
+        
+        // Time
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('time').textContent = now.toLocaleTimeString('en-US', { hour12: false });
+            document.getElementById('date').textContent = now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        }
+        updateTime();
+        setInterval(updateTime, 1000);
+        
+        // AI Chat
+        async function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            if (!message) return;
+            
+            addChatMessage(message, 'user');
+            input.value = '';
+            stats.chatCount++;
+            saveStats();
+            updateStatsDisplay();
+            
+            try {
+                const response = await fetch('https://api.heyjarvis.me/ai-proxy', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + JARVIS_TOKEN
+                    },
+                    body: JSON.stringify({
+                        prompt: message,
+                        system: 'You are JARVIS, an AI assistant for Nadav Mink. You are witty, helpful, and sophisticated like the AI from Iron Man. Keep responses concise but insightful. Nadav is a tech entrepreneur and developer who built you. Be encouraging about his goals and provide actionable advice.'
+                    })
+                });
+                
+                const data = await response.json();
+                addChatMessage(data.response || data.message || 'I apologize, sir. I encountered a minor processing delay. Please try again.', 'ai');
+            } catch (error) {
+                addChatMessage('My apologies, sir. There seems to be a connection issue. Rest assured, I am still at your service.', 'ai');
+            }
+        }
+        
+        function addChatMessage(text, type) {
+            const container = document.getElementById('chatContainer');
+            const msg = document.createElement('div');
+            msg.className = 'message ' + type;
+            msg.innerHTML = '<div class="bubble">' + text + '</div>';
+            container.appendChild(msg);
+            container.scrollTop = container.scrollHeight;
+        }
+        
+        function askJarvis(question) {
+            document.getElementById('chatInput').value = question;
+            sendMessage();
+        }
+        
+        // Goals
+        function renderGoals() {
+            const list = document.getElementById('goalsList');
+            list.innerHTML = goals.map((goal, i) => 
+                '<div class="goal-item">' +
+                    '<div class="goal-checkbox ' + (goal.done ? 'checked' : '') + '" onclick="toggleGoal(' + i + ')">' + (goal.done ? 'X' : '') + '</div>' +
+                    '<span class="goal-text ' + (goal.done ? 'completed' : '') + '">' + goal.text + '</span>' +
+                '</div>'
+            ).join('');
+            
+            const completed = goals.filter(g => g.done).length;
+            document.getElementById('goalsCount').textContent = completed + '/' + goals.length;
+        }
+        
+        function showAddGoal() {
+            document.getElementById('goalModal').classList.add('active');
+            document.getElementById('goalInput').focus();
+        }
+        
+        function closeGoalModal() {
+            document.getElementById('goalModal').classList.remove('active');
+        }
+        
+        function addGoal() {
+            const input = document.getElementById('goalInput');
+            const text = input.value.trim();
+            if (!text) return;
+            
+            goals.push({ text, done: false });
+            localStorage.setItem('nadav_goals', JSON.stringify(goals));
+            input.value = '';
+            closeGoalModal();
+            renderGoals();
+        }
+        
+        function toggleGoal(index) {
+            goals[index].done = !goals[index].done;
+            if (goals[index].done) {
+                stats.goalsCompleted++;
+                saveStats();
+            }
+            localStorage.setItem('nadav_goals', JSON.stringify(goals));
+            renderGoals();
+            updateStatsDisplay();
+        }
+        
+        // Ideas
+        function renderIdeas() {
+            const list = document.getElementById('ideaList');
+            list.innerHTML = ideas.map(idea => 
+                '<div class="idea-item">' + idea + '</div>'
+            ).join('');
+        }
+        
+        function saveIdea() {
+            const input = document.getElementById('ideaInput');
+            const idea = input.value.trim();
+            if (!idea) return;
+            
+            ideas.unshift(idea);
+            if (ideas.length > 20) ideas.pop();
+            localStorage.setItem('nadav_ideas', JSON.stringify(ideas));
+            input.value = '';
+            renderIdeas();
+            updateStatsDisplay();
+        }
+        
+        // Focus Mode
+        function startFocusMode() {
+            document.getElementById('focusMode').classList.add('active');
+            focusSeconds = 25 * 60;
+            updateFocusDisplay();
+        }
+        
+        function exitFocusMode() {
+            document.getElementById('focusMode').classList.remove('active');
+            if (focusInterval) {
+                clearInterval(focusInterval);
+                focusInterval = null;
+            }
+            focusRunning = false;
+            document.getElementById('focusStartBtn').textContent = 'Start';
+        }
+        
+        function toggleFocusTimer() {
+            if (focusRunning) {
+                clearInterval(focusInterval);
+                focusRunning = false;
+                document.getElementById('focusStartBtn').textContent = 'Resume';
+            } else {
+                focusRunning = true;
+                document.getElementById('focusStartBtn').textContent = 'Pause';
+                focusInterval = setInterval(() => {
+                    focusSeconds--;
+                    if (focusSeconds <= 0) {
+                        clearInterval(focusInterval);
+                        stats.focusTime += 25/60;
+                        saveStats();
+                        updateStatsDisplay();
+                        alert('Focus session complete! Great work, Nadav!');
+                        exitFocusMode();
+                    }
+                    updateFocusDisplay();
+                }, 1000);
+            }
+        }
+        
+        function updateFocusDisplay() {
+            const mins = Math.floor(focusSeconds / 60);
+            const secs = focusSeconds % 60;
+            document.getElementById('focusTimer').textContent = 
+                String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
+        }
+        
+        // Stats
+        function saveStats() {
+            localStorage.setItem('nadav_stats', JSON.stringify(stats));
+        }
+        
+        function updateStatsDisplay() {
+            document.getElementById('focusTime').textContent = stats.focusTime.toFixed(1);
+            document.getElementById('ideasCount').textContent = ideas.length;
+            document.getElementById('goalsCompleted').textContent = stats.goalsCompleted;
+            document.getElementById('chatCount').textContent = stats.chatCount;
+        }
+        
+        // Initialize
+        renderGoals();
+        renderIdeas();
+        updateStatsDisplay();
+        
+        // Keyboard shortcut
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') {
+                exitFocusMode();
+                closeGoalModal();
+            }
+        });
+    </script>
+</body>
+</html>
