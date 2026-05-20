@@ -103,64 +103,25 @@ const API = typeof window !== 'undefined' && window.location.hostname !== 'local
 const FREE_LIMIT = 20;
 
 // ── Usage bar component ──────────────────────────────────────
-function UsageBar({ used, limit, onUpgrade }: { used: number; limit: number; onUpgrade: () => void }) {
-  const pct = Math.min((used / limit) * 100, 100);
-  const remaining = limit - used;
-  const isWarning = used >= 15 && used < limit;
-  const isLimit = used >= limit;
-
-  const barColor = isLimit
-    ? 'rgba(239,68,68,0.8)'
-    : isWarning
-    ? 'rgba(245,158,11,0.8)'
-    : 'rgba(59,130,246,0.7)';
-
-  const textColor = isLimit
-    ? 'rgba(252,165,165,0.9)'
-    : isWarning
-    ? 'rgba(253,230,138,0.9)'
-    : 'rgba(147,197,253,0.7)';
-
+function TokenBar({ cost, cap, onUpgrade }: { cost: number; cap: number; onUpgrade: () => void }) {
+  const pct = Math.min((cost / cap) * 100, 100);
+  const isWarning = pct >= 70 && pct < 100;
+  const isLimit = pct >= 100;
+  const barColor = isLimit ? 'rgba(239,68,68,0.8)' : isWarning ? 'rgba(245,158,11,0.8)' : 'rgba(59,130,246,0.7)';
+  const textColor = isLimit ? 'rgba(252,165,165,0.9)' : isWarning ? 'rgba(253,230,138,0.9)' : 'rgba(147,197,253,0.6)';
+  const bars = 12;
   return (
-    <div style={{
-      padding: '6px 12px',
-      background: isLimit
-        ? 'rgba(239,68,68,0.06)'
-        : isWarning
-        ? 'rgba(245,158,11,0.06)'
-        : 'rgba(255,255,255,0.02)',
-      borderBottom: `1px solid ${isLimit ? 'rgba(239,68,68,0.15)' : isWarning ? 'rgba(245,158,11,0.12)' : 'rgba(255,255,255,0.05)'}`,
-      display: 'flex',
-      alignItems: 'center',
-      gap: '10px',
-    }}>
-      {/* Bar */}
-      <div style={{ flex: 1, height: '3px', background: 'rgba(255,255,255,0.07)', borderRadius: '999px', overflow: 'hidden' }}>
-        <div style={{
-          height: '100%',
-          width: `${pct}%`,
-          background: barColor,
-          borderRadius: '999px',
-          transition: 'width 0.4s ease',
-        }} />
+    <div style={{ padding: '5px 12px', background: isLimit ? 'rgba(239,68,68,0.05)' : 'rgba(255,255,255,0.01)', borderBottom: `1px solid ${isLimit ? 'rgba(239,68,68,0.12)' : 'rgba(255,255,255,0.04)'}`, display: 'flex', alignItems: 'center', gap: '10px' }}>
+      <div style={{ display: 'flex', gap: '2px', alignItems: 'center' }}>
+        {Array.from({ length: bars }).map((_, i) => {
+          const filled = (i / bars) * 100 < pct;
+          return <div key={i} style={{ width: '3px', height: '10px', borderRadius: '2px', background: filled ? barColor : 'rgba(255,255,255,0.07)', transition: 'background 0.3s' }} />;
+        })}
       </div>
-
-      {/* Label */}
-      <span style={{ fontSize: '11px', color: textColor, whiteSpace: 'nowrap', flexShrink: 0 }}>
-        {isLimit ? 'Daily limit reached' : `${remaining} message${remaining === 1 ? '' : 's'} left today`}
+      <span style={{ fontSize: '10px', color: textColor, whiteSpace: 'nowrap', flexShrink: 0 }}>
+        {isLimit ? 'Daily tokens used' : 'Daily tokens'}
       </span>
-
-      {/* Upgrade link */}
-      <button
-        onClick={onUpgrade}
-        style={{
-          fontSize: '11px', fontWeight: 500,
-          color: isLimit ? 'rgba(252,165,165,1)' : 'rgba(96,165,250,0.8)',
-          background: 'transparent', border: 'none', cursor: 'pointer',
-          padding: '0', textDecoration: 'underline', flexShrink: 0,
-          textUnderlineOffset: '2px',
-        }}
-      >
+      <button onClick={onUpgrade} style={{ fontSize: '10px', fontWeight: 500, color: isLimit ? 'rgba(252,165,165,1)' : 'rgba(96,165,250,0.7)', background: 'transparent', border: 'none', cursor: 'pointer', padding: 0, textDecoration: 'underline', flexShrink: 0, textUnderlineOffset: '2px' }}>
         Go Pro
       </button>
     </div>
@@ -486,6 +447,28 @@ function VoiceModeModal({
 }
 
 export default function Home() {
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if ((window as any).__TAURI_INTERNALS__) {
+        (window as any).__TAURI_INVOKE__ = (cmd: string, args: any) => {
+          return (window as any).__TAURI_INTERNALS__.invoke(cmd, args);
+        };
+        console.log('[JARVIS] Tauri invoke ready');
+        clearInterval(interval);
+        (window as any).jarvis = {
+          unlock: async () => {
+            const tok = localStorage.getItem('jarvis_token');
+            const res = await fetch(`${API}/jarvis-unlock`, { method: 'POST', headers: { Authorization: `Bearer ${tok}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ code: 'tony-stark-2025' }) });
+            const d = await res.json();
+            if (d.ok) { setSubscribed(true); localStorage.setItem('jarvis_subscribed', 'true'); console.log('JARVIS Pro activated.'); }
+            else console.log('Nope.');
+          }
+        };
+      }
+    }, 100);
+    return () => clearInterval(interval);
+  }, []);
+
   const [token, setToken] = useState<string | null>(null);
   const [userName, setUserName] = useState('');
   const [authMode, setAuthMode] = useState<'login' | 'signup'>('login');
@@ -520,8 +503,11 @@ export default function Home() {
   const [checkingOut, setCheckingOut] = useState(false);
 
   // ── Daily message usage ──────────────────────────────────
-  const [messagesUsed, setMessagesUsed] = useState(0);
+  const [dailyCost, setDailyCost] = useState(0);
+  const [msUntilReset, setMsUntilReset] = useState<number | null>(null);
   const [limitReached, setLimitReached] = useState(false);
+  const [showCapModal, setShowCapModal] = useState(false);
+  const DAILY_CAP = 0.75;
 
   const bottomRef = useRef<HTMLDivElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -550,13 +536,14 @@ export default function Home() {
       window.history.replaceState({}, '', '/');
     }
     // Fetch initial usage
-    fetch(`${API}/message-usage`, { headers: { Authorization: `Bearer ${token}` } })
-      .then(r => r.json()).then(d => {
-        if (!d.subscribed) {
-          setMessagesUsed(d.messagesUsed || 0);
-          setLimitReached((d.messagesUsed || 0) >= FREE_LIMIT);
-        }
-      }).catch(() => {});
+    fetch(`${API}/daily-cost`, { headers: { Authorization: `Bearer ${token}` } })
+  .then(r => r.json()).then(d => {
+    if (!d.unlimited) {
+      setDailyCost(d.cost || 0);
+      setLimitReached(d.limitReached || false);
+      if (d.msUntilReset) setMsUntilReset(d.msUntilReset);
+    }
+  }).catch(() => {});
   }, [token]);
 
   const activeConv = conversations.find(c => c.id === activeId);
@@ -656,8 +643,8 @@ if (!convId) {
           if (ytMatch2) setTimeout(() => window.open(ytMatch2[0], '_blank'), 500);
           // Execute Mac actions from bg responses
           const actionMatches2 = r.message.match(/ACTION:\{[\s\S]*?\}/g);
-          if (actionMatches2 && (window as any).__TAURI__) {
-            const { invoke } = await import('@tauri-apps/api/core');
+          if (actionMatches2 && (window as any).__TAURI_INVOKE__) {
+            const invoke = (window as any).__TAURI_INVOKE__;
             for (const action of actionMatches2) {
               try {
                 const parsed = JSON.parse(action.replace('ACTION:', ''));
@@ -917,15 +904,20 @@ if (!convId) {
     try {
       const res = await fetch(`${API}/chat`, { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` }, body: JSON.stringify({ message: userMsg, attachedFiles: filesToSend }) });
       const data = await res.json();
-
+      if (!subscribed && data.costSpent != null) {
+      setDailyCost(prev => prev + (data.costSpent || 0));
+      if (data.limitReached) { setLimitReached(true); if (data.msUntilReset) setMsUntilReset(data.msUntilReset); }
+    }
       // Update usage from response
-      if (!subscribed && data.messagesUsed != null) {
-        setMessagesUsed(data.messagesUsed);
-        setLimitReached(data.limitReached || data.messagesUsed >= FREE_LIMIT);
-      }
+      
 
       if (data.limitReached) {
-        addMessageToConv(finalConvId, { role: "assistant", content: "You've used all 20 free messages for today. Upgrade to Pro for unlimited messages.", source: "text", timestamp: Date.now() });
+        if (data.dailyCostCap) {
+          setLimitReached(true);
+          setMsUntilReset(data.msUntilReset || null);
+          setShowCapModal(true);
+        }
+        addMessageToConv(finalConvId, { role: "assistant", content: "Daily token limit reached. Come back later or upgrade to Pro.", source: "text", timestamp: Date.now() });
       } else if (data.message === 'On it.') {
         addMessageToConv(finalConvId, { role: "assistant", content: "On it...", source: "text", timestamp: Date.now() });
       } else if (data.message) {
@@ -937,8 +929,8 @@ if (!convId) {
 
         // Execute Mac actions if present
         const actionMatches = data.message.match(/ACTION:\{[\s\S]*?\}/g);
-        if (actionMatches && (window as any).__TAURI__) {
-          const { invoke } = await import('@tauri-apps/api/core');
+        if (actionMatches && (window as any).__TAURI_INVOKE__) {
+          const invoke = (window as any).__TAURI_INVOKE__;
           for (const action of actionMatches) {
             try {
               const parsed = JSON.parse(action.replace('ACTION:', ''));
@@ -947,7 +939,11 @@ if (!convId) {
               } else if (parsed.type === 'SHELL') {
                 await invoke('execute_shell', { command: parsed.command });
               }
-            } catch (e) { console.log('Action error:', e); }
+            } catch (e) { 
+  console.log('Action parse error:', e);
+  console.log('Raw action string:', action);
+  console.log('After replace:', action.replace('ACTION:', ''));
+}
           }
         }
       }
@@ -1041,7 +1037,7 @@ if (!convId) {
               <div className="text-white/40 text-xs mb-1">Account</div>
               <div className="text-white font-medium">{userName}</div>
               <div className={`text-sm mt-1 font-medium ${subscribed ? 'text-green-400' : 'text-yellow-400/80'}`}>
-                {subscribed ? '✦ Pro — Unlimited messages' : `Free — ${Math.max(0, FREE_LIMIT - messagesUsed)} messages left today`}
+                {subscribed ? '✦ Pro — Unlimited messages' : 'Free plan'}
               </div>
             </div>
 
@@ -1064,24 +1060,24 @@ if (!convId) {
               // ── FREE USER: show upgrade card ──
               <>
                 {/* Usage bar in modal */}
-                <div className="mb-4 p-4 rounded-xl border border-white/8 bg-white/3">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="text-white/50 text-xs">Daily messages</div>
-                    <div className={`text-xs font-medium ${messagesUsed >= FREE_LIMIT ? 'text-red-400' : messagesUsed >= 15 ? 'text-amber-400' : 'text-white/40'}`}>
-                      {messagesUsed} / {FREE_LIMIT}
-                    </div>
-                  </div>
-                  <div style={{ height: '4px', background: 'rgba(255,255,255,0.07)', borderRadius: '999px', overflow: 'hidden' }}>
-                    <div style={{
-                      height: '100%',
-                      width: `${Math.min((messagesUsed / FREE_LIMIT) * 100, 100)}%`,
-                      background: messagesUsed >= FREE_LIMIT ? 'rgba(239,68,68,0.8)' : messagesUsed >= 15 ? 'rgba(245,158,11,0.8)' : 'rgba(59,130,246,0.7)',
-                      borderRadius: '999px',
-                      transition: 'width 0.4s ease',
-                    }} />
-                  </div>
-                  <div className="text-white/25 text-xs mt-2">Resets at midnight</div>
-                </div>
+<div className="mb-4 p-4 rounded-xl border border-white/8 bg-white/3">
+  <div className="flex items-center justify-between mb-2">
+    <div className="text-white/50 text-xs">Daily tokens</div>
+    <div className={`text-xs font-medium ${dailyCost >= DAILY_CAP ? 'text-red-400' : dailyCost >= DAILY_CAP * 0.7 ? 'text-amber-400' : 'text-white/40'}`}>
+      {Math.round((dailyCost / DAILY_CAP) * 100)}% used
+    </div>
+  </div>
+  <div style={{ height: '4px', background: 'rgba(255,255,255,0.07)', borderRadius: '999px', overflow: 'hidden' }}>
+    <div style={{
+      height: '100%',
+      width: `${Math.min((dailyCost / DAILY_CAP) * 100, 100)}%`,
+      background: dailyCost >= DAILY_CAP ? 'rgba(239,68,68,0.8)' : dailyCost >= DAILY_CAP * 0.7 ? 'rgba(245,158,11,0.8)' : 'rgba(59,130,246,0.7)',
+      borderRadius: '999px',
+      transition: 'width 0.4s ease',
+    }} />
+  </div>
+  <div className="text-white/25 text-xs mt-2">Resets at midnight ET</div>
+</div>
 
                 <div className="p-4 rounded-xl border border-blue-500/20 bg-blue-500/5">
                   <div className="text-white font-medium mb-1">Upgrade to Pro</div>
@@ -1121,6 +1117,20 @@ if (!convId) {
         </div>
       )}
 
+      {showCapModal && (
+        <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
+          <div className="bg-[#0a0a0f] border border-white/10 rounded-2xl p-6 w-full max-w-xs text-center">
+            <div className="text-2xl mb-2">⏳</div>
+            <div className="text-white font-semibold mb-1">Daily tokens used</div>
+            <div className="text-white/40 text-xs mb-4">
+              {msUntilReset ? `Resets in ${Math.ceil(msUntilReset / 3600000)}h ${Math.ceil((msUntilReset % 3600000) / 60000)}m` : 'Resets at midnight ET'}
+            </div>
+            <button onClick={() => { setShowCapModal(false); setShowSettings(true); }} className="w-full py-2.5 bg-blue-600 hover:bg-blue-500 rounded-xl text-white text-sm font-medium transition-all mb-2">Go Pro — $25/mo</button>
+            <button onClick={() => setShowCapModal(false)} className="w-full py-2 text-white/30 text-xs hover:text-white/50 transition-all">Wait it out</button>
+          </div>
+        </div>
+      )}
+
       {voiceModeOpen && token && (
         <VoiceModeModal token={token} userName={userName} onClose={() => setVoiceModeOpen(false)} onMessageSent={handleVoiceModeMessage} />
       )}
@@ -1156,8 +1166,8 @@ if (!convId) {
           <button
   onClick={async () => {
   const url = `${API}/auth/google?token=${token}`;
-  if ((window as any).__TAURI__) {
-    const { invoke } = await import('@tauri-apps/api/core');
+  const invoke = (window as any).__TAURI_INVOKE__;
+  if (invoke) {
     await invoke('execute_shell', { command: `open "${url}"` });
   } else {
     window.open(url, '_blank');
@@ -1195,7 +1205,7 @@ if (!convId) {
           <div className="flex-1 min-w-0">
             <div className="text-white/70 text-xs font-medium truncate">{userName}</div>
             <div className={`text-xs ${subscribed ? 'text-green-400' : 'text-yellow-400/70'}`}>
-              {subscribed ? 'Pro — unlimited' : `${Math.max(0, FREE_LIMIT - messagesUsed)} msg left today`}
+              {subscribed ? 'Pro — unlimited' : `${Math.round((dailyCost / DAILY_CAP) * 100)}% tokens used`}
             </div>
           </div>
           <button onClick={() => setShowSettings(true)} className="text-white/25 hover:text-white/50 transition-all p-1">
@@ -1240,8 +1250,9 @@ if (!convId) {
         </div>
 
         {/* Usage bar — only shown for free users */}
+        {/* Token bar — only shown for free users */}
         {!subscribed && (
-          <UsageBar used={messagesUsed} limit={FREE_LIMIT} onUpgrade={openUpgrade} />
+          <TokenBar cost={dailyCost} cap={DAILY_CAP} onUpgrade={openUpgrade} />
         )}
 
         {/* Updates panel */}

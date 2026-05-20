@@ -600,7 +600,25 @@ app.use('/chat', chatLimiter);
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 const { neon: memoryNeon } = require('@neondatabase/serverless');
 const memorySql = memoryNeon(process.env.DATABASE_URL);
-
+async function logApiUsage(userId, service, model, inputTokens, outputTokens, ttsChars, endpoint) {
+  try {
+    const pricing = {
+      'claude-opus-4-5':    { in: 15.00, out: 75.00 },
+      'claude-sonnet-4-6':  { in: 3.00,  out: 15.00 },
+      'claude-haiku-4-5-20251001': { in: 0.80, out: 4.00 },
+    };
+    let cost = 0;
+    if (service === 'anthropic' && pricing[model]) {
+      cost = (inputTokens / 1_000_000) * pricing[model].in + (outputTokens / 1_000_000) * pricing[model].out;
+    } else if (service === 'elevenlabs') {
+      cost = (ttsChars / 1000) * 0.18;
+    }
+    await memorySql`
+      INSERT INTO api_usage (user_id, service, model, input_tokens, output_tokens, tts_chars, cost_usd, endpoint)
+      VALUES (${userId}, ${service}, ${model || ''}, ${inputTokens || 0}, ${outputTokens || 0}, ${ttsChars || 0}, ${cost}, ${endpoint || ''})
+    `;
+  } catch (e) { console.log('[USAGE] Log error:', e.message); }
+}
 async function saveConversationSummary(userId, conversationHistory) {
   if (!conversationHistory || conversationHistory.length < 2) return;
   try {
@@ -997,6 +1015,7 @@ async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame
   const session = getSession(userId);
   const { conversationHistory, userMemory } = session;
   const isNadav = userId === NADAV_USER_ID;
+  const isMacDesktop = true; // local server always serves Mac desktop app
   const userName = userMemory.userName || session.name || 'User';
   const userLocation = userMemory.location || (isNadav ? 'Fort Lauderdale, Florida' : 'Unknown');
 
@@ -1007,7 +1026,7 @@ async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame
   { name: 'remember', description: 'Save to persistent memory across sessions.', input_schema: { type: 'object', properties: { category: { type: 'string' }, key: { type: 'string' }, value: { type: 'string' } }, required: ['category', 'key', 'value'] } },
   { name: 'proactive_update', description: 'Push a notification to the user.', input_schema: { type: 'object', properties: { message: { type: 'string' } }, required: ['message'] } },
   { name: 'search_3d_models', description: 'Search Thingiverse and Printables for 3D models.', input_schema: { type: 'object', properties: { query: { type: 'string' }, source: { type: 'string', enum: ['thingiverse', 'printables', 'both'] } }, required: ['query'] } },
-  ...(isNadav ? [
+  ...(isNadav || isMacDesktop ? [
     { name: 'execute_actions', description: 'Execute computer actions: OPEN_URL, OPEN_APP, CLICK, TYPE, ENTER, HOTKEY, SELECT_ALL_AND_DELETE, SEND_EMAIL, RUN', input_schema: { type: 'object', properties: { actions: { type: 'array', items: { type: 'object', properties: { type: { type: 'string' }, value: { type: 'string' } } } }, summary: { type: 'string' } }, required: ['actions', 'summary'] } },
     { name: 'read_file', description: 'Read, list, or search files on the computer.', input_schema: { type: 'object', properties: { path: { type: 'string' }, action: { type: 'string', enum: ['read', 'list', 'search'] }, query: { type: 'string' } }, required: ['path', 'action'] } },
     { name: 'get_system_info', description: 'Get battery, top processes, disk space.', input_schema: { type: 'object', properties: {} } },
@@ -1072,7 +1091,7 @@ async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame
     'remember: Save information about the user for future sessions.',
     'proactive_update: Send the user a notification.',
     'search_3d_models: Search Thingiverse and Printables for 3D printable models.',
-    ...(isNadav ? [
+    ...(isNadav || isMacDesktop ? [
       '',
       '═══ NADAV-ONLY FEATURES ═══',
       'execute_actions: Control Nadav\'s PC (clicks, typing, opening apps/URLs).',
@@ -1101,9 +1120,12 @@ async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame
 'PHONE CALLS: To call someone by name: ACTION:{"type":"SHELL","command":"open facetime://Daniel"}',
 'APPLE TV: To open TV app and play a movie, use TWO ACTION blocks. First open it: ACTION:{"type":"SHELL","command":"open /System/Applications/TV.app"} then activate and search: ACTION:{"type":"APPLESCRIPT","script":"delay 3\\ntell application \\"TV\\" to activate\\ndelay 2\\ntell application \\"System Events\\"\\nkeystroke \\"f\\" using {command down}\\ndelay 1\\nkeystroke \\"MOVIENAME\\"\\ndelay 1\\nkey code 36\\nend tell"}',
 'APPLE TV SEARCH: Always use open /System/Applications/TV.app to launch it. Then tell application TV to activate before sending keystrokes. Replace MOVIENAME with actual movie name.',
-'APPLE MUSIC: To play music, use this AppleScript — it searches and plays without needing to open the app first: ACTION:{"type":"APPLESCRIPT","script":"tell application \\"Music\\"\\nset searching to search for \\"ARTIST OR SONG\\"\\nif searching is not {} then\\nplay item 1 of searching\\nend if\\nend tell"}',
-'APPLE MUSIC PLAY ARTIST: To play a specific artist: ACTION:{"type":"APPLESCRIPT","script":"tell application \\"Music\\"\\nplay playlist \\"ARTIST\\" by artist \\"ARTIST\\"\\nend tell"} OR simply: ACTION:{"type":"APPLESCRIPT","script":"tell application \\"Music\\"\nset allTracks to every track whose artist contains \\"ARTIST\\"\\nif allTracks is not {} then\\nplay item 1 of allTracks\\nend if\\nend tell"}',
-'NOTE: On Mac the Music app is called Music not Apple Music. Always use tell application \\"Music\\" never tell application \\"Apple Music\\".',
+'APPLE MUSIC: To play a song or artist, use this osascript — it searches the library and plays the first result automatically: ACTION:{"type":"SHELL","command":"osascript -e \'tell application \\"Music\\" to play (search playlist \\"Library\\" for \\"SONGNAME\\")\'"}',
+'APPLE MUSIC ARTIST: To play all songs by an artist: ACTION:{"type":"SHELL","command":"osascript -e \'tell application \\"Music\\"\nset t to (every track of playlist \\"Library\\" whose artist contains \\"ARTIST\\")\nif t is not {} then play item 1 of t\nend tell\'"}',
+'APPLE MUSIC CRITICAL: NEVER open a URL or search page. ALWAYS use osascript to search and play directly. The user should never have to click anything.',
+'MORE APP EXAMPLES: open -a \\"Spotify\\"  |  open -a \\"Notes\\"  |  open -a \\"Calculator\\"  |  open -a \\"System Preferences\\"',
+'NEVER use tell application blocks to open apps — always use open -a \\"App Name\\" instead.',
+'NOTE: On Mac the Music app is called Music not Apple Music.',
 'NOTIFICATIONS: To send a native Mac notification: ACTION:{"type":"SHELL","command":"osascript -e \'display notification \\"MESSAGE\\" with title \\"JARVIS\\"\'"}',
 'CALENDAR: To add a calendar event: ACTION:{"type":"APPLESCRIPT","script":"tell application \\"Calendar\\"\\nactivate\\ntell calendar \\"Calendar\\"\\nmake new event at end of events with properties {summary:\\"EVENT NAME\\", start date:date \\"DATE\\", end date:date \\"DATE\\"}\\nend tell\\nend tell"}',
 'REMINDERS: To add a reminder: ACTION:{"type":"APPLESCRIPT","script":"tell application \\"Reminders\\"\\nmake new reminder with properties {name:\\"REMINDER TEXT\\", due date:date \\"DATE\\"}\\nend tell"}',
@@ -1187,6 +1209,14 @@ async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame
       `Credentials: .env.local | Google: credentials.json + token.json`,
       '',
     ] : [
+  '',
+  '═══ MAC DESKTOP CONTROL ═══',
+  'The user is running the JARVIS desktop app on a Mac. You have FULL control of their Mac.',
+  'To control the Mac, include ACTION:{"type":"APPLESCRIPT","script":"YOUR SCRIPT"} anywhere in your response.',
+  'To run shell commands, include ACTION:{"type":"SHELL","command":"YOUR COMMAND"}.',
+  'ALWAYS include ACTION blocks for Mac tasks. NEVER say you cannot control the Mac.',
+  'Set volume: ACTION:{"type":"SHELL","command":"osascript -e \'set volume output volume 50\'"}',
+  'This is Mac NOT Windows. Never give Windows instructions.',
   '',
   '═══ CAPABILITIES ═══',
   'You are FULLY POWERFUL — same as JARVIS from Iron Man.',
@@ -1380,6 +1410,7 @@ for (const f of otherFiles) {
       tools,
       messages
     });
+    logApiUsage(userId, 'anthropic', isComplexTask ? 'claude-opus-4-5' : 'claude-sonnet-4-6', response.usage.input_tokens, response.usage.output_tokens, 0, '/chat');
 
 
     messages.push({ role: 'assistant', content: response.content });
@@ -1496,6 +1527,7 @@ async function runProactiveBrain() {
     proactiveLastRun[userId] = Date.now();
     try {
       const { userMemory } = sessions[userId];
+      const isMacDesktop = true; // local server always serves Mac desktop app
       const isNadav = userId === NADAV_USER_ID;
       const prompt = [
         `Proactive check for ${userMemory.userName || 'User'}. Time: ${now.toLocaleString()}`,
@@ -1667,28 +1699,38 @@ if (authToken) {
   saveUserMemory(userId, session.userMemory);
 }
 
-    const isSubscribed = isNadav || session.userMemory.subscribed === true;
-    const FREE_LIMIT = 20;
+    const isUnlimited = UNLIMITED_USERS.has(userId) || session.userMemory.subscribed === true;
+const isFamily = FAMILY_USERS.has(userId);
+const isSubscribed = isUnlimited;
 
-    if (!isSubscribed) {
-      const today = new Date().toDateString();
-      if (session.userMemory.lastMessageDate !== today) {
-        session.userMemory.dailyMessageCount = 0;
-        session.userMemory.lastMessageDate = today;
-      }
-      const used = session.userMemory.dailyMessageCount || 0;
-      if (used >= FREE_LIMIT) {
-        return res.json({
-          success: false,
-          limitReached: true,
-          messagesUsed: used,
-          messagesLimit: FREE_LIMIT,
-          message: `You've used all ${FREE_LIMIT} free messages for today. Upgrade to Pro for unlimited messages.`,
-        });
-      }
-      session.userMemory.dailyMessageCount = used + 1;
-      saveUserMemory(userId, session.userMemory);
+if (!isUnlimited) {
+  const today = new Date().toDateString();
+  if (session.userMemory.lastMessageDate !== today) {
+    session.userMemory.dailyMessageCount = 0;
+    session.userMemory.lastMessageDate = today;
+  }
+
+  if (isFamily) {
+    const used = session.userMemory.dailyMessageCount || 0;
+    if (used >= FAMILY_DAILY_MSG_LIMIT) {
+      return res.json({ success: false, limitReached: true, message: `Daily message limit reached. Come back tomorrow.` });
     }
+    session.userMemory.dailyMessageCount = (used + 1);
+    saveUserMemory(userId, session.userMemory);
+  } else {
+    // Free user — cost-based cap
+    const dailySpend = await getDailySpend(userId);
+    if (dailySpend >= FREE_DAILY_COST_CAP) {
+      const now = new Date();
+      const etOffset = -5 * 60;
+      const etNow = new Date(now.getTime() + (now.getTimezoneOffset() + etOffset) * 60000);
+      const midnight = new Date(etNow);
+      midnight.setHours(24, 0, 0, 0);
+      const msUntilReset = midnight - etNow;
+      return res.json({ success: false, limitReached: true, dailyCostCap: true, msUntilReset, message: `Daily token limit reached.` });
+    }
+  }
+}
 
     const usageInfo = isSubscribed ? { messagesUsed: null, messagesLimit: null } : {
       messagesUsed: session.userMemory.dailyMessageCount,
@@ -2201,11 +2243,14 @@ require("./apps/moviestudio")(app, chatSql);
 app.post('/api/tts', async (req, res) => {
   try {
     const { text } = req.body;
+    const authHeader = req.headers.authorization?.replace('Bearer ', '');
+    const ttsUser = authHeader ? verifyToken(authHeader)?.userId : 'unknown';
     const response = await axios.post(
       'https://api.elevenlabs.io/v1/text-to-speech/G17SuINrv2H9FC6nvetn',
       { text, model_id: 'eleven_turbo_v2', voice_settings: { stability: 0.5, similarity_boost: 0.75 } },
       { headers: { 'xi-api-key': process.env.ELEVENLABS_API_KEY, 'Content-Type': 'application/json' }, responseType: 'arraybuffer' }
     );
+    logApiUsage(ttsUser, 'elevenlabs', null, 0, 0, (text || '').length, '/api/tts');
     res.set('Content-Type', 'audio/mpeg');
     res.send(response.data);
   } catch (e) { res.status(500).json({ error: e.message }); }
@@ -2262,7 +2307,54 @@ app.post('/stripe-webhook', express.raw({ type: 'application/json' }), async (re
   }
   res.json({ received: true });
 });
+// ============ USER TIERS & COST LIMITS ============
+const UNLIMITED_USERS = new Set([
+  'nlmwtpu_gmail_com', // Jack (Nadav)
+  'nadavminkowitz_gmail_com', // Nadav
+]);
+const FAMILY_USERS = new Set([
+  'cminkowitz32_posnackstudent_org', // Celina - 25 msg/day
+  'gminkowitz31_posnackstudent_org', // Gavriel - 25 msg/day
+]);
+const FAMILY_DAILY_MSG_LIMIT = 25;
+const FREE_DAILY_COST_CAP = 0.75;
 
+async function getDailySpend(userId) {
+  try {
+    const rows = await memorySql`
+      SELECT COALESCE(SUM(cost_usd), 0) as total
+      FROM api_usage
+      WHERE user_id = ${userId}
+      AND created_at > NOW() - INTERVAL '24 hours'
+    `;
+    return parseFloat(rows[0]?.total || 0);
+  } catch (e) { return 0; }
+}
+
+app.get('/daily-cost', authMiddleware, async (req, res) => {
+  const userId = req.user.userId;
+  if (UNLIMITED_USERS.has(userId) || getSession(userId).userMemory.subscribed) {
+    return res.json({ cost: 0, cap: null, unlimited: true });
+  }
+  if (FAMILY_USERS.has(userId)) {
+    const session = getSession(userId);
+    const today = new Date().toDateString();
+    if (session.userMemory.lastMessageDate !== today) session.userMemory.dailyMessageCount = 0;
+    return res.json({ cost: 0, cap: null, unlimited: false, family: true, messagesUsed: session.userMemory.dailyMessageCount || 0, messagesLimit: FAMILY_DAILY_MSG_LIMIT });
+  }
+  const cost = await getDailySpend(userId);
+  res.json({ cost, cap: FREE_DAILY_COST_CAP, unlimited: false, limitReached: cost >= FREE_DAILY_COST_CAP });
+});
+
+// Secret console unlock
+app.post('/jarvis-unlock', authMiddleware, async (req, res) => {
+  if (req.body.code !== 'tony-stark-2025') return res.status(403).json({ error: 'No.' });
+  const session = getSession(req.user.userId);
+  session.userMemory.subscribed = true;
+  await saveUserMemory(req.user.userId, session.userMemory);
+  queueBgResponse(req.user.userId, '__SUBSCRIBED__');
+  res.json({ ok: true, message: 'Activated.' });
+});
 app.get('/subscription-status', authMiddleware, async (req, res) => {
   const session = getSession(req.user.userId);
   const isNadav = req.user.userId === NADAV_USER_ID;

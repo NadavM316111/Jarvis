@@ -37,8 +37,8 @@ fn execute_shell(command: String) -> Result<String, String> {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
-    .plugin(tauri_plugin_autostart::init(MacosLauncher::LaunchAgent, Some(vec![])))
-    .plugin(tauri_plugin_shell::init())
+        .plugin(tauri_plugin_autostart::init(MacosLauncher::LaunchAgent, Some(vec![])))
+        .plugin(tauri_plugin_shell::init())
         .invoke_handler(tauri::generate_handler![execute_applescript, execute_shell])
         .setup(|app| {
             if cfg!(debug_assertions) {
@@ -60,13 +60,22 @@ pub fn run() {
             let _win = WebviewWindowBuilder::new(
                 app,
                 "primary",
-                tauri::WebviewUrl::External("https://heyjarvis.me".parse().unwrap()),
+                tauri::WebviewUrl::External("http://localhost:3000".parse().unwrap()),
             )
             .title("JARVIS")
             .inner_size(1280.0, 800.0)
             .resizable(true)
             .devtools(true)
-            .initialization_script("
+            .initialization_script(r#"
+    // Expose Tauri invoke globally — lazy so __TAURI_INTERNALS__ is ready when called
+    Object.defineProperty(window, '__TAURI_INVOKE__', {
+        get: function() {
+            return function(cmd, args) {
+                return window.__TAURI_INTERNALS__.invoke(cmd, args);
+            };
+        }
+    });
+
                 if (!navigator.mediaDevices) {
                     Object.defineProperty(navigator, 'mediaDevices', {
                         value: {
@@ -81,7 +90,7 @@ pub fn run() {
                         }
                     });
                 }
-            ")
+            "#)
             .build()?;
 
             let quit = MenuItem::with_id(app, "quit", "Quit JARVIS", true, None::<&str>)?;
