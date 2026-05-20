@@ -600,6 +600,26 @@ app.use('/chat', chatLimiter);
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 const { neon: memoryNeon } = require('@neondatabase/serverless');
 const memorySql = memoryNeon(process.env.DATABASE_URL);
+async function logApiUsage(userId, service, model, inputTokens, outputTokens, ttChars, endpoint) {
+  try {
+    // Pricing (per 1M tokens)
+    const pricing = {
+      'claude-opus-4-5':    { in: 15.00, out: 75.00 },
+      'claude-sonnet-4-6':  { in: 3.00,  out: 15.00 },
+      'claude-haiku-4-5-20251001': { in: 0.80, out: 4.00 },
+    };
+    let cost = 0;
+    if (service === 'anthropic' && pricing[model]) {
+      cost = (inputTokens / 1_000_000) * pricing[model].in + (outputTokens / 1_000_000) * pricing[model].out;
+    } else if (service === 'elevenlabs') {
+      cost = (ttChars / 1000) * 0.18; // ~$0.18 per 1k chars on turbo
+    }
+    await memorySql`
+      INSERT INTO api_usage (user_id, service, model, input_tokens, output_tokens, tts_chars, cost_usd, endpoint)
+      VALUES (${userId}, ${service}, ${model || ''}, ${inputTokens || 0}, ${outputTokens || 0}, ${ttChars || 0}, ${cost}, ${endpoint || ''})
+    `;
+  } catch (e) { console.log('[USAGE] Log error:', e.message); }
+}
 
 async function saveConversationSummary(userId, conversationHistory) {
   if (!conversationHistory || conversationHistory.length < 2) return;
@@ -1380,6 +1400,13 @@ for (const f of otherFiles) {
       tools,
       messages
     });
+    logApiUsage(
+  userId, 'anthropic',
+  isComplexTask ? 'claude-opus-4-5' : 'claude-sonnet-4-6',
+  response.usage.input_tokens,
+  response.usage.output_tokens,
+  0, '/chat'
+);
 
 
     messages.push({ role: 'assistant', content: response.content });
@@ -2201,14 +2228,35 @@ require("./apps/moviestudio")(app, chatSql);
 app.post('/api/tts', async (req, res) => {
   try {
     const { text } = req.body;
+    const authHeader = req.headers.authorization?.replace('Bearer ', '');
+    const ttsUser = authHeader ? verifyToken(authHeader)?.userId : 'unknown';
     const response = await axios.post(
       'https://api.elevenlabs.io/v1/text-to-speech/G17SuINrv2H9FC6nvetn',
       { text, model_id: 'eleven_turbo_v2', voice_settings: { stability: 0.5, similarity_boost: 0.75 } },
       { headers: { 'xi-api-key': process.env.ELEVENLABS_API_KEY, 'Content-Type': 'application/json' }, responseType: 'arraybuffer' }
     );
+    logApiUsage(ttsUser, 'elevenlabs', null, 0, 0, (text || '').length, '/api/tts');
     res.set('Content-Type', 'audio/mpeg');
     res.send(response.data);
   } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+app.get('/usage-dashboard', authMiddleware, async (req, res) => {
+  if (req.user.userId !== NADAV_USER_ID) return res.status(403).json({ error: 'Admin only' });
+  const rows = await memorySql`
+    SELECT user_id, service, model,
+           SUM(input_tokens) as total_input,
+           SUM(output_tokens) as total_output,
+           SUM(tts_chars) as total_chars,
+           SUM(cost_usd) as total_cost,
+           COUNT(*) as calls,
+           MAX(created_at) as last_call
+    FROM api_usage
+    WHERE created_at > NOW() - INTERVAL '7 days'
+    GROUP BY user_id, service, model
+    ORDER BY total_cost DESC
+  `;
+  res.json({ usage: rows });
 });
 // ============ STRIPE ============
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
