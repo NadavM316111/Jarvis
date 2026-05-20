@@ -1337,7 +1337,15 @@ if (!convId) {
             </div>
             <div style={{ display: 'flex', gap: '8px', flexShrink: 0 }}>
               <button onClick={() => setShowCapModal(true)} style={{ padding: '7px 14px', borderRadius: '10px', fontSize: '12px', fontWeight: 500, background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)', color: 'rgba(252,165,165,1)', cursor: 'pointer' }}>Wait it out</button>
-              <button onClick={openUpgrade} style={{ padding: '7px 14px', borderRadius: '10px', fontSize: '12px', fontWeight: 600, background: 'rgba(59,130,246,1)', border: 'none', color: 'white', cursor: 'pointer' }}>Go Pro</button>
+              <button onClick={async () => {
+  const res = await fetch(`${API}/create-checkout`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({})
+  });
+  const data = await res.json();
+  if (data.url) window.location.href = data.url;
+}} style={{ padding: '7px 14px', borderRadius: '10px', fontSize: '12px', fontWeight: 600, background: 'rgba(59,130,246,1)', border: 'none', color: 'white', cursor: 'pointer' }}>Go Pro</button>
             </div>
           </div>
         )}
