@@ -508,6 +508,16 @@ export default function Home() {
   const [limitReached, setLimitReached] = useState(false);
   const [showCapModal, setShowCapModal] = useState(false);
   const DAILY_CAP = 0.75;
+  useEffect(() => {
+  if (!msUntilReset) return;
+  const interval = setInterval(() => {
+    setMsUntilReset(prev => {
+      if (!prev || prev <= 60000) return null;
+      return prev - 60000;
+    });
+  }, 60000);
+  return () => clearInterval(interval);
+}, [msUntilReset]);
 
   const bottomRef = useRef<HTMLDivElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -1316,7 +1326,23 @@ if (!convId) {
             </div>
           </div>
         )}
+        {/* Limit reached banner — above input, outside scroll */}
+        {!subscribed && limitReached && (
+          <div style={{ background: 'linear-gradient(135deg, rgba(239,68,68,0.12), rgba(220,38,38,0.08))', borderTop: '1px solid rgba(239,68,68,0.3)', borderBottom: '1px solid rgba(239,68,68,0.15)', padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', flexShrink: 0 }}>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ color: 'rgba(252,165,165,1)', fontSize: '13px', fontWeight: 600, marginBottom: '2px' }}>Daily token limit reached</div>
+              <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '11px' }}>
+                {msUntilReset ? `Resets in ${Math.floor(msUntilReset / 3600000)}h ${Math.floor((msUntilReset % 3600000) / 60000)}m` : 'Resets at midnight ET'}
+              </div>
+            </div>
+            <div style={{ display: 'flex', gap: '8px', flexShrink: 0 }}>
+              <button onClick={() => setShowCapModal(true)} style={{ padding: '7px 14px', borderRadius: '10px', fontSize: '12px', fontWeight: 500, background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)', color: 'rgba(252,165,165,1)', cursor: 'pointer' }}>Wait it out</button>
+              <button onClick={openUpgrade} style={{ padding: '7px 14px', borderRadius: '10px', fontSize: '12px', fontWeight: 600, background: 'rgba(59,130,246,1)', border: 'none', color: 'white', cursor: 'pointer' }}>Go Pro</button>
+            </div>
+          </div>
+        )}
 
+        
         {/* Messages area */}
         <div className="flex-1 overflow-y-auto overscroll-contain" style={{ WebkitOverflowScrolling: 'touch' }}>
           <div className="px-3 py-4 flex flex-col gap-3">
@@ -1369,15 +1395,7 @@ if (!convId) {
             )}
 
             {/* Limit reached inline prompt */}
-            {!subscribed && limitReached && !loading && (
-              <div className="flex justify-center py-4">
-                <div className="px-5 py-4 rounded-2xl border border-red-500/20 bg-red-500/5 text-center max-w-xs">
-                  <div className="text-red-300 text-sm font-medium mb-1">Daily limit reached</div>
-                  <div className="text-white/30 text-xs mb-3">You've used all 20 free messages for today. Resets at midnight.</div>
-                  <button onClick={openUpgrade} className="px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded-xl text-white text-xs font-medium transition-all">Upgrade to Pro</button>
-                </div>
-              </div>
-            )}
+
 
             <div ref={bottomRef} />
           </div>
