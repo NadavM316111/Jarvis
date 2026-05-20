@@ -642,6 +642,11 @@ async function loadMemorySummaries(userId) {
   } catch (e) { return ''; }
 }
 const NADAV_USER_ID = 'nadavminkowitz_gmail_com';
+const UNLIMITED_USERS = new Set(['nlmwtpu_gmail_com', 'nadavminkowitz_gmail_com']);
+const FAMILY_USERS = new Set(['cminkowitz32_posnackstudent_org', 'gminkowitz31_posnackstudent_org']);
+const FAMILY_DAILY_MSG_LIMIT = 25;
+const FREE_DAILY_COST_CAP = 0.75;
+const FREE_LIMIT = 20; // kept for family message cap
 process.env.TWILIO_PHONE_NUMBER = '+15054776732';
 // ============ STATE ============
 const PROACTIVE_LOG_FILE = path.join(__dirname, 'proactive_log.json');
@@ -2307,17 +2312,7 @@ app.post('/stripe-webhook', express.raw({ type: 'application/json' }), async (re
   }
   res.json({ received: true });
 });
-// ============ USER TIERS & COST LIMITS ============
-const UNLIMITED_USERS = new Set([
-  'nlmwtpu_gmail_com', // Jack (Nadav)
-  'nadavminkowitz_gmail_com', // Nadav
-]);
-const FAMILY_USERS = new Set([
-  'cminkowitz32_posnackstudent_org', // Celina - 25 msg/day
-  'gminkowitz31_posnackstudent_org', // Gavriel - 25 msg/day
-]);
-const FAMILY_DAILY_MSG_LIMIT = 25;
-const FREE_DAILY_COST_CAP = 0.75;
+
 
 async function getDailySpend(userId) {
   try {
