@@ -904,10 +904,16 @@ if (!convId) {
     try {
       const res = await fetch(`${API}/chat`, { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` }, body: JSON.stringify({ message: userMsg, attachedFiles: filesToSend }) });
       const data = await res.json();
-      if (!subscribed && data.costSpent != null) {
-      setDailyCost(prev => prev + (data.costSpent || 0));
-      if (data.limitReached) { setLimitReached(true); if (data.msUntilReset) setMsUntilReset(data.msUntilReset); }
-    }
+      if (!subscribed) {
+  fetch(`${API}/daily-cost`, { headers: { Authorization: `Bearer ${token}` } })
+    .then(r => r.json()).then(d => {
+      if (!d.unlimited) {
+        setDailyCost(d.cost || 0);
+        setLimitReached(d.limitReached || false);
+        if (d.msUntilReset) setMsUntilReset(d.msUntilReset);
+      }
+    }).catch(() => {});
+}
       // Update usage from response
       
 
