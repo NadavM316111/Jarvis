@@ -643,7 +643,12 @@ async function loadMemorySummaries(userId) {
 }
 const NADAV_USER_ID = 'nadavminkowitz_gmail_com';
 const UNLIMITED_USERS = new Set(['nlmwtpu_gmail_com', 'nadavminkowitz_gmail_com']);
-const FAMILY_USERS = new Set(['cminkowitz32_posnackstudent_org', 'gminkowitz31_posnackstudent_org']);
+const FAMILY_USERS = new Set([
+  'cminkowitz32_posnackstudent_org',
+  'gminkowitz31_posnackstudent_org',
+  'danielmink_gmail_com',
+  'dm_minkholdings_com',
+]);
 const FAMILY_DAILY_MSG_LIMIT = 25;
 const FREE_DAILY_COST_CAP = 0.75;
 const FREE_LIMIT = 20; // kept for family message cap
