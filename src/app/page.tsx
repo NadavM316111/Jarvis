@@ -258,37 +258,68 @@ function VoiceModeModal({
     } catch { setVoiceState('idle'); }
   }, [token, speak, onMessageSent]);
 
-  const startListening = useCallback(() => {
-    if (isListeningRef.current) return;
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    if (!SpeechRecognition) return;
-    wakeRecRef.current?.abort();
-    const rec = new SpeechRecognition();
-    rec.continuous = false;
-    rec.interimResults = true;
-    rec.lang = 'en-US';
-    recognitionRef.current = rec;
-    isListeningRef.current = true;
-    setVoiceState('listening');
-    setTranscript('');
-    setResponse('');
-    let finalTranscript = '';
-    rec.onresult = (e: any) => {
-      let interim = '';
-      for (let i = e.resultIndex; i < e.results.length; i++) {
-        if (e.results[i].isFinal) finalTranscript += e.results[i][0].transcript;
-        else interim += e.results[i][0].transcript;
-      }
-      setTranscript(finalTranscript || interim);
-    };
-    rec.onend = () => {
-      isListeningRef.current = false;
-      if (finalTranscript.trim()) sendToJarvisRef.current(finalTranscript.trim());
-      else setVoiceState('idle');
-    };
-    rec.onerror = () => { isListeningRef.current = false; setVoiceState('idle'); };
-    rec.start();
-  }, [sendToJarvis]);
+  const startListening = useCallback(async () => {
+  if (isListeningRef.current) return;
+  const invoke = (window as any).__TAURI_INVOKE__;
+  
+  // ── TAURI: use sox recording ──────────────────────────
+  if (invoke) {
+  isListeningRef.current = true;
+  setVoiceState('listening');
+  setTranscript('');
+  setResponse('');
+  try {
+    const audioBase64 = await invoke('record_audio', { durationSecs: 5 });
+    setVoiceState('thinking');
+    const res = await fetch(`${API}/transcribe`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ audioBase64 }),
+    });
+    const data = await res.json();
+    const text = data.transcript?.trim();
+    if (text) { setTranscript(text); sendToJarvisRef.current(text); }
+    else setVoiceState('idle');
+  } catch (e) { console.log('[VOICE] Error:', e); setVoiceState('idle'); }
+  finally { isListeningRef.current = false; }
+  return;
+}
+
+  // ── BROWSER: use webkitSpeechRecognition ─────────────
+  const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+  console.log('[VOICE] SpeechRecognition available:', !!SpeechRecognition);
+  if (!SpeechRecognition) { console.log('[VOICE] No speech recognition available'); return; }
+  wakeRecRef.current?.abort();
+  const rec = new SpeechRecognition();
+  rec.continuous = false;
+  rec.interimResults = true;
+  rec.lang = 'en-US';
+  recognitionRef.current = rec;
+  isListeningRef.current = true;
+  setVoiceState('listening');
+  setTranscript('');
+  setResponse('');
+  let finalTranscript = '';
+  rec.onresult = (e: any) => {
+    let interim = '';
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      if (e.results[i].isFinal) finalTranscript += e.results[i][0].transcript;
+      else interim += e.results[i][0].transcript;
+    }
+    setTranscript(finalTranscript || interim);
+  };
+  rec.onend = () => {
+    isListeningRef.current = false;
+    if (finalTranscript.trim()) sendToJarvisRef.current(finalTranscript.trim());
+    else setVoiceState('idle');
+  };
+  rec.onerror = (e: any) => {
+    console.log('[VOICE] Recognition error:', e.error, e.message);
+    isListeningRef.current = false;
+    setVoiceState('idle');
+  };
+  rec.start();
+}, [token, sendToJarvis]);
 
   useEffect(() => { startListeningRef.current = startListening; }, [startListening]);
   useEffect(() => { sendToJarvisRef.current = sendToJarvis; }, [sendToJarvis]);
@@ -339,7 +370,12 @@ function VoiceModeModal({
           }, 350);
         }
       };
-      rec.onend = () => { if (wakeLoopRef.current) setTimeout(loop, 200); };
+      rec.onend = () => {
+  console.log('[VOICE] Recognition ended, transcript:', finalTranscript);
+  isListeningRef.current = false;
+  if (finalTranscript.trim()) sendToJarvisRef.current(finalTranscript.trim());
+  else setVoiceState('idle');
+};
       rec.onerror = () => { if (wakeLoopRef.current) setTimeout(loop, 500); };
       try { rec.start(); } catch {}
     };
@@ -420,7 +456,7 @@ function VoiceModeModal({
             <div style={{ position: 'absolute', width: 200, height: 200, borderRadius: '50%', background: (orbConfig as any).ringColor, animation: 'voicePulse1 2s ease-out infinite 0.5s' }} />
           </>
         )}
-        <div onClick={handleOrbClick} style={{ width: 140, height: 140, borderRadius: '50%', background: orbConfig.gradient, boxShadow: orbConfig.glow, transform: `scale(${orbConfig.scale})`, transition: 'transform 0.1s ease, box-shadow 0.2s ease', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden' }}>
+        <div onClick={handleOrbClick} style={{ width: 140, height: 140, borderRadius: '50%', background: orbConfig.gradient, boxShadow: orbConfig.glow, transform: `scale(${orbConfig.scale})`, transition: 'transform 0.1s ease, box-shadow 0.2s ease', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden', pointerEvents: 'all', zIndex: 10 }}>
           <div style={{ position: 'absolute', top: '15%', left: '20%', width: '35%', height: '30%', background: 'rgba(255,255,255,0.18)', borderRadius: '50%', filter: 'blur(8px)' }} />
           {voiceState === 'idle' && (<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.9)" strokeWidth="1.8"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>)}
           {voiceState === 'listening' && (<div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>{[0, 1, 2, 3, 4].map(i => { const h = (8 + (audioLevel / 255) * 28 * (0.4 + Math.abs(Math.sin(Date.now() / 100 + i * 0.9)) * 0.6)) + 'px'; return (<div key={i} style={{ width: 4, borderRadius: 2, background: 'rgba(255,255,255,0.95)', height: h, transition: 'height 0.05s', animation: 'voiceBar' + (i % 3) + ' 0.6s ease-in-out infinite', animationDelay: (i * 0.1) + 's' }} />); })}</div>)}
@@ -445,29 +481,50 @@ function VoiceModeModal({
     </div>
   );
 }
-
+function MessageActions({ content, role, onEdit }: { content: string; role: 'user' | 'assistant'; onEdit?: () => void }) {
+  const [copied, setCopied] = useState(false);
+  const copy = () => {
+    const plain = content.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ');
+    navigator.clipboard.writeText(plain).catch(() => {});
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+  return (
+    <div style={{ display: 'flex', gap: '4px', marginTop: '6px', justifyContent: role === 'user' ? 'flex-end' : 'flex-start' }}>
+      <button onClick={copy} style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '3px 8px', borderRadius: '7px', fontSize: '11px', background: copied ? 'rgba(52,211,153,0.12)' : 'rgba(255,255,255,0.06)', border: `1px solid ${copied ? 'rgba(52,211,153,0.3)' : 'rgba(255,255,255,0.08)'}`, color: copied ? '#34d399' : 'rgba(255,255,255,0.4)', cursor: 'pointer' }}>
+        {copied ? <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 6L9 17l-5-5"/></svg> : <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>}
+        {copied ? 'Copied' : 'Copy'}
+      </button>
+      {role === 'user' && onEdit && (
+        <button onClick={onEdit} style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '3px 8px', borderRadius: '7px', fontSize: '11px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.4)', cursor: 'pointer' }}>
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"/></svg>
+          Edit
+        </button>
+      )}
+    </div>
+  );
+}
 export default function Home() {
   useEffect(() => {
-    const interval = setInterval(() => {
-      if ((window as any).__TAURI_INTERNALS__) {
-        (window as any).__TAURI_INVOKE__ = (cmd: string, args: any) => {
-          return (window as any).__TAURI_INTERNALS__.invoke(cmd, args);
-        };
+  const interval = setInterval(() => {
+    if ((window as any).__TAURI_INTERNALS__ && !(window as any).__TAURI_INVOKE__) {
+      try {
+        Object.defineProperty(window, '__TAURI_INVOKE__', {
+          value: (cmd: string, args: any) => (window as any).__TAURI_INTERNALS__.invoke(cmd, args),
+          writable: false,
+          configurable: true,
+        });
         console.log('[JARVIS] Tauri invoke ready');
         clearInterval(interval);
-        (window as any).jarvis = {
-          unlock: async () => {
-            const tok = localStorage.getItem('jarvis_token');
-            const res = await fetch(`${API}/jarvis-unlock`, { method: 'POST', headers: { Authorization: `Bearer ${tok}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ code: 'tony-stark-2025' }) });
-            const d = await res.json();
-            if (d.ok) { setSubscribed(true); localStorage.setItem('jarvis_subscribed', 'true'); console.log('JARVIS Pro activated.'); }
-            else console.log('Nope.');
-          }
-        };
+      } catch(e) {
+        clearInterval(interval);
       }
-    }, 100);
-    return () => clearInterval(interval);
-  }, []);
+    } else if ((window as any).__TAURI_INVOKE__) {
+      clearInterval(interval);
+    }
+  }, 100);
+  return () => clearInterval(interval);
+}, []);
 
   const [token, setToken] = useState<string | null>(null);
   const [userName, setUserName] = useState('');
@@ -531,6 +588,7 @@ export default function Home() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const folderInputRef = useRef<HTMLInputElement>(null);
   const tokenRef = useRef<string | null>(null);
+const abortRef = useRef<AbortController | null>(null);
 
   useEffect(() => { activeIdRef.current = activeId; }, [activeId]);
   useEffect(() => { tokenRef.current = token; }, [token]);
@@ -912,7 +970,8 @@ if (!convId) {
 
     setLoading(true);
     try {
-      const res = await fetch(`${API}/chat`, { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` }, body: JSON.stringify({ message: userMsg, attachedFiles: filesToSend }) });
+      abortRef.current = new AbortController();
+      const res = await fetch(`${API}/chat`, { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` }, body: JSON.stringify({ message: userMsg, attachedFiles: filesToSend }), signal: abortRef.current.signal });
       const data = await res.json();
       if (!subscribed) {
   fetch(`${API}/daily-cost`, { headers: { Authorization: `Bearer ${token}` } })
@@ -963,7 +1022,7 @@ if (!convId) {
           }
         }
       }
-    } catch {}
+    } catch (e: any) { if (e?.name === 'AbortError') return; }
     setLoading(false);
   };
 
@@ -1381,17 +1440,26 @@ if (!convId) {
             )}
 
             {!voiceRunning && messages.map((msg, i) => (
-              <div key={i} className={`flex gap-2 ${msg.role === "user" ? "flex-row-reverse" : ""}`}>
-                {msg.role === "assistant" && (<div className="w-6 h-6 rounded-full flex-shrink-0 mt-1" style={{ background: orbBg, boxShadow: orbGlow }} />)}
-                <div className={`max-w-[85%] px-4 py-3 rounded-2xl text-sm leading-relaxed ${msg.role === "assistant" ? "bg-white/5 border border-white/7 text-white/85 rounded-tl-sm" : "bg-blue-600 text-white rounded-tr-sm"}`}>
-                  {msg.source === "voice" && <div className="text-xs opacity-40 mb-1">{msg.role === "user" ? "voice" : "spoken"}</div>}
-                  {msg.fileName && !msg.imageUrl && (<div className="flex items-center gap-1.5 mb-2 opacity-70"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg><span className="text-xs">{msg.fileName}</span></div>)}
-                  <span dangerouslySetInnerHTML={{ __html: formatMessage(msg.content) }} />
-                  {msg.imageUrl && <img src={msg.imageUrl} alt={msg.fileName || 'attachment'} className="mt-2 rounded-xl max-w-full" style={{ maxHeight: '200px', objectFit: 'contain' }} />}
-                  {msg.role === 'assistant' && renderMessageExtras(msg.content, (prompt) => { setInput(prompt); setTimeout(() => send(), 50); })}
-                </div>
-              </div>
-            ))}
+  <div key={i} className={`flex gap-2 group/msg ${msg.role === "user" ? "flex-row-reverse" : ""}`}>
+    {msg.role === "assistant" && (<div className="w-6 h-6 rounded-full flex-shrink-0 mt-1" style={{ background: orbBg, boxShadow: orbGlow }} />)}
+    <div className="max-w-[85%]">
+      <div className={`px-4 py-3 rounded-2xl text-sm leading-relaxed ${msg.role === "assistant" ? "bg-white/5 border border-white/7 text-white/85 rounded-tl-sm" : "bg-blue-600 text-white rounded-tr-sm"}`}>
+        {msg.source === "voice" && <div className="text-xs opacity-40 mb-1">{msg.role === "user" ? "voice" : "spoken"}</div>}
+        {msg.fileName && !msg.imageUrl && (<div className="flex items-center gap-1.5 mb-2 opacity-70"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg><span className="text-xs">{msg.fileName}</span></div>)}
+        <span dangerouslySetInnerHTML={{ __html: formatMessage(msg.content) }} />
+        {msg.imageUrl && <img src={msg.imageUrl} alt={msg.fileName || 'attachment'} className="mt-2 rounded-xl max-w-full" style={{ maxHeight: '200px', objectFit: 'contain' }} />}
+        {msg.role === 'assistant' && renderMessageExtras(msg.content, (prompt) => { setInput(prompt); setTimeout(() => send(), 50); })}
+      </div>
+      <div className="opacity-0 group-hover/msg:opacity-100 transition-opacity duration-150">
+        <MessageActions
+          content={msg.content}
+          role={msg.role}
+          onEdit={msg.role === 'user' ? () => setInput(msg.content) : undefined}
+        />
+      </div>
+    </div>
+  </div>
+))}
 
             {loading && !voiceRunning && (
               <div className="flex gap-2">
@@ -1468,17 +1536,19 @@ if (!convId) {
               className="flex-1 bg-white/5 border border-white/10 rounded-2xl text-white px-4 py-3 outline-none placeholder:text-white/25 focus:border-blue-500/40 transition-all min-w-0"
             />
             <button
-              onClick={!subscribed && limitReached ? openUpgrade : send}
-              disabled={loading || (subscribed ? false : limitReached ? false : !input.trim() && attachedFiles.length === 0)}
-              className={`w-11 h-11 rounded-xl flex items-center justify-center transition-all flex-shrink-0 ${!subscribed && limitReached ? 'bg-blue-600/60 hover:bg-blue-600' : 'bg-blue-600 hover:bg-blue-500 disabled:opacity-30'}`}
-              title={!subscribed && limitReached ? 'Upgrade to Pro' : 'Send'}
-            >
-              {!subscribed && limitReached ? (
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-              ) : (
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-              )}
-            </button>
+  onClick={loading ? () => { abortRef.current?.abort(); setLoading(false); } : (!subscribed && limitReached ? openUpgrade : send)}
+  disabled={!loading && (subscribed ? false : limitReached ? false : !input.trim() && attachedFiles.length === 0)}
+  className={`w-11 h-11 rounded-xl flex items-center justify-center transition-all flex-shrink-0 ${loading ? 'bg-white/10 hover:bg-white/15' : !subscribed && limitReached ? 'bg-blue-600/60 hover:bg-blue-600' : 'bg-blue-600 hover:bg-blue-500 disabled:opacity-30'}`}
+  title={loading ? 'Stop' : !subscribed && limitReached ? 'Upgrade to Pro' : 'Send'}
+>
+  {loading ? (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>
+  ) : !subscribed && limitReached ? (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+  ) : (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+  )}
+</button>
           </div>
         </div>
       </div>

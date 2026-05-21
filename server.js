@@ -2360,6 +2360,25 @@ app.get('/subscription-status', authMiddleware, async (req, res) => {
   const isNadav = req.user.userId === NADAV_USER_ID;
   res.json({ subscribed: isNadav || session.userMemory.subscribed === true });
 });
+
+app.post('/transcribe', authMiddleware, async (req, res) => {
+  try {
+    const { audioBase64 } = req.body;
+    const audioBuffer = Buffer.from(audioBase64, 'base64');
+    const FormData = require('form-data');
+    const form = new FormData();
+    form.append('file', audioBuffer, { filename: 'audio.wav', contentType: 'audio/wav' });
+    form.append('model_id', 'scribe_v1');
+    const response = await axios.post('https://api.elevenlabs.io/v1/speech-to-text', form, {
+      headers: { ...form.getHeaders(), 'xi-api-key': process.env.ELEVENLABS_API_KEY }
+    });
+    res.json({ transcript: response.data.text });
+  } catch (e) {
+    res.status(500).json({ error: e.message, transcript: '' });
+  }
+});
+
+
 app.listen(3001, () => {
   console.log('\n╔════════════════════════════════════════╗');
   console.log('║       J.A.R.V.I.S. ONLINE              ║');
