@@ -370,12 +370,7 @@ function VoiceModeModal({
           }, 350);
         }
       };
-      rec.onend = () => {
-  console.log('[VOICE] Recognition ended, transcript:', finalTranscript);
-  isListeningRef.current = false;
-  if (finalTranscript.trim()) sendToJarvisRef.current(finalTranscript.trim());
-  else setVoiceState('idle');
-};
+      rec.onend = () => { if (wakeLoopRef.current) setTimeout(loop, 500); };
       rec.onerror = () => { if (wakeLoopRef.current) setTimeout(loop, 500); };
       try { rec.start(); } catch {}
     };
