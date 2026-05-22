@@ -1821,7 +1821,70 @@ if (!isUnlimited) {
     res.json({ success: false, message: error.message });
   }
 });
+app.post('/chat-stream', authMiddleware, async (req, res) => {
+  try {
+    const { message } = req.body;
+    const userId = req.user.userId;
+    const session = getSession(userId);
+    const isNadav = userId === NADAV_USER_ID;
+    const userName = session.userMemory.userName || 'User';
+    const userLocation = session.userMemory.location || (isNadav ? 'Fort Lauderdale, Florida' : 'Unknown');
+    const memorySummaries = await loadMemorySummaries(userId);
 
+    // Rate limit check
+    const isUnlimited = UNLIMITED_USERS.has(userId) || session.userMemory.subscribed === true;
+    const isFamily = FAMILY_USERS.has(userId);
+    if (!isUnlimited) {
+      if (isFamily) {
+        const today = new Date().toDateString();
+        if (session.userMemory.lastMessageDate !== today) { session.userMemory.dailyMessageCount = 0; session.userMemory.lastMessageDate = today; }
+        if ((session.userMemory.dailyMessageCount || 0) >= FAMILY_DAILY_MSG_LIMIT) return res.json({ limitReached: true });
+        session.userMemory.dailyMessageCount = (session.userMemory.dailyMessageCount || 0) + 1;
+        saveUserMemory(userId, session.userMemory);
+      } else {
+        const dailySpend = await getDailySpend(userId);
+        if (dailySpend >= FREE_DAILY_COST_CAP) {
+          const now = new Date(); const etOffset = -5 * 60;
+          const etNow = new Date(now.getTime() + (now.getTimezoneOffset() + etOffset) * 60000);
+          const midnight = new Date(etNow); midnight.setHours(24, 0, 0, 0);
+          return res.json({ limitReached: true, dailyCostCap: true, msUntilReset: midnight - etNow });
+        }
+      }
+    }
+
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+
+    const messages = [...session.conversationHistory, { role: 'user', content: message }];
+    let fullText = '';
+
+    const stream = anthropic.messages.stream({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 4000,
+      system: `You are JARVIS — a powerful autonomous AI assistant.\nUser: ${userName} | Location: ${userLocation} | Time: ${new Date().toLocaleString()}\nBe helpful, precise, and confident. Keep responses concise.\nMemory: ${JSON.stringify(session.userMemory).substring(0, 800)}\n${memorySummaries ? 'Past context:\n' + memorySummaries : ''}`,
+      messages,
+    });
+
+    stream.on('text', (text) => {
+      fullText += text;
+      res.write(`data: ${JSON.stringify({ token: text })}\n\n`);
+    });
+
+    stream.on('finalMessage', (msg) => {
+      logApiUsage(userId, 'anthropic', 'claude-sonnet-4-6', msg.usage.input_tokens, msg.usage.output_tokens, 0, '/chat-stream');
+      session.conversationHistory.push(
+        { role: 'user', content: message },
+        { role: 'assistant', content: fullText }
+      );
+      if (session.conversationHistory.length > 30) session.conversationHistory = session.conversationHistory.slice(-30);
+      res.write(`data: ${JSON.stringify({ done: true })}\n\n`);
+      res.end();
+    });
+
+    stream.on('error', () => { res.write(`data: ${JSON.stringify({ done: true })}\n\n`); res.end(); });
+  } catch (e) { res.write(`data: ${JSON.stringify({ done: true })}\n\n`); res.end(); }
+});
 app.get('/message-usage', authMiddleware, (req, res) => {
   const userId = req.user.userId;
   const isNadav = userId === NADAV_USER_ID;
