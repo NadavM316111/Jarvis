@@ -965,100 +965,60 @@ if (!convId) {
 
     setLoading(true);
     try {
-  abortRef.current = new AbortController();
-  const isSimple = !attachedFiles.length && filesToSend.length === 0;
-
-  if (isSimple) {
-    // Streaming path
-    const res = await fetch(`${API}/chat-stream`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-      body: JSON.stringify({ message: userMsg }),
-      signal: abortRef.current.signal,
-    });
-
-    if (!res.ok) throw new Error('Stream failed');
-    const data = await res.json().catch(() => null);
-    if (data?.limitReached) {
-      if (data.dailyCostCap) { setLimitReached(true); setMsUntilReset(data.msUntilReset || null); setShowCapModal(true); }
-      addMessageToConv(finalConvId, { role: 'assistant', content: 'Daily token limit reached.', source: 'text', timestamp: Date.now() });
-      setLoading(false); return;
-    }
-
-    // It's a stream — read tokens
-    const streamingMsgId = Date.now();
-    addMessageToConv(finalConvId, { role: 'assistant', content: '', source: 'text', timestamp: streamingMsgId });
-
-    const reader = res.body!.getReader();
-    const decoder = new TextDecoder();
-    let buffer = '';
-    let fullText = '';
-
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      buffer += decoder.decode(value, { stream: true });
-      const lines = buffer.split('\n');
-      buffer = lines.pop() || '';
-      for (const line of lines) {
-        if (!line.startsWith('data: ')) continue;
-        try {
-          const parsed = JSON.parse(line.slice(6));
-          if (parsed.token) {
-            fullText += parsed.token;
-            setConversations(prev => prev.map(c => c.id === finalConvId ? {
-              ...c,
-              messages: c.messages.map(m => m.timestamp === streamingMsgId ? { ...m, content: fullText } : m)
-            } : c));
-          }
-          if (parsed.done) break;
-        } catch {}
+      abortRef.current = new AbortController();
+      const res = await fetch(`${API}/chat`, { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` }, body: JSON.stringify({ message: userMsg, attachedFiles: filesToSend }), signal: abortRef.current.signal });
+      const data = await res.json();
+      if (!subscribed) {
+  fetch(`${API}/daily-cost`, { headers: { Authorization: `Bearer ${token}` } })
+    .then(r => r.json()).then(d => {
+      if (!d.unlimited) {
+        setDailyCost(d.cost || 0);
+        setLimitReached(d.limitReached || false);
+        if (d.msUntilReset) setMsUntilReset(d.msUntilReset);
       }
-    }
+    }).catch(() => {});
+}
+      // Update usage from response
+      
 
-    if (!subscribed) {
-      fetch(`${API}/daily-cost`, { headers: { Authorization: `Bearer ${token}` } })
-        .then(r => r.json()).then(d => { if (!d.unlimited) { setDailyCost(d.cost || 0); setLimitReached(d.limitReached || false); } }).catch(() => {});
-    }
-  } else {
-    // Original path for messages with files
-    const res = await fetch(`${API}/chat`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-      body: JSON.stringify({ message: userMsg, attachedFiles: filesToSend }),
-      signal: abortRef.current.signal,
-    });
-    const data = await res.json();
-    if (!subscribed) {
-      fetch(`${API}/daily-cost`, { headers: { Authorization: `Bearer ${token}` } })
-        .then(r => r.json()).then(d => { if (!d.unlimited) { setDailyCost(d.cost || 0); setLimitReached(d.limitReached || false); if (d.msUntilReset) setMsUntilReset(d.msUntilReset); } }).catch(() => {});
-    }
-    if (data.limitReached) {
-      if (data.dailyCostCap) { setLimitReached(true); setMsUntilReset(data.msUntilReset || null); setShowCapModal(true); }
-      addMessageToConv(finalConvId, { role: 'assistant', content: 'Daily token limit reached.', source: 'text', timestamp: Date.now() });
-    } else if (data.message === 'On it.') {
-      addMessageToConv(finalConvId, { role: 'assistant', content: 'On it...', source: 'text', timestamp: Date.now() });
-    } else if (data.message) {
-      addMessageToConv(finalConvId, { role: 'assistant', content: data.message, source: 'text', timestamp: Date.now() });
-      const urlMatch = data.message.match(/https:\/\/api\.heyjarvis\.me\/view\/[^\s)]+/);
-      if (urlMatch) setTimeout(() => window.open(urlMatch[0], '_blank'), 500);
-      const ytMatch = data.message.match(/https:\/\/(www\.)?youtube\.com\/watch\?[^\s<>"')]+/);
-      if (ytMatch) { const w = window.open(ytMatch[0], '_blank'); if (w) w.focus(); }
-      const actionMatches = data.message.match(/ACTION:\{[\s\S]*?\}/g);
-      if (actionMatches && (window as any).__TAURI_INVOKE__) {
-        const invoke = (window as any).__TAURI_INVOKE__;
-        for (const action of actionMatches) {
-          try {
-            const parsed = JSON.parse(action.replace('ACTION:', ''));
-            if (parsed.type === 'APPLESCRIPT') await invoke('execute_applescript', { script: parsed.script });
-            else if (parsed.type === 'SHELL') await invoke('execute_shell', { command: parsed.command });
-          } catch {}
+      if (data.limitReached) {
+        if (data.dailyCostCap) {
+          setLimitReached(true);
+          setMsUntilReset(data.msUntilReset || null);
+          setShowCapModal(true);
+        }
+        addMessageToConv(finalConvId, { role: "assistant", content: "Daily token limit reached. Come back later or upgrade to Pro.", source: "text", timestamp: Date.now() });
+      } else if (data.message === 'On it.') {
+        addMessageToConv(finalConvId, { role: "assistant", content: "On it...", source: "text", timestamp: Date.now() });
+      } else if (data.message) {
+        addMessageToConv(finalConvId, { role: "assistant", content: data.message, source: "text", timestamp: Date.now() });
+        const urlMatch = data.message.match(/https:\/\/api\.heyjarvis\.me\/view\/[^\s)]+/);
+        if (urlMatch) setTimeout(() => window.open(urlMatch[0], '_blank'), 500);
+        const ytMatch = data.message.match(/https:\/\/(www\.)?youtube\.com\/watch\?[^\s<>"')]+/);
+        if (ytMatch) { const w = window.open(ytMatch[0], '_blank'); if (w) w.focus(); }
+
+        // Execute Mac actions if present
+        const actionMatches = data.message.match(/ACTION:\{[\s\S]*?\}/g);
+        if (actionMatches && (window as any).__TAURI_INVOKE__) {
+          const invoke = (window as any).__TAURI_INVOKE__;
+          for (const action of actionMatches) {
+            try {
+              const parsed = JSON.parse(action.replace('ACTION:', ''));
+              if (parsed.type === 'APPLESCRIPT') {
+                await invoke('execute_applescript', { script: parsed.script });
+              } else if (parsed.type === 'SHELL') {
+                await invoke('execute_shell', { command: parsed.command });
+              }
+            } catch (e) { 
+  console.log('Action parse error:', e);
+  console.log('Raw action string:', action);
+  console.log('After replace:', action.replace('ACTION:', ''));
+}
+          }
         }
       }
-    }
-  }
-} catch (e: any) { if (e?.name === 'AbortError') return; }
-setLoading(false);
+    } catch (e: any) { if (e?.name === 'AbortError') return; }
+    setLoading(false);
   };
 
   const orbScale = 1 + (audioLevel / 255) * 0.4;
