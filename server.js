@@ -1283,6 +1283,7 @@ async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame
 'To comment: const { postYouTubeComment } = require("./gmail_multi");',
 '',
   '═══ GMAIL & CALENDAR ═══',
+'CRITICAL: Gmail is ALREADY connected via OAuth tokens stored in Neon DB. NEVER look for credentials.json or token.json files — they do not exist on this server. NEVER tell the user to find credential files. Just call getRecentEmails(userId) directly and it works.',
 'To read emails: use run_code with node:',
 'const { getRecentEmails } = require("./gmail_multi");',
 `const emails = await getRecentEmails("${userId}", 10);`,
