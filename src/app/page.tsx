@@ -553,7 +553,7 @@ export default function Home() {
   const [subscribed, setSubscribed] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [checkingOut, setCheckingOut] = useState(false);
-  const [longTaskRunning, setLongTaskRunning] = useState(false);
+
   // ── Daily message usage ──────────────────────────────────
   const [dailyCost, setDailyCost] = useState(0);
   const [msUntilReset, setMsUntilReset] = useState<number | null>(null);
@@ -700,7 +700,6 @@ if (!convId) {
             continue;
           }
            if (convId) addMessageToConv(convId, { role: "assistant", content: r.message, source: "text", timestamp: r.timestamp ?? Date.now() });
-          setLongTaskRunning(false);
           const urlMatch2 = r.message.match(/https:\/\/api\.heyjarvis\.me\/view\/[^\s)]+/);
           if (urlMatch2) setTimeout(() => window.open(urlMatch2[0], '_blank'), 500);
           const ytMatch2 = r.message.match(/https:\/\/(www\.)?youtube\.com\/watch\?[^\s<>"')]+/);
@@ -991,7 +990,6 @@ if (!convId) {
         addMessageToConv(finalConvId, { role: "assistant", content: "Daily token limit reached. Come back later or upgrade to Pro.", source: "text", timestamp: Date.now() });
       } else if (data.message === 'On it.') {
         addMessageToConv(finalConvId, { role: "assistant", content: "On it...", source: "text", timestamp: Date.now() });
-        setLongTaskRunning(true);
       } else if (data.message) {
         addMessageToConv(finalConvId, { role: "assistant", content: data.message, source: "text", timestamp: Date.now() });
         const urlMatch = data.message.match(/https:\/\/api\.heyjarvis\.me\/view\/[^\s)]+/);
@@ -1382,27 +1380,6 @@ if (!convId) {
             </div>
           </div>
         )}
-        {/* Stop long task button */}
-        {longTaskRunning && (
-          <div style={{ background: 'rgba(59,130,246,0.06)', borderTop: '1px solid rgba(59,130,246,0.15)', borderBottom: '1px solid rgba(59,130,246,0.1)', padding: '10px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', flexShrink: 0 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#60a5fa', animation: 'pulse 1.5s ease-in-out infinite' }} />
-              <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '12px' }}>Working on it...</span>
-            </div>
-            <button
-              onClick={async () => {
-                setLongTaskRunning(false);
-                const convId = activeIdRef.current;
-                if (convId) addMessageToConv(convId, { role: 'assistant', content: "Alright, I've paused. Let me know if you'd like me to continue or change anything.", source: 'text', timestamp: Date.now() });
-                if (token) await fetch(`${API}/bg-response`, { headers: { Authorization: `Bearer ${token}` } });
-              }}
-              style={{ padding: '6px 14px', borderRadius: '8px', fontSize: '12px', fontWeight: 500, background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)', color: 'rgba(252,165,165,1)', cursor: 'pointer', whiteSpace: 'nowrap' }}
-            >
-              Stop task
-            </button>
-          </div>
-        )}
-
         {/* Limit reached banner — above input, outside scroll */}
         {!subscribed && limitReached && (
           <div style={{ background: 'linear-gradient(135deg, rgba(239,68,68,0.12), rgba(220,38,38,0.08))', borderTop: '1px solid rgba(239,68,68,0.3)', borderBottom: '1px solid rgba(239,68,68,0.15)', padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', flexShrink: 0 }}>

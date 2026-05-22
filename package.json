@@ -37,7 +37,7 @@
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-icons": "^5.6.0",
-    
+    "sharp": "^0.34.5",
     "sonos": "^1.14.3",
     "stripe": "^22.1.1",
     "twilio": "^5.13.1",
@@ -47,8 +47,7 @@
   "optionalDependencies": {
     "@jitsi/robotjs": "^0.6.22",
     "puppeteer": "^24.42.0",
-    "screenshot-desktop": "^1.15.4",
-    "sharp": "^0.34.5"
+    "screenshot-desktop": "^1.15.4"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
