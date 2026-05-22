@@ -1518,18 +1518,23 @@ if (!convId) {
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
               </button>
             </div>
-            <input
-              value={input}
-              onChange={e => setInput(e.target.value)}
-              onKeyDown={e => e.key === "Enter" && !e.shiftKey && send()}
-              placeholder={!subscribed && limitReached ? "Daily limit reached — upgrade to Pro" : "Message JARVIS..."}
-              disabled={loading || (!subscribed && limitReached)}
-              autoComplete="off"
-              autoCorrect="off"
-              autoCapitalize="sentences"
-              style={{ fontSize: '16px', opacity: !subscribed && limitReached ? 0.5 : 1 }}
-              className="flex-1 bg-white/5 border border-white/10 rounded-2xl text-white px-4 py-3 outline-none placeholder:text-white/25 focus:border-blue-500/40 transition-all min-w-0"
-            />
+            <textarea
+  value={input}
+  onChange={e => {
+    setInput(e.target.value);
+    e.target.style.height = 'auto';
+    e.target.style.height = Math.min(e.target.scrollHeight, 200) + 'px';
+  }}
+  onKeyDown={e => e.key === "Enter" && !e.shiftKey && (e.preventDefault(), send())}
+  placeholder={!subscribed && limitReached ? "Daily limit reached — upgrade to Pro" : "Message JARVIS..."}
+  disabled={loading || (!subscribed && limitReached)}
+  autoComplete="off"
+  autoCorrect="off"
+  autoCapitalize="sentences"
+  rows={1}
+  style={{ fontSize: '16px', opacity: !subscribed && limitReached ? 0.5 : 1, resize: 'none', overflowY: 'auto', lineHeight: '1.5' }}
+  className="flex-1 bg-white/5 border border-white/10 rounded-2xl text-white px-4 py-3 outline-none placeholder:text-white/25 focus:border-blue-500/40 transition-all min-w-0"
+/>
             <button
   onClick={loading ? () => { abortRef.current?.abort(); setLoading(false); } : (!subscribed && limitReached ? openUpgrade : send)}
   disabled={!loading && (subscribed ? false : limitReached ? false : !input.trim() && attachedFiles.length === 0)}
