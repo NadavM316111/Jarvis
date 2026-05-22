@@ -54,6 +54,20 @@ async function getAuthForUser(userId) {
     expiry_date: rows[0].google_token_expiry ? new Date(rows[0].google_token_expiry).getTime() : null
   });
   auth.on('tokens', async (tokens) => { await saveTokens(userId, tokens); });
+
+  // Force refresh if expired or expiring in next 5 minutes
+  const expiry = rows[0].google_token_expiry ? new Date(rows[0].google_token_expiry).getTime() : 0;
+  if (!expiry || expiry < Date.now() + 5 * 60 * 1000) {
+    try {
+      const { credentials } = await auth.refreshAccessToken();
+      await saveTokens(userId, credentials);
+      auth.setCredentials(credentials);
+    } catch (e) {
+      console.log('[OAUTH] Refresh failed for', userId, e.message);
+      return null;
+    }
+  }
+
   return auth;
 }
 
