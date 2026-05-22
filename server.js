@@ -648,6 +648,8 @@ const FAMILY_USERS = new Set([
   'gminkowitz31_posnackstudent_org',
   'danielmink_gmail_com',
   'dm_minkholdings_com',
+  'shimonredd09_gmail_com',
+  'admin_prufli_com',
 ]);
 const FAMILY_DAILY_MSG_LIMIT = 25;
 const FREE_DAILY_COST_CAP = 0.75;
