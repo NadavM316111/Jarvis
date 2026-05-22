@@ -1394,7 +1394,7 @@ if (!convId) {
                 setLongTaskRunning(false);
                 const convId = activeIdRef.current;
                 if (convId) addMessageToConv(convId, { role: 'assistant', content: "Alright, I've paused. Let me know if you'd like me to continue or change anything.", source: 'text', timestamp: Date.now() });
-                await fetch(`${API}/bg-response`, { headers: { Authorization: `Bearer ${token}` } });
+                if (token) await fetch(`${API}/bg-response`, { headers: { Authorization: `Bearer ${token}` } });
               }}
               style={{ padding: '6px 14px', borderRadius: '8px', fontSize: '12px', fontWeight: 500, background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)', color: 'rgba(252,165,165,1)', cursor: 'pointer', whiteSpace: 'nowrap' }}
             >
