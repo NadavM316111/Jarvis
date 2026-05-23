@@ -102,6 +102,14 @@ const API = typeof window !== 'undefined' && window.location.hostname !== 'local
 
 const FREE_LIMIT = 20;
 
+function openUrl(url: string) {
+  const invoke = (window as any).__TAURI_INVOKE__;
+  if (invoke) {
+    invoke('execute_shell', { command: `open "${url}"` });
+  } else {
+    window.open(url, '_blank');
+  }
+}
 // ── Usage bar component ──────────────────────────────────────
 function TokenBar({ cost, cap, onUpgrade }: { cost: number; cap: number; onUpgrade: () => void }) {
   const pct = Math.min((cost / cap) * 100, 100);
@@ -214,16 +222,8 @@ function VoiceModeModal({
       audio.onerror = () => { URL.revokeObjectURL(url); setVoiceState('idle'); };
       await audio.play();
     } catch {
-      const utt = new SpeechSynthesisUtterance(clean);
-      utt.rate = 0.9; utt.pitch = 0.7; utt.volume = 1.0;
-      utt.onend = () => {
-        if (inConversationRef.current && wakeLoopRef.current) {
-          setTimeout(() => startListeningRef.current(), 400);
-        } else {
-          setVoiceState('idle');
-        }
-      };
-      window.speechSynthesis.speak(utt);
+      // Don't fall back to browser TTS — just go idle and let user retry
+      setVoiceState('idle');
     }
   }, []);
 
@@ -534,6 +534,28 @@ const toggleLight = () => {
   return () => clearInterval(interval);
 }, []);
 
+  useEffect(() => {
+  const invoke = (window as any).__TAURI_INVOKE__;
+  if (!invoke) return;
+  
+  const interval = setInterval(async () => {
+    try {
+      const result = await invoke('execute_shell', { 
+        command: 'cat /tmp/jarvis_wake.flag 2>/dev/null' 
+      });
+      if (!result?.trim()) return;
+      const ts = parseFloat(result.trim());
+      if (Date.now() / 1000 - ts < 3) {
+        // Fresh wake word — clear flag and open voice mode
+        await invoke('execute_shell', { command: 'rm /tmp/jarvis_wake.flag' });
+        setVoiceModeOpen(true);
+      }
+    } catch {}
+  }, 500);
+  
+  return () => clearInterval(interval);
+}, []);
+
   const [token, setToken] = useState<string | null>(null);
   const [userName, setUserName] = useState('');
   const [authMode, setAuthMode] = useState<'login' | 'signup'>('login');
@@ -714,9 +736,9 @@ if (!convId) {
           }
            if (convId) addMessageToConv(convId, { role: "assistant", content: r.message, source: "text", timestamp: r.timestamp ?? Date.now() });
           const urlMatch2 = r.message.match(/https:\/\/api\.heyjarvis\.me\/view\/[^\s)]+/);
-          if (urlMatch2) setTimeout(() => window.open(urlMatch2[0], '_blank'), 500);
+          if (urlMatch2) setTimeout(() => openUrl(urlMatch2[0]), 500);
           const ytMatch2 = r.message.match(/https:\/\/(www\.)?youtube\.com\/watch\?[^\s<>"')]+/);
-          if (ytMatch2) setTimeout(() => window.open(ytMatch2[0], '_blank'), 500);
+          if (ytMatch2) setTimeout(() => openUrl(ytMatch2[0]), 500);
           // Execute Mac actions from bg responses
           const actionMatches2 = r.message.match(/ACTION:\{[\s\S]*?\}/g);
           if (actionMatches2 && (window as any).__TAURI_INVOKE__) {
@@ -1006,9 +1028,9 @@ if (!convId) {
       } else if (data.message) {
         addMessageToConv(finalConvId, { role: "assistant", content: data.message, source: "text", timestamp: Date.now() });
         const urlMatch = data.message.match(/https:\/\/api\.heyjarvis\.me\/view\/[^\s)]+/);
-        if (urlMatch) setTimeout(() => window.open(urlMatch[0], '_blank'), 500);
+        if (urlMatch) setTimeout(() => openUrl(urlMatch[0]), 500);
         const ytMatch = data.message.match(/https:\/\/(www\.)?youtube\.com\/watch\?[^\s<>"')]+/);
-        if (ytMatch) { const w = window.open(ytMatch[0], '_blank'); if (w) w.focus(); }
+        if (ytMatch) openUrl(ytMatch[0]);
 
         // Execute Mac actions if present
         const actionMatches = data.message.match(/ACTION:\{[\s\S]*?\}/g);

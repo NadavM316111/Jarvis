@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotel Chaos</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: white;
+            overflow-x: hidden;
+        }
+        .game-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(90deg, #e94560, #ff6b6b);
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(233, 69, 96, 0.3);
+        }
+        .header h1 {
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .stat {
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #ffd700;
+        }
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+        .hotel {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .room {
+            background: linear-gradient(145deg, #2d3a4a, #1f2833);
+            border-radius: 10px;
+            padding: 15px;
+            min-height: 120px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            position: relative;
+        }
+        .room:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
+        .room.angry { border-color: #e94560; animation: shake 0.5s infinite; }
+        .room.happy { border-color: #4ecca3; }
+        .room.empty { opacity: 0.5; }
+        .room-number { font-size: 0.8em; opacity: 0.6; }
+        .guest-emoji { font-size: 2.5em; text-align: center; margin: 10px 0; }
+        .guest-need { font-size: 0.75em; text-align: center; background: rgba(255,255,255,0.1); padding: 5px; border-radius: 5px; }
+        .mood-bar {
+            height: 5px;
+            background: #333;
+            border-radius: 3px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+        .mood-fill {
+            height: 100%;
+            transition: width 0.3s, background 0.3s;
+        }
+        .actions {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .action-btn {
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+        .action-btn:hover { transform: scale(1.05); }
+        .action-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-food { background: linear-gradient(145deg, #ff9a3c, #ff6f00); color: white; }
+        .btn-clean { background: linear-gradient(145deg, #4fc3f7, #0288d1); color: white; }
+        .btn-fix { background: linear-gradient(145deg, #aed581, #689f38); color: white; }
+        .btn-music { background: linear-gradient(145deg, #ce93d8, #8e24aa); color: white; }
+        .action-emoji { font-size: 1.5em; }
+        .event-log {
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            padding: 15px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+        .event { padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 0.9em; }
+        .event:last-child { border-bottom: none; }
+        .game-over {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+        .game-over h2 { font-size: 3em; color: #e94560; margin-bottom: 20px; }
+        .game-over p { font-size: 1.5em; margin-bottom: 30px; }
+        .restart-btn {
+            padding: 15px 40px;
+            font-size: 1.2em;
+            background: #4ecca3;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            color: #1a1a2e;
+            font-weight: bold;
+        }
+        .hidden { display: none !important; }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        .level-up {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(145deg, #ffd700, #ffaa00);
+            color: #1a1a2e;
+            padding: 30px 50px;
+            border-radius: 20px;
+            font-size: 2em;
+            font-weight: bold;
+            z-index: 50;
+            animation: pop 0.5s ease;
+        }
+        @keyframes pop {
+            0% { transform: translate(-50%, -50%) scale(0); }
+            50% { transform: translate(-50%, -50%) scale(1.2); }
+            100% { transform: translate(-50%, -50%) scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="header">
+            <h1>🏨 Hotel Chaos</h1>
+            <p>Keep your guests happy before they riot!</p>
+        </div>
+        
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-value" id="money">$500</div>
+                <div class="stat-label">💰 Money</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="reputation">⭐⭐⭐</div>
+                <div class="stat-label">Reputation</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="level">1</div>
+                <div class="stat-label">📈 Level</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="day">Day 1</div>
+                <div class="stat-label">🌙 Time</div>
+            </div>
+        </div>
+        
+        <div class="hotel" id="hotel"></div>
+        
+        <div class="actions">
+            <button class="action-btn btn-food" onclick="selectAction('food')">
+                <span class="action-emoji">🍔</span>
+                <span>Food ($20)</span>
+            </button>
+            <button class="action-btn btn-clean" onclick="selectAction('clean')">
+                <span class="action-emoji">🧹</span>
+                <span>Clean ($15)</span>
+            </button>
+            <button class="action-btn btn-fix" onclick="selectAction('fix')">
+                <span class="action-emoji">🔧</span>
+                <span>Fix ($30)</span>
+            </button>
+            <button class="action-btn btn-music" onclick="selectAction('music')">
+                <span class="action-emoji">🎵</span>
+                <span>Music ($10)</span>
+            </button>
+        </div>
+        
+        <div class="event-log" id="eventLog">
+            <div class="event">🏨 Welcome to Hotel Chaos! Click a room, then an action to help guests.</div>
+        </div>
+    </div>
+    
+    <div class="game-over hidden" id="gameOver">
+        <h2>💥 HOTEL COLLAPSED!</h2>
+        <p>Your reputation hit rock bottom!</p>
+        <p id="finalScore">Final Score: $0</p>
+        <button class="restart-btn" onclick="restartGame()">Try Again</button>
+    </div>
+    
+    <div class="level-up hidden" id="levelUp">🎉 LEVEL UP!</div>
+
+    <script>
+        const guestTypes = [
+            { emoji: '👨‍💼', name: 'Business Guy', patience: 0.7 },
+            { emoji: '👵', name: 'Grandma', patience: 0.3 },
+            { emoji: '🤵', name: 'Fancy Man', patience: 0.9 },
+            { emoji: '👩‍🎤', name: 'Rock Star', patience: 0.8 },
+            { emoji: '🧒', name: 'Hyper Kid', patience: 1.2 },
+            { emoji: '👽', name: 'Alien Tourist', patience: 0.5 },
+            { emoji: '🤠', name: 'Cowboy', patience: 0.4 },
+            { emoji: '🧙', name: 'Wizard', patience: 0.6 },
+        ];
+        
+        const needs = [
+            { type: 'food', text: 'Hungry! 🍔', action: 'food' },
+            { type: 'clean', text: 'Room is dirty! 🧹', action: 'clean' },
+            { type: 'fix', text: 'Something broke! 🔧', action: 'fix' },
+            { type: 'music', text: 'Too quiet! 🎵', action: 'music' },
+        ];
+        
+        let gameState = {
+            money: 500,
+            reputation: 3,
+            level: 1,
+            day: 1,
+            rooms: [],
+            selectedRoom: null,
+            selectedAction: null,
+            guestsServed: 0
+        };
+        
+        function initRooms() {
+            gameState.rooms = [];
+            for (let i = 0; i < 8; i++) {
+                gameState.rooms.push({
+                    id: i,
+                    guest: Math.random() > 0.3 ? createGuest() : null
+                });
+            }
+        }
+        
+        function createGuest() {
+            const type = guestTypes[Math.floor(Math.random() * guestTypes.length)];
+            const need = needs[Math.floor(Math.random() * needs.length)];
+            return {
+                ...type,
+                need: need,
+                mood: 70 + Math.random() * 30,
+                maxMood: 100,
+                decayRate: type.patience * (0.5 + gameState.level * 0.2)
+            };
+        }
+        
+        function renderHotel() {
+            const hotel = document.getElementById('hotel');
+            hotel.innerHTML = '';
+            
+            gameState.rooms.forEach((room, i) => {
+                const div = document.createElement('div');
+                div.className = 'room' + (room.guest ? (room.guest.mood < 30 ? ' angry' : room.guest.mood > 70 ? ' happy' : '') : ' empty');
+                div.onclick = () => selectRoom(i);
+                
+                if (room.guest) {
+                    const moodColor = room.guest.mood > 70 ? '#4ecca3' : room.guest.mood > 30 ? '#ffd700' : '#e94560';
+                    div.innerHTML = `
+                        <div class="room-number">Room ${101 + i}</div>
+                        <div class="guest-emoji">${room.guest.emoji}</div>
+                        <div class="guest-need">${room.guest.need.text}</div>
+                        <div class="mood-bar">
+                            <div class="mood-fill" style="width: ${room.guest.mood}%; background: ${moodColor}"></div>
+                        </div>
+                    `;
+                } else {
+                    div.innerHTML = `
+                        <div class="room-number">Room ${101 + i}</div>
+                        <div class="guest-emoji">🚪</div>
+                        <div class="guest-need">Empty</div>
+                    `;
+                }
+                hotel.appendChild(div);
+            });
+        }
+        
+        function selectRoom(index) {
+            gameState.selectedRoom = index;
+            if (gameState.selectedAction) {
+                performAction();
+            }
+        }
+        
+        function selectAction(action) {
+            gameState.selectedAction = action;
+            if (gameState.selectedRoom !== null) {
+                performAction();
+            }
+        }
+        
+        function performAction() {
+            const room = gameState.rooms[gameState.selectedRoom];
+            const action = gameState.selectedAction;
+            const costs = { food: 20, clean: 15, fix: 30, music: 10 };
+            
+            if (!room.guest) {
+                addEvent('❌ No guest in that room!');
+                resetSelection();
+                return;
+            }
+            
+            if (gameState.money < costs[action]) {
+                addEvent('💸 Not enough money!');
+                resetSelection();
+                return;
+            }
+            
+            gameState.money -= costs[action];
+            
+            if (room.guest.need.action === action) {
+                room.guest.mood = Math.min(100, room.guest.mood + 40);
+                room.guest.need = needs[Math.floor(Math.random() * needs.length)];
+                gameState.money += 50 + gameState.level * 10;
+                gameState.guestsServed++;
+                addEvent(`✅ ${room.guest.name} is happy! +$${50 + gameState.level * 10}`);
+                
+                if (gameState.guestsServed % 5 === 0) {
+                    levelUp();
+                }
+            } else {
+                room.guest.mood = Math.max(0, room.guest.mood - 15);
+                addEvent(`❌ ${room.guest.name} didn't want that!`);
+            }
+            
+            updateStats();
+            renderHotel();
+            resetSelection();
+        }
+        
+        function resetSelection() {
+            gameState.selectedRoom = null;
+            gameState.selectedAction = null;
+        }
+        
+        function addEvent(text) {
+            const log = document.getElementById('eventLog');
+            const div = document.createElement('div');
+            div.className = 'event';
+            div.textContent = text;
+            log.insertBefore(div, log.firstChild);
+            if (log.children.length > 20) log.removeChild(log.lastChild);
+        }
+        
+        function updateStats() {
+            document.getElementById('money').textContent = '$' + gameState.money;
+            document.getElementById('level').textContent = gameState.level;
+            document.getElementById('day').textContent = 'Day ' + gameState.day;
+            
+            const stars = '⭐'.repeat(Math.max(0, gameState.reputation)) + '☆'.repeat(Math.max(0, 5 - gameState.reputation));
+            document.getElementById('reputation').textContent = stars;
+        }
+        
+        function levelUp() {
+            gameState.level++;
+            const popup = document.getElementById('levelUp');
+            popup.classList.remove('hidden');
+            setTimeout(() => popup.classList.add('hidden'), 2000);
+            addEvent(`🎉 Level ${gameState.level}! Guests are more demanding now!`);
+        }
+        
+        function gameLoop() {
+            gameState.rooms.forEach((room, i) => {
+                if (room.guest) {
+                    room.guest.mood -= room.guest.decayRate;
+                    
+                    if (room.guest.mood <= 0) {
+                        addEvent(`😡 ${room.guest.name} left a 1-star review!`);
+                        gameState.reputation--;
+                        room.guest = null;
+                    }
+                } else if (Math.random() > 0.95) {
+                    room.guest = createGuest();
+                    addEvent(`🚶 New guest: ${room.guest.name} in Room ${101 + i}`);
+                }
+            });
+            
+            if (gameState.reputation <= 0) {
+                gameOver();
+                return;
+            }
+            
+            gameState.day = Math.floor(gameState.guestsServed / 10) + 1;
+            
+            updateStats();
+            renderHotel();
+        }
+        
+        function gameOver() {
+            document.getElementById('finalScore').textContent = 'Final Score: $' + gameState.money + ' | Level ' + gameState.level;
+            document.getElementById('gameOver').classList.remove('hidden');
+        }
+        
+        function restartGame() {
+            gameState = {
+                money: 500,
+                reputation: 3,
+                level: 1,
+                day: 1,
+                rooms: [],
+                selectedRoom: null,
+                selectedAction: null,
+                guestsServed: 0
+            };
+            document.getElementById('gameOver').classList.add('hidden');
+            initRooms();
+            updateStats();
+            renderHotel();
+            addEvent('🏨 New game started! Good luck!');
+        }
+        
+        initRooms();
+        updateStats();
+        renderHotel();
+        setInterval(gameLoop, 2000);
+    </script>
+</body>
+</html>
