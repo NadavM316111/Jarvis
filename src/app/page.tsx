@@ -111,11 +111,11 @@ function TokenBar({ cost, cap, onUpgrade }: { cost: number; cap: number; onUpgra
   const textColor = isLimit ? 'rgba(252,165,165,0.9)' : isWarning ? 'rgba(253,230,138,0.9)' : 'rgba(147,197,253,0.6)';
   const bars = 12;
   return (
-    <div style={{ padding: '5px 12px', background: isLimit ? 'rgba(239,68,68,0.05)' : 'rgba(255,255,255,0.01)', borderBottom: `1px solid ${isLimit ? 'rgba(239,68,68,0.12)' : 'rgba(255,255,255,0.04)'}`, display: 'flex', alignItems: 'center', gap: '10px' }}>
+    <div style={{ padding: '5px 12px', background: isLimit ? 'rgba(239,68,68,0.05)' : 'var(--jarvis-card)', borderBottom: `1px solid var(--jarvis-border)`, display: 'flex', alignItems: 'center', gap: '10px' }}>
       <div style={{ display: 'flex', gap: '2px', alignItems: 'center' }}>
         {Array.from({ length: bars }).map((_, i) => {
           const filled = (i / bars) * 100 < pct;
-          return <div key={i} style={{ width: '3px', height: '10px', borderRadius: '2px', background: filled ? barColor : 'rgba(255,255,255,0.07)', transition: 'background 0.3s' }} />;
+          return <div key={i} style={{ width: '3px', height: '10px', borderRadius: '2px', background: filled ? barColor : 'var(--jarvis-border)', transition: 'background 0.3s' }} />;
         })}
       </div>
       <span style={{ fontSize: '10px', color: textColor, whiteSpace: 'nowrap', flexShrink: 0 }}>
@@ -1252,11 +1252,11 @@ style={{ width: '260px', transform: sidebarOpen ? 'translateX(0)' : 'translateX(
         </div>
 
         <div className="px-3 pt-3 pb-2 flex-shrink-0">
-          <button onClick={newConversation} className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/20 text-blue-300 text-xs font-medium transition-all mb-2">
+          <button onClick={newConversation} className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/30 text-blue-500 text-xs font-medium transition-all mb-2">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             New conversation
           </button>
-          <button onClick={() => { setVoiceModeOpen(true); setSidebarOpen(false); }} className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl border text-xs font-medium transition-all mb-2 bg-gradient-to-r from-blue-600/20 via-purple-600/15 to-pink-600/20 border-white/10 text-white/70 hover:text-white hover:border-white/20">
+          <button onClick={() => { setVoiceModeOpen(true); setSidebarOpen(false); }} className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl border text-xs font-medium transition-all mb-2 bg-gradient-to-r from-blue-600/20 via-purple-600/15 to-pink-600/20 border-black/10 hover:border-black/20" style={{ color: 'var(--jarvis-text-sub)' }}>
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
             Voice mode
           </button>
@@ -1270,12 +1270,14 @@ style={{ width: '260px', transform: sidebarOpen ? 'translateX(0)' : 'translateX(
     window.open(url, '_blank');
   }
 }}
-  className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl border text-xs font-medium transition-all mb-2 ${googleConnected ? 'bg-green-500/15 border-green-500/30 text-green-400' : 'bg-white/5 border-white/10 text-white/50 hover:text-white/70'}`}
+  className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl border text-xs font-medium transition-all mb-2 ${googleConnected ? 'bg-green-500/15 border-green-500/30 text-green-600' : 'border-black/10 hover:border-black/20'}`}
+style={!googleConnected ? { color: 'var(--jarvis-text-sub)', background: 'var(--jarvis-card)' } : undefined}
 >
   <div className={`w-2 h-2 rounded-full ${googleConnected ? 'bg-green-400' : 'bg-white/20'}`} />
   {googleConnected ? 'Google connected' : 'Connect Google'}
 </button>
-          <button onClick={async () => { const res = await fetch(`${API}/voice/spoken-updates`, { method: 'POST', headers: { 'Content-Type': 'application/json' } }); const data = await res.json(); setSpokenUpdates(data.enabled); }} className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl border text-xs font-medium transition-all ${spokenUpdates ? 'bg-purple-500/15 border-purple-500/30 text-purple-400' : 'bg-white/5 border-white/10 text-white/50 hover:text-white/70'}`}>
+          <button onClick={async () => { const res = await fetch(`${API}/voice/spoken-updates`, { method: 'POST', headers: { 'Content-Type': 'application/json' } }); const data = await res.json(); setSpokenUpdates(data.enabled); }} className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl border text-xs font-medium transition-all ${spokenUpdates ? 'bg-purple-500/15 border-purple-500/30 text-purple-500' : 'border-black/10 hover:border-black/20'}`}
+style={!spokenUpdates ? { color: 'var(--jarvis-text-sub)', background: 'var(--jarvis-card)' } : undefined}>
             <div className={`w-2 h-2 rounded-full ${spokenUpdates ? 'bg-purple-400 animate-pulse' : 'bg-white/20'}`} />
             {spokenUpdates ? 'Spoken updates — on' : 'Spoken updates — off'}
           </button>
