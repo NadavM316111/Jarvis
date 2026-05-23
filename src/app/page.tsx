@@ -1246,7 +1246,7 @@ style={{ width: '260px', transform: sidebarOpen ? 'translateX(0)' : 'translateX(
             <div className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-400 to-blue-700" style={{ boxShadow: "0 0 12px rgba(96,165,250,0.5)" }} />
             <span style={{ color: 'var(--jarvis-text)' }} className="text-sm font-semibold tracking-wide">JARVIS</span>
           </div>
-          <button onClick={() => setSidebarOpen(false)} className="w-8 h-8 flex items-center justify-center rounded-lg text-white/30 hover:text-white/60 hover:bg-white/5 transition-all">
+          <button onClick={() => setSidebarOpen(false)} className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-black/5 transition-all" style={{ color: 'var(--jarvis-text-sub)' }}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
           </button>
         </div>
@@ -1305,10 +1305,10 @@ style={{ width: '260px', transform: sidebarOpen ? 'translateX(0)' : 'translateX(
               {subscribed ? 'Pro — unlimited' : `${Math.round((dailyCost / DAILY_CAP) * 100)}% tokens used`}
             </div>
           </div>
-          <button onClick={() => setShowSettings(true)} className="text-white/25 hover:text-white/50 transition-all p-1">
+          <button onClick={() => setShowSettings(true)} className="transition-all p-1" style={{ color: 'var(--jarvis-text-dim)' }}>
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
           </button>
-          <button onClick={logout} className="text-white/25 hover:text-white/50 transition-all p-1">
+          <button onClick={logout} className="transition-all p-1" style={{ color: 'var(--jarvis-text-dim)' }}>
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
           </button>
         </div>
@@ -1318,7 +1318,7 @@ style={{ width: '260px', transform: sidebarOpen ? 'translateX(0)' : 'translateX(
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden" style={{ height: '100dvh' }}>
         {/* Top bar */}
         <div className="px-3 py-3 flex items-center gap-2 border-b border-white/5 flex-shrink-0" style={{ background: 'var(--jarvis-bg)' }}>
-          <button onClick={() => setSidebarOpen(!sidebarOpen)} className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-white/5 transition-all text-white/40 hover:text-white/70 flex-shrink-0">
+          <button onClick={() => setSidebarOpen(!sidebarOpen)} className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-black/5 transition-all flex-shrink-0" style={{ color: 'var(--jarvis-text-sub)' }}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
           </button>
           <div className="flex items-center gap-2 flex-1 min-w-0">
@@ -1334,14 +1334,14 @@ style={{ width: '260px', transform: sidebarOpen ? 'translateX(0)' : 'translateX(
               <span className="text-white/30 text-xs">cam</span>
             </div>
           )}
-          <button onClick={() => setVoiceModeOpen(true)} className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-white/5 transition-all flex-shrink-0" title="Voice mode">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.35)" strokeWidth="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+          <button onClick={() => setVoiceModeOpen(true)} className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-black/5 transition-all flex-shrink-0" title="Voice mode">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--jarvis-text-sub)" strokeWidth="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
           </button>
-          <button onClick={logout} className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-white/5 transition-all text-white/30 hover:text-white/60 flex-shrink-0">
+          <button onClick={logout} className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-black/5 transition-all flex-shrink-0" style={{ color: 'var(--jarvis-text-sub)' }}>
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
           </button>
-          <button onClick={() => { setShowUpdates(!showUpdates); if (!showUpdates) markAllRead(); }} className="relative w-10 h-10 flex items-center justify-center rounded-xl hover:bg-white/5 transition-all flex-shrink-0">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.35)" strokeWidth="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <button onClick={() => { setShowUpdates(!showUpdates); if (!showUpdates) markAllRead(); }} className="relative w-10 h-10 flex items-center justify-center rounded-xl hover:bg-black/5 transition-all flex-shrink-0">
+             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--jarvis-text-sub)" strokeWidth="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
             {unreadCount > 0 && (<span className="absolute top-1 right-1 w-3.5 h-3.5 bg-blue-500 rounded-full text-white flex items-center justify-center font-bold" style={{ fontSize: '9px' }}>{unreadCount}</span>)}
           </button>
         </div>
@@ -1539,10 +1539,10 @@ className={`px-4 py-3 rounded-2xl text-sm leading-relaxed ${msg.role === "assist
           <input ref={folderInputRef} type="file" multiple onChange={handleFileAttach} className="hidden" {...{ webkitdirectory: 'true' } as any} />
           <div className="flex items-center gap-2">
             <div className="flex flex-col gap-1 flex-shrink-0">
-              <button onClick={() => fileInputRef.current?.click()} className="w-11 h-5 flex items-center justify-center rounded-t-xl hover:bg-white/5 transition-all text-white/30 hover:text-white/60" title="Attach files">
+              <button onClick={() => fileInputRef.current?.click()} className="w-11 h-5 flex items-center justify-center rounded-t-xl hover:bg-black/5 transition-all" style={{ color: 'var(--jarvis-text-dim)' }} title="Attach files">
                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
               </button>
-              <button onClick={() => folderInputRef.current?.click()} className="w-11 h-5 flex items-center justify-center rounded-b-xl hover:bg-white/5 transition-all text-white/30 hover:text-white/60" title="Attach folder">
+              <button onClick={() => folderInputRef.current?.click()} className="w-11 h-5 flex items-center justify-center rounded-b-xl hover:bg-black/5 transition-all" style={{ color: 'var(--jarvis-text-dim)' }} title="Attach folder">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
               </button>
             </div>
