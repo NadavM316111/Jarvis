@@ -1244,7 +1244,7 @@ style={{ width: '260px', transform: sidebarOpen ? 'translateX(0)' : 'translateX(
         <div className="flex items-center justify-between px-4 py-4 border-b border-white/5 flex-shrink-0">
           <div className="flex items-center gap-2.5">
             <div className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-400 to-blue-700" style={{ boxShadow: "0 0 12px rgba(96,165,250,0.5)" }} />
-            <span className="text-white text-sm font-semibold tracking-wide">JARVIS</span>
+            <span style={{ color: 'var(--jarvis-text)' }} className="text-sm font-semibold tracking-wide">JARVIS</span>
           </div>
           <button onClick={() => setSidebarOpen(false)} className="w-8 h-8 flex items-center justify-center rounded-lg text-white/30 hover:text-white/60 hover:bg-white/5 transition-all">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -1324,8 +1324,8 @@ style={{ width: '260px', transform: sidebarOpen ? 'translateX(0)' : 'translateX(
           <div className="flex items-center gap-2 flex-1 min-w-0">
             <div className="w-6 h-6 rounded-full flex-shrink-0 transition-all duration-100" style={{ background: orbBg, boxShadow: orbGlow, transform: `scale(${orbScale})` }} />
             <div className="min-w-0">
-              <div className="text-white/85 text-sm font-medium leading-none">JARVIS</div>
-              <div className="text-white/30 text-xs mt-0.5">{statusText}</div>
+              <div style={{ color: 'var(--jarvis-text)' }} className="text-sm font-medium leading-none">JARVIS</div>
+              <div style={{ color: 'var(--jarvis-text-sub)' }} className="text-xs mt-0.5">{statusText}</div>
             </div>
           </div>
           {cameraActive && (
@@ -1502,7 +1502,7 @@ className={`px-4 py-3 rounded-2xl text-sm leading-relaxed ${msg.role === "assist
 
         {/* Attached file preview */}
         {attachedFiles.length > 0 && (
-          <div className="flex-shrink-0 bg-[#060608] border-t border-white/5 px-3 py-3">
+          <div className="flex-shrink-0 border-t border-white/5 px-3 py-3" style={{ background: 'var(--jarvis-bg)' }}>
             <div className="flex items-center gap-2 flex-wrap">
               {Array.from(new Set(attachedFiles.filter(f => f.name.includes('/')).map(f => f.name.substring(0, f.name.indexOf('/'))))).map(folderName => (
                 <div key={folderName} className="flex items-center gap-2">
@@ -1534,7 +1534,7 @@ className={`px-4 py-3 rounded-2xl text-sm leading-relaxed ${msg.role === "assist
         )}
 
         {/* Input bar */}
-        <div className="flex-shrink-0 bg-[#060608] border-t border-white/5 px-3 py-3" style={{ paddingBottom: 'max(12px, env(safe-area-inset-bottom))' }}>
+        <div className="flex-shrink-0 border-t border-white/5 px-3 py-3" style={{ background: 'var(--jarvis-bg)', paddingBottom: 'max(12px, env(safe-area-inset-bottom))' }}>
           <input ref={fileInputRef} type="file" multiple accept="image/*,.pdf,.txt,.js,.ts,.py,.md,.json,.csv,.doc,.docx" onChange={handleFileAttach} className="hidden" />
           <input ref={folderInputRef} type="file" multiple onChange={handleFileAttach} className="hidden" {...{ webkitdirectory: 'true' } as any} />
           <div className="flex items-center gap-2">
