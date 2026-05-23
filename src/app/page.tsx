@@ -222,8 +222,16 @@ function VoiceModeModal({
       audio.onerror = () => { URL.revokeObjectURL(url); setVoiceState('idle'); };
       await audio.play();
     } catch {
-      // Don't fall back to browser TTS — just go idle and let user retry
-      setVoiceState('idle');
+      const utt = new SpeechSynthesisUtterance(clean);
+      utt.rate = 0.9; utt.pitch = 0.7; utt.volume = 1.0;
+      utt.onend = () => {
+        if (inConversationRef.current && wakeLoopRef.current) {
+          setTimeout(() => startListeningRef.current(), 400);
+        } else {
+          setVoiceState('idle');
+        }
+      };
+      window.speechSynthesis.speak(utt);
     }
   }, []);
 
