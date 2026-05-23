@@ -1297,15 +1297,15 @@ style={!spokenUpdates ? { color: 'var(--jarvis-text-sub)', background: 'var(--ja
           ))}
         </div>
 
-        <div className="px-4 py-3 border-t border-white/5 flex items-center gap-2.5 flex-shrink-0">
+        <div className="px-4 py-3 flex items-center gap-2.5 flex-shrink-0" style={{ borderTop: '1px solid var(--jarvis-border)' }}>
           <div className="w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
             {userName.charAt(0).toUpperCase()}
           </div>
           <div className="flex-1 min-w-0">
-            <div className="text-white/70 text-xs font-medium truncate">{userName}</div>
-            <div className={`text-xs ${subscribed ? 'text-green-400' : 'text-yellow-400/70'}`}>
-              {subscribed ? 'Pro — unlimited' : `${Math.round((dailyCost / DAILY_CAP) * 100)}% tokens used`}
-            </div>
+            <div className="text-xs font-medium truncate" style={{ color: 'var(--jarvis-text)' }}>{userName}</div>
+<div className={`text-xs ${subscribed ? 'text-green-500' : 'text-amber-500'}`}>
+  {subscribed ? 'Pro — unlimited' : `${Math.round((dailyCost / DAILY_CAP) * 100)}% tokens used`}
+</div>
           </div>
           <button onClick={() => setShowSettings(true)} className="transition-all p-1" style={{ color: 'var(--jarvis-text-dim)' }}>
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
@@ -1331,9 +1331,9 @@ style={!spokenUpdates ? { color: 'var(--jarvis-text-sub)', background: 'var(--ja
             </div>
           </div>
           {cameraActive && (
-            <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-white/5 flex-shrink-0">
-              <div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
-              <span className="text-white/30 text-xs">cam</span>
+            <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg flex-shrink-0" style={{ background: 'var(--jarvis-card)', border: '1px solid var(--jarvis-border)' }}>
+  <div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+  <span className="text-xs" style={{ color: 'var(--jarvis-text-sub)' }}>cam</span>
             </div>
           )}
           <button onClick={() => setVoiceModeOpen(true)} className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-black/5 transition-all flex-shrink-0" title="Voice mode">
