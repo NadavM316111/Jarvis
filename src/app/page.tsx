@@ -486,12 +486,12 @@ function MessageActions({ content, role, onEdit }: { content: string; role: 'use
   };
   return (
     <div style={{ display: 'flex', gap: '4px', marginTop: '6px', justifyContent: role === 'user' ? 'flex-end' : 'flex-start' }}>
-      <button onClick={copy} style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '3px 8px', borderRadius: '7px', fontSize: '11px', background: copied ? 'rgba(52,211,153,0.12)' : 'rgba(255,255,255,0.06)', border: `1px solid ${copied ? 'rgba(52,211,153,0.3)' : 'rgba(255,255,255,0.08)'}`, color: copied ? '#34d399' : 'rgba(255,255,255,0.4)', cursor: 'pointer' }}>
+      <button onClick={copy} style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '3px 8px', borderRadius: '7px', fontSize: '11px', background: copied ? 'rgba(52,211,153,0.12)' : 'var(--jarvis-card)', border: `1px solid ${copied ? 'rgba(52,211,153,0.3)' : 'var(--jarvis-border)'}`, color: copied ? '#34d399' : 'var(--jarvis-text-sub)', cursor: 'pointer' }}>
         {copied ? <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 6L9 17l-5-5"/></svg> : <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>}
         {copied ? 'Copied' : 'Copy'}
       </button>
       {role === 'user' && onEdit && (
-        <button onClick={onEdit} style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '3px 8px', borderRadius: '7px', fontSize: '11px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.4)', cursor: 'pointer' }}>
+        <button onClick={onEdit} style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '3px 8px', borderRadius: '7px', fontSize: '11px', background: 'var(--jarvis-card)', border: '1px solid var(--jarvis-border)', color: 'var(--jarvis-text-sub)', cursor: 'pointer' }}>
           <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"/></svg>
           Edit
         </button>
