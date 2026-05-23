@@ -1237,8 +1237,9 @@ if (!convId) {
 
       {/* SIDEBAR */}
       <div
-        className="fixed md:relative inset-y-0 left-0 z-40 md:z-auto flex flex-col bg-[#07070a] border-r border-white/5 transition-transform duration-300"
-        style={{ width: '260px', transform: sidebarOpen ? 'translateX(0)' : 'translateX(-100%)', height: '100dvh' }}
+        className="fixed md:relative inset-y-0 left-0 z-40 md:z-auto flex flex-col border-r border-white/5 transition-transform duration-300"
+style={{ width: '260px', transform: sidebarOpen ? 'translateX(0)' : 'translateX(-100%)', height: '100dvh', background: 'var(--jarvis-bg-alt)' }}
+
       >
         <div className="flex items-center justify-between px-4 py-4 border-b border-white/5 flex-shrink-0">
           <div className="flex items-center gap-2.5">
@@ -1316,7 +1317,7 @@ if (!convId) {
       {/* MAIN CONTENT */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden" style={{ height: '100dvh' }}>
         {/* Top bar */}
-        <div className="px-3 py-3 flex items-center gap-2 border-b border-white/5 flex-shrink-0 bg-[#060608]">
+        <div className="px-3 py-3 flex items-center gap-2 border-b border-white/5 flex-shrink-0" style={{ background: 'var(--jarvis-bg)' }}>
           <button onClick={() => setSidebarOpen(!sidebarOpen)} className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-white/5 transition-all text-white/40 hover:text-white/70 flex-shrink-0">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
           </button>
@@ -1464,7 +1465,8 @@ if (!convId) {
   <div key={i} className={`flex gap-2 group/msg ${msg.role === "user" ? "flex-row-reverse" : ""}`}>
     {msg.role === "assistant" && (<div className="w-6 h-6 rounded-full flex-shrink-0 mt-1" style={{ background: orbBg, boxShadow: orbGlow }} />)}
     <div className="max-w-[85%]">
-      <div className={`px-4 py-3 rounded-2xl text-sm leading-relaxed ${msg.role === "assistant" ? "bg-white/5 border border-white/7 text-white/85 rounded-tl-sm" : "bg-blue-600 text-white rounded-tr-sm"}`}>
+      <div style={msg.role === "assistant" ? { background: 'var(--jarvis-msg-ai)', border: '1px solid var(--jarvis-border)', color: 'var(--jarvis-text)' } : { background: 'var(--jarvis-msg-user)' }}
+className={`px-4 py-3 rounded-2xl text-sm leading-relaxed ${msg.role === "assistant" ? "rounded-tl-sm" : "text-white rounded-tr-sm"}`}>
         {msg.source === "voice" && <div className="text-xs opacity-40 mb-1">{msg.role === "user" ? "voice" : "spoken"}</div>}
         {msg.fileName && !msg.imageUrl && (<div className="flex items-center gap-1.5 mb-2 opacity-70"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg><span className="text-xs">{msg.fileName}</span></div>)}
         <span dangerouslySetInnerHTML={{ __html: formatMessage(msg.content) }} />
@@ -1500,7 +1502,7 @@ if (!convId) {
 
         {/* Attached file preview */}
         {attachedFiles.length > 0 && (
-          <div className="px-3 pt-2 flex-shrink-0 bg-[#060608]">
+          <div className="flex-shrink-0 bg-[#060608] border-t border-white/5 px-3 py-3">
             <div className="flex items-center gap-2 flex-wrap">
               {Array.from(new Set(attachedFiles.filter(f => f.name.includes('/')).map(f => f.name.substring(0, f.name.indexOf('/'))))).map(folderName => (
                 <div key={folderName} className="flex items-center gap-2">
@@ -1558,8 +1560,8 @@ if (!convId) {
   autoCorrect="off"
   autoCapitalize="sentences"
   rows={1}
-  style={{ fontSize: '16px', opacity: !subscribed && limitReached ? 0.5 : 1, resize: 'none', overflowY: 'auto', lineHeight: '1.5' }}
-  className="flex-1 bg-white/5 border border-white/10 rounded-2xl text-white px-4 py-3 outline-none placeholder:text-white/25 focus:border-blue-500/40 transition-all min-w-0"
+  className="flex-1 rounded-2xl px-4 py-3 outline-none transition-all min-w-0"
+  style={{ fontSize: '16px', opacity: !subscribed && limitReached ? 0.5 : 1, resize: 'none', overflowY: 'auto', lineHeight: '1.5', background: 'var(--jarvis-card)', border: '1px solid var(--jarvis-border)', color: 'var(--jarvis-text)' }}
 />
             <button
   onClick={loading ? () => { abortRef.current?.abort(); setLoading(false); } : (!subscribed && limitReached ? openUpgrade : send)}
