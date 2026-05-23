@@ -3,6 +3,29 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --jarvis-bg: #060608;
+  --jarvis-bg-alt: #07070a;
+  --jarvis-card: rgba(255,255,255,0.05);
+  --jarvis-border: rgba(255,255,255,0.1);
+  --jarvis-text: rgba(255,255,255,0.85);
+  --jarvis-text-sub: rgba(255,255,255,0.4);
+  --jarvis-text-dim: rgba(255,255,255,0.25);
+  --jarvis-input-bg: rgba(255,255,255,0.05);
+  --jarvis-msg-user: #2563eb;
+  --jarvis-msg-ai: rgba(255,255,255,0.05);
+}
+
+html.light {
+  --jarvis-bg: #f0f2f5;
+  --jarvis-bg-alt: #ffffff;
+  --jarvis-card: rgba(0,0,0,0.04);
+  --jarvis-border: rgba(0,0,0,0.09);
+  --jarvis-text: rgba(0,0,0,0.85);
+  --jarvis-text-sub: rgba(0,0,0,0.45);
+  --jarvis-text-dim: rgba(0,0,0,0.25);
+  --jarvis-input-bg: rgba(0,0,0,0.04);
+  --jarvis-msg-user: #2563eb;
+  --jarvis-msg-ai: rgba(0,0,0,0.05);
 }
 
 @theme inline {

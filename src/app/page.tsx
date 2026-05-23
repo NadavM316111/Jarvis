@@ -500,6 +500,19 @@ function MessageActions({ content, role, onEdit }: { content: string; role: 'use
   );
 }
 export default function Home() {
+  const [lightMode, setLightMode] = useState(false);
+
+useEffect(() => {
+  const saved = localStorage.getItem('jarvis_light');
+  if (saved === 'true') { setLightMode(true); document.documentElement.classList.add('light'); }
+}, []);
+
+const toggleLight = () => {
+  const next = !lightMode;
+  setLightMode(next);
+  localStorage.setItem('jarvis_light', String(next));
+  document.documentElement.classList.toggle('light', next);
+};
   useEffect(() => {
   const interval = setInterval(() => {
     if ((window as any).__TAURI_INTERNALS__ && !(window as any).__TAURI_INVOKE__) {
@@ -1087,8 +1100,7 @@ if (!convId) {
   }
 
   return (
-    <div style={{ height: '100dvh', fontFamily: "-apple-system, 'SF Pro Display', sans-serif" }} className="bg-[#060608] flex overflow-hidden">
-
+    <div style={{ height: '100dvh', fontFamily: "-apple-system, 'SF Pro Display', sans-serif", background: 'var(--jarvis-bg)', color: 'var(--jarvis-text)' }} className="flex overflow-hidden">
       {/* Settings modal */}
       {showSettings && (
         <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
@@ -1109,6 +1121,20 @@ if (!convId) {
               <div className={`text-sm mt-1 font-medium ${subscribed ? 'text-green-400' : 'text-yellow-400/80'}`}>
                 {subscribed ? '✦ Pro — Unlimited messages' : 'Free plan'}
               </div>
+            </div>
+
+            {/* Light mode toggle */}
+            <div className="mb-4 p-4 rounded-xl border border-white/10 bg-white/3 flex items-center justify-between">
+              <div>
+                <div className="text-white/70 text-sm font-medium">Light mode</div>
+                <div className="text-white/30 text-xs mt-0.5">Easier on the eyes in bright environments</div>
+              </div>
+              <button
+                onClick={toggleLight}
+                style={{ width: 44, height: 24, borderRadius: 12, background: lightMode ? '#3b82f6' : 'rgba(255,255,255,0.1)', border: `1px solid ${lightMode ? '#3b82f6' : 'rgba(255,255,255,0.15)'}`, transition: 'all 0.2s', position: 'relative', flexShrink: 0, cursor: 'pointer' }}
+              >
+                <div style={{ width: 18, height: 18, borderRadius: '50%', background: 'white', position: 'absolute', top: 2, left: lightMode ? 22 : 2, transition: 'left 0.2s', boxShadow: '0 1px 3px rgba(0,0,0,0.3)' }} />
+              </button>
             </div>
 
             {subscribed ? (
