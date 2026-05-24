@@ -956,14 +956,15 @@ async function search3DModels(query, source = 'both') {
   return results;
 }
 async function generateImage(prompt) {
+  const enhancedPrompt = `${prompt}, photorealistic, ultra detailed, 8k, sharp focus, professional photography, natural lighting, hyper realistic`;
+
   const response = await axios.post(
-    'https://api.replicate.com/v1/models/black-forest-labs/flux-schnell/predictions',
-    { input: { prompt, num_outputs: 1, output_format: 'webp', output_quality: 90 } },
+    'https://api.replicate.com/v1/models/black-forest-labs/flux-dev/predictions',
+    { input: { prompt: enhancedPrompt, num_outputs: 1, output_format: 'webp', output_quality: 90, num_inference_steps: 28 } },
     { headers: { Authorization: `Token ${process.env.REPLICATE_API_KEY}`, 'Content-Type': 'application/json' } }
   );
-  
+
   let prediction = response.data;
-  // Poll until done
   while (prediction.status !== 'succeeded' && prediction.status !== 'failed') {
     await new Promise(r => setTimeout(r, 1000));
     const poll = await axios.get(`https://api.replicate.com/v1/predictions/${prediction.id}`, {
@@ -971,18 +972,17 @@ async function generateImage(prompt) {
     });
     prediction = poll.data;
   }
-  
+
   if (prediction.status === 'failed') throw new Error('Image generation failed');
-  
+
   const imageUrl = prediction.output[0];
-  // Download and save to public dir
   const filename = `img_${Date.now()}.webp`;
   const imgRes = await axios.get(imageUrl, { responseType: 'arraybuffer' });
   fs.writeFileSync(path.join(PUBLIC_DIR, filename), imgRes.data);
-  const url = process.env.RAILWAY_ENVIRONMENT 
-  ? `https://api.heyjarvis.me/view/${filename}`
-  : `http://localhost:3001/view/${filename}`;
-return url;
+  const url = process.env.RAILWAY_ENVIRONMENT
+    ? `https://api.heyjarvis.me/view/${filename}`
+    : `http://localhost:3001/view/${filename}`;
+  return url;
 }
 // ============ COMPUTER ACTIONS (Nadav-only) ============
 async function executeAction(action) {
