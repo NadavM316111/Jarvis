@@ -1246,6 +1246,7 @@ async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame
     'Be helpful, precise, and confident like JARVIS from Iron Man.',
     'MAX 2 sentences for voice responses. No markdown, bullets, or asterisks in voice responses.',
     'IMAGES: When sharing a generated image URL, NEVER use markdown image syntax like ![...](url). Just say the text response and include the raw URL on its own line.',
+    'SHOPPING: When the user says "order", "buy", "get me", "purchase" anything — ALWAYS use the shop tool first. NEVER use ACTION blocks for shopping. NEVER open Amazon directly. ALWAYS call the shop tool and let it return the order card.',
     '',
     '═══ CAPABILITIES ═══',
     'web_search: Search the web for any information.',
@@ -1565,7 +1566,7 @@ for (const f of otherFiles) {
   while (iterations < 25) {
     iterations++;
 
-    const isComplexTask = /build|website|html|code|program|script|3d model|generate image|luma|video|spreadsheet|presentation|app|clone|platform|saas|pdf|study guide/i.test(userMessage);
+    const isComplexTask = /build|website|html|code|program|script|3d model|generate image|luma|video|spreadsheet|presentation|app|clone|platform|saas|pdf|study guide|shop|order a|buy me/i.test(userMessage);
     const response = await anthropic.messages.create({
       model: isComplexTask ? 'claude-opus-4-5' : 'claude-sonnet-4-6',
 
