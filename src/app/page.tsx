@@ -532,17 +532,26 @@ function OrderCard({ content }: { content: string }) {
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           {results.map((r: any, i: number) => (
-            <div key={i} style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12, padding: '12px 14px', display: 'flex', alignItems: 'center', gap: 12 }}>
-              <div style={{ fontSize: 22, flexShrink: 0 }}>{logos[r.logo] || '🛒'}</div>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.9)', marginBottom: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{r.store}</div>
-                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{r.price ? `${r.price} · ` : ''}{r.note}</div>
-              </div>
-              <a href={r.url} target="_blank" rel="noopener noreferrer"
-                style={{ flexShrink: 0, padding: '8px 14px', borderRadius: 10, fontSize: 12, fontWeight: 600, background: r.color, color: 'white', textDecoration: 'none', whiteSpace: 'nowrap' }}>
-                Open & Buy
-              </a>
-            </div>
+            <div key={i} style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12, padding: '12px 14px' }}>
+  {r.screenshotUrl && (
+    <img
+      src={r.screenshotUrl}
+      alt={r.store}
+      style={{ width: '100%', borderRadius: 8, marginBottom: 10, objectFit: 'cover', maxHeight: 180, border: '1px solid rgba(255,255,255,0.08)' }}
+    />
+  )}
+  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+    <div style={{ fontSize: 22, flexShrink: 0 }}>{logos[r.logo] || '🛒'}</div>
+    <div style={{ flex: 1, minWidth: 0 }}>
+      <div style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.9)', marginBottom: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{r.store}</div>
+      <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{r.price ? `${r.price} · ` : ''}{r.note}</div>
+    </div>
+    <a href={r.url} target="_blank" rel="noopener noreferrer"
+      style={{ flexShrink: 0, padding: '8px 14px', borderRadius: 10, fontSize: 12, fontWeight: 600, background: r.color, color: 'white', textDecoration: 'none', whiteSpace: 'nowrap' }}>
+      Open & Buy
+    </a>
+  </div>
+</div>
           ))}
         </div>
       </div>

@@ -984,7 +984,25 @@ async function generateImage(prompt) {
     : `http://localhost:3001/view/${filename}`;
   return url;
 }
-
+async function screenshotPage(url) {
+  try {
+    const puppeteer = require('puppeteer');
+    const browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'], headless: 'new' });
+    const page = await browser.newPage();
+    await page.setViewport({ width: 1280, height: 800 });
+    await page.setUserAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36');
+    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 12000 });
+    await new Promise(r => setTimeout(r, 2000));
+    const filename = `shop_${Date.now()}.png`;
+    const outPath = path.join(PUBLIC_DIR, filename);
+    await page.screenshot({ path: outPath, fullPage: false });
+    await browser.close();
+    return `https://api.heyjarvis.me/view/${filename}`;
+  } catch (e) {
+    console.log('[SCREENSHOT] Failed:', e.message);
+    return null;
+  }
+}
 async function shopSearch(query, category, location = '') {
   const results = [];
 
@@ -995,13 +1013,14 @@ async function shopSearch(query, category, location = '') {
       const amazonResult = amazonSearch.find(r => r.url.includes('amazon.com/') && r.url.includes('/dp/'));
       if (amazonResult) {
         results.push({
-          store: 'Amazon',
-          name: amazonResult.title.replace(' - Amazon.com', '').replace(' | Amazon.com', ''),
-          url: amazonResult.url,
-          note: 'Prime eligible — fast shipping',
-          color: '#FF9900',
-          logo: 'amazon'
-        });
+  store: 'Amazon',
+  name: amazonResult.title.replace(' - Amazon.com', '').replace(' | Amazon.com', ''),
+  url: amazonResult.url,
+  note: 'Prime eligible — fast shipping',
+  color: '#FF9900',
+  logo: 'amazon',
+  screenshotUrl: await screenshotPage(amazonResult.url)
+});
       }
     } catch (e) {}
 
@@ -1013,14 +1032,15 @@ async function shopSearch(query, category, location = '') {
         // Try to extract price from description
         const priceMatch = ebayResult.description?.match(/\$[\d,]+\.?\d*/);
         results.push({
-          store: 'eBay',
-          name: ebayResult.title.replace(' | eBay', ''),
-          url: ebayResult.url,
-          price: priceMatch ? priceMatch[0] : null,
-          note: 'Buy It Now',
-          color: '#86B817',
-          logo: 'ebay'
-        });
+  store: 'eBay',
+  name: ebayResult.title.replace(' | eBay', ''),
+  url: ebayResult.url,
+  price: priceMatch ? priceMatch[0] : null,
+  note: 'Buy It Now',
+  color: '#86B817',
+  logo: 'ebay',
+  screenshotUrl: await screenshotPage(ebayResult.url)
+});
       }
     } catch (e) {}
   }
@@ -1031,22 +1051,24 @@ async function shopSearch(query, category, location = '') {
       const instacartResult = instacartSearch.find(r => r.url.includes('instacart.com'));
       if (instacartResult) {
         results.push({
-          store: 'Instacart',
-          name: instacartResult.title.replace(' - Instacart', ''),
-          url: instacartResult.url || `https://www.instacart.com/store/s?k=${encodeURIComponent(query)}`,
-          note: 'Delivery in ~1 hour',
-          color: '#43B02A',
-          logo: 'instacart'
-        });
+  store: 'Instacart',
+  name: instacartResult.title.replace(' - Instacart', ''),
+  url: instacartResult.url || `https://www.instacart.com/store/s?k=${encodeURIComponent(query)}`,
+  note: 'Delivery in ~1 hour',
+  color: '#43B02A',
+  logo: 'instacart',
+  screenshotUrl: await screenshotPage(instacartResult.url || `https://www.instacart.com/store/s?k=${encodeURIComponent(query)}`)
+});
       } else {
         results.push({
-          store: 'Instacart',
-          name: query,
-          url: `https://www.instacart.com/store/s?k=${encodeURIComponent(query)}`,
-          note: 'Search on Instacart',
-          color: '#43B02A',
-          logo: 'instacart'
-        });
+  store: 'Instacart',
+  name: query,
+  url: `https://www.instacart.com/store/s?k=${encodeURIComponent(query)}`,
+  note: 'Search on Instacart',
+  color: '#43B02A',
+  logo: 'instacart',
+  screenshotUrl: await screenshotPage(`https://www.instacart.com/store/s?k=${encodeURIComponent(query)}`)
+});
       }
     } catch (e) {}
   }
@@ -1055,25 +1077,27 @@ async function shopSearch(query, category, location = '') {
     // DoorDash
     try {
       results.push({
-        store: 'DoorDash',
-        name: query,
-        url: `https://www.doordash.com/search/store/${encodeURIComponent(query)}/`,
-        note: 'Order on DoorDash',
-        color: '#FF3008',
-        logo: 'doordash'
-      });
+  store: 'DoorDash',
+  name: query,
+  url: `https://www.doordash.com/search/store/${encodeURIComponent(query)}/`,
+  note: 'Order on DoorDash',
+  color: '#FF3008',
+  logo: 'doordash',
+  screenshotUrl: await screenshotPage(`https://www.doordash.com/search/store/${encodeURIComponent(query)}/`)
+});
     } catch (e) {}
 
     // Uber Eats
     try {
       results.push({
-        store: 'Uber Eats',
-        name: query,
-        url: `https://www.ubereats.com/search?q=${encodeURIComponent(query)}`,
-        note: 'Order on Uber Eats',
-        color: '#06C167',
-        logo: 'ubereats'
-      });
+  store: 'Uber Eats',
+  name: query,
+  url: `https://www.ubereats.com/search?q=${encodeURIComponent(query)}`,
+  note: 'Order on Uber Eats',
+  color: '#06C167',
+  logo: 'ubereats',
+  screenshotUrl: await screenshotPage(`https://www.ubereats.com/search?q=${encodeURIComponent(query)}`)
+});
     } catch (e) {}
   }
 
