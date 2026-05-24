@@ -723,20 +723,20 @@ const abortRef = useRef<AbortController | null>(null);
         for (const r of data.responses) {
           if (r.message === '__SUBSCRIBED__') { setSubscribed(true); continue; }
           let convId = activeIdRef.current;
-if (!convId) {
-  const existingConvs = JSON.parse(localStorage.getItem('jarvis_conversations') || '[]');
-  if (existingConvs.length > 0) {
-    convId = existingConvs[0].id;
-    setActiveId(convId);
-    activeIdRef.current = convId;
-  } else {
-    convId = generateId();
-    const conv: Conversation = { id: convId, title: r.message.slice(0, 40), messages: [], createdAt: Date.now() };
-    setConversations(prev => [conv, ...prev]);
-    setActiveId(convId);
-    activeIdRef.current = convId;
-  }
-}
+          if (!convId) {
+            const existingConvs = JSON.parse(localStorage.getItem('jarvis_conversations') || '[]');
+            if (existingConvs.length > 0) {
+              convId = existingConvs[0].id;
+              setActiveId(convId);
+              activeIdRef.current = convId;
+            } else {
+              convId = generateId();
+              const conv: Conversation = { id: convId, title: r.message.slice(0, 40), messages: [], createdAt: Date.now() };
+              setConversations(prev => [conv, ...prev]);
+              setActiveId(convId);
+              activeIdRef.current = convId;
+            }
+          }
           const isProgress = r.message.includes('[PROGRESS:');
           if (isProgress) {
             setConversations(prev => prev.map(c => {
@@ -750,7 +750,25 @@ if (!convId) {
             }));
             continue;
           }
-           if (convId) addMessageToConv(convId, { role: "assistant", content: r.message, source: "text", timestamp: r.timestamp ?? Date.now() });
+
+          // ── Image URL: replace __IMAGE_LOADING__ placeholder if present ──
+          const isImageUrl = /https:\/\/api\.heyjarvis\.me\/view\/img_[^\s)]+\.webp/.test(r.message);
+          if (isImageUrl) {
+            setConversations(prev => prev.map(c => {
+              if (c.id !== convId) return c;
+              const hasPlaceholder = c.messages.some(m => m.content === '__IMAGE_LOADING__');
+              const msgs = c.messages.map(m =>
+                m.content === '__IMAGE_LOADING__'
+                  ? { ...m, content: r.message }
+                  : m
+              );
+              if (!hasPlaceholder) msgs.push({ role: 'assistant' as const, content: r.message, source: 'text' as const, timestamp: Date.now() });
+              return { ...c, messages: msgs };
+            }));
+          } else if (convId) {
+            addMessageToConv(convId, { role: "assistant", content: r.message, source: "text", timestamp: r.timestamp ?? Date.now() });
+          }
+
           const urlMatch2 = r.message.match(/https:\/\/api\.heyjarvis\.me\/view\/[^\s)]+/);
           if (urlMatch2) setTimeout(() => openUrl(urlMatch2[0]), 500);
           const ytMatch2 = r.message.match(/https:\/\/(www\.)?youtube\.com\/watch\?[^\s<>"')]+/);
