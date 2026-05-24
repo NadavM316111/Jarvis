@@ -3,1148 +3,1052 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HYPERFLEX STUDIO — JARVIS v4</title>
+<title>HYPERFLEX — Holographic Studio</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/DRACOLoader.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js" crossorigin="anonymous"></script>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;700;800&display=swap');
+
 :root {
-  --arc:#00d4ff; --arc-dim:#0066aa; --arc-glow:#00d4ff88;
-  --gold:#ffd700; --red:#ff2a2a; --green:#00ff88;
-  --panel:rgba(0,20,40,0.88); --border:rgba(0,212,255,0.3);
+  --holo: #00f5ff;
+  --holo2: #0af;
+  --holo3: #7000ff;
+  --grid: rgba(0,245,255,0.12);
+  --glow: rgba(0,245,255,0.5);
+  --panel: rgba(0,8,20,0.85);
+  --border: rgba(0,245,255,0.2);
+  --text: rgba(0,245,255,0.9);
+  --dim: rgba(0,245,255,0.4);
+  --danger: #ff2266;
 }
-*{margin:0;padding:0;box-sizing:border-box;}
-body{background:#000;font-family:'Rajdhani',sans-serif;overflow:hidden;width:100vw;height:100vh;cursor:none;}
 
-#camera-bg{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;transform:scaleX(-1);opacity:0.85;z-index:0;}
-#three-canvas{position:fixed;inset:0;z-index:2;pointer-events:none;}
-#hand-canvas{position:fixed;inset:0;z-index:3;pointer-events:none;transform:scaleX(-1);}
-#pose-canvas{position:fixed;inset:0;z-index:3;pointer-events:none;}
+* { margin:0; padding:0; box-sizing:border-box; }
 
-.scanlines{position:fixed;inset:0;z-index:10;pointer-events:none;
-  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,212,255,0.015) 2px,rgba(0,212,255,0.015) 4px);
-  animation:scanPan 8s linear infinite;}
-@keyframes scanPan{0%{background-position:0 0}100%{background-position:0 100px}}
+body {
+  background: #000408;
+  color: var(--text);
+  font-family: 'Space Mono', monospace;
+  overflow: hidden;
+  height: 100vh;
+  cursor: none;
+  user-select: none;
+}
 
-.hud-frame{position:fixed;inset:0;z-index:11;pointer-events:none;}
-.corner{position:absolute;width:60px;height:60px;}
-.corner::before,.corner::after{content:'';position:absolute;background:var(--arc);box-shadow:0 0 10px var(--arc);}
-.corner::before{width:100%;height:2px;} .corner::after{width:2px;height:100%;}
-.corner.tl{top:20px;left:20px;} .corner.tr{top:20px;right:20px;transform:scaleX(-1);}
-.corner.bl{bottom:20px;left:20px;transform:scaleY(-1);} .corner.br{bottom:20px;right:20px;transform:scale(-1);}
+/* ── CURSOR ── */
+#cursor {
+  position: fixed;
+  width: 20px; height: 20px;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%,-50%);
+  transition: transform 0.05s;
+}
+#cursor::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 1px solid var(--holo);
+  transform: rotate(45deg);
+  box-shadow: 0 0 10px var(--holo), inset 0 0 10px rgba(0,245,255,0.1);
+  animation: cursorPulse 2s ease-in-out infinite;
+}
+#cursor.pinching::before { background: rgba(0,245,255,0.2); transform: rotate(45deg) scale(0.6); }
+@keyframes cursorPulse { 0%,100%{opacity:1} 50%{opacity:0.6} }
 
-.hud-header{position:fixed;top:30px;left:50%;transform:translateX(-50%);z-index:20;text-align:center;pointer-events:none;}
-.hud-title{font-family:'Orbitron',sans-serif;font-size:22px;font-weight:900;color:var(--arc);letter-spacing:8px;text-shadow:0 0 20px var(--arc),0 0 40px var(--arc-dim);animation:titlePulse 3s ease-in-out infinite;}
-.hud-subtitle{font-size:11px;color:var(--arc-dim);letter-spacing:4px;margin-top:4px;}
-@keyframes titlePulse{0%,100%{opacity:1}50%{opacity:0.8}}
+/* ── SCANLINES ── */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 1000; pointer-events: none;
+  background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,245,255,0.012) 3px, rgba(0,245,255,0.012) 4px);
+}
 
-#gesture-status{position:fixed;top:90px;left:50%;transform:translateX(-50%);z-index:30;
-  font-family:'Orbitron',sans-serif;font-size:14px;color:var(--gold);letter-spacing:4px;
-  text-shadow:0 0 20px var(--gold);opacity:0;transition:opacity 0.3s;pointer-events:none;text-transform:uppercase;white-space:nowrap;}
+/* ── VIGNETTE ── */
+body::after {
+  content: '';
+  position: fixed; inset: 0; z-index: 999; pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,8,0.85) 100%);
+}
 
-.mode-badge{position:fixed;top:30px;right:200px;z-index:20;background:rgba(0,212,255,0.1);
-  border:1px solid var(--arc);padding:6px 14px;font-family:'Orbitron',sans-serif;font-size:10px;color:var(--arc);letter-spacing:3px;pointer-events:none;}
+/* ── CANVAS ── */
+#canvas {
+  position: fixed; inset: 0;
+  width: 100%; height: 100%;
+  z-index: 0;
+}
 
-/* WEARABLE MODE BADGE */
-#wearable-badge{position:fixed;top:70px;right:200px;z-index:20;background:rgba(0,255,136,0.12);
-  border:1px solid var(--green);padding:5px 12px;font-family:'Orbitron',sans-serif;font-size:9px;
-  color:var(--green);letter-spacing:2px;display:none;}
-#wearable-badge.on{display:block;animation:wBlink 1.5s ease-in-out infinite;}
-@keyframes wBlink{0%,100%{opacity:1}50%{opacity:0.5}}
+/* ── PROJECTION EFFECT ── */
+#projection-base {
+  position: fixed;
+  bottom: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 500px; height: 3px;
+  background: linear-gradient(90deg, transparent, var(--holo), var(--holo2), var(--holo), transparent);
+  box-shadow: 0 0 40px 10px var(--glow);
+  z-index: 2;
+  filter: blur(1px);
+}
+#projection-beam {
+  position: fixed;
+  bottom: 3px; left: 50%;
+  transform: translateX(-50%);
+  width: 0; height: 0;
+  border-left: 250px solid transparent;
+  border-right: 250px solid transparent;
+  border-bottom: 120px solid rgba(0,245,255,0.03);
+  z-index: 1;
+  pointer-events: none;
+}
 
-/* LEFT TOOLBAR */
-.panel-left{position:fixed;left:20px;top:50%;transform:translateY(-50%);z-index:20;display:flex;flex-direction:column;gap:6px;}
-.obj-btn{width:56px;height:52px;background:var(--panel);border:1px solid var(--border);color:var(--arc);
-  font-family:'Orbitron',sans-serif;font-size:7px;letter-spacing:1px;cursor:pointer;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
-  clip-path:polygon(8px 0%,100% 0%,100% calc(100% - 8px),calc(100% - 8px) 100%,0% 100%,0% 8px);
-  transition:all 0.2s;position:relative;overflow:hidden;}
-.obj-btn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent 40%,rgba(0,212,255,0.1));opacity:0;transition:opacity 0.2s;}
-.obj-btn:hover,.obj-btn.active{border-color:var(--arc);box-shadow:0 0 15px var(--arc-glow),inset 0 0 15px rgba(0,212,255,0.1);color:#fff;}
-.obj-btn:hover::before,.obj-btn.active::before{opacity:1;}
-.obj-icon{font-size:17px;}
-.obj-btn.danger{border-color:rgba(255,42,42,0.4);color:var(--red);}
-.obj-btn.danger:hover{border-color:var(--red);box-shadow:0 0 15px rgba(255,42,42,0.4);}
-.obj-btn.go{border-color:rgba(0,255,136,0.4);color:var(--green);}
-.obj-btn.go:hover{border-color:var(--green);box-shadow:0 0 15px rgba(0,255,136,0.4);}
-.obj-btn.wear-toggle{border-color:rgba(255,215,0,0.4);color:var(--gold);}
-.obj-btn.wear-toggle.on{border-color:var(--gold);background:rgba(255,215,0,0.1);box-shadow:0 0 15px rgba(255,215,0,0.4);}
+/* ── TOP BAR ── */
+#topbar {
+  position: fixed; top: 0; left: 0; right: 0;
+  height: 54px; z-index: 100;
+  background: linear-gradient(180deg, rgba(0,4,12,0.98), rgba(0,4,12,0.7));
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; padding: 0 24px; gap: 20px;
+}
+#topbar::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--holo), transparent);
+  animation: scanH 4s ease-in-out infinite;
+  opacity: 0.6;
+}
+@keyframes scanH { 0%,100%{opacity:0.2} 50%{opacity:0.8} }
 
-/* RIGHT PANEL */
-.panel-right{position:fixed;right:20px;top:50%;transform:translateY(-50%);z-index:20;display:flex;flex-direction:column;gap:6px;width:160px;}
-.stat-card{background:var(--panel);border:1px solid var(--border);padding:8px 12px;
-  clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,10px 100%,0 calc(100% - 10px));}
-.stat-label{font-size:9px;color:var(--arc-dim);letter-spacing:2px;text-transform:uppercase;}
-.stat-value{font-family:'Orbitron',sans-serif;font-size:13px;color:var(--arc);font-weight:700;margin-top:2px;text-shadow:0 0 10px var(--arc);}
-.stat-bar{margin-top:5px;height:2px;background:var(--arc-dim);position:relative;overflow:hidden;}
-.stat-bar-fill{position:absolute;top:0;left:0;height:100%;background:var(--arc);box-shadow:0 0 6px var(--arc);transition:width 0.3s;}
+.logo {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800; font-size: 18px;
+  letter-spacing: 6px;
+  color: var(--holo);
+  text-shadow: 0 0 20px var(--holo), 0 0 60px rgba(0,245,255,0.3);
+  flex-shrink: 0;
+}
 
-/* COLOR SWATCH ROW */
-.color-swatches{position:fixed;right:190px;bottom:160px;z-index:20;display:flex;flex-direction:column;gap:5px;}
-.swatch{width:22px;height:22px;border-radius:50%;border:2px solid rgba(255,255,255,0.2);cursor:pointer;transition:all 0.2s;}
-.swatch:hover,.swatch.picked{border-color:#fff;box-shadow:0 0 10px currentColor;transform:scale(1.2);}
+.top-sep { width: 1px; height: 28px; background: var(--border); }
 
-/* INPUT BAR */
-.input-bar{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:25;
-  display:flex;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--border);
-  padding:10px 16px;width:660px;max-width:calc(100vw - 220px);
-  clip-path:polygon(10px 0%,100% 0%,100% calc(100% - 10px),calc(100% - 10px) 100%,0% 100%,0% 10px);}
-.input-label{font-family:'Orbitron',sans-serif;font-size:9px;color:var(--arc-dim);letter-spacing:2px;white-space:nowrap;}
-.input-bar input{flex:1;background:transparent;border:none;outline:none;font-family:'Orbitron',sans-serif;font-size:12px;color:#fff;letter-spacing:2px;}
-.input-bar input::placeholder{color:rgba(0,212,255,0.3);}
-.ibtn{background:none;border:1px solid var(--border);color:var(--arc);padding:5px 12px;
-  font-family:'Orbitron',sans-serif;font-size:9px;letter-spacing:2px;cursor:pointer;transition:all 0.15s;white-space:nowrap;}
-.ibtn:hover{border-color:var(--arc);box-shadow:0 0 10px var(--arc-glow);}
-.ibtn.mic-btn{border-color:rgba(0,255,136,0.4);color:var(--green);}
-.ibtn.mic-btn.active{border-color:var(--green);background:rgba(0,255,136,0.12);box-shadow:0 0 15px rgba(0,255,136,0.5);animation:micPulse 0.8s ease-in-out infinite;}
-@keyframes micPulse{0%,100%{opacity:1}50%{opacity:0.6}}
+.top-stat { display: flex; flex-direction: column; gap: 2px; min-width: 80px; }
+.top-stat-label { font-size: 7px; letter-spacing: 3px; color: var(--dim); text-transform: uppercase; }
+.top-stat-val { font-size: 11px; color: var(--holo); text-shadow: 0 0 8px var(--holo); }
 
-/* BOTTOM GUIDE */
-.hud-bottom{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);z-index:20;display:flex;gap:20px;align-items:center;pointer-events:none;}
-.gesture-indicator{text-align:center;}
-.gesture-name{font-family:'Orbitron',sans-serif;font-size:10px;color:var(--arc);letter-spacing:2px;}
-.gesture-desc{font-size:9px;color:rgba(0,212,255,0.5);letter-spacing:1px;margin-top:2px;}
-.sep{width:1px;height:36px;background:var(--border);}
+.top-center { flex: 1; display: flex; justify-content: center; }
+.top-mode {
+  font-size: 9px; letter-spacing: 5px; color: var(--dim);
+  text-transform: uppercase;
+  padding: 4px 16px;
+  border: 1px solid var(--border);
+  animation: modeBlink 3s ease-in-out infinite;
+}
+@keyframes modeBlink { 0%,100%{border-color:var(--border)} 50%{border-color:var(--holo);color:var(--holo)} }
 
-/* CURSOR */
-#custom-cursor{position:fixed;width:16px;height:16px;z-index:100;pointer-events:none;transform:translate(-50%,-50%);}
-#custom-cursor::before{content:'';position:absolute;inset:0;border:1px solid var(--arc);transform:rotate(45deg);box-shadow:0 0 8px var(--arc);}
-#pinch-indicator{position:fixed;width:40px;height:40px;border:2px solid var(--gold);border-radius:50%;pointer-events:none;z-index:25;display:none;transform:translate(-50%,-50%);box-shadow:0 0 15px var(--gold);animation:pinchPulse 0.5s ease-in-out infinite;}
-@keyframes pinchPulse{0%,100%{transform:translate(-50%,-50%) scale(1);opacity:1}50%{transform:translate(-50%,-50%) scale(1.2);opacity:0.7}}
+.top-actions { display: flex; gap: 8px; }
+.hbtn {
+  padding: 7px 16px;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--dim);
+  font-family: 'Space Mono', monospace;
+  font-size: 9px; letter-spacing: 2px;
+  text-transform: uppercase; cursor: pointer;
+  clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+  transition: all 0.2s;
+}
+.hbtn:hover { border-color: var(--holo); color: var(--holo); box-shadow: 0 0 16px var(--glow); background: rgba(0,245,255,0.05); }
+.hbtn.primary { border-color: var(--holo); color: var(--holo); }
 
-/* WEARABLE ANCHOR SELECTOR */
-#anchor-picker{position:fixed;left:90px;top:50%;transform:translateY(-50%);z-index:22;display:none;flex-direction:column;gap:6px;}
-#anchor-picker.visible{display:flex;}
-.anchor-btn{background:var(--panel);border:1px solid rgba(255,215,0,0.4);color:var(--gold);
-  font-family:'Orbitron',sans-serif;font-size:8px;letter-spacing:1px;padding:7px 10px;cursor:pointer;
-  clip-path:polygon(5px 0%,100% 0%,100% calc(100% - 5px),calc(100% - 5px) 100%,0% 100%,0% 5px);transition:all 0.2s;}
-.anchor-btn:hover,.anchor-btn.sel{border-color:var(--gold);background:rgba(255,215,0,0.15);box-shadow:0 0 10px rgba(255,215,0,0.4);}
+/* ── LEFT PANEL ── */
+#left-panel {
+  position: fixed; left: 0; top: 54px; bottom: 0;
+  width: 220px; z-index: 50;
+  background: var(--panel);
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  backdrop-filter: blur(20px);
+  overflow: hidden;
+}
+#left-panel::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--holo), transparent);
+  animation: slideR 3s ease-in-out infinite;
+}
+@keyframes slideR { 0%{transform:translateX(-100%);opacity:0} 50%{opacity:1} 100%{transform:translateX(100%);opacity:0} }
 
-/* LOADING */
-#loading{position:fixed;inset:0;background:#000;z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;transition:opacity 0.8s;}
-.loading-ring{width:80px;height:80px;border:2px solid rgba(0,212,255,0.2);border-top-color:var(--arc);border-radius:50%;animation:spin 0.8s linear infinite;box-shadow:0 0 20px var(--arc-glow);}
-@keyframes spin{to{transform:rotate(360deg)}}
-.loading-text{font-family:'Orbitron',sans-serif;font-size:11px;color:var(--arc);letter-spacing:4px;animation:blink 1s ease-in-out infinite;}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+.panel-sec { padding: 16px 14px 12px; border-bottom: 1px solid var(--border); }
+.panel-sec-title {
+  font-size: 7px; letter-spacing: 3px; color: var(--dim);
+  text-transform: uppercase; margin-bottom: 10px;
+  display: flex; align-items: center; gap: 6px;
+}
+.panel-sec-title::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, var(--border), transparent); }
 
-/* MODEL LOADING TOAST */
-#model-toast{position:fixed;bottom:140px;left:50%;transform:translateX(-50%);z-index:40;
-  background:var(--panel);border:1px solid var(--arc);padding:10px 20px;
-  font-family:'Orbitron',sans-serif;font-size:11px;color:var(--arc);letter-spacing:3px;
-  display:none;white-space:nowrap;clip-path:polygon(8px 0%,100% 0%,100% calc(100% - 8px),calc(100% - 8px) 100%,0% 100%,0% 8px);}
-#model-toast.visible{display:block;animation:toastPulse 0.8s ease-in-out infinite;}
-@keyframes toastPulse{0%,100%{opacity:1}50%{opacity:0.6}}
+.shape-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+.shape-btn {
+  padding: 8px 4px;
+  background: rgba(0,245,255,0.03);
+  border: 1px solid var(--border);
+  color: var(--dim);
+  font-family: 'Space Mono', monospace;
+  font-size: 8px; letter-spacing: 1px;
+  cursor: pointer; text-align: center;
+  text-transform: uppercase;
+  transition: all 0.15s;
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+}
+.shape-btn .sico { font-size: 14px; }
+.shape-btn:hover, .shape-btn.active {
+  background: rgba(0,245,255,0.1);
+  border-color: var(--holo); color: var(--holo);
+  box-shadow: 0 0 10px rgba(0,245,255,0.2), inset 0 0 10px rgba(0,245,255,0.05);
+}
 
-/* ROTATION GESTURE INDICATOR */
-#rot-ring{position:fixed;z-index:15;pointer-events:none;display:none;transform:translate(-50%,-50%);}
-#rot-ring svg{animation:rotSpin 2s linear infinite;}
-@keyframes rotSpin{to{transform:rotate(360deg)}}
+.obj-list { flex: 1; overflow-y: auto; padding: 8px; }
+.obj-list::-webkit-scrollbar { width: 2px; }
+.obj-list::-webkit-scrollbar-thumb { background: var(--dim); }
+.obj-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 8px; margin-bottom: 2px;
+  cursor: pointer; border: 1px solid transparent;
+  transition: all 0.12s; position: relative;
+}
+.obj-item:hover { background: rgba(0,245,255,0.05); border-color: var(--border); }
+.obj-item.selected { background: rgba(0,245,255,0.1); border-color: var(--holo); }
+.obj-item.selected::before {
+  content: '';
+  position: absolute; left: 0; top: 0; bottom: 0; width: 2px;
+  background: var(--holo); box-shadow: 0 0 6px var(--holo);
+}
+.obj-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.obj-name { font-size: 9px; color: var(--dim); flex: 1; letter-spacing: 0.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.obj-item.selected .obj-name { color: var(--holo); }
+.obj-del { font-size: 10px; color: transparent; cursor: pointer; }
+.obj-item:hover .obj-del { color: var(--danger); }
+
+.panel-bottom { padding: 12px; border-top: 1px solid var(--border); }
+.sel-info { font-size: 8px; color: var(--dim); letter-spacing: 1px; text-align: center; }
+
+/* ── RIGHT PANEL ── */
+#right-panel {
+  position: fixed; right: 0; top: 54px; bottom: 0;
+  width: 220px; z-index: 50;
+  background: var(--panel);
+  border-left: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  backdrop-filter: blur(20px);
+  overflow-y: auto;
+}
+#right-panel::-webkit-scrollbar { width: 2px; }
+#right-panel::-webkit-scrollbar-thumb { background: var(--dim); }
+
+.rsec { padding: 14px; border-bottom: 1px solid var(--border); }
+.rsec-title {
+  font-size: 7px; letter-spacing: 3px; color: var(--dim);
+  text-transform: uppercase; margin-bottom: 10px;
+  display: flex; align-items: center; gap: 6px;
+}
+.rsec-title::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, var(--border), transparent); }
+
+.color-row { display: grid; grid-template-columns: repeat(6, 1fr); gap: 5px; }
+.cswatch {
+  aspect-ratio: 1; border-radius: 50%; cursor: pointer;
+  border: 2px solid transparent; transition: all 0.2s;
+}
+.cswatch:hover, .cswatch.active { border-color: white; transform: scale(1.2); }
+
+.mat-list { display: flex; flex-direction: column; gap: 3px; }
+.mat-btn {
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 10px;
+  background: rgba(0,245,255,0.02);
+  border: 1px solid var(--border);
+  color: var(--dim); font-family: 'Space Mono', monospace;
+  font-size: 8px; letter-spacing: 1px;
+  cursor: pointer; transition: all 0.15s;
+  text-transform: uppercase;
+}
+.mat-btn:hover { background: rgba(0,245,255,0.08); border-color: var(--holo); color: var(--holo); }
+.mat-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+.xf-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+.xf-btn {
+  padding: 7px 4px;
+  background: rgba(0,245,255,0.02);
+  border: 1px solid var(--border);
+  color: var(--dim);
+  font-family: 'Space Mono', monospace;
+  font-size: 8px; letter-spacing: 1px;
+  cursor: pointer; text-align: center;
+  text-transform: uppercase; transition: all 0.15s;
+}
+.xf-btn:hover { background: rgba(0,245,255,0.08); border-color: var(--holo); color: var(--holo); }
+.xf-btn.red { border-color: rgba(255,34,102,0.3); color: var(--danger); }
+.xf-btn.red:hover { background: rgba(255,34,102,0.1); border-color: var(--danger); }
+
+/* ── CHAT BAR ── */
+#chatbar {
+  position: fixed; bottom: 0; left: 220px; right: 220px;
+  z-index: 100; padding: 12px 20px;
+  background: linear-gradient(0deg, rgba(0,4,12,0.99), rgba(0,4,12,0.8));
+  border-top: 1px solid var(--border);
+}
+#chatbar::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--holo), var(--holo2), var(--holo), transparent);
+  box-shadow: 0 0 20px var(--glow);
+}
+
+.chat-row { display: flex; align-items: center; gap: 10px; }
+.chat-prefix { font-size: 11px; color: var(--holo); text-shadow: 0 0 10px var(--holo); flex-shrink: 0; }
+#chat-input {
+  flex: 1;
+  background: transparent; border: none; outline: none;
+  font-family: 'Space Mono', monospace;
+  font-size: 12px; color: rgba(255,255,255,0.9);
+  letter-spacing: 0.5px; caret-color: var(--holo);
+}
+#chat-input::placeholder { color: var(--dim); font-size: 11px; }
+.chat-send {
+  padding: 8px 18px;
+  background: rgba(0,245,255,0.08);
+  border: 1px solid var(--holo);
+  color: var(--holo);
+  font-family: 'Space Mono', monospace;
+  font-size: 9px; letter-spacing: 2px;
+  cursor: pointer; transition: all 0.2s;
+  text-transform: uppercase;
+}
+.chat-send:hover { background: rgba(0,245,255,0.18); box-shadow: 0 0 20px var(--glow); }
+
+.chat-log { max-height: 80px; overflow-y: auto; margin-bottom: 8px; }
+.chat-log::-webkit-scrollbar { width: 2px; }
+.chat-log::-webkit-scrollbar-thumb { background: var(--dim); }
+.chat-msg { font-size: 10px; margin-bottom: 3px; line-height: 1.4; }
+.chat-msg.user { color: var(--dim); }
+.chat-msg.ai { color: var(--holo); text-shadow: 0 0 6px rgba(0,245,255,0.3); }
+.chat-msg.err { color: var(--danger); }
+
+/* ── HOLO GRID OVERLAY ── */
+#holo-grid {
+  position: fixed; inset: 0; z-index: 1; pointer-events: none;
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse at 50% 60%, rgba(0,0,0,0.4) 30%, transparent 75%);
+  animation: gridFloat 8s ease-in-out infinite;
+}
+@keyframes gridFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)} }
+
+/* ── CORNER BRACKETS ── */
+.bracket {
+  position: fixed; width: 24px; height: 24px;
+  z-index: 101; pointer-events: none;
+}
+.bracket::before, .bracket::after {
+  content: ''; position: absolute;
+  background: var(--holo); box-shadow: 0 0 8px var(--holo);
+}
+.bracket::before { width: 100%; height: 2px; }
+.bracket::after { width: 2px; height: 100%; }
+.bracket.tl { top: 62px; left: 228px; }
+.bracket.tr { top: 62px; right: 228px; transform: scaleX(-1); }
+.bracket.bl { bottom: 108px; left: 228px; transform: scaleY(-1); }
+.bracket.br { bottom: 108px; right: 228px; transform: scale(-1,-1); }
+
+/* ── STATUS TOAST ── */
+#toast {
+  position: fixed; top: 70px; left: 50%; transform: translateX(-50%);
+  z-index: 200;
+  background: rgba(0,4,12,0.95);
+  border: 1px solid var(--holo);
+  padding: 8px 24px;
+  font-size: 10px; letter-spacing: 3px;
+  color: var(--holo); text-transform: uppercase;
+  clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%);
+  box-shadow: 0 0 30px var(--glow);
+  transition: opacity 0.3s; opacity: 0;
+  pointer-events: none;
+}
+#toast.show { opacity: 1; }
+
+/* ── LOADING ── */
+#loader {
+  position: fixed; inset: 0; z-index: 9000;
+  background: #000408;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 24px;
+  transition: opacity 0.8s;
+}
+.loader-ring {
+  width: 80px; height: 80px;
+  border: 1px solid rgba(0,245,255,0.2);
+  border-top-color: var(--holo);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  box-shadow: 0 0 30px var(--glow);
+}
+@keyframes spin { to{transform:rotate(360deg)} }
+.loader-text {
+  font-family: 'Syne', sans-serif;
+  font-size: 11px; letter-spacing: 6px;
+  color: var(--holo); text-transform: uppercase;
+  animation: loaderBlink 1.2s ease-in-out infinite;
+}
+@keyframes loaderBlink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+/* ── THINKING ── */
+.thinking-dots { display: inline-flex; gap: 3px; align-items: center; }
+.thinking-dots span {
+  width: 4px; height: 4px; border-radius: 50%;
+  background: var(--holo); animation: tdot 1.2s ease-in-out infinite;
+}
+.thinking-dots span:nth-child(2){animation-delay:.2s}
+.thinking-dots span:nth-child(3){animation-delay:.4s}
+@keyframes tdot { 0%,80%,100%{transform:scale(0.5);opacity:0.3} 40%{transform:scale(1);opacity:1} }
 </style>
 </head>
 <body>
 
-<div id="loading"><div class="loading-ring"></div><div class="loading-text">INITIALIZING HYPERFLEX STUDIO v4</div></div>
-
-<video id="camera-bg" autoplay muted playsinline></video>
-<canvas id="three-canvas"></canvas>
-<canvas id="hand-canvas"></canvas>
-<canvas id="pose-canvas"></canvas>
-<div class="scanlines"></div>
-
-<div class="hud-frame">
-  <div class="corner tl"></div><div class="corner tr"></div>
-  <div class="corner bl"></div><div class="corner br"></div>
+<div id="loader">
+  <div class="loader-ring"></div>
+  <div class="loader-text">Initializing Hyperflex Studio</div>
 </div>
 
-<div class="hud-header">
-  <div class="hud-title">HYPERFLEX STUDIO</div>
-  <div class="hud-subtitle">JARVIS v4 · HAND + VOICE + TEXT + WEARABLE AR</div>
+<canvas id="canvas"></canvas>
+<div id="holo-grid"></div>
+<div id="projection-base"></div>
+<div id="projection-beam"></div>
+
+<div class="bracket tl"></div>
+<div class="bracket tr"></div>
+<div class="bracket bl"></div>
+<div class="bracket br"></div>
+
+<div id="cursor"></div>
+<div id="toast"></div>
+
+<!-- TOP BAR -->
+<div id="topbar">
+  <div class="logo">HYPERFLEX</div>
+  <div class="top-sep"></div>
+  <div class="top-stat"><div class="top-stat-label">Objects</div><div class="top-stat-val" id="stat-obj">000</div></div>
+  <div class="top-sep"></div>
+  <div class="top-stat"><div class="top-stat-label">Selected</div><div class="top-stat-val" id="stat-sel">NONE</div></div>
+  <div class="top-sep"></div>
+  <div class="top-stat"><div class="top-stat-label">Vertices</div><div class="top-stat-val" id="stat-verts">0</div></div>
+  <div class="top-center"><div class="top-mode" id="top-mode">STANDBY</div></div>
+  <div class="top-actions">
+    <button class="hbtn" onclick="clearScene()">Clear</button>
+    <button class="hbtn" onclick="exportSTL()">Export STL</button>
+    <button class="hbtn" onclick="toggleWireframe()">Wireframe</button>
+    <button class="hbtn primary" onclick="document.getElementById('chat-input').focus()">Describe</button>
+  </div>
 </div>
 
-<div id="gesture-status"></div>
-<div id="mode-badge" class="mode-badge">MODE: IDLE</div>
-<div id="wearable-badge">WEARABLE MODE ON</div>
+<!-- LEFT PANEL -->
+<div id="left-panel">
+  <div class="panel-sec">
+    <div class="panel-sec-title">Geometry</div>
+    <div class="shape-grid">
+      <button class="shape-btn active" onclick="setShape(this,'sphere')"><span class="sico">●</span>Sphere</button>
+      <button class="shape-btn" onclick="setShape(this,'box')"><span class="sico">■</span>Box</button>
+      <button class="shape-btn" onclick="setShape(this,'cylinder')"><span class="sico">⬡</span>Tube</button>
+      <button class="shape-btn" onclick="setShape(this,'cone')"><span class="sico">▲</span>Cone</button>
+      <button class="shape-btn" onclick="setShape(this,'torus')"><span class="sico">◎</span>Torus</button>
+      <button class="shape-btn" onclick="setShape(this,'knot')"><span class="sico">∞</span>Knot</button>
+    </div>
+  </div>
 
-<!-- Toolbar -->
-<div class="panel-left">
-  <!-- Primitive shapes -->
-  <button class="obj-btn active" data-shape="sphere"      onclick="pickShape(this,'sphere')">      <span class="obj-icon">●</span>SPHERE</button>
-  <button class="obj-btn"        data-shape="box"          onclick="pickShape(this,'box')">          <span class="obj-icon">■</span>CUBE</button>
-  <button class="obj-btn"        data-shape="torus"        onclick="pickShape(this,'torus')">        <span class="obj-icon">◎</span>TORUS</button>
-  <button class="obj-btn"        data-shape="cone"         onclick="pickShape(this,'cone')">         <span class="obj-icon">▲</span>CONE</button>
-  <button class="obj-btn"        data-shape="cylinder"     onclick="pickShape(this,'cylinder')">     <span class="obj-icon">⬡</span>TUBE</button>
-  <button class="obj-btn"        data-shape="octahedron"   onclick="pickShape(this,'octahedron')">   <span class="obj-icon">◆</span>GEM</button>
-  <button class="obj-btn"        data-shape="torus_knot"   onclick="pickShape(this,'torus_knot')">   <span class="obj-icon">∞</span>KNOT</button>
-  <!-- Actions -->
-  <button class="obj-btn go"      onclick="spawnCenter()">                  <span class="obj-icon">+</span>SPAWN</button>
-  <button class="obj-btn wear-toggle" id="wear-toggle-btn" onclick="toggleWearable()"><span class="obj-icon">📍</span>WEAR</button>
-  <button class="obj-btn danger"  onclick="deleteSelected()">               <span class="obj-icon">✕</span>DEL</button>
-  <button class="obj-btn danger"  onclick="clearAll()">                     <span class="obj-icon">⌫</span>CLEAR</button>
+  <div class="panel-sec" style="flex-shrink:0">
+    <div class="panel-sec-title">Scene Objects</div>
+  </div>
+  <div class="obj-list" id="obj-list"></div>
+  <div class="panel-bottom">
+    <div class="sel-info" id="sel-info">0 objects · none selected</div>
+  </div>
 </div>
 
-<!-- Anchor picker (shown when wearable mode on) -->
-<div id="anchor-picker">
-  <button class="anchor-btn sel" data-anchor="right_wrist"  onclick="pickAnchor(this,'right_wrist')">R WRIST</button>
-  <button class="anchor-btn"     data-anchor="left_wrist"   onclick="pickAnchor(this,'left_wrist')">L WRIST</button>
-  <button class="anchor-btn"     data-anchor="right_hand"   onclick="pickAnchor(this,'right_hand')">R HAND</button>
-  <button class="anchor-btn"     data-anchor="left_hand"    onclick="pickAnchor(this,'left_hand')">L HAND</button>
-  <button class="anchor-btn"     data-anchor="head"         onclick="pickAnchor(this,'head')">HEAD</button>
-  <button class="anchor-btn"     data-anchor="chest"        onclick="pickAnchor(this,'chest')">CHEST</button>
-  <button class="anchor-btn"     data-anchor="right_shoulder" onclick="pickAnchor(this,'right_shoulder')">R SHLDR</button>
-  <button class="anchor-btn"     data-anchor="left_shoulder"  onclick="pickAnchor(this,'left_shoulder')">L SHLDR</button>
+<!-- RIGHT PANEL -->
+<div id="right-panel">
+  <div class="rsec">
+    <div class="rsec-title">Color</div>
+    <div class="color-row" id="color-row"></div>
+  </div>
+  <div class="rsec">
+    <div class="rsec-title">Material</div>
+    <div class="mat-list">
+      <div class="mat-btn" onclick="applyMat('holo')"><div class="mat-dot" style="background:#00f5ff;box-shadow:0 0 6px #00f5ff"></div>Hologram</div>
+      <div class="mat-btn" onclick="applyMat('chrome')"><div class="mat-dot" style="background:#e0eef8"></div>Chrome</div>
+      <div class="mat-btn" onclick="applyMat('gold')"><div class="mat-dot" style="background:#ffd700"></div>Gold</div>
+      <div class="mat-btn" onclick="applyMat('matte')"><div class="mat-dot" style="background:#1a2030"></div>Matte</div>
+      <div class="mat-btn" onclick="applyMat('glass')"><div class="mat-dot" style="background:rgba(100,200,255,0.4);border:1px solid #0af"></div>Glass</div>
+      <div class="mat-btn" onclick="applyMat('plasma')"><div class="mat-dot" style="background:#7000ff;box-shadow:0 0 6px #7000ff"></div>Plasma</div>
+    </div>
+  </div>
+  <div class="rsec">
+    <div class="rsec-title">Transform</div>
+    <div class="xf-grid">
+      <button class="xf-btn" onclick="scaleSel(1.3)">Scale +</button>
+      <button class="xf-btn" onclick="scaleSel(0.77)">Scale −</button>
+      <button class="xf-btn" onclick="rotateSel('y',20)">Rot Y</button>
+      <button class="xf-btn" onclick="rotateSel('x',20)">Rot X</button>
+      <button class="xf-btn" onclick="rotateSel('z',20)">Rot Z</button>
+      <button class="xf-btn" onclick="dupSel()">Duplicate</button>
+      <button class="xf-btn" onclick="centerSel()">Center</button>
+      <button class="xf-btn red" onclick="deleteSel()">Delete</button>
+    </div>
+  </div>
+  <div class="rsec">
+    <div class="rsec-title">Spawn</div>
+    <div class="xf-grid">
+      <button class="xf-btn" onclick="spawnShape()">Add Shape</button>
+      <button class="xf-btn" onclick="selectAll()">Sel All</button>
+    </div>
+  </div>
 </div>
 
-<!-- Stats -->
-<div class="panel-right">
-  <div class="stat-card"><div class="stat-label">OBJECTS</div><div class="stat-value" id="stat-objects">0</div><div class="stat-bar"><div class="stat-bar-fill" id="bar-objects" style="width:0%"></div></div></div>
-  <div class="stat-card"><div class="stat-label">LEFT HAND</div><div class="stat-value" id="stat-left">—</div></div>
-  <div class="stat-card"><div class="stat-label">RIGHT HAND</div><div class="stat-value" id="stat-right">—</div></div>
-  <div class="stat-card"><div class="stat-label">GESTURE</div><div class="stat-value" id="stat-gesture">—</div></div>
-  <div class="stat-card"><div class="stat-label">SELECTED</div><div class="stat-value" id="stat-selected">NONE</div></div>
-  <div class="stat-card"><div class="stat-label">COLOR</div><div class="stat-value" id="stat-color" style="font-size:10px">—</div></div>
-  <div class="stat-card"><div class="stat-label">ANCHOR</div><div class="stat-value" id="stat-anchor" style="font-size:10px">—</div></div>
-  <div class="stat-card"><div class="stat-label">SCALE</div><div class="stat-value" id="stat-scale">1.0x</div><div class="stat-bar"><div class="stat-bar-fill" id="bar-scale" style="width:20%"></div></div></div>
-</div>
-
-<!-- Color swatches -->
-<div class="color-swatches" id="color-swatches"></div>
-
-<!-- Text + Voice Input -->
-<div class="input-bar">
-  <span class="input-label">JARVIS &rsaquo;</span>
-  <input id="cmd-input" type="text" placeholder="red sphere · 3 gold cubes · iron man armor · blue helmet · silver shield · ring ..." autocomplete="off"/>
-  <button class="ibtn" onclick="handleTextCmd()">EXECUTE</button>
-  <button class="ibtn mic-btn" id="mic-btn" onclick="toggleMic()">&#9679; MIC</button>
-</div>
-
-<!-- Gesture guide -->
-<div class="hud-bottom">
-  <div class="gesture-indicator"><div class="gesture-name">PINCH+DRAG</div><div class="gesture-desc">MOVE</div></div>
-  <div class="sep"></div>
-  <div class="gesture-indicator"><div class="gesture-name">2 HANDS APART</div><div class="gesture-desc">SCALE</div></div>
-  <div class="sep"></div>
-  <div class="gesture-indicator"><div class="gesture-name">INDEX FINGER UP</div><div class="gesture-desc">ROTATE (MOVE HAND)</div></div>
-  <div class="sep"></div>
-  <div class="gesture-indicator"><div class="gesture-name">TYPE / SPEAK</div><div class="gesture-desc">SPAWN + COLOR</div></div>
-  <div class="sep"></div>
-  <div class="gesture-indicator"><div class="gesture-name">WEAR MODE</div><div class="gesture-desc">BODY ANCHOR</div></div>
-</div>
-
-<div id="pinch-indicator"></div>
-<div id="custom-cursor"></div>
-<div id="model-toast">LOADING MODEL...</div>
-<div id="rot-ring">
-  <svg width="60" height="60" viewBox="0 0 60 60">
-    <circle cx="30" cy="30" r="26" fill="none" stroke="#ffd700" stroke-width="1.5" stroke-dasharray="6 4" opacity="0.8"/>
-    <path d="M30 4 L34 12 L26 12 Z" fill="#ffd700"/>
-  </svg>
+<!-- CHAT BAR -->
+<div id="chatbar">
+  <div class="chat-log" id="chat-log"></div>
+  <div class="chat-row">
+    <div class="chat-prefix">JARVIS &rsaquo;</div>
+    <input id="chat-input" type="text" placeholder="Describe anything to build — &quot;a modern chair&quot;, &quot;a drone&quot;, &quot;molecular structure&quot;..." autocomplete="off"/>
+    <button class="chat-send" id="chat-send" onclick="sendCmd()">Build</button>
+  </div>
 </div>
 
 <script>
-// ═══════════════════════════════════════════
-// COLOR SYSTEM
-// ═══════════════════════════════════════════
-const NAMED_COLORS = {
-  red:      { hex: 0xff2222, name:'RED'    },
-  orange:   { hex: 0xff6600, name:'ORANGE' },
-  yellow:   { hex: 0xffdd00, name:'YELLOW' },
-  gold:     { hex: 0xffd700, name:'GOLD'   },
-  green:    { hex: 0x00ff66, name:'GREEN'  },
-  teal:     { hex: 0x00ffcc, name:'TEAL'   },
-  cyan:     { hex: 0x00d4ff, name:'CYAN'   },
-  blue:     { hex: 0x1144ff, name:'BLUE'   },
-  purple:   { hex: 0xaa00ff, name:'PURPLE' },
-  pink:     { hex: 0xff2a88, name:'PINK'   },
-  white:    { hex: 0xffffff, name:'WHITE'  },
-  silver:   { hex: 0xaaaacc, name:'SILVER' },
-  black:    { hex: 0x111122, name:'BLACK'  },
-  iron:     { hex: 0x8899aa, name:'IRON'   },
-  arc:      { hex: 0x00d4ff, name:'ARC'    },
+// ── SCENE ─────────────────────────────────
+const canvas = document.getElementById('canvas');
+const scene  = new THREE.Scene();
+scene.fog = new THREE.FogExp2(0x000408, 0.0006);
+
+const camera = new THREE.PerspectiveCamera(50, innerWidth/innerHeight, 0.1, 5000);
+camera.position.set(0, 60, 280);
+
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setSize(innerWidth, innerHeight);
+renderer.shadowMap.enabled = true;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.1;
+
+function onResize() {
+  camera.aspect = innerWidth / innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+}
+window.addEventListener('resize', onResize);
+
+// ── LIGHTS ────────────────────────────────
+scene.add(new THREE.AmbientLight(0x050f1a, 3));
+const sun = new THREE.DirectionalLight(0xffffff, 2.5);
+sun.position.set(150, 300, 200); sun.castShadow = true; scene.add(sun);
+const holoLight = new THREE.PointLight(0x00f5ff, 8, 600);
+holoLight.position.set(0, 80, 100); scene.add(holoLight);
+const rimLight  = new THREE.DirectionalLight(0x0040aa, 2);
+rimLight.position.set(-200, 50, -100); scene.add(rimLight);
+const fillLight = new THREE.PointLight(0x7000ff, 3, 400);
+fillLight.position.set(-100, 100, -100); scene.add(fillLight);
+
+// ── GRID PLANE ────────────────────────────
+const gridHelper = new THREE.GridHelper(1000, 40, 0x00f5ff, 0x001a2a);
+gridHelper.material.opacity = 0.08; gridHelper.material.transparent = true;
+scene.add(gridHelper);
+
+// ── PIVOT ─────────────────────────────────
+const pivot = new THREE.Object3D();
+scene.add(pivot);
+
+// ── OBJECTS ───────────────────────────────
+const objects = {};
+const selected = new Set();
+let objCounter = 0;
+let wireframe = false;
+let activeShape = 'sphere';
+let activeColor = null; // null = auto
+
+const COLORS = {
+  'Holo Blue':  { hex: 0x00f5ff, metalness: 0.9, roughness: 0.05, emissive: 0x003a44 },
+  'Arc':        { hex: 0x0af0ff, metalness: 0.9, roughness: 0.04, emissive: 0x002233 },
+  'Gold':       { hex: 0xffd700, metalness: 0.95, roughness: 0.04 },
+  'Chrome':     { hex: 0xe0eef8, metalness: 1.0,  roughness: 0.02 },
+  'Plasma':     { hex: 0x7000ff, metalness: 0.85, roughness: 0.1, emissive: 0x1a0040 },
+  'Red':        { hex: 0xff2266, metalness: 0.8,  roughness: 0.15 },
+  'Amber':      { hex: 0xff8800, metalness: 0.7,  roughness: 0.2 },
+  'Emerald':    { hex: 0x00ff88, metalness: 0.8,  roughness: 0.1 },
+  'White':      { hex: 0xf0f8ff, metalness: 0.5,  roughness: 0.2 },
+  'Black':      { hex: 0x0a1020, metalness: 0.7,  roughness: 0.3 },
+  'Steel':      { hex: 0x607080, metalness: 0.9,  roughness: 0.2 },
+  'Violet':     { hex: 0xaa44ff, metalness: 0.8,  roughness: 0.1, emissive: 0x1a0033 },
 };
-const COLOR_KEYS = Object.keys(NAMED_COLORS);
-const COLOR_VALS = Object.values(NAMED_COLORS);
+const colorEntries = Object.entries(COLORS);
 
-// Current user-selected color (null = auto cycle)
-let pickedColor = null;
-let pickedColorName = 'AUTO';
-let autoColorIdx = 0;
+// Build color swatches
+const cr = document.getElementById('color-row');
+// Auto
+const autoSw = document.createElement('div');
+autoSw.className = 'cswatch active';
+autoSw.title = 'Auto';
+autoSw.style.cssText = 'background:linear-gradient(135deg,#00f5ff,#7000ff,#ff2266);border-color:white';
+autoSw.onclick = () => { activeColor=null; setSwatch(autoSw); };
+cr.appendChild(autoSw);
+colorEntries.forEach(([name, props]) => {
+  const hex = '#'+props.hex.toString(16).padStart(6,'0');
+  const sw = document.createElement('div');
+  sw.className = 'cswatch'; sw.title = name;
+  sw.style.background = hex;
+  if (props.emissive) sw.style.boxShadow = `0 0 8px ${hex}`;
+  sw.onclick = () => { activeColor = props; setSwatch(sw); };
+  cr.appendChild(sw);
+});
+function setSwatch(el) {
+  document.querySelectorAll('.cswatch').forEach(s => s.classList.remove('active'));
+  el.classList.add('active');
+}
 
-function getNextColor() {
-  if(pickedColor !== null) return pickedColor;
-  const c = COLOR_VALS[autoColorIdx % COLOR_VALS.length].hex;
-  autoColorIdx++;
+let colorIdx = 0;
+function getColor() {
+  if (activeColor) return activeColor;
+  const c = colorEntries[colorIdx % colorEntries.length][1];
+  colorIdx++;
   return c;
 }
 
-function parseColorFromText(text) {
-  text = text.toLowerCase();
-  for(const key of COLOR_KEYS) {
-    if(text.includes(key)) return { hex: NAMED_COLORS[key].hex, name: NAMED_COLORS[key].name };
+// ── GEOMETRY ──────────────────────────────
+function makeGeo(type, size=30) {
+  switch(type) {
+    case 'sphere':    return new THREE.SphereGeometry(size/2, 48, 32);
+    case 'box':       return new THREE.BoxGeometry(size, size, size);
+    case 'cylinder':  return new THREE.CylinderGeometry(size*.4, size*.4, size, 32);
+    case 'cone':      return new THREE.ConeGeometry(size/2, size*1.3, 32);
+    case 'torus':     return new THREE.TorusGeometry(size/2, size/8, 20, 60);
+    case 'knot':      return new THREE.TorusKnotGeometry(size/3, size/10, 200, 32);
+    default:          return new THREE.SphereGeometry(size/2, 48, 32);
   }
-  return null;
 }
 
-// Build color swatch UI
-function buildSwatches() {
-  const container = document.getElementById('color-swatches');
-  // AUTO option
-  const auto = document.createElement('div');
-  auto.className = 'swatch picked';
-  auto.title = 'AUTO';
-  auto.style.background = 'linear-gradient(135deg,#ff0000,#00ff00,#0000ff)';
-  auto.style.borderColor = '#fff';
-  auto.onclick = () => { pickedColor=null; pickedColorName='AUTO'; document.getElementById('stat-color').textContent='AUTO'; document.querySelectorAll('.swatch').forEach(s=>s.classList.remove('picked')); auto.classList.add('picked'); };
-  container.appendChild(auto);
-  COLOR_VALS.forEach((c,i) => {
-    const s = document.createElement('div');
-    s.className = 'swatch';
-    s.title = c.name;
-    s.style.background = '#'+c.hex.toString(16).padStart(6,'0');
-    s.onclick = () => {
-      pickedColor = c.hex; pickedColorName = c.name;
-      document.getElementById('stat-color').textContent = c.name;
-      document.querySelectorAll('.swatch').forEach(sw=>sw.classList.remove('picked'));
-      s.classList.add('picked');
-    };
-    container.appendChild(s);
-  });
-}
-buildSwatches();
-
-// ═══════════════════════════════════════════
-// THREE.JS SETUP
-// ═══════════════════════════════════════════
-const TC = document.getElementById('three-canvas');
-TC.width = window.innerWidth; TC.height = window.innerHeight;
-const renderer = new THREE.WebGLRenderer({canvas:TC,alpha:true,antialias:true});
-renderer.setSize(window.innerWidth,window.innerHeight);
-renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
-renderer.setClearColor(0,0);
-renderer.physicallyCorrectLights = true;
-renderer.outputEncoding = THREE.sRGBEncoding;
-renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.2;
-renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-
-const scene = new THREE.Scene();
-const cam3 = new THREE.PerspectiveCamera(60,window.innerWidth/window.innerHeight,0.1,1000);
-cam3.position.z = 6;
-
-// PBR lighting setup
-scene.add(new THREE.AmbientLight(0xffffff, 0.4));
-
-const dirLight = new THREE.DirectionalLight(0xffffff, 2.5);
-dirLight.position.set(5, 8, 5);
-dirLight.castShadow = true;
-dirLight.shadow.mapSize.width = 1024;
-dirLight.shadow.mapSize.height = 1024;
-scene.add(dirLight);
-
-const pl1=new THREE.PointLight(0x00d4ff, 3, 25); pl1.position.set(6,6,6); scene.add(pl1);
-const pl2=new THREE.PointLight(0xff6600, 1.5, 20); pl2.position.set(-5,-3,3); scene.add(pl2);
-const pl3=new THREE.PointLight(0xffffff, 2.0, 20); pl3.position.set(0,5,-5); scene.add(pl3);
-const pl4=new THREE.PointLight(0x4488ff, 1.5, 18); pl4.position.set(-4,4,6); scene.add(pl4);
-
-// ═══════════════════════════════════════════
-// GLTF LOADER SETUP
-// ═══════════════════════════════════════════
-const gltfLoader = new THREE.GLTFLoader();
-const dracoLoader = new THREE.DRACOLoader();
-dracoLoader.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/libs/draco/');
-gltfLoader.setDRACOLoader(dracoLoader);
-
-// ═══════════════════════════════════════════
-// SEARCH KEYWORD MAP → Poly Pizza queries
-// ═══════════════════════════════════════════
-const SEARCH_QUERIES = {
-  ironman_hand:  ['iron man gauntlet','gauntlet','armored glove'],
-  helmet:        ['iron man helmet','helmet','knight helmet'],
-  shield:        ['shield','captain america shield','round shield'],
-  ring_armor:    ['ring','diamond ring','gold ring'],
-  sword:         ['sword','katana','blade'],
-  gun:           ['pistol','sci-fi gun','blaster'],
-  dragon:        ['dragon','dragon head'],
-  skull:         ['skull','human skull'],
-  car:           ['sports car','car','race car'],
-  spaceship:     ['spaceship','starship','ufo'],
-  robot:         ['robot','mech','android'],
-  crown:         ['crown','royal crown'],
-  necklace:      ['necklace','pendant'],
-  bracelet:      ['bracelet','wristband'],
-  watch:         ['watch','wristwatch'],
-  sneaker:       ['sneaker','shoe'],
-  heart:         ['heart','love heart'],
-  earth:         ['earth','globe','planet earth'],
-  moon:          ['moon','lunar'],
-  tree:          ['tree','oak tree'],
-  flower:        ['flower','rose'],
-  butterfly:     ['butterfly'],
-  crystal:       ['crystal','gem','quartz'],
-  sphere: null, box: null, torus: null, cone: null,
-  cylinder: null, octahedron: null, torus_knot: null,
-};
-
-// Poly Pizza public API — no key needed, returns direct GLB links
-async function fetchAndLoadModel(shape, color, x, y, z) {
-  const queries = SEARCH_QUERIES[shape];
-  if(!queries) return null;
-
-  setLoadingToast(true, `SEARCHING: ${shape.toUpperCase().replace('_',' ')}...`);
-
-  for(const query of queries) {
-    try {
-      const res = await fetch('/search-models', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query })
-      });
-      const data = await res.json();
-      const results = data.results || [];
-
-      const hit = results.find(r => r.source === 'Poly Pizza' && r.downloadUrl);
-
-      if(hit) {
-        setLoadingToast(true, `LOADING: ${hit.name?.toUpperCase().slice(0,28)}...`);
-        try {
-          const model = await loadGLB(hit.downloadUrl, color, x, y, z, shape);
-          setLoadingToast(false);
-          return model;
-        } catch(e) {
-          console.warn('GLB load failed, next query:', e.message);
-        }
-      }
-    } catch(e) {
-      console.warn('Search failed:', query, e.message);
-    }
-  }
-
-  setLoadingToast(false);
-  return null;
-}
-// Show/hide loading toast
-function setLoadingToast(visible, text) {
-  const t = document.getElementById('model-toast');
-  t.textContent = text || 'LOADING MODEL...';
-  t.classList.toggle('visible', visible);
-}
-
-
-// Load a GLB file into Three.js scene — always use JARVIS proxy to avoid CORS
-function loadGLB(url, color, x, y, z, shape) {
-  return new Promise((resolve, reject) => {
-    const proxyUrl = `/proxy-model?url=${encodeURIComponent(url)}`;
-    console.log('[HF] Loading GLB:', url, '→ proxy:', proxyUrl);
-    gltfLoader.load(proxyUrl,
-      (gltf) => {
-        console.log('[HF] GLB loaded OK:', shape);
-        const model = gltf.scene;
-        const box = new THREE.Box3().setFromObject(model);
-        const size = box.getSize(new THREE.Vector3());
-        const maxDim = Math.max(size.x, size.y, size.z);
-        if(maxDim === 0) { reject(new Error('Empty model')); return; }
-        model.scale.set(1.5/maxDim, 1.5/maxDim, 1.5/maxDim);
-        const box2 = new THREE.Box3().setFromObject(model);
-        model.position.sub(box2.getCenter(new THREE.Vector3()));
-        if(color) {
-          model.traverse(child => {
-            if(!child.isMesh || !child.material) return;
-            const mats = Array.isArray(child.material) ? child.material : [child.material];
-            mats.forEach(m => {
-              if(m.color) m.color.lerp(new THREE.Color(color), 0.35);
-              if(!m.emissive) m.emissive = new THREE.Color(0);
-              m.emissive.set(color); m.emissiveIntensity = 0.06; m.needsUpdate = true;
-            });
-          });
-        }
-        const wrapper = new THREE.Group();
-        wrapper.add(model); wrapper.position.set(x, y, z);
-        wrapper.userData = { id:objectCount++, shape, color, rotX:(Math.random()-.5)*0.008, rotY:(Math.random()-.5)*0.012, floatOff:Math.random()*Math.PI*2, dragged:false, isGroup:true, isGLB:true, wearable:false, anchor:null };
-        scene.add(wrapper); objects.push(wrapper);
-        wrapper.scale.set(0.01,0.01,0.01);
-        let t=0; const anim=setInterval(()=>{ t+=0.1; const s=Math.min(1,t); wrapper.scale.set(s,s,s); if(t>=1)clearInterval(anim); },16);
-        select(wrapper); updateStats();
-        showStatus(`LOADED: ${shape.toUpperCase().replace('_',' ')}`);
-        resolve(wrapper);
-      },
-      (prog) => { const pct=prog.total?Math.round(prog.loaded/prog.total*100):'...'; setLoadingToast(true,`DOWNLOADING ${pct}%`); },
-      (err) => { console.error('[HF] GLB FAILED:', err?.message||err, proxyUrl); reject(err); }
-    );
+function makeMat(props) {
+  return new THREE.MeshStandardMaterial({
+    color: props.hex,
+    metalness: props.metalness ?? 0.85,
+    roughness: props.roughness ?? 0.15,
+    emissive: new THREE.Color(props.emissive || 0),
+    emissiveIntensity: props.emissive ? 1.2 : 0,
+    wireframe,
+    transparent: props.opacity !== undefined,
+    opacity: props.opacity ?? 1,
   });
 }
 
-
-// ═══════════════════════════════════════════
-// OBJECT MANAGEMENT
-// ═══════════════════════════════════════════
-const objects = [];
-let selectedObject = null;
-let activeShape = 'sphere';
-let objectCount = 0;
-let frame = 0;
-
-const PRIM_SHAPES = new Set(['sphere','box','torus','cone','cylinder','octahedron','torus_knot']);
-
-function makePrimGeom(shape) {
-  switch(shape) {
-    case 'sphere':     return new THREE.SphereGeometry(0.45,64,64);
-    case 'box':        return new THREE.BoxGeometry(0.75,0.75,0.75);
-    case 'torus':      return new THREE.TorusGeometry(0.38,0.15,32,80);
-    case 'cone':       return new THREE.ConeGeometry(0.42,0.9,32);
-    case 'cylinder':   return new THREE.CylinderGeometry(0.28,0.28,0.85,32);
-    case 'octahedron': return new THREE.OctahedronGeometry(0.55,2);
-    case 'torus_knot': return new THREE.TorusKnotGeometry(0.32,0.1,200,32);
-    default:           return new THREE.SphereGeometry(0.45,64,64);
-  }
+function addObj(name, geo, props, pos=[0,0,0], rot=[0,0,0]) {
+  if (objects[name]) return;
+  const mesh = new THREE.Mesh(geo, makeMat(props));
+  mesh.position.set(...pos);
+  mesh.rotation.set(...rot.map(r => r * Math.PI/180));
+  mesh.castShadow = true; mesh.receiveShadow = true;
+  mesh.userData = { name, props };
+  pivot.add(mesh);
+  objects[name] = mesh;
+  updateUI();
+  return mesh;
 }
 
-async function spawnAt(x, y, z, shape, color) {
-  shape = shape || activeShape;
-  const c = color !== undefined ? color : getNextColor();
-
-  // Non-primitive: try to load a real 3D model from Poly Pizza
-  if(!PRIM_SHAPES.has(shape) && SEARCH_QUERIES[shape] !== undefined) {
-    const loaded = await fetchAndLoadModel(shape, c, x, y, z);
-    if(loaded) return loaded;
-    showStatus('MODEL NOT FOUND — USING GEOMETRY FALLBACK');
+function spawnShape(opts={}) {
+  const type = opts.type || activeShape;
+  const props = opts.props || getColor();
+  const name = opts.name || (type.charAt(0).toUpperCase() + type.slice(1) + '_' + (++objCounter));
+  const size = opts.size || 30;
+  const pos  = opts.pos || [0, size/2, 0];
+  const geo  = makeGeo(type, size);
+  const m    = addObj(name, geo, props, pos);
+  if (m) {
+    m.scale.set(0.01, 0.01, 0.01);
+    let t = 0;
+    const anim = setInterval(() => {
+      t += 0.15; const s = Math.min(1, t);
+      m.scale.set(s, s, s);
+      if (s >= 1) clearInterval(anim);
+    }, 16);
   }
+  selected.clear(); selected.add(name);
+  updateUI(); updateMode('READY');
+  toast(type.toUpperCase() + ' added');
+  return name;
+}
 
-  // Primitives or fallback: PBR geometry
-  const geom = makePrimGeom(shape);
-  const mat = new THREE.MeshStandardMaterial({
-    color: c, metalness: 0.65, roughness: 0.25,
-    emissive: c, emissiveIntensity: 0.06,
+// ── SELECTION ─────────────────────────────
+function selectObj(name) {
+  selected.clear();
+  selected.add(name);
+  updateUI();
+}
+function selectAll() {
+  Object.keys(objects).forEach(n => selected.add(n));
+  updateUI();
+}
+
+// ── TRANSFORMS ────────────────────────────
+function scaleSel(f) { selected.forEach(n => { if(objects[n]) objects[n].scale.multiplyScalar(f); }); }
+function rotateSel(ax, deg) { selected.forEach(n => { if(objects[n]) objects[n].rotation[ax] += deg*Math.PI/180; }); }
+function centerSel() { selected.forEach(n => { if(objects[n]) { objects[n].position.x = 0; objects[n].position.z = 0; } }); }
+function deleteSel() {
+  selected.forEach(n => {
+    if (!objects[n]) return;
+    pivot.remove(objects[n]);
+    objects[n].geometry.dispose();
+    objects[n].material.dispose();
+    delete objects[n];
   });
-  const mesh = new THREE.Mesh(geom, mat);
-  mesh.castShadow = true;
-  mesh.position.set(x,y,z);
-  mesh.userData = {
-    id:objectCount++, shape, color:c,
-    rotX:(Math.random()-.5)*0.015, rotY:(Math.random()-.5)*0.025,
-    floatOff:Math.random()*Math.PI*2, dragged:false,
-    isGroup:false, isGLB:false, wearable:false, anchor:null
+  selected.clear(); updateUI();
+}
+function dupSel() {
+  const toAdd = [];
+  selected.forEach(n => {
+    if (!objects[n]) return;
+    const m = objects[n];
+    toAdd.push({ name: n+'_copy'+(++objCounter), geo: m.geometry.clone(), props: m.userData.props, pos: [m.position.x+25, m.position.y, m.position.z+25] });
+  });
+  toAdd.forEach(t => { spawnShape({ name:t.name, type:'sphere', props:t.props, pos:t.pos }); });
+}
+
+// ── MATERIALS ─────────────────────────────
+function applyMat(preset) {
+  const P = {
+    holo:   { hex:0x00f5ff, metalness:.9, roughness:.05, emissive:0x003a44 },
+    chrome: { hex:0xe0eef8, metalness:1.0, roughness:.02 },
+    gold:   { hex:0xffd700, metalness:.95, roughness:.04 },
+    matte:  { hex:0x1a2030, metalness:.2, roughness:.95 },
+    glass:  { hex:0x88ddff, metalness:.1, roughness:.02, opacity:.35 },
+    plasma: { hex:0x7000ff, metalness:.85, roughness:.1, emissive:0x1a0040 },
   };
-  scene.add(mesh); objects.push(mesh);
-  mesh.scale.set(0.01,0.01,0.01);
-  let t=0; const g=setInterval(()=>{ t+=0.12; const s=Math.min(1,t); mesh.scale.set(s,s,s); if(s>=1)clearInterval(g); },16);
-  select(mesh); updateStats(); return mesh;
+  const props = P[preset]; if (!props) return;
+  const targets = selected.size ? selected : new Set(Object.keys(objects));
+  targets.forEach(n => {
+    if (!objects[n]) return;
+    objects[n].userData.props = props;
+    const mat = objects[n].material;
+    mat.color.setHex(props.hex);
+    mat.metalness = props.metalness;
+    mat.roughness = props.roughness;
+    mat.emissive.setHex(props.emissive || 0);
+    mat.emissiveIntensity = props.emissive ? 1.2 : 0;
+    mat.transparent = !!props.opacity;
+    mat.opacity = props.opacity ?? 1;
+  });
+  toast('Material: ' + preset.toUpperCase());
 }
 
-function spawnCenter() { spawnAt(0,0,0); showStatus('SPAWNING...'); }
-
-function select(mesh) {
-  if(selectedObject && !selectedObject.userData.isGroup) selectedObject.material.emissiveIntensity = 0.35;
-  selectedObject = mesh;
-  if(mesh) {
-    if(!mesh.userData.isGroup) mesh.material.emissiveIntensity = 0.9;
-    document.getElementById('stat-selected').textContent = mesh.userData.shape.toUpperCase().replace('_',' ');
-    const sc = mesh.scale.x.toFixed(1);
-    document.getElementById('stat-scale').textContent = sc+'x';
-    document.getElementById('bar-scale').style.width = Math.min(100,mesh.scale.x/5*100)+'%';
-  } else {
-    document.getElementById('stat-selected').textContent = 'NONE';
-  }
+function applyColorToSel(props) {
+  if (!selected.size) return;
+  selected.forEach(n => {
+    if (!objects[n]) return;
+    objects[n].userData.props = props;
+    objects[n].material.color.setHex(props.hex);
+    objects[n].material.metalness = props.metalness ?? 0.85;
+    objects[n].material.roughness = props.roughness ?? 0.15;
+    objects[n].material.emissive.setHex(props.emissive || 0);
+    objects[n].material.emissiveIntensity = props.emissive ? 1.2 : 0;
+  });
 }
 
-function deleteSelected() {
-  if(!selectedObject) return;
-  const i=objects.indexOf(selectedObject);
-  if(i>-1){ scene.remove(selectedObject); objects.splice(i,1); }
-  selectedObject=null;
-  document.getElementById('stat-selected').textContent='NONE'; updateStats(); showStatus('DELETED');
+// ── SCENE OPS ─────────────────────────────
+function clearScene() {
+  Object.keys(objects).forEach(n => {
+    pivot.remove(objects[n]);
+    objects[n].geometry.dispose();
+    objects[n].material.dispose();
+    delete objects[n];
+  });
+  selected.clear(); objCounter = 0;
+  updateUI(); toast('Scene cleared');
 }
-
-function clearAll() {
-  objects.forEach(o=>scene.remove(o)); objects.length=0; selectedObject=null; objectCount=0;
-  document.getElementById('stat-selected').textContent='NONE'; updateStats(); showStatus('CLEARED');
+function toggleWireframe() {
+  wireframe = !wireframe;
+  Object.values(objects).forEach(m => { m.material.wireframe = wireframe; });
+  toast(wireframe ? 'Wireframe ON' : 'Wireframe OFF');
 }
-
-function pickShape(btn,shape) {
-  activeShape=shape;
-  document.querySelectorAll('.obj-btn[data-shape]').forEach(b=>b.classList.remove('active'));
+function setShape(btn, shape) {
+  activeShape = shape;
+  document.querySelectorAll('.shape-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
 }
 
-function updateStats() {
-  const n=objects.length;
-  document.getElementById('stat-objects').textContent=n;
-  document.getElementById('bar-objects').style.width=Math.min(100,n*8)+'%';
-  if(selectedObject){
-    const sc=selectedObject.scale.x.toFixed(1);
-    document.getElementById('stat-scale').textContent=sc+'x';
-    document.getElementById('bar-scale').style.width=Math.min(100,selectedObject.scale.x/5*100)+'%';
-  }
-}
-
-// ═══════════════════════════════════════════
-// SCREEN → 3D
-// ═══════════════════════════════════════════
-function s2w(sx, sy, z) {
-  z=z||0;
-  const v=new THREE.Vector3((sx-0.5)*2,-(sy-0.5)*2,0.5);
-  v.unproject(cam3);
-  const dir=v.sub(cam3.position).normalize();
-  const t=(z-cam3.position.z)/dir.z;
-  return cam3.position.clone().add(dir.multiplyScalar(t));
-}
-
-// ═══════════════════════════════════════════
-// TEXT / VOICE COMMAND PARSER
-// ═══════════════════════════════════════════
-const SHAPE_WORDS = {
-  sphere:['sphere','ball','orb','globe','circle','dot'],
-  box:['box','cube','block','square'],
-  torus:['torus','donut','loop','hoop'],
-  cone:['cone','pyramid','spike','triangle'],
-  cylinder:['cylinder','tube','pipe','rod','barrel','pillar'],
-  octahedron:['octahedron','gem','crystal'],
-  torus_knot:['knot','pretzel','infinity','torusknot'],
-  ironman_hand:['iron man','ironman','armor','gauntlet','hand armor','glove','stark','repulsor'],
-  helmet:['helmet','visor','mask','iron man head','stark mask'],
-  shield:['shield','captain america','vibranium'],
-  ring_armor:['ring','jewelry','band','diamond ring','engagement'],
-  sword:['sword','blade','katana','saber','lightsaber'],
-  gun:['gun','pistol','weapon','blaster','rifle'],
-  dragon:['dragon','wyvern','wyrm'],
-  skull:['skull','skeleton head','cranium'],
-  car:['car','vehicle','supercar','ferrari','lambo','automobile'],
-  spaceship:['spaceship','starship','spacecraft','ufo','rocket ship'],
-  robot:['robot','mech','android','cyborg','gundam'],
-  crown:['crown','tiara','royal','king hat'],
-  necklace:['necklace','chain','pendant','choker'],
-  bracelet:['bracelet','wristband','bangle'],
-  watch:['watch','timepiece','rolex','smartwatch'],
-  sneaker:['sneaker','shoe','jordan','nike','kicks'],
-  heart:['heart','love heart','cardiac'],
-  earth:['earth','planet','globe','world'],
-  moon:['moon','lunar','crescent'],
-  tree:['tree','oak','pine','forest tree'],
-  flower:['flower','rose','bloom','petal'],
-  butterfly:['butterfly','moth','wings insect'],
-  crystal:['crystal','quartz','gem stone','mineral'],
-};
-
-function parseCmd(text) {
-  text = text.toLowerCase().trim();
-  let shape=null, color=null, count=1;
-
-  for(const [s,words] of Object.entries(SHAPE_WORDS))
-    if(words.some(w=>text.includes(w))){ shape=s; break; }
-
-  const colorResult = parseColorFromText(text);
-  if(colorResult) color = colorResult.hex;
-
-  const nm=text.match(/(\d+)/);
-  if(nm) count = Math.min(parseInt(nm[1]),8);
-
-  return { shape:shape||activeShape, color, count };
-}
-
-function handleTextCmd() {
-  const inp=document.getElementById('cmd-input');
-  const text=inp.value.trim();
-  if(!text){ spawnCenter(); inp.value=''; return; }
-  const { shape, color, count } = parseCmd(text);
-  for(let i=0;i<count;i++){
-    const x=(Math.random()-.5)*4, y=(Math.random()-.5)*2.5;
-    spawnAt(x,y,0,shape,color);
-  }
-  const cname = color ? '#'+color.toString(16).padStart(6,'0') : 'AUTO';
-  showStatus('SPAWNED '+(count>1?count+'x ':'')+shape.toUpperCase().replace('_',' ')+' · '+cname);
-  inp.value='';
-}
-document.getElementById('cmd-input').addEventListener('keydown',e=>{ if(e.key==='Enter') handleTextCmd(); });
-
-// ═══════════════════════════════════════════
-// VOICE INPUT
-// ═══════════════════════════════════════════
-let recognition=null, micActive=false;
-function toggleMic() {
-  if(!('webkitSpeechRecognition' in window||'SpeechRecognition' in window)){ showStatus('VOICE NOT SUPPORTED'); return; }
-  if(micActive){ recognition?.stop(); return; }
-  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-  recognition=new SR(); recognition.continuous=false; recognition.interimResults=false; recognition.lang='en-US';
-  recognition.onresult=e=>{ const t=e.results[0][0].transcript; showStatus('HEARD: '+t.toUpperCase()); document.getElementById('cmd-input').value=t; handleTextCmd(); };
-  recognition.onerror=()=>{ showStatus('MIC ERROR'); micActive=false; document.getElementById('mic-btn').classList.remove('active'); };
-  recognition.onend=()=>{ micActive=false; document.getElementById('mic-btn').classList.remove('active'); document.getElementById('mic-btn').textContent='⬤ MIC'; };
-  recognition.start(); micActive=true;
-  document.getElementById('mic-btn').classList.add('active'); document.getElementById('mic-btn').textContent='◉ LISTENING';
-  showStatus('LISTENING...');
-}
-
-// ═══════════════════════════════════════════
-// WEARABLE MODE
-// ═══════════════════════════════════════════
-let wearableMode = false;
-let activeAnchor = 'right_wrist';
-let poseData = null;  // latest pose landmarks
-
-function toggleWearable() {
-  wearableMode = !wearableMode;
-  const btn=document.getElementById('wear-toggle-btn');
-  const badge=document.getElementById('wearable-badge');
-  const picker=document.getElementById('anchor-picker');
-  btn.classList.toggle('on', wearableMode);
-  badge.classList.toggle('on', wearableMode);
-  picker.classList.toggle('visible', wearableMode);
-  document.getElementById('stat-anchor').textContent = wearableMode ? activeAnchor.replace('_',' ').toUpperCase() : '—';
-  showStatus(wearableMode ? 'WEARABLE MODE ON — SELECT ANCHOR' : 'WEARABLE MODE OFF');
-  if(wearableMode && selectedObject) {
-    selectedObject.userData.wearable = true;
-    selectedObject.userData.anchor = activeAnchor;
-  }
-}
-
-function pickAnchor(btn, anchor) {
-  activeAnchor = anchor;
-  document.querySelectorAll('.anchor-btn').forEach(b=>b.classList.remove('sel'));
-  btn.classList.add('sel');
-  document.getElementById('stat-anchor').textContent = anchor.replace('_',' ').toUpperCase();
-  if(selectedObject) { selectedObject.userData.anchor = anchor; selectedObject.userData.wearable = true; }
-  showStatus('ANCHOR: '+anchor.replace('_',' ').toUpperCase());
-}
-
-// Map anchor names to MediaPipe Pose landmark indices
-// Using HAND landmarks when available, Pose for body
-const POSE_ANCHOR_MAP = {
-  right_wrist:  15,
-  left_wrist:   16,
-  right_hand:   15,
-  left_hand:    16,
-  head:         0,
-  chest:        12, // midpoint approx
-  right_shoulder: 11,
-  left_shoulder:  12,
-};
-
-function getPosePoint(anchor) {
-  if(!poseData) return null;
-  const idx = POSE_ANCHOR_MAP[anchor];
-  if(idx === undefined) return null;
-
-  // For chest, average shoulders
-  if(anchor === 'chest') {
-    const ls = poseData[11], rs = poseData[12];
-    if(!ls||!rs||ls.visibility<0.3||rs.visibility<0.3) return null;
-    return { x:(ls.x+rs.x)/2, y:(ls.y+rs.y)/2+0.05, vis:Math.min(ls.visibility,rs.visibility) };
-  }
-  const lm = poseData[idx];
-  if(!lm || lm.visibility < 0.4) return null;
-  return { x: lm.x, y: lm.y, vis: lm.visibility };
-}
-
-// Also use hand landmarks for wrist anchors when hands are detected
-function getHandWristPoint(anchor) {
-  if(anchor === 'right_wrist' || anchor === 'right_hand') {
-    const hand = handData.right;
-    if(hand) return { x: 1-hand[0].x, y: hand[0].y };  // wrist = lm 0
-  }
-  if(anchor === 'left_wrist' || anchor === 'left_hand') {
-    const hand = handData.left;
-    if(hand) return { x: 1-hand[0].x, y: hand[0].y };
-  }
-  return null;
-}
-
-// ═══════════════════════════════════════════
-// HAND TRACKING
-// ═══════════════════════════════════════════
-const handCanvas = document.getElementById('hand-canvas');
-const hCtx = handCanvas.getContext('2d');
-handCanvas.width=window.innerWidth; handCanvas.height=window.innerHeight;
-
-let handData = { left:null, right:null };
-let isPinching=false, isDragging=false, dragObj=null, dragOff={x:0,y:0};
-let isTwoHanded=false, th_dist0=null, th_scale0=null, th_rotY0=null, th_midX0=null;
-
-// One-hand rotation state
-let isRotating=false;
-const PINCH_ON=0.065, PINCH_OFF=0.09, GRAB_R=3.0;
-
-function lm(hand,i){ return hand?.[i]||null; }
-function d2(a,b){ return Math.sqrt((a.x-b.x)**2+(a.y-b.y)**2); }
-function pinchDist(hand){ const t=lm(hand,4),i=lm(hand,8); return(t&&i)?d2(t,i):1; }
-
-// Detect "index up" gesture:
-// - index finger extended upward (tip well above MCP)
-// - middle, ring, pinky all curled down (tips below their MCPs)
-// - thumb relaxed (not counted)
-// - NOT pinching
-function isIndexUpPose(hand) {
-  const indexTip = lm(hand,8),  indexMcp = lm(hand,5);
-  const midTip   = lm(hand,12), midMcp   = lm(hand,9);
-  const ringTip  = lm(hand,16), ringMcp  = lm(hand,13);
-  const pinkyTip = lm(hand,20), pinkyMcp = lm(hand,17);
-  if(!indexTip||!indexMcp||!midTip||!midMcp||!ringTip||!ringMcp||!pinkyTip||!pinkyMcp) return false;
-
-  const indexUp  = indexTip.y < indexMcp.y - 0.08;   // index clearly raised
-  const midDown  = midTip.y   > midMcp.y   - 0.02;   // middle curled
-  const ringDown = ringTip.y  > ringMcp.y  - 0.02;   // ring curled
-  const pinkyDown= pinkyTip.y > pinkyMcp.y - 0.02;   // pinky curled
-
-  return indexUp && midDown && ringDown && pinkyDown;
-}
-
-// Return the screen-space position of the index fingertip (for rotation anchor + UI)
-function indexTipScreen(hand) {
-  const tip = lm(hand,8);
-  if(!tip) return null;
-  return { x:(1-tip.x)*window.innerWidth, y:tip.y*window.innerHeight };
-}
-
-// Map index tip movement → rotation deltas
-// We track how the tip moves frame-to-frame:
-//   left/right  → Y rotation
-//   up/down     → X rotation
-let rotPrevTipX = null, rotPrevTipY = null;
-
-function drawSkeleton(landmarks, color) {
-  const CONN=[[0,1],[1,2],[2,3],[3,4],[0,5],[5,6],[6,7],[7,8],[5,9],[9,10],[10,11],[11,12],[9,13],[13,14],[14,15],[15,16],[13,17],[17,18],[18,19],[19,20],[0,17]];
-  hCtx.strokeStyle=color; hCtx.lineWidth=2; hCtx.shadowColor=color; hCtx.shadowBlur=8;
-  CONN.forEach(([a,b])=>{
-    const la=landmarks[a],lb=landmarks[b]; if(!la||!lb) return;
-    hCtx.beginPath();
-    hCtx.moveTo(la.x*handCanvas.width,la.y*handCanvas.height);
-    hCtx.lineTo(lb.x*handCanvas.width,lb.y*handCanvas.height);
-    hCtx.stroke();
+// ── STL EXPORT ────────────────────────────
+function exportSTL() {
+  if (!Object.keys(objects).length) { toast('No objects to export'); return; }
+  const lines = ['solid hyperflex'];
+  Object.values(objects).forEach(mesh => {
+    const geo = mesh.geometry.clone();
+    geo.applyMatrix4(mesh.matrixWorld);
+    const pos = geo.attributes.position;
+    for (let i = 0; i < pos.count; i += 3) {
+      const v = [0,1,2].map(j => new THREE.Vector3().fromBufferAttribute(pos, i+j));
+      const n = new THREE.Vector3().crossVectors(v[1].clone().sub(v[0]), v[2].clone().sub(v[0])).normalize();
+      lines.push(`facet normal ${n.x} ${n.y} ${n.z}`, `  outer loop`,
+        ...v.map(vv => `    vertex ${vv.x} ${vv.y} ${vv.z}`), `  endloop`, `endfacet`);
+    }
   });
-  landmarks.forEach((l,i)=>{
-    const tip=[4,8,12,16,20].includes(i);
-    hCtx.beginPath(); hCtx.arc(l.x*handCanvas.width,l.y*handCanvas.height,tip?5:3,0,Math.PI*2);
-    hCtx.fillStyle=tip?'#fff':color; hCtx.shadowBlur=12; hCtx.fill();
+  lines.push('endsolid hyperflex');
+  const blob = new Blob([lines.join('\n')], { type:'text/plain' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = 'hyperflex_model.stl'; a.click();
+  toast('STL exported');
+}
+
+// ── UI ────────────────────────────────────
+function updateUI() {
+  const names = Object.keys(objects);
+  document.getElementById('stat-obj').textContent = names.length.toString().padStart(3,'0');
+  document.getElementById('stat-sel').textContent = selected.size > 0 ? Array.from(selected)[0].substring(0,8) : 'NONE';
+  let verts = 0;
+  Object.values(objects).forEach(m => { verts += m.geometry.attributes.position?.count || 0; });
+  document.getElementById('stat-verts').textContent = verts.toLocaleString();
+  document.getElementById('sel-info').textContent = `${names.length} objects · ${selected.size} selected`;
+
+  const list = document.getElementById('obj-list');
+  list.innerHTML = '';
+  names.forEach(name => {
+    const m = objects[name]; if (!m) return;
+    const hex = '#' + (m.userData.props?.hex || 0x00f5ff).toString(16).padStart(6,'0');
+    const item = document.createElement('div');
+    item.className = 'obj-item' + (selected.has(name) ? ' selected' : '');
+    item.innerHTML = `<div class="obj-dot" style="background:${hex};box-shadow:0 0 4px ${hex}"></div><div class="obj-name">${name}</div><div class="obj-del" onclick="event.stopPropagation();delObj('${name}')">✕</div>`;
+    item.onclick = () => { selectObj(name); updateUI(); };
+    list.appendChild(item);
   });
 }
 
-function onHandResults(res) {
-  hCtx.clearRect(0,0,handCanvas.width,handCanvas.height);
-  handData={left:null,right:null};
-  if(res.multiHandLandmarks&&res.multiHandedness) {
-    res.multiHandLandmarks.forEach((lms,i)=>{
-      const label=res.multiHandedness[i]?.label;
-      const side=label==='Left'?'right':'left';
-      handData[side]=lms;
-      const pd=pinchDist(lms);
-      const stateText=pd<PINCH_ON?'PINCH':isIndexUpPose(lms)?'INDEX UP':'OPEN';
-      document.getElementById('stat-'+side).textContent=stateText;
-      drawSkeleton(lms,side==='right'?'#00d4ff':'#ffd700');
+function delObj(name) {
+  if (!objects[name]) return;
+  pivot.remove(objects[name]);
+  objects[name].geometry.dispose();
+  objects[name].material.dispose();
+  delete objects[name];
+  selected.delete(name);
+  updateUI();
+}
+
+let toastTimer;
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2800);
+}
+
+function updateMode(m) { document.getElementById('top-mode').textContent = m; }
+
+// ── CAMERA CONTROL ────────────────────────
+let drag = false, dragPX = 0, dragPY = 0;
+let rotX = 12, rotY = 20, tRotX = 12, tRotY = 20;
+let panX = 0, panY = 0, tPanX = 0, tPanY = 0;
+let zoom = 280, tZoom = 280;
+const ease = 0.07;
+
+canvas.addEventListener('mousedown', e => { drag=true; dragPX=e.clientX; dragPY=e.clientY; });
+window.addEventListener('mouseup', () => drag=false);
+window.addEventListener('mousemove', e => {
+  document.getElementById('cursor').style.left = e.clientX+'px';
+  document.getElementById('cursor').style.top  = e.clientY+'px';
+  if (!drag) return;
+  const dx = e.clientX - dragPX, dy = e.clientY - dragPY;
+  tRotY += dx * 0.3; tRotX = Math.max(-85, Math.min(85, tRotX + dy * 0.2));
+  dragPX = e.clientX; dragPY = e.clientY;
+});
+canvas.addEventListener('wheel', e => { tZoom = Math.max(50, Math.min(1500, tZoom + e.deltaY * 0.3)); }, {passive:true});
+
+// Raycasting click select
+const raycaster = new THREE.Raycaster();
+const mouse2 = new THREE.Vector2();
+let clickStart = {x:0,y:0};
+canvas.addEventListener('mousedown', e => { clickStart.x=e.clientX; clickStart.y=e.clientY; });
+canvas.addEventListener('click', e => {
+  if (Math.abs(e.clientX-clickStart.x)>5 || Math.abs(e.clientY-clickStart.y)>5) return;
+  const rect = canvas.getBoundingClientRect();
+  mouse2.x = ((e.clientX-rect.left)/rect.width)*2 - 1;
+  mouse2.y = -((e.clientY-rect.top)/rect.height)*2 + 1;
+  raycaster.setFromCamera(mouse2, camera);
+  const meshes = Object.values(objects);
+  const hits = raycaster.intersectObjects(meshes, true);
+  if (hits.length) {
+    let obj = hits[0].object;
+    while (obj && !obj.userData.name && obj.parent) obj = obj.parent;
+    if (obj?.userData?.name) { selectObj(obj.userData.name); updateUI(); }
+  } else {
+    selected.clear(); updateUI();
+  }
+});
+
+// ── CHAT / AI ─────────────────────────────
+const chatLog = document.getElementById('chat-log');
+let chatHistory = [];
+
+function addChatMsg(role, text) {
+  const div = document.createElement('div');
+  div.className = 'chat-msg ' + role;
+  if (role === 'ai') div.innerHTML = '↳ ' + text;
+  else if (role === 'user') div.innerHTML = '→ ' + text;
+  else div.textContent = text;
+  chatLog.appendChild(div); chatLog.scrollTop = chatLog.scrollHeight;
+}
+
+function showThinking() {
+  const div = document.createElement('div');
+  div.className = 'chat-msg ai'; div.id = 'thinking';
+  div.innerHTML = '↳ <span class="thinking-dots"><span></span><span></span><span></span></span>';
+  chatLog.appendChild(div); chatLog.scrollTop = chatLog.scrollHeight;
+}
+function hideThinking() {
+  const el = document.getElementById('thinking');
+  if (el) el.remove();
+}
+
+async function sendCmd() {
+  const inp = document.getElementById('chat-input');
+  const cmd = inp.value.trim(); if (!cmd) { spawnShape(); return; }
+  inp.value = '';
+  addChatMsg('user', cmd);
+  showThinking();
+  updateMode('PROCESSING');
+  document.getElementById('chat-send').textContent = '...';
+
+  const sceneState = Object.keys(objects).map(n => {
+    const m = objects[n];
+    return `${n} at [${m.position.toArray().map(v=>Math.round(v)).join(',')}]`;
+  }).join(', ');
+
+  const systemPrompt = `You are JARVIS — a holographic 3D design AI. Build objects from primitive shapes.
+
+Available shapes: sphere, box, cylinder, cone, torus, knot
+Colors (integers): holo_blue=65535, gold=16766720, chrome=14737400, red=16721510, plasma=7340031, amber=16744448, emerald=65416, white=15792383, black=659488, steel=6316160, violet=11149567
+
+Current scene: ${sceneState || 'empty'}
+Selected: ${Array.from(selected).join(', ') || 'none'}
+
+Respond ONLY with valid JSON (no markdown, no backticks):
+{
+  "response": "one sentence JARVIS-style reply",
+  "actions": [
+    {"type":"add","shape":"sphere","name":"Core","color":65535,"size":40,"pos":[0,40,0]},
+    {"type":"color","parts":["Name"],"color":16766720},
+    {"type":"material","parts":["Name"],"preset":"chrome"},
+    {"type":"scale","parts":["Name"],"factor":1.5},
+    {"type":"rotate","parts":["Name"],"axis":"y","deg":45},
+    {"type":"delete","parts":["Name"]},
+    {"type":"clear"}
+  ]
+}
+
+Build 15-40 parts for complex objects. Position them on Y axis starting at Y=0.
+For a chair: legs, seat, back. For a drone: body, arms, rotors. Be creative and precise.`;
+
+  chatHistory.push({ role:'user', content:cmd });
+
+  try {
+    const token = localStorage.getItem('jarvis_token') || '';
+    const res = await fetch('https://api.heyjarvis.me/design-command', {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json', 'Authorization':`Bearer ${token}` },
+      body: JSON.stringify({ command:cmd, systemPrompt, history:chatHistory })
     });
-  } else {
-    document.getElementById('stat-left').textContent='—';
-    document.getElementById('stat-right').textContent='—';
+    const data = await res.json();
+    hideThinking();
+
+    if (data.response) addChatMsg('ai', data.response);
+    if (data.actions?.length) {
+      data.actions.forEach(execAction);
+      updateUI();
+    }
+    chatHistory.push({ role:'assistant', content:JSON.stringify(data) });
+    if (chatHistory.length > 16) chatHistory = chatHistory.slice(-16);
+    updateMode('READY');
+  } catch(e) {
+    hideThinking();
+    addChatMsg('err', 'Server offline — add shapes manually');
+    updateMode('LOCAL');
   }
-  processGestures();
+  document.getElementById('chat-send').textContent = 'Build';
 }
 
-function processGestures() {
-  const rh=handData.right, lh=handData.left;
-
-  // ── TWO-HAND: scale only ──
-  if(rh&&lh&&selectedObject) {
-    const rw=lm(rh,0), lw=lm(lh,0);
-    if(rw&&lw) {
-      const cur=d2(rw,lw);
-      if(!isTwoHanded){
-        isTwoHanded=true; th_dist0=cur; th_scale0=selectedObject.scale.x; setMode('SCALE');
-      }
-      const sc=Math.max(0.1,Math.min(6,th_scale0*(cur/th_dist0)));
-      selectedObject.scale.set(sc,sc,sc);
-      // Show ring between hands
-      const pi=document.getElementById('pinch-indicator');
-      const px=(1-(rw.x+lw.x)/2)*window.innerWidth, py=((rw.y+lw.y)/2)*window.innerHeight;
-      pi.style.display='block'; pi.style.left=px+'px'; pi.style.top=py+'px';
-      pi.style.borderColor='#00ff88'; pi.style.boxShadow='0 0 15px #00ff88';
-      selectedObject.userData.dragged=true; updateStats(); return;
-    }
-  }
-  if(isTwoHanded){
-    isTwoHanded=false; th_dist0=null;
-    if(selectedObject) selectedObject.userData.dragged=false;
-    document.getElementById('pinch-indicator').style.display='none'; setMode('IDLE');
-  }
-
-  // ── SINGLE HAND ──
-  const ah=rh||lh;
-  if(!ah){ setMode('IDLE'); document.getElementById('rot-ring').style.display='none'; return; }
-
-  const indexTip=lm(ah,8), thumbTip=lm(ah,4);
-  if(!indexTip) return;
-
-  // Cursor
-  const cx=(1-indexTip.x)*window.innerWidth, cy=indexTip.y*window.innerHeight;
-  document.getElementById('custom-cursor').style.left=cx+'px';
-  document.getElementById('custom-cursor').style.top=cy+'px';
-
-  const pd=pinchDist(ah);
-  const mx=thumbTip?(1-(thumbTip.x+indexTip.x)/2):(1-indexTip.x);
-  const my=thumbTip?((thumbTip.y+indexTip.y)/2):indexTip.y;
-  const sx=mx*window.innerWidth, sy=my*window.innerHeight;
-
-  // ── INDEX FINGER UP → rotate selected object ──
-  // Only fires when: index is up, hand is open (no pinch), object selected, not two-handed
-  if(isIndexUpPose(ah) && pd > PINCH_OFF && selectedObject && !isPinching) {
-    const tipScreen = indexTipScreen(ah);
-    if(!tipScreen) return;
-
-    // Show rotation ring at fingertip
-    const rr = document.getElementById('rot-ring');
-    rr.style.display = 'block';
-    rr.style.left = tipScreen.x + 'px';
-    rr.style.top  = tipScreen.y + 'px';
-
-    if(!isRotating) {
-      isRotating = true;
-      rotPrevTipX = tipScreen.x;
-      rotPrevTipY = tipScreen.y;
-      setMode('ROTATE'); document.getElementById('stat-gesture').textContent = 'INDEX UP';
-    } else {
-      // Delta fingertip movement drives rotation — feels direct and natural
-      const dx = tipScreen.x - rotPrevTipX;
-      const dy = tipScreen.y - rotPrevTipY;
-      selectedObject.rotation.y += dx * 0.025;   // left/right → spin Y
-      selectedObject.rotation.x += dy * 0.025;   // up/down    → tilt X
-      rotPrevTipX = tipScreen.x;
-      rotPrevTipY = tipScreen.y;
-    }
-  } else {
-    if(isRotating) {
-      isRotating = false; rotPrevTipX = null; rotPrevTipY = null;
-      document.getElementById('rot-ring').style.display = 'none';
-      if(!isPinching) setMode('IDLE');
-    }
-  }
-
-  // ── PINCH → grab and drag ──
-  if(pd<PINCH_ON) {
-    if(!isRotating) document.getElementById('rot-ring').style.display='none';
-    if(!isPinching) {
-      isPinching=true;
-      const wp=s2w(mx,my,0);
-      let nearest=null,nearD=GRAB_R;
-      objects.forEach(o=>{ const d=o.position.distanceTo(wp); if(d<nearD){nearD=d;nearest=o;} });
-      if(nearest){
-        dragObj=nearest; isDragging=true; select(nearest);
-        nearest.userData.dragged=true;
-        dragOff.x=nearest.position.x-wp.x; dragOff.y=nearest.position.y-wp.y;
-        setMode('GRABBING'); document.getElementById('stat-gesture').textContent='PINCH';
-      } else { setMode('PINCH'); }
-    }
-    if(isDragging&&dragObj){
-      const wp=s2w(mx,my,0);
-      dragObj.position.x+=(wp.x+dragOff.x-dragObj.position.x)*0.4;
-      dragObj.position.y+=(wp.y+dragOff.y-dragObj.position.y)*0.4;
-      updateStats();
-    }
-    const pi=document.getElementById('pinch-indicator');
-    pi.style.display='block'; pi.style.left=sx+'px'; pi.style.top=sy+'px';
-    pi.style.borderColor='#ffd700'; pi.style.boxShadow='0 0 15px #ffd700';
-  } else if(pd>PINCH_OFF) {
-    if(isPinching){
-      isPinching=false;
-      if(isDragging&&dragObj){ dragObj.userData.dragged=false; dragObj=null; }
-      isDragging=false;
-      document.getElementById('pinch-indicator').style.display='none';
-      document.getElementById('stat-gesture').textContent='—';
-      setMode('IDLE');
-    }
-  }
-}
-
-// ═══════════════════════════════════════════
-// POSE TRACKING (for wearable anchors)
-// ═══════════════════════════════════════════
-const poseCanvas = document.getElementById('pose-canvas');
-const pCtx = poseCanvas.getContext('2d');
-poseCanvas.width=window.innerWidth; poseCanvas.height=window.innerHeight;
-
-function onPoseResults(res) {
-  pCtx.clearRect(0,0,poseCanvas.width,poseCanvas.height);
-  if(res.poseLandmarks) {
-    poseData = res.poseLandmarks;
-    // Draw minimal pose skeleton (just key points, subtle)
-    if(wearableMode) {
-      pCtx.fillStyle='rgba(0,212,255,0.5)'; pCtx.shadowColor='#00d4ff'; pCtx.shadowBlur=6;
-      [0,11,12,13,14,15,16,23,24].forEach(i=>{
-        const l=poseData[i];
-        if(!l||l.visibility<0.4) return;
-        pCtx.beginPath();
-        pCtx.arc((1-l.x)*poseCanvas.width,l.y*poseCanvas.height,5,0,Math.PI*2);
-        pCtx.fill();
+function execAction(a) {
+  switch(a.type) {
+    case 'add':
+      const props = { hex: a.color||65535, metalness:.85, roughness:.15 };
+      spawnShape({ type:a.shape||'sphere', name:a.name, props, size:a.size||30, pos:a.pos||[0,15,0] });
+      break;
+    case 'color':
+      const targets = a.parts?.length ? a.parts : Array.from(selected);
+      targets.forEach(n => {
+        if (!objects[n]) return;
+        objects[n].userData.props = { hex:a.color, metalness:.85, roughness:.15 };
+        objects[n].material.color.setHex(a.color);
       });
-    }
+      break;
+    case 'material':
+      const s = new Set(a.parts || Array.from(selected));
+      const prev = new Set(selected);
+      selected.clear(); s.forEach(n=>selected.add(n));
+      applyMat(a.preset); selected.clear(); prev.forEach(n=>selected.add(n));
+      break;
+    case 'scale':
+      const sc = new Set(a.parts || Array.from(selected));
+      sc.forEach(n => { if(objects[n]) objects[n].scale.multiplyScalar(a.factor||1.2); });
+      break;
+    case 'rotate':
+      (a.parts||Array.from(selected)).forEach(n=>{ if(objects[n]) objects[n].rotation[a.axis||'y']+=((a.deg||15)*Math.PI/180); });
+      break;
+    case 'delete':
+      (a.parts||[]).forEach(n=>delObj(n));
+      break;
+    case 'clear': clearScene(); break;
   }
 }
 
-// ═══════════════════════════════════════════
-// MOUSE FALLBACK
-// ═══════════════════════════════════════════
-let mPos={x:0,y:0},mDown=false,mDragObj=null,mDragOff={x:0,y:0};
-let rDown=false,rLast={x:0,y:0};
-
-document.addEventListener('mousemove',e=>{
-  mPos={x:e.clientX,y:e.clientY};
-  document.getElementById('custom-cursor').style.left=e.clientX+'px';
-  document.getElementById('custom-cursor').style.top=e.clientY+'px';
-  if(mDown&&mDragObj){
-    const wp=s2w(e.clientX/window.innerWidth,e.clientY/window.innerHeight,0);
-    mDragObj.position.x+=(wp.x+mDragOff.x-mDragObj.position.x)*0.45;
-    mDragObj.position.y+=(wp.y+mDragOff.y-mDragObj.position.y)*0.45;
-    updateStats();
-  }
-  if(rDown&&selectedObject){
-    selectedObject.rotation.y+=(e.clientX-rLast.x)*0.012;
-    selectedObject.rotation.x+=(e.clientY-rLast.y)*0.012;
-    rLast={x:e.clientX,y:e.clientY};
-  }
-});
-TC.addEventListener('mousedown',e=>{
-  if(document.activeElement===document.getElementById('cmd-input')) return;
-  if(e.button===0){
-    const wp=s2w(e.clientX/window.innerWidth,e.clientY/window.innerHeight,0);
-    let nearest=null,nearD=2.2;
-    objects.forEach(o=>{ const d=o.position.distanceTo(wp); if(d<nearD){nearD=d;nearest=o;} });
-    if(nearest){ mDown=true; mDragObj=nearest; select(nearest); nearest.userData.dragged=true; mDragOff.x=nearest.position.x-wp.x; mDragOff.y=nearest.position.y-wp.y; setMode('DRAG'); }
-  }
-  if(e.button===2){ rDown=true; rLast={x:e.clientX,y:e.clientY}; }
-});
-document.addEventListener('mouseup',e=>{
-  if(e.button===0){ mDown=false; if(mDragObj){mDragObj.userData.dragged=false;mDragObj=null;} setMode('IDLE'); }
-  if(e.button===2){ rDown=false; }
-});
-TC.addEventListener('dblclick',e=>{
-  const wp=s2w(e.clientX/window.innerWidth,e.clientY/window.innerHeight,0);
-  spawnAt(wp.x,wp.y,0); showStatus('SPAWNED');
-});
-TC.addEventListener('contextmenu',e=>{ e.preventDefault(); deleteSelected(); });
-TC.addEventListener('wheel',e=>{
-  if(!selectedObject) return;
-  const f=e.deltaY>0?0.88:1.14;
-  const s=Math.max(0.1,Math.min(6,selectedObject.scale.x*f));
-  selectedObject.scale.set(s,s,s); updateStats();
-},{passive:true});
-
-// ═══════════════════════════════════════════
-// KEYBOARD
-// ═══════════════════════════════════════════
-document.addEventListener('keydown',e=>{
-  if(document.activeElement===document.getElementById('cmd-input')) return;
-  if(e.key==='Delete'||e.key==='Backspace') deleteSelected();
-  if(e.key===' '||e.key==='Enter'){ e.preventDefault(); spawnCenter(); }
-  if(e.key==='c'||e.key==='C') clearAll();
-  if(e.key==='v'||e.key==='V') toggleMic();
-  if(e.key==='w'||e.key==='W') toggleWearable();
-  if(e.key==='Tab'){ e.preventDefault(); document.getElementById('cmd-input').focus(); }
+document.getElementById('chat-input').addEventListener('keydown', e => {
+  if (e.key==='Enter' && !e.shiftKey) { e.preventDefault(); sendCmd(); }
 });
 
-// ═══════════════════════════════════════════
-// ANIMATION LOOP
-// ═══════════════════════════════════════════
+// ── ANIMATION ─────────────────────────────
+let t = 0;
 function animate() {
-  requestAnimationFrame(animate); frame++;
+  requestAnimationFrame(animate); t += 0.01;
+  rotX += (tRotX-rotX)*ease;
+  rotY += (tRotY-rotY)*ease;
+  panX += (tPanX-panX)*ease;
+  panY += (tPanY-panY)*ease;
+  zoom += (tZoom-zoom)*ease;
+  pivot.rotation.x = rotX*Math.PI/180;
+  pivot.rotation.y = rotY*Math.PI/180;
+  pivot.position.x = -panX; pivot.position.y = -panY;
+  camera.position.z = zoom;
 
-  objects.forEach(obj=>{
-    // WEARABLE: anchor to body landmark
-    if(obj.userData.wearable && obj.userData.anchor && wearableMode) {
-      // Try hand landmarks first for precision
-      let pt = getHandWristPoint(obj.userData.anchor);
-      if(!pt) pt = getPosePoint(obj.userData.anchor);
-      if(pt) {
-        const wp=s2w(pt.x,pt.y,0);
-        obj.position.x+=(wp.x-obj.position.x)*0.3;
-        obj.position.y+=(wp.y-obj.position.y)*0.3;
-        obj.userData.dragged=true;
-        return;
-      }
-    }
+  // Holo light drift
+  holoLight.intensity = 6 + Math.sin(t*2)*2;
+  fillLight.intensity = 2 + Math.sin(t*1.3+1)*1;
 
-    if(obj.userData.dragged||isTwoHanded) return;
-    if(!obj.userData.isGroup) {
-      obj.rotation.x+=obj.userData.rotX*0.5;
-      obj.rotation.y+=obj.userData.rotY;
-    } else {
-      obj.rotation.y+=obj.userData.rotY*0.5;
+  // Selected glow pulse
+  Object.entries(objects).forEach(([name, m]) => {
+    if (selected.has(name)) {
+      m.material.emissiveIntensity = (m.userData.props?.emissive ? 1.2 : 0.15) + Math.sin(t*4)*0.08;
+      if (!m.userData.props?.emissive) m.material.emissive.setHex(0x003a44);
+    } else if (!m.userData.props?.emissive) {
+      m.material.emissiveIntensity = 0;
     }
-    obj.position.y+=Math.sin(frame*0.018+obj.userData.floatOff)*0.0008;
   });
 
-  pl1.intensity=2.5+Math.sin(frame*0.03)*0.6;
-  pl3.intensity=1.0+Math.sin(frame*0.025+2)*0.3;
-  renderer.render(scene,cam3);
+  renderer.render(scene, camera);
 }
 animate();
 
-// ═══════════════════════════════════════════
-// UI HELPERS
-// ═══════════════════════════════════════════
-let gsTimer;
-function showStatus(txt){
-  const el=document.getElementById('gesture-status');
-  el.textContent=txt; el.style.opacity='1';
-  clearTimeout(gsTimer); gsTimer=setTimeout(()=>el.style.opacity='0',2500);
-}
-function setMode(m){ document.getElementById('mode-badge').textContent='MODE: '+m; }
-
-// ═══════════════════════════════════════════
-// INIT: Camera + MediaPipe Hands + Pose
-// ═══════════════════════════════════════════
-const videoEl=document.getElementById('camera-bg');
-async function initAll(){
-  try{
-    const stream=await navigator.mediaDevices.getUserMedia({video:{width:1280,height:720,facingMode:'user'}});
-    videoEl.srcObject=stream; await videoEl.play();
-    document.getElementById('loading').style.opacity='0';
-    setTimeout(()=>document.getElementById('loading').style.display='none',800);
-    showStatus('HYPERFLEX v4 ONLINE');
-
-    // MediaPipe Hands
-    const hands=new Hands({locateFile:f=>`https://cdn.jsdelivr.net/npm/@mediapipe/hands/${f}`});
-    hands.setOptions({maxNumHands:2,modelComplexity:1,minDetectionConfidence:0.7,minTrackingConfidence:0.6});
-    hands.onResults(onHandResults);
-
-    // MediaPipe Pose (for wearable body anchoring)
-    let poseReady=false;
-    try{
-      const pose=new Pose({locateFile:f=>`https://cdn.jsdelivr.net/npm/@mediapipe/pose/${f}`});
-      pose.setOptions({modelComplexity:1,smoothLandmarks:true,minDetectionConfidence:0.6,minTrackingConfidence:0.5});
-      pose.onResults(onPoseResults);
-
-      // Run both hands and pose from the same camera
-      const mpCam=new Camera(videoEl,{
-        onFrame:async()=>{
-          await hands.send({image:videoEl});
-          if(wearableMode){ await pose.send({image:videoEl}); }
-        },
-        width:1280,height:720
-      });
-      mpCam.start();
-      poseReady=true;
-      showStatus('HAND + POSE TRACKING ACTIVE — PINCH TO GRAB · TWIST TO ROTATE · W = WEARABLE');
-    }catch(e){
-      // Pose failed, run hands only
-      const mpCam=new Camera(videoEl,{onFrame:async()=>{await hands.send({image:videoEl});},width:1280,height:720});
-      mpCam.start();
-      showStatus('HAND TRACKING ACTIVE — PINCH TO GRAB · TWIST TO ROTATE');
-    }
-  }catch(e){
-    document.getElementById('loading').style.opacity='0';
-    setTimeout(()=>document.getElementById('loading').style.display='none',800);
-    document.getElementById('camera-bg').style.display='none';
-    document.body.style.background='radial-gradient(ellipse at 30% 50%,#001833,#000510)';
-    showStatus('NO CAMERA — TYPE OR SPEAK TO SPAWN · R-DRAG ROTATE · SCROLL SCALE');
-  }
-}
-initAll();
-
-window.addEventListener('resize',()=>{
-  renderer.setSize(window.innerWidth,window.innerHeight);
-  cam3.aspect=window.innerWidth/window.innerHeight; cam3.updateProjectionMatrix();
-  TC.width=window.innerWidth; TC.height=window.innerHeight;
-  handCanvas.width=window.innerWidth; handCanvas.height=window.innerHeight;
-  poseCanvas.width=window.innerWidth; poseCanvas.height=window.innerHeight;
-});
+// ── INIT ──────────────────────────────────
+setTimeout(() => {
+  document.getElementById('loader').style.opacity = '0';
+  setTimeout(() => document.getElementById('loader').style.display='none', 800);
+  toast('HYPERFLEX online — describe anything');
+  updateMode('STANDBY');
+  updateUI();
+}, 1200);
 </script>
 </body>
 </html>
