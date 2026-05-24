@@ -1831,12 +1831,26 @@ app.get('/memory-insights', authMiddleware, async (req, res) => {
     const response = await anthropic.messages.create({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 600,
-      messages: [{ role: 'user', content: `Based on these conversation summaries, extract 6-10 memorable facts about this user. Focus on personality, interests, preferences, habits, and style. Return ONLY a JSON array of strings, each a short fact starting with "Likes", "Prefers", "Is", "Has", "Enjoys", etc. No markdown, no preamble.\n\nSummaries:\n${summaries}` }]
+      messages: [{ 
+        role: 'user', 
+        content: `Based on these conversation summaries, extract 6-10 memorable facts about this user. Focus on personality, interests, preferences, habits, and style.\n\nRespond with ONLY a raw JSON array like this example:\n["Enjoys shopping on Amazon", "Likes grunge music", "Has an Eric Clapton shirt"]\n\nNo markdown backticks, no explanation, just the array.\n\nSummaries:\n${summaries}` 
+      }]
     });
-    const text = response.content[0].text.replace(/```json|```/g, '').trim();
-    const insights = JSON.parse(text);
+    let text = response.content[0].text.trim();
+    // Strip any markdown if present
+    text = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+    // Find the array in the response
+    const match = text.match(/\[[\s\S]*\]/);
+    if (!match) {
+      console.log('[INSIGHTS] No array found in response:', text);
+      return res.json({ insights: [] });
+    }
+    const insights = JSON.parse(match[0]);
     res.json({ insights });
-  } catch (e) { res.json({ insights: [] }); }
+  } catch (e) { 
+    console.log('[INSIGHTS] Error:', e.message);
+    res.json({ insights: [] }); 
+  }
 });
 // ============ FACE RECOGNITION (Nadav-only) ============
 app.post('/face-status', authMiddleware, (req, res) => {
