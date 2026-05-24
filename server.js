@@ -1282,7 +1282,7 @@ async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame
     type: 'object',
     properties: {
       prompt: { type: 'string', description: 'Description of the desired image' },
-      faceImageIndex: { type: 'number', description: 'Index of the uploaded image to use as face reference (0 = first image)' }
+      faceImageIndex: { type: 'number', description: 'Index of the uploaded image (always use 0 for the first/only image)' }
     },
     required: ['prompt']
   }
@@ -1698,10 +1698,17 @@ for (const f of otherFiles) {
   result = `Image generated: ${imageUrl}`;
 }
 else if (block.name === 'generate_image_with_face') {
-  const faceIdx = block.input.faceImageIndex || 0;
+  const faceIdx = block.input.faceImageIndex ?? 0;  // default to 0
   const faceFile = imageFiles[faceIdx];
   if (!faceFile) {
-    result = 'No image uploaded to use as face reference. Ask the user to upload a photo first.';
+    // Force index 0 if specified index not found
+    const fallbackFile = imageFiles[0];
+    if (!fallbackFile) {
+      result = 'No image uploaded. Ask the user to upload a photo first.';
+    } else {
+      const imageUrl = await generateImageWithFace(fallbackFile.data, block.input.prompt);
+      result = `Image generated: ${imageUrl}`;
+    }
   } else {
     const imageUrl = await generateImageWithFace(faceFile.data, block.input.prompt);
     result = `Image generated: ${imageUrl}`;
