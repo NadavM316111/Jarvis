@@ -986,42 +986,37 @@ async function generateImage(prompt) {
 }
 
 async function generateImageWithFace(faceImageBase64, prompt) {
-  const { fal } = require('@fal-ai/client');
-  fal.config({ credentials: process.env.FAL_API_KEY });
-
-  // Upload the image to fal storage first
-  const imageBuffer = Buffer.from(faceImageBase64, 'base64');
-  const uploadedUrl = await fal.storage.upload(
-    new Blob([imageBuffer], { type: 'image/jpeg' }),
-    { filename: 'face.jpg' }
-  );
-
-  // Create a zip with the single image
-  const JSZip = require('jszip');
-  const zip = new JSZip();
-  zip.file('face.jpg', imageBuffer);
-  const zipBuffer = await zip.generateAsync({ type: 'nodebuffer' });
-  const archiveUrl = await fal.storage.upload(
-    new Blob([zipBuffer], { type: 'application/zip' }),
-    { filename: 'faces.zip' }
-  );
-
-  const result = await fal.subscribe('fal-ai/photomaker', {
-    input: {
-      prompt: `${prompt}, img, best quality, high quality, photorealistic`,
-      image_archive_url: archiveUrl,
-      style_name: 'Photographic (Default)',
-      num_steps: 25,
-      style_strength_ratio: 20,
-      guidance_scale: 5,
-      negative_prompt: 'nsfw, lowres, bad anatomy, bad hands, text, error, cropped, worst quality, low quality, jpeg artifacts, watermark, blurry, deformed face',
+  const response = await axios.post(
+    'https://api.replicate.com/v1/models/tencentarc/photomaker/predictions',
+    {
+      input: {
+  prompt: `${prompt}, img, best quality, high quality`,
+  input_images: [`data:image/jpeg;base64,${faceImageBase64}`],
+  style_name: 'Photographic (Default)',
+  num_steps: 25,
+  style_strength_ratio: 35,
+  num_outputs: 1,
+  guidance_scale: 5,
+  negative_prompt: 'nsfw, lowres, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry',
+}
     },
-    pollInterval: 2000,
-  });
+    { headers: { Authorization: `Token ${process.env.REPLICATE_API_KEY}`, 'Content-Type': 'application/json' } }
+  );
 
-  const outputUrl = result.data.images[0].url;
+  let prediction = response.data;
+  while (prediction.status !== 'succeeded' && prediction.status !== 'failed') {
+    await new Promise(r => setTimeout(r, 1500));
+    const poll = await axios.get(`https://api.replicate.com/v1/predictions/${prediction.id}`, {
+      headers: { Authorization: `Token ${process.env.REPLICATE_API_KEY}` }
+    });
+    prediction = poll.data;
+  }
+
+  if (prediction.status === 'failed') throw new Error('Face image generation failed: ' + prediction.error);
+
+  const imageUrl = Array.isArray(prediction.output) ? prediction.output[0] : prediction.output;
   const filename = `img_${Date.now()}.webp`;
-  const imgRes = await axios.get(outputUrl, { responseType: 'arraybuffer' });
+  const imgRes = await axios.get(imageUrl, { responseType: 'arraybuffer' });
   fs.writeFileSync(path.join(PUBLIC_DIR, filename), imgRes.data);
   return `https://api.heyjarvis.me/view/${filename}`;
 }
@@ -1294,7 +1289,7 @@ async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame
     type: 'object',
     properties: {
       prompt: { type: 'string', description: 'Description of the desired image' },
-      faceImageIndex: { type: 'number', description: 'Index of the uploaded image (always use 0 for the first/only image)' }
+      faceImageIndex: { type: 'number', description: 'Index of the uploaded image to use as face reference (0 = first image)' }
     },
     required: ['prompt']
   }
@@ -1710,17 +1705,10 @@ for (const f of otherFiles) {
   result = `Image generated: ${imageUrl}`;
 }
 else if (block.name === 'generate_image_with_face') {
-  const faceIdx = block.input.faceImageIndex ?? 0;  // default to 0
+  const faceIdx = block.input.faceImageIndex || 0;
   const faceFile = imageFiles[faceIdx];
   if (!faceFile) {
-    // Force index 0 if specified index not found
-    const fallbackFile = imageFiles[0];
-    if (!fallbackFile) {
-      result = 'No image uploaded. Ask the user to upload a photo first.';
-    } else {
-      const imageUrl = await generateImageWithFace(fallbackFile.data, block.input.prompt);
-      result = `Image generated: ${imageUrl}`;
-    }
+    result = 'No image uploaded to use as face reference. Ask the user to upload a photo first.';
   } else {
     const imageUrl = await generateImageWithFace(faceFile.data, block.input.prompt);
     result = `Image generated: ${imageUrl}`;
