@@ -48,6 +48,7 @@ function formatMessage(text: string) {
     .replace(/#{1,3} (.*?)(\n|$)/g, '<strong>$1</strong><br/>')
     .replace(/^- (.*?)$/gm, '• $1')
     .replace(/\n/g, '<br/>')
+    .replace(/(https?:\/\/[^\s<"]+\.(webp|png|jpg|jpeg))/g, '<div style="margin-top:8px"><img src="$1" style="max-width:100%;border-radius:12px;display:block;" /><a href="$1" download style="display:inline-flex;align-items:center;gap:4px;margin-top:6px;font-size:11px;color:#60a5fa;text-decoration:none;opacity:0.7;">↓ Download</a></div>')
     .replace(/(https?:\/\/[^\s<"]+)/g, '<a href="$1" target="_blank" rel="noopener noreferrer" style="color:#60a5fa;text-decoration:underline;word-break:break-all;">$1</a>');
 }
 
