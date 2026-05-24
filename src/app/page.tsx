@@ -489,6 +489,7 @@ function VoiceModeModal({
         @keyframes voiceBar0 { 0%, 100% { height: 8px; } 50% { height: 28px; } }
         @keyframes voiceBar1 { 0%, 100% { height: 14px; } 50% { height: 8px; } }
         @keyframes voiceBar2 { 0%, 100% { height: 20px; } 50% { height: 36px; } }
+        @keyframes spin { to { transform: rotate(360deg); } }
       `}</style>
     </div>
   );
@@ -617,6 +618,7 @@ const toggleLight = () => {
   const [showMemory, setShowMemory] = useState(false);
 const [memoryData, setMemoryData] = useState<any>(null);
   const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [memoryLoading, setMemoryLoading] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -1236,25 +1238,34 @@ const abortRef = useRef<AbortController | null>(null);
                 <div className="text-white/70 text-sm font-medium">JARVIS Memory</div>
                 <div className="text-white/30 text-xs mt-0.5">See what JARVIS knows about you</div>
               </div>
-              <button
-                onClick={async () => {
-  try {
-    const [meRes, insightsRes] = await Promise.all([
-      fetch(`${API}/auth/me`, { headers: { Authorization: `Bearer ${token}` } }),
-      fetch(`${API}/memory-insights`, { headers: { Authorization: `Bearer ${token}` } })
-    ]);
-    const meData = await meRes.json();
-    const insightsData = await insightsRes.json();
-    setMemoryData({ ...meData.memory, _insights: insightsData.insights || [] });
-  } catch (e) {
-    setMemoryData({ userName, email: '', _insights: [] });
-  }
-  setShowMemory(true);
-}}
-                style={{ padding: '7px 14px', borderRadius: 10, fontSize: 12, fontWeight: 500, background: 'rgba(99,102,241,0.15)', border: '1px solid rgba(99,102,241,0.3)', color: '#a5b4fc', cursor: 'pointer' }}
-              >
-                View
-              </button>
+             
+<button
+  disabled={memoryLoading}
+  onClick={async () => {
+    setMemoryLoading(true);
+    try {
+      const [meRes, insightsRes] = await Promise.all([
+        fetch(`${API}/auth/me`, { headers: { Authorization: `Bearer ${token}` } }),
+        fetch(`${API}/memory-insights`, { headers: { Authorization: `Bearer ${token}` } })
+      ]);
+      const meData = await meRes.json();
+      const insightsData = await insightsRes.json();
+      setMemoryData({ ...meData.memory, _insights: insightsData.insights || [] });
+    } catch (e) {
+      setMemoryData({ userName, email: '', _insights: [] });
+    }
+    setMemoryLoading(false);
+    setShowMemory(true);
+  }}
+  style={{ padding: '7px 14px', borderRadius: 10, fontSize: 12, fontWeight: 500, background: 'rgba(99,102,241,0.15)', border: '1px solid rgba(99,102,241,0.3)', color: '#a5b4fc', cursor: memoryLoading ? 'default' : 'pointer', opacity: memoryLoading ? 0.7 : 1, display: 'flex', alignItems: 'center', gap: 6 }}
+>
+  {memoryLoading ? (
+    <>
+      <div style={{ width: 10, height: 10, borderRadius: '50%', border: '1.5px solid #a5b4fc', borderTopColor: 'transparent', animation: 'spin 0.7s linear infinite' }} />
+      Loading...
+    </>
+  ) : 'View'}
+</button>
             </div>
 
             {subscribed ? (
