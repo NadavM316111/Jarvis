@@ -984,6 +984,106 @@ async function generateImage(prompt) {
     : `http://localhost:3001/view/${filename}`;
   return url;
 }
+
+async function shopSearch(query, category, location = '') {
+  const results = [];
+
+  if (category === 'product') {
+    // Amazon
+    try {
+      const amazonSearch = await webSearch(`${query} site:amazon.com buy`);
+      const amazonResult = amazonSearch.find(r => r.url.includes('amazon.com/') && r.url.includes('/dp/'));
+      if (amazonResult) {
+        results.push({
+          store: 'Amazon',
+          name: amazonResult.title.replace(' - Amazon.com', '').replace(' | Amazon.com', ''),
+          url: amazonResult.url,
+          note: 'Prime eligible — fast shipping',
+          color: '#FF9900',
+          logo: 'amazon'
+        });
+      }
+    } catch (e) {}
+
+    // eBay
+    try {
+      const ebaySearch = await webSearch(`${query} site:ebay.com buy it now`);
+      const ebayResult = ebaySearch.find(r => r.url.includes('ebay.com/itm/'));
+      if (ebayResult) {
+        // Try to extract price from description
+        const priceMatch = ebayResult.description?.match(/\$[\d,]+\.?\d*/);
+        results.push({
+          store: 'eBay',
+          name: ebayResult.title.replace(' | eBay', ''),
+          url: ebayResult.url,
+          price: priceMatch ? priceMatch[0] : null,
+          note: 'Buy It Now',
+          color: '#86B817',
+          logo: 'ebay'
+        });
+      }
+    } catch (e) {}
+  }
+
+  if (category === 'grocery') {
+    try {
+      const instacartSearch = await webSearch(`${query} site:instacart.com`);
+      const instacartResult = instacartSearch.find(r => r.url.includes('instacart.com'));
+      if (instacartResult) {
+        results.push({
+          store: 'Instacart',
+          name: instacartResult.title.replace(' - Instacart', ''),
+          url: instacartResult.url || `https://www.instacart.com/store/s?k=${encodeURIComponent(query)}`,
+          note: 'Delivery in ~1 hour',
+          color: '#43B02A',
+          logo: 'instacart'
+        });
+      } else {
+        results.push({
+          store: 'Instacart',
+          name: query,
+          url: `https://www.instacart.com/store/s?k=${encodeURIComponent(query)}`,
+          note: 'Search on Instacart',
+          color: '#43B02A',
+          logo: 'instacart'
+        });
+      }
+    } catch (e) {}
+  }
+
+  if (category === 'food') {
+    // DoorDash
+    try {
+      results.push({
+        store: 'DoorDash',
+        name: query,
+        url: `https://www.doordash.com/search/store/${encodeURIComponent(query)}/`,
+        note: 'Order on DoorDash',
+        color: '#FF3008',
+        logo: 'doordash'
+      });
+    } catch (e) {}
+
+    // Uber Eats
+    try {
+      results.push({
+        store: 'Uber Eats',
+        name: query,
+        url: `https://www.ubereats.com/search?q=${encodeURIComponent(query)}`,
+        note: 'Order on Uber Eats',
+        color: '#06C167',
+        logo: 'ubereats'
+      });
+    } catch (e) {}
+  }
+
+  if (results.length === 0) {
+    return JSON.stringify({ error: 'No results found' });
+  }
+
+  // Return as special order card format
+  return `__ORDER_CARD__${JSON.stringify({ query, results })}__ORDER_CARD__`;
+}
 // ============ COMPUTER ACTIONS (Nadav-only) ============
 async function executeAction(action) {
   switch (action.type) {
@@ -1113,6 +1213,19 @@ async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame
     properties: { prompt: { type: 'string', description: 'Detailed image description' } }, 
     required: ['prompt'] 
   } 
+},
+{
+  name: 'shop',
+  description: 'Search for and find the best place to buy any product. Searches Amazon, eBay, Instacart, DoorDash, and Uber Eats. Returns a structured result with the best option.',
+  input_schema: {
+    type: 'object',
+    properties: {
+      query: { type: 'string', description: 'What the user wants to buy or order' },
+      category: { type: 'string', enum: ['product', 'grocery', 'food'], description: 'product=Amazon/eBay, grocery=Instacart, food=DoorDash/UberEats' },
+      location: { type: 'string', description: 'User location for food/grocery delivery' }
+    },
+    required: ['query', 'category']
+  }
 },
   { name: 'finish', description: 'Task complete. Deliver final response.', input_schema: { type: 'object', properties: { response: { type: 'string' } }, required: ['response'] } }
 ];
@@ -1535,6 +1648,9 @@ for (const f of otherFiles) {
           addProactiveUpdate(block.input.message, userId);
           result = 'Update sent.';
         }
+        else if (block.name === 'shop') {
+  result = await shopSearch(block.input.query, block.input.category, block.input.location || userLocation);
+}
         else if (block.name === 'finish') {
           finalResponse = block.input.response;
           toolResults.push({ type: 'tool_result', tool_use_id: block.id, content: 'Done.' });

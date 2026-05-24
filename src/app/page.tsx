@@ -516,6 +516,39 @@ function MessageActions({ content, role, onEdit }: { content: string; role: 'use
     </div>
   );
 }
+
+function OrderCard({ content }: { content: string }) {
+  const match = content.match(/__ORDER_CARD__([\s\S]+)__ORDER_CARD__/);
+  if (!match) return null;
+  try {
+    const { query, results } = JSON.parse(match[1]);
+    const logos: Record<string, string> = {
+      amazon: '🛒', ebay: '🏷️', instacart: '🛍️', doordash: '🚗', ubereats: '🍔'
+    };
+    return (
+      <div style={{ background: 'var(--jarvis-msg-ai)', border: '1px solid var(--jarvis-border)', borderRadius: 16, padding: '16px', maxWidth: 380 }}>
+        <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+          Best options for "{query}"
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          {results.map((r: any, i: number) => (
+            <div key={i} style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12, padding: '12px 14px', display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div style={{ fontSize: 22, flexShrink: 0 }}>{logos[r.logo] || '🛒'}</div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.9)', marginBottom: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{r.store}</div>
+                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{r.price ? `${r.price} · ` : ''}{r.note}</div>
+              </div>
+              <a href={r.url} target="_blank" rel="noopener noreferrer"
+                style={{ flexShrink: 0, padding: '8px 14px', borderRadius: 10, fontSize: 12, fontWeight: 600, background: r.color, color: 'white', textDecoration: 'none', whiteSpace: 'nowrap' }}>
+                Open & Buy
+              </a>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  } catch { return null; }
+}
 export default function Home() {
   const [lightMode, setLightMode] = useState(false);
 
@@ -1547,7 +1580,10 @@ style={!spokenUpdates ? { color: 'var(--jarvis-text-sub)', background: 'var(--ja
 className={`px-4 py-3 rounded-2xl text-sm leading-relaxed ${msg.role === "assistant" ? "rounded-tl-sm" : "text-white rounded-tr-sm"}`}>
         {msg.source === "voice" && <div className="text-xs opacity-40 mb-1">{msg.role === "user" ? "voice" : "spoken"}</div>}
         {msg.fileName && !msg.imageUrl && (<div className="flex items-center gap-1.5 mb-2 opacity-70"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg><span className="text-xs">{msg.fileName}</span></div>)}
-        <span dangerouslySetInnerHTML={{ __html: formatMessage(msg.content) }} />
+        {msg.content.includes('__ORDER_CARD__') 
+          ? <OrderCard content={msg.content} />
+          : <span dangerouslySetInnerHTML={{ __html: formatMessage(msg.content) }} />
+        }
         {msg.imageUrl && <img src={msg.imageUrl} alt={msg.fileName || 'attachment'} className="mt-2 rounded-xl max-w-full" style={{ maxHeight: '200px', objectFit: 'contain' }} />}
         {msg.role === 'assistant' && renderMessageExtras(msg.content, (prompt) => { setInput(prompt); setTimeout(() => send(), 50); })}
       </div>
