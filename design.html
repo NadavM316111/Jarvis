@@ -332,32 +332,31 @@ function setLoading(show, sub) {
 const SYS = {
   mockup: `You are an elite UI/UX designer. Generate a stunning, complete, working HTML page.
 
-CRITICAL: Return ONLY valid JSON in this exact format:
-{"title":"Page Title","html":"FULL HTML HERE","meta":"colors and components used"}
+CRITICAL OUTPUT FORMAT - follow exactly:
+{"title":"Page Title","html":"FULL HTML HERE","meta":"brief summary"}
 
-The "html" value must be:
-- A COMPLETE HTML document with <!DOCTYPE html>, <html>, <head>, <body>
-- Fully self-contained: all CSS in <style> tags, all JS in <script> tags
-- Google Fonts allowed via <link> tag
-- ALL interactive elements (buttons, tabs, dropdowns) must actually work with JavaScript
-- Realistic fake data — real names, numbers, dates, not placeholders
-- Visually stunning with proper spacing, shadows, gradients, modern design
-- IMPORTANT: Escape all special characters in the JSON string value
-
-Return NOTHING except the JSON object. No markdown, no backticks, no explanation.`,
+Rules for the html string:
+- Complete HTML document with DOCTYPE, html, head, body tags
+- Use SINGLE QUOTES for all HTML attributes (style='color:red' NOT style="color:red")
+- All CSS in style tags, all JS in script tags
+- Google Fonts via link tag allowed
+- All buttons/tabs must work with JS onclick handlers
+- Realistic fake data, visually stunning
+- No markdown, no backticks around the JSON`,
 
   brand: `You are a brand identity designer. Generate a complete brand kit.
 
-Return ONLY valid JSON:
-{"title":"Kit Title","brandName":"Name","tagline":"Tagline","colors":[{"hex":"#hex","name":"Name","role":"role"}],"fonts":{"heading":"FontName","body":"FontName"},"logoSVG":"SVG string","voice":"brand voice","meta":"summary"}
+Return ONLY this JSON (no markdown, no backticks):
+{"title":"Kit Title","brandName":"Name","tagline":"Tagline","colors":[{"hex":"#hex","name":"Name","role":"role"}],"fonts":{"heading":"FontName","body":"FontName"},"logoSVG":"SVG string with single-quote attributes","voice":"brand voice","meta":"summary"}
 
-Rules: 5-6 colors, real Google Font names, logoSVG is viewBox="0 0 200 60". No markdown. Pure JSON.`,
+Rules: 5-6 colors, real Google Font names, logoSVG uses single quotes for attributes.`,
 
-  poster: `You are a graphic designer. Generate a creative HTML/CSS visual.
+  poster: `You are a graphic designer. Generate a creative HTML poster.
 
-Return ONLY valid JSON: {"title":"Title","html":"FULL HTML DOCUMENT","meta":"summary"}
+Return ONLY this JSON (no markdown, no backticks):
+{"title":"Title","html":"COMPLETE HTML DOC","meta":"summary"}
 
-The html must be a complete HTML document with a fixed 500x700 container for poster format. Bold layouts, strong typography, realistic copy, CSS animations allowed. No markdown. Pure JSON.`,
+Use SINGLE QUOTES for all HTML attributes in the html string. Fixed 500x700px container, bold typography, CSS animations OK.`,
 };
 
 async function generate() {
@@ -374,16 +373,31 @@ async function generate() {
   try {
     const token = localStorage.getItem('jarvis_token') || '';
 
-    // Use /ai-proxy to get raw AI response — avoids server-side JSON.parse issues
-    const res = await fetch('https://api.heyjarvis.me/ai-proxy', {
+    const res = await fetch('https://api.heyjarvis.me/design-command', {
       method: 'POST',
       headers: { 'Content-Type':'application/json', 'Authorization':'Bearer '+token },
-      body: JSON.stringify({ prompt: full, system: SYS[mode] })
+      body: JSON.stringify({ command: full, systemPrompt: SYS[mode], history: [] })
     });
 
+    // design-command does JSON.parse on the server, so we get back an object
+    // but if that fails it returns { response: 'Processing...', actions: [] }
+    // We handle both cases
     const raw = await res.json();
-    const text = (raw.response || '').trim();
-    const data = extractJSON(text);
+
+    let data = null;
+
+    // Case 1: server parsed it successfully and returned the object directly
+    if (raw && (raw.html || raw.brandName || raw.colors)) {
+      data = raw;
+    }
+    // Case 2: server returned { response: "...", actions: [] } — parse response field
+    else if (raw && typeof raw.response === 'string' && raw.response.length > 10) {
+      data = extractJSON(raw.response);
+    }
+    // Case 3: raw itself might be parseable
+    else {
+      data = extractJSON(JSON.stringify(raw));
+    }
 
     setLoading(false);
 
