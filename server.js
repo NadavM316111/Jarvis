@@ -989,29 +989,35 @@ async function generateImageWithFace(faceImageBase64, prompt) {
   const { fal } = require('@fal-ai/client');
   fal.config({ credentials: process.env.FAL_API_KEY });
 
-  const result = await fal.subscribe('fal-ai/photomaker', {
-    input: {
-      prompt: `${prompt}, img, best quality, high quality, photorealistic`,
-      input_image_urls: [`data:image/jpeg;base64,${faceImageBase64}`],
-      style_name: 'Photographic (Default)',
-      num_steps: 25,
-      style_strength_ratio: 20,
-      guidance_scale: 5,
-      negative_prompt: 'nsfw, lowres, bad anatomy, bad hands, text, error, cropped, worst quality, low quality, jpeg artifacts, watermark, blurry, deformed face',
-    },
-    pollInterval: 2000,
-    logs: true,
-    onQueueUpdate: (update) => {
-      console.log('[FAL] status:', update.status, update.logs?.map(l => l.message).join(' '));
-    },
-  });
+  try {
+    const result = await fal.subscribe('fal-ai/photomaker', {
+      input: {
+        prompt: `${prompt}, img, best quality, high quality, photorealistic`,
+        input_image_urls: [`data:image/jpeg;base64,${faceImageBase64}`],
+        style_name: 'Photographic (Default)',
+        num_steps: 25,
+        style_strength_ratio: 20,
+        guidance_scale: 5,
+        negative_prompt: 'nsfw, lowres, bad anatomy, bad hands, text, error, cropped, worst quality, low quality, jpeg artifacts, watermark, blurry, deformed face',
+      },
+      pollInterval: 2000,
+      logs: true,
+      onQueueUpdate: (update) => {
+        console.log('[FAL] status:', update.status);
+        if (update.logs) console.log('[FAL] logs:', update.logs.map(l => l.message).join('\n'));
+      },
+    });
 
-  console.log('[FAL] result:', JSON.stringify(result.data).substring(0, 200));
-  const outputUrl = result.data.images[0].url;
-  const filename = `img_${Date.now()}.webp`;
-  const imgRes = await axios.get(outputUrl, { responseType: 'arraybuffer' });
-  fs.writeFileSync(path.join(PUBLIC_DIR, filename), imgRes.data);
-  return `https://api.heyjarvis.me/view/${filename}`;
+    console.log('[FAL] full result:', JSON.stringify(result, null, 2).substring(0, 500));
+    const outputUrl = result.data.images[0].url;
+    const filename = `img_${Date.now()}.webp`;
+    const imgRes = await axios.get(outputUrl, { responseType: 'arraybuffer' });
+    fs.writeFileSync(path.join(PUBLIC_DIR, filename), imgRes.data);
+    return `https://api.heyjarvis.me/view/${filename}`;
+  } catch(e) {
+    console.log('[FAL] full error:', JSON.stringify(e.body, null, 2));
+    throw e;
+  }
 }
 
 async function screenshotPage(url) {
