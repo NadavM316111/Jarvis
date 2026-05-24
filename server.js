@@ -1650,7 +1650,16 @@ for (const f of otherFiles) {
           result = 'Update sent.';
         }
         else if (block.name === 'shop') {
-  result = await shopSearch(block.input.query, block.input.category, block.input.location || userLocation);
+  const shopResult = await shopSearch(block.input.query, block.input.category, block.input.location || userLocation);
+  // If it's an order card, return it directly as the final response
+  if (shopResult.includes('__ORDER_CARD__')) {
+    finalResponse = shopResult;
+    toolResults.push({ type: 'tool_result', tool_use_id: block.id, content: 'Order card created and displayed to user.' });
+    messages.push({ role: 'user', content: toolResults });
+    finished = true;
+    break;
+  }
+  result = shopResult;
 }
         else if (block.name === 'finish') {
           finalResponse = block.input.response;
