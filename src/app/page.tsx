@@ -1238,13 +1238,17 @@ const abortRef = useRef<AbortController | null>(null);
               </div>
               <button
                 onClick={async () => {
-  const [meRes, summRes] = await Promise.all([
-    fetch(`${API}/auth/me`, { headers: { Authorization: `Bearer ${token}` } }),
-    fetch(`${API}/memory-summaries`, { headers: { Authorization: `Bearer ${token}` } })
-  ]);
-  const meData = await meRes.json();
-  const summData = await summRes.json();
-  setMemoryData({ ...meData.memory, _conversationHistory: summData.summaries });
+  try {
+    const [meRes, summRes] = await Promise.all([
+      fetch(`${API}/auth/me`, { headers: { Authorization: `Bearer ${token}` } }),
+      fetch(`${API}/memory-summaries`, { headers: { Authorization: `Bearer ${token}` } })
+    ]);
+    const meData = await meRes.json();
+    const summData = await summRes.json();
+    setMemoryData({ ...meData.memory, _conversationHistory: summData.summaries || [] });
+  } catch (e) {
+    setMemoryData({ userName, email: '', _conversationHistory: [] });
+  }
   setShowMemory(true);
 }}
                 style={{ padding: '7px 14px', borderRadius: 10, fontSize: 12, fontWeight: 500, background: 'rgba(99,102,241,0.15)', border: '1px solid rgba(99,102,241,0.3)', color: '#a5b4fc', cursor: 'pointer' }}
