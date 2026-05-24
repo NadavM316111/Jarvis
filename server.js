@@ -994,14 +994,14 @@ async function generateImageWithFace(faceImageBase64, prompt) {
       prompt: `${prompt}, img, best quality, high quality, photorealistic`,
       input_image_urls: [`data:image/jpeg;base64,${faceImageBase64}`],
       style_name: 'Photographic (Default)',
-      num_steps: 50,
+      num_steps: 25,
       style_strength_ratio: 20,
       guidance_scale: 5,
       negative_prompt: 'nsfw, lowres, bad anatomy, bad hands, text, error, cropped, worst quality, low quality, jpeg artifacts, watermark, blurry, deformed face',
     },
     pollInterval: 2000,
   });
-  
+
 
   const imageUrl = result.data.images[0].url;
   const filename = `img_${Date.now()}.webp`;
