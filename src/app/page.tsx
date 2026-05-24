@@ -614,7 +614,8 @@ const toggleLight = () => {
   const [authName, setAuthName] = useState('');
   const [authError, setAuthError] = useState('');
   const [authLoading, setAuthLoading] = useState(false);
-
+  const [showMemory, setShowMemory] = useState(false);
+const [memoryData, setMemoryData] = useState<any>(null);
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [input, setInput] = useState("");
@@ -1230,6 +1231,24 @@ const abortRef = useRef<AbortController | null>(null);
               </button>
             </div>
 
+            <div className="mb-4 p-4 rounded-xl border border-white/10 bg-white/3 flex items-center justify-between">
+              <div>
+                <div className="text-white/70 text-sm font-medium">JARVIS Memory</div>
+                <div className="text-white/30 text-xs mt-0.5">See what JARVIS knows about you</div>
+              </div>
+              <button
+                onClick={async () => {
+                  const res = await fetch(`${API}/auth/me`, { headers: { Authorization: `Bearer ${token}` } });
+                  const data = await res.json();
+                  setMemoryData(data.memory);
+                  setShowMemory(true);
+                }}
+                style={{ padding: '7px 14px', borderRadius: 10, fontSize: 12, fontWeight: 500, background: 'rgba(99,102,241,0.15)', border: '1px solid rgba(99,102,241,0.3)', color: '#a5b4fc', cursor: 'pointer' }}
+              >
+                View
+              </button>
+            </div>
+
             {subscribed ? (
               // ── PRO USER: show plan details, no upgrade needed ──
               <div className="mb-4 p-4 rounded-xl border border-green-500/20 bg-green-500/5">
@@ -1302,6 +1321,36 @@ const abortRef = useRef<AbortController | null>(null);
                 </div>
               </>
             )}
+          </div>
+        </div>
+      )}
+
+      {showMemory && memoryData && (
+        <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
+          <div className="bg-[#0a0a0f] border border-white/10 rounded-2xl p-6 w-full max-w-md max-h-[80vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <div className="text-white font-semibold">JARVIS Memory</div>
+                <div className="text-white/30 text-xs mt-0.5">What JARVIS knows about you</div>
+              </div>
+              <button onClick={() => setShowMemory(false)} className="text-white/30 hover:text-white/60">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+              </button>
+            </div>
+            <div className="flex flex-col gap-3">
+              {Object.entries(memoryData)
+                .filter(([key, val]) => !['token', 'password', 'subscribed', 'dailyMessageCount', 'lastMessageDate'].includes(key) && val !== null && val !== undefined && val !== '')
+                .map(([key, val]) => (
+                  <div key={key} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 12, padding: '12px 14px' }}>
+                    <div style={{ fontSize: 10, color: 'rgba(99,102,241,0.8)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>{key}</div>
+                    <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', lineHeight: 1.5, wordBreak: 'break-word' }}>
+                      {typeof val === 'object' ? JSON.stringify(val, null, 2) : String(val)}
+                    </div>
+                  </div>
+                ))}
+            </div>
           </div>
         </div>
       )}
