@@ -1000,12 +1000,16 @@ async function generateImageWithFace(faceImageBase64, prompt) {
       negative_prompt: 'nsfw, lowres, bad anatomy, bad hands, text, error, cropped, worst quality, low quality, jpeg artifacts, watermark, blurry, deformed face',
     },
     pollInterval: 2000,
+    logs: true,
+    onQueueUpdate: (update) => {
+      console.log('[FAL] status:', update.status, update.logs?.map(l => l.message).join(' '));
+    },
   });
 
-
-  const imageUrl = result.data.images[0].url;
+  console.log('[FAL] result:', JSON.stringify(result.data).substring(0, 200));
+  const outputUrl = result.data.images[0].url;
   const filename = `img_${Date.now()}.webp`;
-  const imgRes = await axios.get(imageUrl, { responseType: 'arraybuffer' });
+  const imgRes = await axios.get(outputUrl, { responseType: 'arraybuffer' });
   fs.writeFileSync(path.join(PUBLIC_DIR, filename), imgRes.data);
   return `https://api.heyjarvis.me/view/${filename}`;
 }
