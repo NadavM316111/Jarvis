@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Design Studio — JARVIS</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Fraunces:ital,wght@0,300;0,700;1,300;1,700&display=swap');
@@ -21,45 +21,56 @@
 }
 
 *,*::before,*::after { margin:0; padding:0; box-sizing:border-box; }
-html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--text); font-family:'DM Mono',monospace; }
+html,body { height:100%; background:var(--bg); color:var(--text); font-family:'DM Mono',monospace; }
 
 /* ── LAYOUT ── */
-#shell { display:flex; flex-direction:column; height:100vh; }
+#shell { display:flex; flex-direction:column; height:100dvh; }
 
 /* ── TOP ── */
 #top {
   height:52px; border-bottom:1px solid var(--border);
-  display:flex; align-items:center; padding:0 20px; gap:16px;
+  display:flex; align-items:center; padding:0 16px; gap:12px;
   background:rgba(6,6,10,0.98); flex-shrink:0; position:relative; z-index:100;
 }
 .ds-logo {
   font-family:'Fraunces',serif; font-weight:700; font-size:17px;
   color:var(--accent); letter-spacing:1px; flex-shrink:0;
 }
-.mode-tabs { display:flex; gap:2px; }
-.mode-tab {
-  padding:5px 14px; font-size:10px; letter-spacing:2px;
-  text-transform:uppercase; cursor:pointer;
-  border:1px solid transparent; color:var(--dim);
-  background:transparent; font-family:'DM Mono',monospace;
-  transition:all 0.2s;
-}
-.mode-tab:hover { color:var(--text); border-color:var(--border); }
-.mode-tab.active { color:var(--accent); border-color:var(--accent); background:rgba(232,255,0,0.06); }
 .top-spacer { flex:1; }
 .top-btn {
-  padding:6px 14px; font-size:9px; letter-spacing:2px;
+  padding:6px 12px; font-size:9px; letter-spacing:2px;
   text-transform:uppercase; cursor:pointer;
   border:1px solid var(--border); color:var(--dim);
   background:transparent; font-family:'DM Mono',monospace;
-  transition:all 0.2s;
+  transition:all 0.2s; white-space:nowrap;
+  -webkit-tap-highlight-color: transparent;
 }
 .top-btn:hover { border-color:var(--accent); color:var(--accent); }
 .top-btn.go { border-color:var(--accent); color:var(--accent); background:rgba(232,255,0,0.08); }
 .top-btn.go:hover { background:rgba(232,255,0,0.15); }
 
+/* ── MODE BAR (mobile only) ── */
+#mode-bar {
+  display:none;
+  gap:2px; padding:8px 12px; overflow-x:auto; flex-shrink:0;
+  border-bottom:1px solid var(--border); background:var(--bg2);
+  scrollbar-width:none;
+}
+#mode-bar::-webkit-scrollbar { display:none; }
+
+.mode-tab {
+  padding:6px 16px; font-size:10px; letter-spacing:2px;
+  text-transform:uppercase; cursor:pointer; white-space:nowrap;
+  border:1px solid transparent; color:var(--dim);
+  background:transparent; font-family:'DM Mono',monospace;
+  transition:all 0.2s; flex-shrink:0;
+  -webkit-tap-highlight-color: transparent;
+}
+.mode-tab:hover { color:var(--text); border-color:var(--border); }
+.mode-tab.active { color:var(--accent); border-color:var(--accent); background:rgba(232,255,0,0.06); }
+
 /* ── BODY ── */
-#body { display:flex; flex:1; min-height:0; }
+#body { display:flex; flex:1; min-height:0; overflow:hidden; }
 
 /* ── LEFT ── */
 #left {
@@ -73,7 +84,6 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--text
   text-transform:uppercase; margin-bottom:10px;
 }
 
-/* Prompt area */
 #prompt-area {
   flex:1; display:flex; flex-direction:column; padding:14px; gap:10px; overflow-y:auto;
 }
@@ -82,8 +92,7 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--text
 
 textarea#prompt {
   flex:1; min-height:120px;
-  background:rgba(255,255,255,0.03);
-  border:1px solid var(--border);
+  background:rgba(255,255,255,0.03); border:1px solid var(--border);
   border-radius:0; resize:none; outline:none;
   padding:12px; color:var(--text);
   font-family:'DM Mono',monospace; font-size:11px; line-height:1.6;
@@ -98,39 +107,45 @@ textarea#prompt::placeholder { color:var(--muted); }
   border:1px solid var(--accent); color:var(--accent);
   background:rgba(232,255,0,0.06); font-family:'DM Mono',monospace;
   transition:all 0.2s; position:relative; overflow:hidden;
+  -webkit-tap-highlight-color: transparent;
 }
 .generate-btn:hover { background:rgba(232,255,0,0.15); }
 .generate-btn:disabled { opacity:0.4; cursor:default; }
-.generate-btn::after { content:''; position:absolute; inset:0; background:linear-gradient(90deg,transparent,rgba(232,255,0,0.1),transparent); transform:translateX(-100%); animation:shimmer 2s infinite; }
+.generate-btn::after {
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(90deg,transparent,rgba(232,255,0,0.1),transparent);
+  transform:translateX(-100%); animation:shimmer 2s infinite;
+}
 @keyframes shimmer { to{transform:translateX(200%)} }
 
-/* History chips */
 .hist-chips { display:flex; flex-direction:column; gap:4px; }
 .hist-chip {
   padding:6px 8px; font-size:9px; color:var(--dim);
   border:1px solid var(--border); cursor:pointer;
   transition:all 0.15s; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  -webkit-tap-highlight-color: transparent;
 }
 .hist-chip:hover { border-color:var(--accent); color:var(--accent); }
 
-/* Options (per-mode) */
 .opt-row { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:8px; }
 .opt-chip {
   padding:4px 10px; font-size:8px; letter-spacing:1px;
   border:1px solid var(--border); color:var(--dim);
   cursor:pointer; transition:all 0.15s; text-transform:uppercase;
+  -webkit-tap-highlight-color: transparent;
 }
-.opt-chip:hover, .opt-chip.sel { border-color:var(--accent); color:var(--accent); background:rgba(232,255,0,0.06); }
+.opt-chip:hover, .opt-chip.sel {
+  border-color:var(--accent); color:var(--accent); background:rgba(232,255,0,0.06);
+}
 
 /* ── CANVAS AREA ── */
 #canvas-area {
   flex:1; position:relative; overflow:hidden;
-  background: radial-gradient(ellipse at 30% 30%, rgba(167,139,250,0.04) 0%, transparent 60%),
-              radial-gradient(ellipse at 70% 70%, rgba(232,255,0,0.03) 0%, transparent 60%),
-              var(--bg);
+  background:
+    radial-gradient(ellipse at 30% 30%, rgba(167,139,250,0.04) 0%, transparent 60%),
+    radial-gradient(ellipse at 70% 70%, rgba(232,255,0,0.03) 0%, transparent 60%),
+    var(--bg);
 }
-
-/* Dot grid */
 #canvas-area::before {
   content:''; position:absolute; inset:0; pointer-events:none;
   background-image: radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1px);
@@ -143,17 +158,13 @@ textarea#prompt::placeholder { color:var(--muted); }
   padding:40px; overflow:auto;
 }
 
-#empty-state {
-  text-align:center; pointer-events:none;
-}
+#empty-state { text-align:center; pointer-events:none; }
 .empty-title {
   font-family:'Fraunces',serif; font-style:italic;
-  font-size:28px; color:rgba(255,255,255,0.08); letter-spacing:1px;
-  margin-bottom:10px;
+  font-size:28px; color:rgba(255,255,255,0.08); letter-spacing:1px; margin-bottom:10px;
 }
 .empty-sub { font-size:10px; color:var(--muted); letter-spacing:3px; text-transform:uppercase; }
 
-/* The generated output card */
 #output-card {
   width:100%; max-width:860px;
   background:var(--bg2); border:1px solid var(--border);
@@ -171,13 +182,12 @@ textarea#prompt::placeholder { color:var(--muted); }
   text-transform:uppercase; cursor:pointer;
   border:1px solid var(--border); color:var(--dim);
   background:transparent; font-family:'DM Mono',monospace;
-  transition:all 0.15s;
+  transition:all 0.15s; -webkit-tap-highlight-color: transparent;
 }
 .card-btn:hover { border-color:var(--accent); color:var(--accent); }
-
 #output-content { padding:24px; min-height:300px; }
 
-/* ── LOADING OVERLAY ── */
+/* ── LOADING ── */
 #loading-overlay {
   position:absolute; inset:0;
   background:rgba(6,6,10,0.92);
@@ -188,59 +198,39 @@ textarea#prompt::placeholder { color:var(--muted); }
 #loading-overlay.show { display:flex; }
 .ld-ring {
   width:48px; height:48px;
-  border:1px solid rgba(232,255,0,0.2);
-  border-top-color:var(--accent);
-  border-radius:50%;
-  animation:spin 0.9s linear infinite;
+  border:1px solid rgba(232,255,0,0.2); border-top-color:var(--accent);
+  border-radius:50%; animation:spin 0.9s linear infinite;
 }
 @keyframes spin { to{transform:rotate(360deg)} }
 .ld-text { font-size:10px; letter-spacing:4px; color:var(--accent); text-transform:uppercase; }
 .ld-sub { font-size:9px; color:var(--dim); letter-spacing:2px; text-transform:uppercase; }
 
-/* ── MOCKUP STYLES ── */
-.mockup-frame {
-  background:#fff; border-radius:8px; overflow:hidden;
-  box-shadow:0 40px 100px rgba(0,0,0,0.6); width:100%;
-}
+/* ── BRAND / MOCKUP / POSTER STYLES ── */
+.mockup-frame { background:#fff; border-radius:8px; overflow:hidden; box-shadow:0 40px 100px rgba(0,0,0,0.6); width:100%; }
 .mockup-frame.dark { background:#0f0f17; }
 .mockup-frame.mobile { max-width:375px; margin:0 auto; }
 
-/* ── BRAND KIT STYLES ── */
 .brand-kit { display:flex; flex-direction:column; gap:28px; }
 .bk-section-title { font-size:8px; letter-spacing:3px; color:var(--dim); text-transform:uppercase; margin-bottom:12px; }
 .bk-colors { display:flex; gap:10px; flex-wrap:wrap; }
-.bk-color-card {
-  display:flex; flex-direction:column; align-items:center; gap:6px;
-}
+.bk-color-card { display:flex; flex-direction:column; align-items:center; gap:6px; }
 .bk-swatch { width:72px; height:72px; border-radius:4px; }
 .bk-hex { font-size:9px; color:var(--dim); letter-spacing:1px; }
 .bk-name { font-size:8px; color:var(--muted); text-transform:uppercase; letter-spacing:1px; }
 .bk-fonts { display:flex; flex-direction:column; gap:16px; }
-.bk-font-sample { }
 .bk-font-label { font-size:8px; color:var(--dim); letter-spacing:2px; text-transform:uppercase; margin-bottom:4px; }
 .bk-logo-area { display:flex; gap:20px; align-items:flex-start; flex-wrap:wrap; }
-.bk-logo-card {
-  padding:24px 32px;
-  display:flex; align-items:center; justify-content:center;
-  min-width:160px;
-}
+.bk-logo-card { padding:24px 32px; display:flex; align-items:center; justify-content:center; min-width:160px; }
 .bk-logo-light { background:#f5f5f0; }
 .bk-logo-dark { background:#0f0f17; }
-.bk-logo-color { background:var(--accent); }
 
-/* ── POSTER STYLES ── */
 .poster-wrap { display:flex; justify-content:center; }
-.poster {
-  width:500px; height:700px;
-  position:relative; overflow:hidden;
-  box-shadow:0 40px 100px rgba(0,0,0,0.7);
-}
+.poster { width:500px; height:700px; position:relative; overflow:hidden; box-shadow:0 40px 100px rgba(0,0,0,0.7); }
 
-/* ── RIGHT PANEL ── */
+/* ── RIGHT ── */
 #right {
   width:220px; flex-shrink:0; border-left:1px solid var(--border);
-  display:flex; flex-direction:column;
-  background:var(--bg2); overflow-y:auto;
+  display:flex; flex-direction:column; background:var(--bg2); overflow-y:auto;
 }
 #right::-webkit-scrollbar { width:2px; }
 #right::-webkit-scrollbar-thumb { background:var(--border); }
@@ -251,35 +241,154 @@ textarea#prompt::placeholder { color:var(--muted); }
   padding:4px 8px; font-size:8px; letter-spacing:1px;
   border:1px solid var(--border); color:var(--dim);
   cursor:pointer; transition:all 0.15s; text-transform:uppercase;
+  -webkit-tap-highlight-color: transparent;
 }
 .rsec-chip:hover { border-color:var(--accent2); color:var(--accent2); }
-
-/* ── COPY CODE BLOCK ── */
-.code-block {
-  background:rgba(0,0,0,0.4); border:1px solid var(--border);
-  padding:12px; margin-top:16px; overflow-x:auto;
-  font-size:10px; line-height:1.7; color:rgba(255,255,255,0.7);
-}
-.code-block::-webkit-scrollbar { height:2px; }
-.code-block::-webkit-scrollbar-thumb { background:var(--border); }
 
 /* ── TOAST ── */
 #toast {
   position:fixed; bottom:30px; left:50%; transform:translateX(-50%);
-  z-index:500; background:var(--bg2); border:1px solid var(--accent);
+  z-index:999; background:var(--bg2); border:1px solid var(--accent);
   padding:8px 22px; font-size:10px; letter-spacing:2px; color:var(--accent);
-  text-transform:uppercase; pointer-events:none;
+  text-transform:uppercase; pointer-events:none; white-space:nowrap;
   transition:opacity 0.3s; opacity:0;
 }
 #toast.show { opacity:1; }
+
+/* ══════════════════════════════════════
+   MOBILE  ≤ 768px
+══════════════════════════════════════ */
+@media (max-width: 768px) {
+  /* Hide desktop sidebars */
+  #left, #right { display:none; }
+  #desktop-mode-tabs { display:none !important; }
+
+  /* Show mobile mode bar */
+  #mode-bar { display:flex; }
+
+  #body { flex-direction:column; overflow:hidden; }
+  #canvas-area { flex:1; min-height:0; }
+
+  #output-wrap { padding:16px; align-items:flex-start; padding-top:24px; }
+  #output-card { max-width:100%; }
+  #output-content { padding:14px; min-height:180px; }
+
+  .card-toolbar { flex-wrap:wrap; padding:8px 12px; gap:6px; }
+  .card-title { font-size:8px; width:100%; }
+
+  .empty-title { font-size:22px; }
+
+  /* ── BOTTOM SHEET ── */
+  #mobile-sheet {
+    flex-shrink:0; background:var(--bg2);
+    border-top:1px solid var(--border);
+    display:flex; flex-direction:column;
+    transition:max-height 0.35s cubic-bezier(0.4,0,0.2,1);
+    max-height:60vh; overflow:hidden;
+  }
+  #mobile-sheet.collapsed { max-height:48px; }
+
+  #sheet-handle {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:13px 16px; cursor:pointer; flex-shrink:0; user-select:none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .sheet-handle-left { display:flex; align-items:center; gap:10px; }
+  .sheet-handle-title { font-size:9px; letter-spacing:3px; color:var(--dim); text-transform:uppercase; }
+  .sheet-handle-mode {
+    font-size:9px; letter-spacing:1px; color:var(--accent);
+    text-transform:uppercase; border:1px solid rgba(232,255,0,0.3);
+    padding:2px 8px;
+  }
+  .sheet-arrow {
+    font-size:9px; color:var(--dim);
+    transition:transform 0.35s; display:inline-block;
+  }
+  #mobile-sheet:not(.collapsed) .sheet-arrow { transform:rotate(180deg); }
+
+  #sheet-inner { flex:1; overflow-y:auto; overflow-x:hidden; }
+  #sheet-inner::-webkit-scrollbar { display:none; }
+
+  .mob-section-label {
+    font-size:8px; letter-spacing:3px; color:var(--dim);
+    text-transform:uppercase; padding:10px 14px 6px;
+  }
+
+  /* Horizontal scroll rows */
+  .mob-hscroll {
+    display:flex; gap:6px; padding:0 14px 12px;
+    overflow-x:auto; scrollbar-width:none;
+  }
+  .mob-hscroll::-webkit-scrollbar { display:none; }
+  .mob-hscroll .opt-chip { flex-shrink:0; padding:5px 12px; font-size:9px; }
+
+  .mob-quick-chip {
+    flex-shrink:0; padding:5px 10px; font-size:8px; letter-spacing:1px;
+    border:1px solid var(--border); color:var(--dim); cursor:pointer;
+    transition:all 0.15s; text-transform:uppercase; white-space:nowrap;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .mob-quick-chip:active { border-color:var(--accent2); color:var(--accent2); }
+
+  /* Prompt + button */
+  .mob-prompt-row {
+    display:flex; gap:8px; padding:6px 14px 12px; align-items:flex-end;
+  }
+  textarea#prompt-mobile {
+    flex:1; min-height:68px; max-height:110px;
+    background:rgba(255,255,255,0.03); border:1px solid var(--border);
+    border-radius:0; resize:none; outline:none;
+    padding:10px; color:var(--text);
+    font-family:'DM Mono',monospace; font-size:13px; line-height:1.6;
+    caret-color:var(--accent);
+  }
+  textarea#prompt-mobile:focus { border-color:rgba(232,255,0,0.3); }
+  textarea#prompt-mobile::placeholder { color:var(--muted); font-size:11px; }
+
+  .mob-gen-btn {
+    padding:0 16px; font-size:9px; letter-spacing:2px; text-transform:uppercase;
+    cursor:pointer; white-space:nowrap; border:1px solid var(--accent);
+    color:var(--accent); background:rgba(232,255,0,0.08);
+    font-family:'DM Mono',monospace; transition:all 0.2s;
+    align-self:stretch; display:flex; align-items:center; justify-content:center;
+    min-width:64px; -webkit-tap-highlight-color: transparent;
+  }
+  .mob-gen-btn:active { background:rgba(232,255,0,0.2); }
+  .mob-gen-btn:disabled { opacity:0.4; }
+
+  /* Recent chips horizontal */
+  .mob-recent-chip {
+    flex-shrink:0; max-width:200px; overflow:hidden; text-overflow:ellipsis;
+    white-space:nowrap; padding:5px 10px; font-size:8px; letter-spacing:0.5px;
+    border:1px solid var(--border); color:var(--dim); cursor:pointer;
+    transition:all 0.15s; -webkit-tap-highlight-color: transparent;
+  }
+  .mob-recent-chip:active { border-color:var(--accent); color:var(--accent); }
+
+  /* Top bar on mobile: hide copy/save, keep generate */
+  .top-btn:not(.go) { display:none; }
+  #top { padding:0 12px; gap:10px; }
+  .top-btn.go { padding:6px 14px; font-size:9px; }
+
+  /* Safe area bottom */
+  #mobile-sheet { padding-bottom:env(safe-area-inset-bottom); }
+  #toast { bottom:calc(env(safe-area-inset-bottom) + 16px); }
+}
+
+/* ── Desktop: hide mobile stuff ── */
+@media (min-width: 769px) {
+  #mobile-sheet { display:none; }
+  #mode-bar { display:none; }
+}
 </style>
 </head>
 <body>
 <div id="shell">
 
+<!-- TOP BAR -->
 <div id="top">
   <div class="ds-logo">Studio</div>
-  <div class="mode-tabs">
+  <div id="desktop-mode-tabs" style="display:flex;gap:2px;">
     <button class="mode-tab active" onclick="setMode('mockup',this)">UI Mockup</button>
     <button class="mode-tab" onclick="setMode('brand',this)">Brand Kit</button>
     <button class="mode-tab" onclick="setMode('poster',this)">Creative</button>
@@ -287,26 +396,31 @@ textarea#prompt::placeholder { color:var(--muted); }
   <div class="top-spacer"></div>
   <button class="top-btn" onclick="copyOutput()">Copy</button>
   <button class="top-btn" onclick="downloadOutput()">Save</button>
-  <button class="top-btn go" onclick="generate()">Generate →</button>
+  <button class="top-btn go" onclick="doGenerate()">Generate →</button>
+</div>
+
+<!-- MOBILE MODE BAR -->
+<div id="mode-bar">
+  <button class="mode-tab active" onclick="setModeMobile('mockup',this)">UI Mockup</button>
+  <button class="mode-tab" onclick="setModeMobile('brand',this)">Brand Kit</button>
+  <button class="mode-tab" onclick="setModeMobile('poster',this)">Creative</button>
 </div>
 
 <div id="body">
-  <!-- LEFT -->
+
+  <!-- DESKTOP LEFT -->
   <div id="left">
-    <!-- Dynamic options per mode -->
     <div class="left-sec" id="mode-options">
       <div class="left-sec-title">Style</div>
       <div class="opt-row" id="style-chips"></div>
       <div class="left-sec-title" style="margin-top:8px">Platform</div>
       <div class="opt-row" id="platform-chips"></div>
     </div>
-
     <div id="prompt-area">
       <div class="left-sec-title">Describe</div>
       <textarea id="prompt" placeholder="A minimal task manager app with a sidebar, dark theme, and kanban board..."></textarea>
-      <button class="generate-btn" onclick="generate()" id="gen-btn">Generate</button>
+      <button class="generate-btn" onclick="doGenerate()" id="gen-btn">Generate</button>
     </div>
-
     <div class="left-sec">
       <div class="left-sec-title">Recents</div>
       <div class="hist-chips" id="hist-chips">
@@ -327,14 +441,13 @@ textarea#prompt::placeholder { color:var(--muted); }
       <div id="output-card">
         <div class="card-toolbar">
           <div class="card-title" id="card-title">Output</div>
-          <button class="card-btn" onclick="generate()">Regenerate</button>
-          <button class="card-btn" onclick="copyOutput()">Copy HTML</button>
-          <button class="card-btn" onclick="downloadOutput()">Download</button>
+          <button class="card-btn" onclick="doGenerate()">Regen</button>
+          <button class="card-btn" onclick="copyOutput()">Copy</button>
+          <button class="card-btn" onclick="downloadOutput()">Save</button>
         </div>
         <div id="output-content"></div>
       </div>
     </div>
-
     <div id="loading-overlay">
       <div class="ld-ring"></div>
       <div class="ld-text">Generating</div>
@@ -342,7 +455,7 @@ textarea#prompt::placeholder { color:var(--muted); }
     </div>
   </div>
 
-  <!-- RIGHT -->
+  <!-- DESKTOP RIGHT -->
   <div id="right">
     <div class="rsec">
       <div class="rsec-title">Quick Prompts</div>
@@ -394,20 +507,71 @@ textarea#prompt::placeholder { color:var(--muted); }
       <div id="meta-content" style="font-size:9px;color:var(--dim);line-height:1.8;letter-spacing:0.5px"></div>
     </div>
   </div>
+
+</div><!-- /#body -->
+
+<!-- MOBILE BOTTOM SHEET -->
+<div id="mobile-sheet" class="collapsed">
+  <div id="sheet-handle" onclick="toggleSheet()">
+    <div class="sheet-handle-left">
+      <span class="sheet-handle-title">Prompt</span>
+      <span class="sheet-handle-mode" id="sheet-mode-label">UI Mockup</span>
+    </div>
+    <span class="sheet-arrow">&#9650;</span>
+  </div>
+  <div id="sheet-inner">
+    <div class="mob-section-label">Style</div>
+    <div class="mob-hscroll" id="mob-style-chips"></div>
+
+    <div class="mob-section-label">Format</div>
+    <div class="mob-hscroll" id="mob-platform-chips"></div>
+
+    <div class="mob-section-label">Quick Add</div>
+    <div class="mob-hscroll">
+      <div class="mob-quick-chip" onclick="mobAddPrompt('dark theme')">dark</div>
+      <div class="mob-quick-chip" onclick="mobAddPrompt('minimal')">minimal</div>
+      <div class="mob-quick-chip" onclick="mobAddPrompt('glassmorphism')">glass</div>
+      <div class="mob-quick-chip" onclick="mobAddPrompt('bold typography')">bold</div>
+      <div class="mob-quick-chip" onclick="mobAddPrompt('colorful gradients')">gradient</div>
+      <div class="mob-quick-chip" onclick="mobAddPrompt('brutalist')">brutal</div>
+      <div class="mob-quick-chip" onclick="mobAddPrompt('luxury, premium feel')">luxury</div>
+      <div class="mob-quick-chip" onclick="mobAddPrompt('playful, rounded')">playful</div>
+      <div class="mob-quick-chip" onclick="mobAddPrompt('neon, cyberpunk')">neon</div>
+      <div class="mob-quick-chip" onclick="mobAddPrompt('with sidebar navigation')">sidebar</div>
+      <div class="mob-quick-chip" onclick="mobAddPrompt('with data charts')">charts</div>
+      <div class="mob-quick-chip" onclick="mobAddPrompt('with a hero section')">hero</div>
+      <div class="mob-quick-chip" onclick="mobAddPrompt('with a pricing table')">pricing</div>
+      <div class="mob-quick-chip" onclick="mobAddPrompt('for a fintech startup')">fintech</div>
+      <div class="mob-quick-chip" onclick="mobAddPrompt('for an AI product')">AI</div>
+      <div class="mob-quick-chip" onclick="mobAddPrompt('for a SaaS tool')">SaaS</div>
+    </div>
+
+    <div class="mob-prompt-row">
+      <textarea id="prompt-mobile" placeholder="Describe what you want to generate..."></textarea>
+      <button class="mob-gen-btn" id="mob-gen-btn" onclick="doGenerate()">Gen</button>
+    </div>
+
+    <div class="mob-section-label">Recents</div>
+    <div class="mob-hscroll" id="mob-recents">
+      <div class="mob-recent-chip" onclick="setMobPrompt(this.textContent)">Landing page for a crypto startup</div>
+      <div class="mob-recent-chip" onclick="setMobPrompt(this.textContent)">Fitness app brand kit, energetic</div>
+      <div class="mob-recent-chip" onclick="setMobPrompt(this.textContent)">Dark mode dashboard with charts</div>
+    </div>
+  </div>
 </div>
 
-</div>
+</div><!-- /#shell -->
 <div id="toast"></div>
 
 <script>
 let currentMode = 'mockup';
 let currentOutput = '';
-let selectedStyle = '';
-let selectedPlatform = '';
+let deskStyle = '', deskPlatform = '';
+let mobStyle = '', mobPlatform = '';
 
 function extractJSON(text) {
   if (!text) return null;
-  text = text.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
+  text = text.replace(/```json\s*/gi,'').replace(/```\s*/g,'').trim();
   const start = text.indexOf('{');
   if (start === -1) return null;
   let depth = 0, end = -1;
@@ -416,69 +580,102 @@ function extractJSON(text) {
     else if (text[i] === '}') { depth--; if (depth === 0) { end = i; break; } }
   }
   if (end === -1) return null;
-  try {
-    return JSON.parse(text.slice(start, end + 1));
-  } catch(e) {
-    console.error('JSON parse failed:', e, '\nRaw:', text.slice(start, end + 1));
-    return null;
-  }
+  try { return JSON.parse(text.slice(start, end+1)); } catch(e) { return null; }
 }
 
 const MODES = {
   mockup: {
-    placeholder: 'A dark-themed dashboard with a sidebar, user stats, recent activity feed, and a chart section...',
-    styles: ['Dark', 'Light', 'Glass', 'Minimal', 'Bold', 'Retro'],
-    platforms: ['Desktop', 'Mobile', 'Tablet', 'Full Page'],
-    ldSub: 'Designing your UI...',
+    label:'UI Mockup',
+    placeholder:'A dark-themed dashboard with a sidebar, user stats, recent activity feed, and a chart section...',
+    mobPlaceholder:'Dark dashboard with sidebar, stats and charts...',
+    styles:['Dark','Light','Glass','Minimal','Bold','Retro'],
+    platforms:['Desktop','Mobile','Tablet','Full Page'],
+    ldSub:'Designing your UI...',
   },
   brand: {
-    placeholder: 'A modern fintech startup called "Vault" — trustworthy, bold, with a dark premium feel...',
-    styles: ['Modern', 'Luxury', 'Playful', 'Minimal', 'Bold', 'Classic'],
-    platforms: ['Full Kit', 'Colors Only', 'Typography', 'Logo'],
-    ldSub: 'Building your brand...',
+    label:'Brand Kit',
+    placeholder:'A modern fintech startup called "Vault" — trustworthy, bold, with a dark premium feel...',
+    mobPlaceholder:'Fintech startup "Vault" — bold, dark, premium...',
+    styles:['Modern','Luxury','Playful','Minimal','Bold','Classic'],
+    platforms:['Full Kit','Colors Only','Typography','Logo'],
+    ldSub:'Building your brand...',
   },
   poster: {
-    placeholder: 'A concert poster for an electronic music festival in Tokyo, neon colors, cyberpunk aesthetic...',
-    styles: ['Cyberpunk', 'Editorial', 'Retro', 'Luxury', 'Minimal', 'Brutalist'],
-    platforms: ['Poster', 'Social', 'Banner', 'Card'],
-    ldSub: 'Creating your design...',
+    label:'Creative',
+    placeholder:'A concert poster for an electronic music festival in Tokyo, neon colors, cyberpunk aesthetic...',
+    mobPlaceholder:'Electronic music festival in Tokyo, neon cyberpunk...',
+    styles:['Cyberpunk','Editorial','Retro','Luxury','Minimal','Brutalist'],
+    platforms:['Poster','Social','Banner','Card'],
+    ldSub:'Creating your design...',
   },
 };
 
-function setMode(mode, btn) {
-  currentMode = mode;
-  document.querySelectorAll('.mode-tab').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-
-  const cfg = MODES[mode];
-  document.getElementById('prompt').placeholder = cfg.placeholder;
-
-  const styleChips = document.getElementById('style-chips');
-  styleChips.innerHTML = '';
+function buildDeskChips() {
+  const cfg = MODES[currentMode];
+  const sc = document.getElementById('style-chips');
+  sc.innerHTML = '';
   cfg.styles.forEach(s => {
     const el = document.createElement('div');
     el.className = 'opt-chip';
     el.textContent = s;
-    el.onclick = () => { selectedStyle = s; document.querySelectorAll('#style-chips .opt-chip').forEach(c=>c.classList.remove('sel')); el.classList.add('sel'); };
-    styleChips.appendChild(el);
+    el.onclick = () => { deskStyle=s; sc.querySelectorAll('.opt-chip').forEach(c=>c.classList.remove('sel')); el.classList.add('sel'); };
+    sc.appendChild(el);
   });
-
-  const platChips = document.getElementById('platform-chips');
-  platChips.innerHTML = '';
+  const pc = document.getElementById('platform-chips');
+  pc.innerHTML = '';
   cfg.platforms.forEach(p => {
     const el = document.createElement('div');
     el.className = 'opt-chip';
     el.textContent = p;
-    el.onclick = () => { selectedPlatform = p; document.querySelectorAll('#platform-chips .opt-chip').forEach(c=>c.classList.remove('sel')); el.classList.add('sel'); };
-    platChips.appendChild(el);
+    el.onclick = () => { deskPlatform=p; pc.querySelectorAll('.opt-chip').forEach(c=>c.classList.remove('sel')); el.classList.add('sel'); };
+    pc.appendChild(el);
   });
-
-  selectedStyle = '';
-  selectedPlatform = '';
 }
 
-// Init mode options
-setMode('mockup', document.querySelector('.mode-tab.active'));
+function buildMobChips() {
+  const cfg = MODES[currentMode];
+  const sc = document.getElementById('mob-style-chips');
+  sc.innerHTML = '';
+  cfg.styles.forEach(s => {
+    const el = document.createElement('div');
+    el.className = 'opt-chip';
+    el.textContent = s;
+    el.onclick = () => { mobStyle=s; sc.querySelectorAll('.opt-chip').forEach(c=>c.classList.remove('sel')); el.classList.add('sel'); };
+    sc.appendChild(el);
+  });
+  const pc = document.getElementById('mob-platform-chips');
+  pc.innerHTML = '';
+  cfg.platforms.forEach(p => {
+    const el = document.createElement('div');
+    el.className = 'opt-chip';
+    el.textContent = p;
+    el.onclick = () => { mobPlatform=p; pc.querySelectorAll('.opt-chip').forEach(c=>c.classList.remove('sel')); el.classList.add('sel'); };
+    pc.appendChild(el);
+  });
+}
+
+function setMode(mode, btn) {
+  currentMode = mode;
+  document.querySelectorAll('#desktop-mode-tabs .mode-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const cfg = MODES[mode];
+  document.getElementById('prompt').placeholder = cfg.placeholder;
+  deskStyle=''; deskPlatform='';
+  buildDeskChips();
+}
+
+function setModeMobile(mode, btn) {
+  currentMode = mode;
+  document.querySelectorAll('#mode-bar .mode-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const cfg = MODES[mode];
+  document.getElementById('prompt-mobile').placeholder = cfg.mobPlaceholder;
+  document.getElementById('sheet-mode-label').textContent = cfg.label;
+  mobStyle=''; mobPlatform='';
+  buildMobChips();
+}
+
+buildDeskChips(); buildMobChips();
 
 function setPrompt(t) { document.getElementById('prompt').value = t; }
 function addToPrompt(t) {
@@ -486,10 +683,43 @@ function addToPrompt(t) {
   el.value = el.value.trim() + (el.value.trim() ? ', ' : '') + t;
   el.focus();
 }
+function setMobPrompt(t) {
+  document.getElementById('prompt-mobile').value = t;
+  toggleSheet(false);
+}
+function mobAddPrompt(t) {
+  const el = document.getElementById('prompt-mobile');
+  el.value = el.value.trim() + (el.value.trim() ? ', ' : '') + t;
+}
+
+function toggleSheet(force) {
+  const s = document.getElementById('mobile-sheet');
+  if (force === true) s.classList.remove('collapsed');
+  else if (force === false) s.classList.add('collapsed');
+  else s.classList.toggle('collapsed');
+}
+
+function isMobile() { return window.innerWidth <= 768; }
+
+function getActivePromptAndOptions() {
+  if (isMobile()) {
+    return {
+      prompt: document.getElementById('prompt-mobile').value.trim(),
+      style: mobStyle,
+      platform: mobPlatform,
+      btn: document.getElementById('mob-gen-btn'),
+    };
+  }
+  return {
+    prompt: document.getElementById('prompt').value.trim(),
+    style: deskStyle,
+    platform: deskPlatform,
+    btn: document.getElementById('gen-btn'),
+  };
+}
 
 function setLoading(show, sub) {
-  const ol = document.getElementById('loading-overlay');
-  ol.classList.toggle('show', show);
+  document.getElementById('loading-overlay').classList.toggle('show', show);
   if (sub) document.getElementById('ld-sub').textContent = sub;
 }
 
@@ -502,10 +732,8 @@ function showOutput(html, title) {
   currentOutput = html;
 }
 
-// ── SYSTEM PROMPTS ──────────────────────
 const SYSTEMS = {
-  mockup: `You are a world-class UI designer. Generate a complete, beautiful HTML/CSS UI mockup based on the user's description.
-
+  mockup:`You are a world-class UI designer. Generate a complete, beautiful HTML/CSS UI mockup based on the user's description.
 Rules:
 - Output ONLY a JSON object: {"title":"...", "html":"...", "meta":"..."}
 - "html" must be a complete self-contained HTML snippet (no doctype/html/body tags) with inline styles
@@ -515,22 +743,16 @@ Rules:
 - Use Google Fonts via @import if needed
 - "meta" is a short summary: colors used, fonts, components
 - No backticks, no markdown. Pure JSON.`,
-
-  brand: `You are a brand identity designer. Generate a complete brand kit based on the description.
-
+  brand:`You are a brand identity designer. Generate a complete brand kit based on the description.
 Output ONLY JSON: {"title":"...","brandName":"...","tagline":"...","colors":[{"hex":"#...","name":"...","role":"..."}],"fonts":{"heading":"font-name","body":"font-name","mono":"font-name (optional)"},"logoSVG":"...SVG string...","logoText":"...","voice":"...","meta":"..."}
-
 Rules:
-- 4-6 colors with semantic roles (primary, secondary, accent, neutral, dark, light)
+- 4-6 colors with semantic roles
 - Real Google Font names
-- logoSVG: a clean SVG wordmark or mark (200x60 viewBox), inline SVG string
+- logoSVG: clean SVG wordmark or mark (200x60 viewBox), inline SVG string
 - voice: brand voice description (1-2 sentences)
 - No backticks, no markdown. Pure JSON.`,
-
-  poster: `You are a graphic designer. Generate a creative HTML/CSS poster/graphic.
-
+  poster:`You are a graphic designer. Generate a creative HTML/CSS poster/graphic.
 Output ONLY JSON: {"title":"...","html":"...","meta":"..."}
-
 Rules:
 - "html" is a self-contained div (500px wide, 700px tall for poster; adjust for other formats)
 - Use absolute/relative positioning for dramatic layouts
@@ -540,37 +762,32 @@ Rules:
 - No backticks, no markdown. Pure JSON.`,
 };
 
-async function generate() {
-  const prompt = document.getElementById('prompt').value.trim();
+async function doGenerate() {
+  const { prompt, style, platform, btn } = getActivePromptAndOptions();
   if (!prompt) { showToast('Enter a description first'); return; }
 
-  const btn = document.getElementById('gen-btn');
-  btn.disabled = true;
+  if (btn) btn.disabled = true;
+  // Also disable top-bar button to prevent double-tap
+  document.getElementById('top').querySelector('.go').disabled = true;
+
+  if (isMobile()) toggleSheet(false);
 
   const cfg = MODES[currentMode];
   setLoading(true, cfg.ldSub);
 
-  const fullPrompt = [
-    prompt,
-    selectedStyle ? `Style: ${selectedStyle}` : '',
-    selectedPlatform ? `Format: ${selectedPlatform}` : '',
-  ].filter(Boolean).join('. ');
+  const fullPrompt = [prompt, style?`Style: ${style}`:'', platform?`Format: ${platform}`:''].filter(Boolean).join('. ');
 
   try {
     const token = localStorage.getItem('jarvis_token') || '';
     const res = await fetch('https://api.heyjarvis.me/design-command', {
-      method: 'POST',
-      headers: { 'Content-Type':'application/json', 'Authorization':`Bearer ${token}` },
-      body: JSON.stringify({
-        command: fullPrompt,
-        systemPrompt: SYSTEMS[currentMode],
-        history: [],
-      })
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},
+      body:JSON.stringify({ command:fullPrompt, systemPrompt:SYSTEMS[currentMode], history:[] })
     });
 
     let data;
-    const contentType = res.headers.get('content-type') || '';
-    if (contentType.includes('application/json')) {
+    const ct = res.headers.get('content-type') || '';
+    if (ct.includes('application/json')) {
       const raw = await res.json();
       if (raw && typeof raw === 'object' && (raw.html || raw.colors || raw.brandName)) {
         data = raw;
@@ -579,146 +796,114 @@ async function generate() {
         data = extractJSON(text);
       }
     } else {
-      const text = await res.text();
-      data = extractJSON(text);
+      data = extractJSON(await res.text());
     }
 
     setLoading(false);
-    if (!data) { showToast('Parse error — try again'); btn.disabled=false; return; }
+    if (!data) { showToast('Parse error — try again'); reEnableBtns(btn); return; }
 
-    if (currentMode === 'mockup') {
-      renderMockup(data);
-    } else if (currentMode === 'brand') {
-      renderBrandKit(data);
-    } else if (currentMode === 'poster') {
-      renderPoster(data);
-    }
+    if (currentMode==='mockup') renderMockup(data);
+    else if (currentMode==='brand') renderBrandKit(data);
+    else renderPoster(data);
 
-    // Save to history
-    const hc = document.getElementById('hist-chips');
-    const chip = document.createElement('div');
-    chip.className = 'hist-chip';
-    chip.textContent = prompt.length > 50 ? prompt.slice(0,50)+'...' : prompt;
-    chip.onclick = () => setPrompt(prompt);
-    hc.prepend(chip);
-    if (hc.children.length > 6) hc.removeChild(hc.lastChild);
-
+    addToRecents(prompt);
   } catch(e) {
     setLoading(false);
     showToast('Generation failed — check connection');
   }
-  btn.disabled = false;
+
+  reEnableBtns(btn);
+}
+
+function reEnableBtns(btn) {
+  if (btn) btn.disabled = false;
+  document.getElementById('top').querySelector('.go').disabled = false;
+}
+
+function addToRecents(prompt) {
+  const short = prompt.length > 48 ? prompt.slice(0,48)+'...' : prompt;
+
+  const hc = document.getElementById('hist-chips');
+  const chip = document.createElement('div');
+  chip.className = 'hist-chip';
+  chip.textContent = short;
+  chip.onclick = () => setPrompt(prompt);
+  hc.prepend(chip);
+  if (hc.children.length > 6) hc.removeChild(hc.lastChild);
+
+  const mc = document.getElementById('mob-recents');
+  const mchip = document.createElement('div');
+  mchip.className = 'mob-recent-chip';
+  mchip.textContent = short;
+  mchip.onclick = () => setMobPrompt(prompt);
+  mc.prepend(mchip);
+  if (mc.children.length > 6) mc.removeChild(mc.lastChild);
 }
 
 function renderMockup(data) {
-  const html = `
-    <style>
-      .mockup-shell { font-family: system-ui, sans-serif; }
-    </style>
-    <div class="mockup-shell">
-      ${data.html || ''}
-    </div>
-  `;
-  showOutput(html, data.title || 'UI Mockup');
-  if (data.meta) {
-    document.getElementById('output-meta').style.display = 'block';
-    document.getElementById('meta-content').textContent = data.meta;
-  }
+  showOutput(`<style>.mockup-shell{font-family:system-ui,sans-serif}</style><div class="mockup-shell">${data.html||''}</div>`, data.title||'UI Mockup');
+  if (data.meta) { document.getElementById('output-meta').style.display='block'; document.getElementById('meta-content').textContent=data.meta; }
 }
 
 function renderBrandKit(data) {
-  const swatches = (data.colors || []).map(c => `
+  const swatches = (data.colors||[]).map(c=>`
     <div class="bk-color-card">
       <div class="bk-swatch" style="background:${c.hex}"></div>
       <div class="bk-hex">${c.hex}</div>
       <div class="bk-name">${c.name}</div>
       <div class="bk-name" style="color:rgba(255,255,255,0.2)">${c.role}</div>
-    </div>
-  `).join('');
-
-  const primaryHex = data.colors?.[0]?.hex || '#ffffff';
-  const darkHex = data.colors?.find(c=>c.role?.includes('dark'))?.hex || '#0f0f17';
-
-  const headingFont = data.fonts?.heading || 'Georgia';
-  const bodyFont = data.fonts?.body || 'system-ui';
-
+    </div>`).join('');
+  const primaryHex = data.colors?.[0]?.hex||'#ffffff';
+  const darkHex = data.colors?.find(c=>c.role?.includes('dark'))?.hex||'#0f0f17';
+  const hf = data.fonts?.heading||'Georgia';
+  const bf = data.fonts?.body||'system-ui';
   const html = `
-    <link href="https://fonts.googleapis.com/css2?family=${encodeURIComponent(headingFont)}:wght@400;700&family=${encodeURIComponent(bodyFont)}:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=${encodeURIComponent(hf)}:wght@400;700&family=${encodeURIComponent(bf)}:wght@400;500&display=swap" rel="stylesheet">
     <div class="brand-kit">
       <div>
         <div class="bk-section-title">Logo</div>
         <div class="bk-logo-area">
-          <div class="bk-logo-card bk-logo-light">
-            ${data.logoSVG || `<span style="font-family:'${headingFont}',sans-serif;font-size:24px;font-weight:700;color:${darkHex}">${data.brandName||'Brand'}</span>`}
-          </div>
-          <div class="bk-logo-card bk-logo-dark">
-            ${data.logoSVG || `<span style="font-family:'${headingFont}',sans-serif;font-size:24px;font-weight:700;color:#ffffff">${data.brandName||'Brand'}</span>`}
-          </div>
-          <div class="bk-logo-card bk-logo-color" style="background:${primaryHex}">
-            ${data.logoSVG || `<span style="font-family:'${headingFont}',sans-serif;font-size:24px;font-weight:700;color:${darkHex}">${data.brandName||'Brand'}</span>`}
-          </div>
+          <div class="bk-logo-card bk-logo-light">${data.logoSVG||`<span style="font-family:'${hf}',sans-serif;font-size:24px;font-weight:700;color:${darkHex}">${data.brandName||'Brand'}</span>`}</div>
+          <div class="bk-logo-card bk-logo-dark">${data.logoSVG||`<span style="font-family:'${hf}',sans-serif;font-size:24px;font-weight:700;color:#fff">${data.brandName||'Brand'}</span>`}</div>
+          <div class="bk-logo-card" style="background:${primaryHex};padding:24px 32px;display:flex;align-items:center;justify-content:center;min-width:160px">${data.logoSVG||`<span style="font-family:'${hf}',sans-serif;font-size:24px;font-weight:700;color:${darkHex}">${data.brandName||'Brand'}</span>`}</div>
         </div>
       </div>
-
       <div>
-        <div class="bk-section-title">Brand Name &amp; Tagline</div>
-        <div style="font-family:'${headingFont}',sans-serif;font-size:32px;font-weight:700;color:var(--text);margin-bottom:6px">${data.brandName||''}</div>
-        <div style="font-family:'${bodyFont}',sans-serif;font-size:14px;color:var(--dim)">${data.tagline||''}</div>
+        <div class="bk-section-title">Name &amp; Tagline</div>
+        <div style="font-family:'${hf}',sans-serif;font-size:32px;font-weight:700;color:var(--text);margin-bottom:6px">${data.brandName||''}</div>
+        <div style="font-family:'${bf}',sans-serif;font-size:14px;color:var(--dim)">${data.tagline||''}</div>
       </div>
-
-      <div>
-        <div class="bk-section-title">Color Palette</div>
-        <div class="bk-colors">${swatches}</div>
-      </div>
-
+      <div><div class="bk-section-title">Colors</div><div class="bk-colors">${swatches}</div></div>
       <div>
         <div class="bk-section-title">Typography</div>
         <div class="bk-fonts">
-          <div class="bk-font-sample">
-            <div class="bk-font-label">${headingFont} — Heading</div>
-            <div style="font-family:'${headingFont}',sans-serif;font-size:28px;font-weight:700;color:var(--text)">The quick brown fox</div>
-          </div>
-          <div class="bk-font-sample">
-            <div class="bk-font-label">${bodyFont} — Body</div>
-            <div style="font-family:'${bodyFont}',sans-serif;font-size:15px;color:var(--dim);line-height:1.7">Consistent visual identity builds trust and recognition across every touchpoint of your brand experience.</div>
-          </div>
+          <div><div class="bk-font-label">${hf} — Heading</div><div style="font-family:'${hf}',sans-serif;font-size:28px;font-weight:700;color:var(--text)">The quick brown fox</div></div>
+          <div><div class="bk-font-label">${bf} — Body</div><div style="font-family:'${bf}',sans-serif;font-size:15px;color:var(--dim);line-height:1.7">Consistent visual identity builds trust and recognition across every touchpoint.</div></div>
         </div>
       </div>
-
-      ${data.voice ? `<div>
-        <div class="bk-section-title">Brand Voice</div>
-        <div style="font-size:13px;color:var(--dim);line-height:1.7;font-style:italic">"${data.voice}"</div>
-      </div>` : ''}
-    </div>
-  `;
-  showOutput(html, data.brandName ? `${data.brandName} — Brand Kit` : 'Brand Kit');
-  if (data.meta) {
-    document.getElementById('output-meta').style.display = 'block';
-    document.getElementById('meta-content').textContent = data.meta;
-  }
+      ${data.voice?`<div><div class="bk-section-title">Brand Voice</div><div style="font-size:13px;color:var(--dim);line-height:1.7;font-style:italic">"${data.voice}"</div></div>`:''}
+    </div>`;
+  showOutput(html, data.brandName?`${data.brandName} — Brand Kit`:'Brand Kit');
+  if (data.meta) { document.getElementById('output-meta').style.display='block'; document.getElementById('meta-content').textContent=data.meta; }
 }
 
 function renderPoster(data) {
-  showOutput(`<div class="poster-wrap">${data.html||''}</div>`, data.title || 'Creative');
-  if (data.meta) {
-    document.getElementById('output-meta').style.display = 'block';
-    document.getElementById('meta-content').textContent = data.meta;
-  }
+  showOutput(`<div class="poster-wrap">${data.html||''}</div>`, data.title||'Creative');
+  if (data.meta) { document.getElementById('output-meta').style.display='block'; document.getElementById('meta-content').textContent=data.meta; }
 }
 
 function copyOutput() {
-  const el = document.getElementById('output-content');
-  const text = el.innerHTML;
-  navigator.clipboard.writeText(text).then(() => showToast('Copied to clipboard'));
+  navigator.clipboard.writeText(document.getElementById('output-content').innerHTML)
+    .then(()=>showToast('Copied'));
 }
 
 function downloadOutput() {
   const el = document.getElementById('output-content');
   if (!el.innerHTML.trim()) { showToast('Nothing to download'); return; }
   const full = `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>body{margin:0;background:#06060a;color:#fff;font-family:system-ui,sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:40px}</style></head><body>${el.innerHTML}</body></html>`;
-  const blob = new Blob([full], {type:'text/html'});
-  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-  a.download = `design-studio-output.html`; a.click();
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([full],{type:'text/html'}));
+  a.download = 'design-studio-output.html'; a.click();
   showToast('Saved');
 }
 
@@ -727,12 +912,16 @@ function showToast(msg) {
   const el = document.getElementById('toast');
   el.textContent = msg; el.classList.add('show');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.classList.remove('show'), 2500);
+  toastTimer = setTimeout(()=>el.classList.remove('show'), 2500);
 }
 
-// Enter to generate
-document.getElementById('prompt').addEventListener('keydown', e => {
-  if (e.key === 'Enter' && e.metaKey) generate();
+// Keyboard shortcuts
+document.getElementById('prompt').addEventListener('keydown', e => { if (e.key==='Enter'&&e.metaKey) doGenerate(); });
+document.getElementById('prompt-mobile').addEventListener('keydown', e => { if (e.key==='Enter'&&e.metaKey) doGenerate(); });
+
+// Open sheet on canvas tap when empty (mobile UX)
+document.getElementById('canvas-area').addEventListener('click', () => {
+  if (isMobile()) toggleSheet(true);
 });
 </script>
 </body>
