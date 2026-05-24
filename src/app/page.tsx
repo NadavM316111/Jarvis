@@ -52,7 +52,7 @@ function formatMessage(text: string) {
     .replace(/(https?:\/\/[^\s<"]+\.(webp|png|jpg|jpeg))/g, (_, url) => {
   const idx = images.length;
   const downloadFn = `(async function(){try{const r=await fetch('${url}');const b=await r.blob();const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='jarvis-image.webp';a.click();}catch(e){window.open('${url}','_blank');}})()`;
-  images.push(`<div style="margin-top:8px"><img src="${url}" style="max-width:100%;border-radius:12px;display:block;" /><a href="#" onclick="${downloadFn};return false;" style="display:inline-flex;align-items:center;gap:4px;margin-top:6px;font-size:11px;color:#60a5fa;text-decoration:none;opacity:0.7;">↓ Download</a></div>`);
+  images.push(`<div style="margin-top:8px"><img src="${url}" style="max-width:100%;border-radius:12px;display:block;" /></div>`);
   return `__IMG_${idx}__`;
 })
     .replace(/\n/g, '<br/>')
