@@ -3,1052 +3,451 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HYPERFLEX — Holographic Studio</title>
+<title>HYPERFLEX</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;700;800&display=swap');
-
-:root {
-  --holo: #00f5ff;
-  --holo2: #0af;
-  --holo3: #7000ff;
-  --grid: rgba(0,245,255,0.12);
-  --glow: rgba(0,245,255,0.5);
-  --panel: rgba(0,8,20,0.85);
-  --border: rgba(0,245,255,0.2);
-  --text: rgba(0,245,255,0.9);
-  --dim: rgba(0,245,255,0.4);
-  --danger: #ff2266;
-}
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&display=swap');
 
 * { margin:0; padding:0; box-sizing:border-box; }
 
 body {
-  background: #000408;
-  color: var(--text);
-  font-family: 'Space Mono', monospace;
+  background: #000;
+  font-family: 'DM Sans', sans-serif;
   overflow: hidden;
   height: 100vh;
-  cursor: none;
-  user-select: none;
+  color: white;
 }
 
-/* ── CURSOR ── */
-#cursor {
+#canvas { position: fixed; inset: 0; width: 100%; height: 100%; }
+
+/* ── CORNER MARKS ── */
+.corner {
   position: fixed;
-  width: 20px; height: 20px;
-  pointer-events: none;
-  z-index: 9999;
-  transform: translate(-50%,-50%);
-  transition: transform 0.05s;
+  width: 18px; height: 18px;
+  z-index: 10; pointer-events: none;
 }
-#cursor::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border: 1px solid var(--holo);
-  transform: rotate(45deg);
-  box-shadow: 0 0 10px var(--holo), inset 0 0 10px rgba(0,245,255,0.1);
-  animation: cursorPulse 2s ease-in-out infinite;
+.corner::before, .corner::after {
+  content: ''; position: absolute;
+  background: rgba(0,245,255,0.5);
 }
-#cursor.pinching::before { background: rgba(0,245,255,0.2); transform: rotate(45deg) scale(0.6); }
-@keyframes cursorPulse { 0%,100%{opacity:1} 50%{opacity:0.6} }
+.corner::before { width: 100%; height: 1px; top: 0; left: 0; }
+.corner::after  { width: 1px; height: 100%; top: 0; left: 0; }
+.c-tl { top: 20px; left: 20px; }
+.c-tr { top: 20px; right: 20px; transform: scaleX(-1); }
+.c-bl { bottom: 90px; left: 20px; transform: scaleY(-1); }
+.c-br { bottom: 90px; right: 20px; transform: scale(-1,-1); }
 
-/* ── SCANLINES ── */
-body::before {
-  content: '';
-  position: fixed; inset: 0; z-index: 1000; pointer-events: none;
-  background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,245,255,0.012) 3px, rgba(0,245,255,0.012) 4px);
-}
-
-/* ── VIGNETTE ── */
-body::after {
-  content: '';
-  position: fixed; inset: 0; z-index: 999; pointer-events: none;
-  background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,8,0.85) 100%);
-}
-
-/* ── CANVAS ── */
-#canvas {
-  position: fixed; inset: 0;
-  width: 100%; height: 100%;
-  z-index: 0;
-}
-
-/* ── PROJECTION EFFECT ── */
-#projection-base {
-  position: fixed;
-  bottom: 0; left: 50%;
-  transform: translateX(-50%);
-  width: 500px; height: 3px;
-  background: linear-gradient(90deg, transparent, var(--holo), var(--holo2), var(--holo), transparent);
-  box-shadow: 0 0 40px 10px var(--glow);
-  z-index: 2;
-  filter: blur(1px);
-}
-#projection-beam {
-  position: fixed;
-  bottom: 3px; left: 50%;
-  transform: translateX(-50%);
-  width: 0; height: 0;
-  border-left: 250px solid transparent;
-  border-right: 250px solid transparent;
-  border-bottom: 120px solid rgba(0,245,255,0.03);
-  z-index: 1;
-  pointer-events: none;
-}
-
-/* ── TOP BAR ── */
-#topbar {
+/* ── TOP ── */
+#top {
   position: fixed; top: 0; left: 0; right: 0;
-  height: 54px; z-index: 100;
-  background: linear-gradient(180deg, rgba(0,4,12,0.98), rgba(0,4,12,0.7));
-  border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; padding: 0 24px; gap: 20px;
+  height: 52px; z-index: 50;
+  display: flex; align-items: center;
+  padding: 0 24px; gap: 20px;
+  background: linear-gradient(180deg, rgba(0,0,0,0.9) 0%, transparent 100%);
 }
-#topbar::after {
-  content: '';
-  position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
-  background: linear-gradient(90deg, transparent, var(--holo), transparent);
-  animation: scanH 4s ease-in-out infinite;
-  opacity: 0.6;
+#logo {
+  font-size: 13px; letter-spacing: 6px;
+  color: rgba(0,245,255,0.8); font-weight: 300;
+  text-transform: uppercase;
 }
-@keyframes scanH { 0%,100%{opacity:0.2} 50%{opacity:0.8} }
+#status {
+  font-size: 10px; letter-spacing: 3px;
+  color: rgba(255,255,255,0.2);
+  text-transform: uppercase;
+  margin-left: auto;
+}
 
-.logo {
-  font-family: 'Syne', sans-serif;
-  font-weight: 800; font-size: 18px;
-  letter-spacing: 6px;
-  color: var(--holo);
-  text-shadow: 0 0 20px var(--holo), 0 0 60px rgba(0,245,255,0.3);
+/* ── BOTTOM BAR ── */
+#bottom {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  height: 72px; z-index: 50;
+  display: flex; align-items: center;
+  padding: 0 20px; gap: 12px;
+  background: linear-gradient(0deg, rgba(0,0,0,0.95) 0%, transparent 100%);
+}
+
+#input-wrap {
+  flex: 1;
+  display: flex; align-items: center; gap: 10px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  padding: 0 16px;
+  height: 44px;
+  max-width: 640px;
+  margin: 0 auto;
+}
+#input-wrap:focus-within {
+  border-color: rgba(0,245,255,0.3);
+  background: rgba(0,245,255,0.04);
+}
+#prefix {
+  font-size: 11px; color: rgba(0,245,255,0.5);
+  letter-spacing: 1px; flex-shrink: 0;
+}
+#prompt {
+  flex: 1; background: none; border: none; outline: none;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px; color: white;
+  caret-color: rgba(0,245,255,0.8);
+}
+#prompt::placeholder { color: rgba(255,255,255,0.2); }
+#go {
+  padding: 0 18px; height: 32px;
+  background: rgba(0,245,255,0.15);
+  border: 1px solid rgba(0,245,255,0.3);
+  border-radius: 8px;
+  color: rgba(0,245,255,0.9);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px; font-weight: 500;
+  cursor: pointer; transition: all 0.2s;
   flex-shrink: 0;
 }
+#go:hover { background: rgba(0,245,255,0.25); }
+#go:disabled { opacity: 0.4; cursor: default; }
 
-.top-sep { width: 1px; height: 28px; background: var(--border); }
-
-.top-stat { display: flex; flex-direction: column; gap: 2px; min-width: 80px; }
-.top-stat-label { font-size: 7px; letter-spacing: 3px; color: var(--dim); text-transform: uppercase; }
-.top-stat-val { font-size: 11px; color: var(--holo); text-shadow: 0 0 8px var(--holo); }
-
-.top-center { flex: 1; display: flex; justify-content: center; }
-.top-mode {
-  font-size: 9px; letter-spacing: 5px; color: var(--dim);
-  text-transform: uppercase;
-  padding: 4px 16px;
-  border: 1px solid var(--border);
-  animation: modeBlink 3s ease-in-out infinite;
-}
-@keyframes modeBlink { 0%,100%{border-color:var(--border)} 50%{border-color:var(--holo);color:var(--holo)} }
-
-.top-actions { display: flex; gap: 8px; }
-.hbtn {
-  padding: 7px 16px;
-  background: transparent;
-  border: 1px solid var(--border);
-  color: var(--dim);
-  font-family: 'Space Mono', monospace;
-  font-size: 9px; letter-spacing: 2px;
-  text-transform: uppercase; cursor: pointer;
-  clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
-  transition: all 0.2s;
-}
-.hbtn:hover { border-color: var(--holo); color: var(--holo); box-shadow: 0 0 16px var(--glow); background: rgba(0,245,255,0.05); }
-.hbtn.primary { border-color: var(--holo); color: var(--holo); }
-
-/* ── LEFT PANEL ── */
-#left-panel {
-  position: fixed; left: 0; top: 54px; bottom: 0;
-  width: 220px; z-index: 50;
-  background: var(--panel);
-  border-right: 1px solid var(--border);
-  display: flex; flex-direction: column;
-  backdrop-filter: blur(20px);
-  overflow: hidden;
-}
-#left-panel::before {
-  content: '';
-  position: absolute; top: 0; left: 0; right: 0; height: 2px;
-  background: linear-gradient(90deg, transparent, var(--holo), transparent);
-  animation: slideR 3s ease-in-out infinite;
-}
-@keyframes slideR { 0%{transform:translateX(-100%);opacity:0} 50%{opacity:1} 100%{transform:translateX(100%);opacity:0} }
-
-.panel-sec { padding: 16px 14px 12px; border-bottom: 1px solid var(--border); }
-.panel-sec-title {
-  font-size: 7px; letter-spacing: 3px; color: var(--dim);
-  text-transform: uppercase; margin-bottom: 10px;
-  display: flex; align-items: center; gap: 6px;
-}
-.panel-sec-title::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, var(--border), transparent); }
-
-.shape-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
-.shape-btn {
-  padding: 8px 4px;
-  background: rgba(0,245,255,0.03);
-  border: 1px solid var(--border);
-  color: var(--dim);
-  font-family: 'Space Mono', monospace;
-  font-size: 8px; letter-spacing: 1px;
-  cursor: pointer; text-align: center;
-  text-transform: uppercase;
-  transition: all 0.15s;
-  display: flex; flex-direction: column; align-items: center; gap: 3px;
-}
-.shape-btn .sico { font-size: 14px; }
-.shape-btn:hover, .shape-btn.active {
-  background: rgba(0,245,255,0.1);
-  border-color: var(--holo); color: var(--holo);
-  box-shadow: 0 0 10px rgba(0,245,255,0.2), inset 0 0 10px rgba(0,245,255,0.05);
+/* ── HINT ── */
+#hint {
+  position: fixed; bottom: 80px; left: 50%;
+  transform: translateX(-50%);
+  font-size: 10px; color: rgba(255,255,255,0.15);
+  letter-spacing: 2px; text-transform: uppercase;
+  pointer-events: none; z-index: 10;
+  text-align: center; white-space: nowrap;
 }
 
-.obj-list { flex: 1; overflow-y: auto; padding: 8px; }
-.obj-list::-webkit-scrollbar { width: 2px; }
-.obj-list::-webkit-scrollbar-thumb { background: var(--dim); }
-.obj-item {
-  display: flex; align-items: center; gap: 8px;
-  padding: 6px 8px; margin-bottom: 2px;
-  cursor: pointer; border: 1px solid transparent;
-  transition: all 0.12s; position: relative;
-}
-.obj-item:hover { background: rgba(0,245,255,0.05); border-color: var(--border); }
-.obj-item.selected { background: rgba(0,245,255,0.1); border-color: var(--holo); }
-.obj-item.selected::before {
-  content: '';
-  position: absolute; left: 0; top: 0; bottom: 0; width: 2px;
-  background: var(--holo); box-shadow: 0 0 6px var(--holo);
-}
-.obj-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
-.obj-name { font-size: 9px; color: var(--dim); flex: 1; letter-spacing: 0.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.obj-item.selected .obj-name { color: var(--holo); }
-.obj-del { font-size: 10px; color: transparent; cursor: pointer; }
-.obj-item:hover .obj-del { color: var(--danger); }
-
-.panel-bottom { padding: 12px; border-top: 1px solid var(--border); }
-.sel-info { font-size: 8px; color: var(--dim); letter-spacing: 1px; text-align: center; }
-
-/* ── RIGHT PANEL ── */
-#right-panel {
-  position: fixed; right: 0; top: 54px; bottom: 0;
-  width: 220px; z-index: 50;
-  background: var(--panel);
-  border-left: 1px solid var(--border);
-  display: flex; flex-direction: column;
-  backdrop-filter: blur(20px);
-  overflow-y: auto;
-}
-#right-panel::-webkit-scrollbar { width: 2px; }
-#right-panel::-webkit-scrollbar-thumb { background: var(--dim); }
-
-.rsec { padding: 14px; border-bottom: 1px solid var(--border); }
-.rsec-title {
-  font-size: 7px; letter-spacing: 3px; color: var(--dim);
-  text-transform: uppercase; margin-bottom: 10px;
-  display: flex; align-items: center; gap: 6px;
-}
-.rsec-title::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, var(--border), transparent); }
-
-.color-row { display: grid; grid-template-columns: repeat(6, 1fr); gap: 5px; }
-.cswatch {
-  aspect-ratio: 1; border-radius: 50%; cursor: pointer;
-  border: 2px solid transparent; transition: all 0.2s;
-}
-.cswatch:hover, .cswatch.active { border-color: white; transform: scale(1.2); }
-
-.mat-list { display: flex; flex-direction: column; gap: 3px; }
-.mat-btn {
-  display: flex; align-items: center; gap: 8px;
-  padding: 7px 10px;
-  background: rgba(0,245,255,0.02);
-  border: 1px solid var(--border);
-  color: var(--dim); font-family: 'Space Mono', monospace;
-  font-size: 8px; letter-spacing: 1px;
-  cursor: pointer; transition: all 0.15s;
-  text-transform: uppercase;
-}
-.mat-btn:hover { background: rgba(0,245,255,0.08); border-color: var(--holo); color: var(--holo); }
-.mat-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-
-.xf-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
-.xf-btn {
-  padding: 7px 4px;
-  background: rgba(0,245,255,0.02);
-  border: 1px solid var(--border);
-  color: var(--dim);
-  font-family: 'Space Mono', monospace;
-  font-size: 8px; letter-spacing: 1px;
-  cursor: pointer; text-align: center;
-  text-transform: uppercase; transition: all 0.15s;
-}
-.xf-btn:hover { background: rgba(0,245,255,0.08); border-color: var(--holo); color: var(--holo); }
-.xf-btn.red { border-color: rgba(255,34,102,0.3); color: var(--danger); }
-.xf-btn.red:hover { background: rgba(255,34,102,0.1); border-color: var(--danger); }
-
-/* ── CHAT BAR ── */
-#chatbar {
-  position: fixed; bottom: 0; left: 220px; right: 220px;
-  z-index: 100; padding: 12px 20px;
-  background: linear-gradient(0deg, rgba(0,4,12,0.99), rgba(0,4,12,0.8));
-  border-top: 1px solid var(--border);
-}
-#chatbar::before {
-  content: '';
-  position: absolute; top: 0; left: 0; right: 0; height: 1px;
-  background: linear-gradient(90deg, transparent, var(--holo), var(--holo2), var(--holo), transparent);
-  box-shadow: 0 0 20px var(--glow);
-}
-
-.chat-row { display: flex; align-items: center; gap: 10px; }
-.chat-prefix { font-size: 11px; color: var(--holo); text-shadow: 0 0 10px var(--holo); flex-shrink: 0; }
-#chat-input {
-  flex: 1;
-  background: transparent; border: none; outline: none;
-  font-family: 'Space Mono', monospace;
-  font-size: 12px; color: rgba(255,255,255,0.9);
-  letter-spacing: 0.5px; caret-color: var(--holo);
-}
-#chat-input::placeholder { color: var(--dim); font-size: 11px; }
-.chat-send {
-  padding: 8px 18px;
-  background: rgba(0,245,255,0.08);
-  border: 1px solid var(--holo);
-  color: var(--holo);
-  font-family: 'Space Mono', monospace;
-  font-size: 9px; letter-spacing: 2px;
-  cursor: pointer; transition: all 0.2s;
-  text-transform: uppercase;
-}
-.chat-send:hover { background: rgba(0,245,255,0.18); box-shadow: 0 0 20px var(--glow); }
-
-.chat-log { max-height: 80px; overflow-y: auto; margin-bottom: 8px; }
-.chat-log::-webkit-scrollbar { width: 2px; }
-.chat-log::-webkit-scrollbar-thumb { background: var(--dim); }
-.chat-msg { font-size: 10px; margin-bottom: 3px; line-height: 1.4; }
-.chat-msg.user { color: var(--dim); }
-.chat-msg.ai { color: var(--holo); text-shadow: 0 0 6px rgba(0,245,255,0.3); }
-.chat-msg.err { color: var(--danger); }
-
-/* ── HOLO GRID OVERLAY ── */
-#holo-grid {
-  position: fixed; inset: 0; z-index: 1; pointer-events: none;
-  background-image:
-    linear-gradient(var(--grid) 1px, transparent 1px),
-    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
-  background-size: 60px 60px;
-  mask-image: radial-gradient(ellipse at 50% 60%, rgba(0,0,0,0.4) 30%, transparent 75%);
-  animation: gridFloat 8s ease-in-out infinite;
-}
-@keyframes gridFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)} }
-
-/* ── CORNER BRACKETS ── */
-.bracket {
-  position: fixed; width: 24px; height: 24px;
-  z-index: 101; pointer-events: none;
-}
-.bracket::before, .bracket::after {
-  content: ''; position: absolute;
-  background: var(--holo); box-shadow: 0 0 8px var(--holo);
-}
-.bracket::before { width: 100%; height: 2px; }
-.bracket::after { width: 2px; height: 100%; }
-.bracket.tl { top: 62px; left: 228px; }
-.bracket.tr { top: 62px; right: 228px; transform: scaleX(-1); }
-.bracket.bl { bottom: 108px; left: 228px; transform: scaleY(-1); }
-.bracket.br { bottom: 108px; right: 228px; transform: scale(-1,-1); }
-
-/* ── STATUS TOAST ── */
+/* ── TOAST ── */
 #toast {
-  position: fixed; top: 70px; left: 50%; transform: translateX(-50%);
-  z-index: 200;
-  background: rgba(0,4,12,0.95);
-  border: 1px solid var(--holo);
-  padding: 8px 24px;
-  font-size: 10px; letter-spacing: 3px;
-  color: var(--holo); text-transform: uppercase;
-  clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%);
-  box-shadow: 0 0 30px var(--glow);
-  transition: opacity 0.3s; opacity: 0;
-  pointer-events: none;
+  position: fixed; top: 60px; left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.8);
+  border: 1px solid rgba(0,245,255,0.3);
+  padding: 8px 20px; border-radius: 8px;
+  font-size: 11px; letter-spacing: 2px;
+  color: rgba(0,245,255,0.8); text-transform: uppercase;
+  opacity: 0; transition: opacity 0.3s;
+  pointer-events: none; z-index: 100;
 }
 #toast.show { opacity: 1; }
 
-/* ── LOADING ── */
-#loader {
-  position: fixed; inset: 0; z-index: 9000;
-  background: #000408;
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center; gap: 24px;
-  transition: opacity 0.8s;
+/* ── CLEAR BTN ── */
+#clear {
+  position: fixed; top: 16px; right: 20px;
+  z-index: 60;
+  padding: 6px 12px;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 6px;
+  color: rgba(255,255,255,0.3);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 10px; letter-spacing: 1px;
+  cursor: pointer; transition: all 0.2s;
+  text-transform: uppercase;
 }
-.loader-ring {
-  width: 80px; height: 80px;
+#clear:hover { border-color: rgba(255,50,50,0.4); color: rgba(255,100,100,0.7); }
+
+/* ── LOADING ── */
+#loading {
+  position: fixed; inset: 0; z-index: 200;
+  background: #000;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 16px;
+  transition: opacity 0.6s;
+}
+.ld-ring {
+  width: 36px; height: 36px;
   border: 1px solid rgba(0,245,255,0.2);
-  border-top-color: var(--holo);
+  border-top-color: rgba(0,245,255,0.8);
   border-radius: 50%;
   animation: spin 1s linear infinite;
-  box-shadow: 0 0 30px var(--glow);
 }
-@keyframes spin { to{transform:rotate(360deg)} }
-.loader-text {
-  font-family: 'Syne', sans-serif;
-  font-size: 11px; letter-spacing: 6px;
-  color: var(--holo); text-transform: uppercase;
-  animation: loaderBlink 1.2s ease-in-out infinite;
-}
-@keyframes loaderBlink { 0%,100%{opacity:1} 50%{opacity:0.3} }
-
-/* ── THINKING ── */
-.thinking-dots { display: inline-flex; gap: 3px; align-items: center; }
-.thinking-dots span {
-  width: 4px; height: 4px; border-radius: 50%;
-  background: var(--holo); animation: tdot 1.2s ease-in-out infinite;
-}
-.thinking-dots span:nth-child(2){animation-delay:.2s}
-.thinking-dots span:nth-child(3){animation-delay:.4s}
-@keyframes tdot { 0%,80%,100%{transform:scale(0.5);opacity:0.3} 40%{transform:scale(1);opacity:1} }
+@keyframes spin { to { transform: rotate(360deg); } }
+.ld-txt { font-size: 10px; letter-spacing: 4px; color: rgba(0,245,255,0.4); text-transform: uppercase; }
 </style>
 </head>
 <body>
 
-<div id="loader">
-  <div class="loader-ring"></div>
-  <div class="loader-text">Initializing Hyperflex Studio</div>
-</div>
-
 <canvas id="canvas"></canvas>
-<div id="holo-grid"></div>
-<div id="projection-base"></div>
-<div id="projection-beam"></div>
 
-<div class="bracket tl"></div>
-<div class="bracket tr"></div>
-<div class="bracket bl"></div>
-<div class="bracket br"></div>
+<div class="corner c-tl"></div>
+<div class="corner c-tr"></div>
+<div class="corner c-bl"></div>
+<div class="corner c-br"></div>
 
-<div id="cursor"></div>
+<div id="loading">
+  <div class="ld-ring"></div>
+  <div class="ld-txt">Hyperflex</div>
+</div>
+
+<div id="top">
+  <div id="logo">Hyperflex</div>
+  <div id="status">Drag to rotate · Scroll to zoom</div>
+</div>
+
+<button id="clear" onclick="clearAll()">Clear</button>
 <div id="toast"></div>
+<div id="hint">Describe anything and JARVIS will build it</div>
 
-<!-- TOP BAR -->
-<div id="topbar">
-  <div class="logo">HYPERFLEX</div>
-  <div class="top-sep"></div>
-  <div class="top-stat"><div class="top-stat-label">Objects</div><div class="top-stat-val" id="stat-obj">000</div></div>
-  <div class="top-sep"></div>
-  <div class="top-stat"><div class="top-stat-label">Selected</div><div class="top-stat-val" id="stat-sel">NONE</div></div>
-  <div class="top-sep"></div>
-  <div class="top-stat"><div class="top-stat-label">Vertices</div><div class="top-stat-val" id="stat-verts">0</div></div>
-  <div class="top-center"><div class="top-mode" id="top-mode">STANDBY</div></div>
-  <div class="top-actions">
-    <button class="hbtn" onclick="clearScene()">Clear</button>
-    <button class="hbtn" onclick="exportSTL()">Export STL</button>
-    <button class="hbtn" onclick="toggleWireframe()">Wireframe</button>
-    <button class="hbtn primary" onclick="document.getElementById('chat-input').focus()">Describe</button>
-  </div>
-</div>
-
-<!-- LEFT PANEL -->
-<div id="left-panel">
-  <div class="panel-sec">
-    <div class="panel-sec-title">Geometry</div>
-    <div class="shape-grid">
-      <button class="shape-btn active" onclick="setShape(this,'sphere')"><span class="sico">●</span>Sphere</button>
-      <button class="shape-btn" onclick="setShape(this,'box')"><span class="sico">■</span>Box</button>
-      <button class="shape-btn" onclick="setShape(this,'cylinder')"><span class="sico">⬡</span>Tube</button>
-      <button class="shape-btn" onclick="setShape(this,'cone')"><span class="sico">▲</span>Cone</button>
-      <button class="shape-btn" onclick="setShape(this,'torus')"><span class="sico">◎</span>Torus</button>
-      <button class="shape-btn" onclick="setShape(this,'knot')"><span class="sico">∞</span>Knot</button>
-    </div>
-  </div>
-
-  <div class="panel-sec" style="flex-shrink:0">
-    <div class="panel-sec-title">Scene Objects</div>
-  </div>
-  <div class="obj-list" id="obj-list"></div>
-  <div class="panel-bottom">
-    <div class="sel-info" id="sel-info">0 objects · none selected</div>
-  </div>
-</div>
-
-<!-- RIGHT PANEL -->
-<div id="right-panel">
-  <div class="rsec">
-    <div class="rsec-title">Color</div>
-    <div class="color-row" id="color-row"></div>
-  </div>
-  <div class="rsec">
-    <div class="rsec-title">Material</div>
-    <div class="mat-list">
-      <div class="mat-btn" onclick="applyMat('holo')"><div class="mat-dot" style="background:#00f5ff;box-shadow:0 0 6px #00f5ff"></div>Hologram</div>
-      <div class="mat-btn" onclick="applyMat('chrome')"><div class="mat-dot" style="background:#e0eef8"></div>Chrome</div>
-      <div class="mat-btn" onclick="applyMat('gold')"><div class="mat-dot" style="background:#ffd700"></div>Gold</div>
-      <div class="mat-btn" onclick="applyMat('matte')"><div class="mat-dot" style="background:#1a2030"></div>Matte</div>
-      <div class="mat-btn" onclick="applyMat('glass')"><div class="mat-dot" style="background:rgba(100,200,255,0.4);border:1px solid #0af"></div>Glass</div>
-      <div class="mat-btn" onclick="applyMat('plasma')"><div class="mat-dot" style="background:#7000ff;box-shadow:0 0 6px #7000ff"></div>Plasma</div>
-    </div>
-  </div>
-  <div class="rsec">
-    <div class="rsec-title">Transform</div>
-    <div class="xf-grid">
-      <button class="xf-btn" onclick="scaleSel(1.3)">Scale +</button>
-      <button class="xf-btn" onclick="scaleSel(0.77)">Scale −</button>
-      <button class="xf-btn" onclick="rotateSel('y',20)">Rot Y</button>
-      <button class="xf-btn" onclick="rotateSel('x',20)">Rot X</button>
-      <button class="xf-btn" onclick="rotateSel('z',20)">Rot Z</button>
-      <button class="xf-btn" onclick="dupSel()">Duplicate</button>
-      <button class="xf-btn" onclick="centerSel()">Center</button>
-      <button class="xf-btn red" onclick="deleteSel()">Delete</button>
-    </div>
-  </div>
-  <div class="rsec">
-    <div class="rsec-title">Spawn</div>
-    <div class="xf-grid">
-      <button class="xf-btn" onclick="spawnShape()">Add Shape</button>
-      <button class="xf-btn" onclick="selectAll()">Sel All</button>
-    </div>
-  </div>
-</div>
-
-<!-- CHAT BAR -->
-<div id="chatbar">
-  <div class="chat-log" id="chat-log"></div>
-  <div class="chat-row">
-    <div class="chat-prefix">JARVIS &rsaquo;</div>
-    <input id="chat-input" type="text" placeholder="Describe anything to build — &quot;a modern chair&quot;, &quot;a drone&quot;, &quot;molecular structure&quot;..." autocomplete="off"/>
-    <button class="chat-send" id="chat-send" onclick="sendCmd()">Build</button>
+<div id="bottom">
+  <div id="input-wrap">
+    <div id="prefix">→</div>
+    <input id="prompt" type="text" placeholder="a modern chair, a sports car, a drone, a robot..." autocomplete="off"/>
+    <button id="go" onclick="build()">Build</button>
   </div>
 </div>
 
 <script>
-// ── SCENE ─────────────────────────────────
+// ── SCENE ──────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
 const scene  = new THREE.Scene();
-scene.fog = new THREE.FogExp2(0x000408, 0.0006);
+const camera = new THREE.PerspectiveCamera(45, innerWidth/innerHeight, 0.1, 3000);
+camera.position.set(0, 40, 220);
 
-const camera = new THREE.PerspectiveCamera(50, innerWidth/innerHeight, 0.1, 5000);
-camera.position.set(0, 60, 280);
-
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.setSize(innerWidth, innerHeight);
-renderer.shadowMap.enabled = true;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.1;
+renderer.toneMappingExposure = 1.2;
+renderer.shadowMap.enabled = true;
 
-function onResize() {
-  camera.aspect = innerWidth / innerHeight;
+window.addEventListener('resize', () => {
+  camera.aspect = innerWidth/innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(innerWidth, innerHeight);
-}
-window.addEventListener('resize', onResize);
+});
 
-// ── LIGHTS ────────────────────────────────
-scene.add(new THREE.AmbientLight(0x050f1a, 3));
-const sun = new THREE.DirectionalLight(0xffffff, 2.5);
-sun.position.set(150, 300, 200); sun.castShadow = true; scene.add(sun);
-const holoLight = new THREE.PointLight(0x00f5ff, 8, 600);
-holoLight.position.set(0, 80, 100); scene.add(holoLight);
-const rimLight  = new THREE.DirectionalLight(0x0040aa, 2);
-rimLight.position.set(-200, 50, -100); scene.add(rimLight);
-const fillLight = new THREE.PointLight(0x7000ff, 3, 400);
-fillLight.position.set(-100, 100, -100); scene.add(fillLight);
+// ── LIGHTS ─────────────────────────────────────────────────
+scene.add(new THREE.AmbientLight(0x08101a, 4));
+const key = new THREE.DirectionalLight(0xffffff, 3);
+key.position.set(100, 200, 150); key.castShadow = true; scene.add(key);
+const holo = new THREE.PointLight(0x00f5ff, 12, 500);
+holo.position.set(0, 60, 80); scene.add(holo);
+const fill = new THREE.PointLight(0x5500ff, 4, 400);
+fill.position.set(-100, 80, -100); scene.add(fill);
+const rim = new THREE.DirectionalLight(0x002244, 3);
+rim.position.set(-80, 0, -120); scene.add(rim);
 
-// ── GRID PLANE ────────────────────────────
-const gridHelper = new THREE.GridHelper(1000, 40, 0x00f5ff, 0x001a2a);
-gridHelper.material.opacity = 0.08; gridHelper.material.transparent = true;
-scene.add(gridHelper);
+// ── GROUND REFLECT ─────────────────────────────────────────
+const ground = new THREE.Mesh(
+  new THREE.PlaneGeometry(2000, 2000),
+  new THREE.MeshStandardMaterial({ color: 0x000a14, metalness: 0.8, roughness: 0.9 })
+);
+ground.rotation.x = -Math.PI/2;
+ground.position.y = -1;
+ground.receiveShadow = true;
+scene.add(ground);
 
-// ── PIVOT ─────────────────────────────────
+// ── PIVOT ──────────────────────────────────────────────────
 const pivot = new THREE.Object3D();
 scene.add(pivot);
 
-// ── OBJECTS ───────────────────────────────
-const objects = {};
-const selected = new Set();
-let objCounter = 0;
-let wireframe = false;
-let activeShape = 'sphere';
-let activeColor = null; // null = auto
+// ── OBJECTS ────────────────────────────────────────────────
+let objects = {};
+let objN = 0;
 
-const COLORS = {
-  'Holo Blue':  { hex: 0x00f5ff, metalness: 0.9, roughness: 0.05, emissive: 0x003a44 },
-  'Arc':        { hex: 0x0af0ff, metalness: 0.9, roughness: 0.04, emissive: 0x002233 },
-  'Gold':       { hex: 0xffd700, metalness: 0.95, roughness: 0.04 },
-  'Chrome':     { hex: 0xe0eef8, metalness: 1.0,  roughness: 0.02 },
-  'Plasma':     { hex: 0x7000ff, metalness: 0.85, roughness: 0.1, emissive: 0x1a0040 },
-  'Red':        { hex: 0xff2266, metalness: 0.8,  roughness: 0.15 },
-  'Amber':      { hex: 0xff8800, metalness: 0.7,  roughness: 0.2 },
-  'Emerald':    { hex: 0x00ff88, metalness: 0.8,  roughness: 0.1 },
-  'White':      { hex: 0xf0f8ff, metalness: 0.5,  roughness: 0.2 },
-  'Black':      { hex: 0x0a1020, metalness: 0.7,  roughness: 0.3 },
-  'Steel':      { hex: 0x607080, metalness: 0.9,  roughness: 0.2 },
-  'Violet':     { hex: 0xaa44ff, metalness: 0.8,  roughness: 0.1, emissive: 0x1a0033 },
-};
-const colorEntries = Object.entries(COLORS);
-
-// Build color swatches
-const cr = document.getElementById('color-row');
-// Auto
-const autoSw = document.createElement('div');
-autoSw.className = 'cswatch active';
-autoSw.title = 'Auto';
-autoSw.style.cssText = 'background:linear-gradient(135deg,#00f5ff,#7000ff,#ff2266);border-color:white';
-autoSw.onclick = () => { activeColor=null; setSwatch(autoSw); };
-cr.appendChild(autoSw);
-colorEntries.forEach(([name, props]) => {
-  const hex = '#'+props.hex.toString(16).padStart(6,'0');
-  const sw = document.createElement('div');
-  sw.className = 'cswatch'; sw.title = name;
-  sw.style.background = hex;
-  if (props.emissive) sw.style.boxShadow = `0 0 8px ${hex}`;
-  sw.onclick = () => { activeColor = props; setSwatch(sw); };
-  cr.appendChild(sw);
-});
-function setSwatch(el) {
-  document.querySelectorAll('.cswatch').forEach(s => s.classList.remove('active'));
-  el.classList.add('active');
-}
-
-let colorIdx = 0;
-function getColor() {
-  if (activeColor) return activeColor;
-  const c = colorEntries[colorIdx % colorEntries.length][1];
-  colorIdx++;
-  return c;
-}
-
-// ── GEOMETRY ──────────────────────────────
-function makeGeo(type, size=30) {
+function makeGeo(type, size) {
   switch(type) {
-    case 'sphere':    return new THREE.SphereGeometry(size/2, 48, 32);
-    case 'box':       return new THREE.BoxGeometry(size, size, size);
-    case 'cylinder':  return new THREE.CylinderGeometry(size*.4, size*.4, size, 32);
-    case 'cone':      return new THREE.ConeGeometry(size/2, size*1.3, 32);
-    case 'torus':     return new THREE.TorusGeometry(size/2, size/8, 20, 60);
-    case 'knot':      return new THREE.TorusKnotGeometry(size/3, size/10, 200, 32);
-    default:          return new THREE.SphereGeometry(size/2, 48, 32);
+    case 'sphere':   return new THREE.SphereGeometry(size/2, 48, 32);
+    case 'box':      return new THREE.BoxGeometry(size, size, size);
+    case 'cylinder': return new THREE.CylinderGeometry(size*.38, size*.38, size, 32);
+    case 'cone':     return new THREE.ConeGeometry(size/2, size*1.4, 32);
+    case 'torus':    return new THREE.TorusGeometry(size/2, size/7, 20, 60);
+    case 'knot':     return new THREE.TorusKnotGeometry(size/3, size/10, 200, 32);
+    default:         return new THREE.SphereGeometry(size/2, 48, 32);
   }
 }
 
-function makeMat(props) {
+function makeMat(hex, metalness=0.85, roughness=0.12, emissive=0) {
   return new THREE.MeshStandardMaterial({
-    color: props.hex,
-    metalness: props.metalness ?? 0.85,
-    roughness: props.roughness ?? 0.15,
-    emissive: new THREE.Color(props.emissive || 0),
-    emissiveIntensity: props.emissive ? 1.2 : 0,
-    wireframe,
-    transparent: props.opacity !== undefined,
-    opacity: props.opacity ?? 1,
+    color: hex, metalness, roughness,
+    emissive: new THREE.Color(emissive),
+    emissiveIntensity: emissive ? 1.5 : 0,
   });
 }
 
-function addObj(name, geo, props, pos=[0,0,0], rot=[0,0,0]) {
-  if (objects[name]) return;
-  const mesh = new THREE.Mesh(geo, makeMat(props));
+function addObj(name, geo, mat, pos=[0,0,0], rot=[0,0,0]) {
+  const mesh = new THREE.Mesh(geo, mat);
   mesh.position.set(...pos);
-  mesh.rotation.set(...rot.map(r => r * Math.PI/180));
+  mesh.rotation.set(...rot.map(r=>r*Math.PI/180));
   mesh.castShadow = true; mesh.receiveShadow = true;
-  mesh.userData = { name, props };
   pivot.add(mesh);
   objects[name] = mesh;
-  updateUI();
+
+  // spawn animation
+  mesh.scale.set(0.01, 0.01, 0.01);
+  let t = 0;
+  const anim = setInterval(() => {
+    t += 0.1; const s = Math.min(1, t);
+    mesh.scale.set(s, s, s);
+    if (s >= 1) clearInterval(anim);
+  }, 16);
   return mesh;
 }
 
-function spawnShape(opts={}) {
-  const type = opts.type || activeShape;
-  const props = opts.props || getColor();
-  const name = opts.name || (type.charAt(0).toUpperCase() + type.slice(1) + '_' + (++objCounter));
-  const size = opts.size || 30;
-  const pos  = opts.pos || [0, size/2, 0];
-  const geo  = makeGeo(type, size);
-  const m    = addObj(name, geo, props, pos);
-  if (m) {
-    m.scale.set(0.01, 0.01, 0.01);
-    let t = 0;
-    const anim = setInterval(() => {
-      t += 0.15; const s = Math.min(1, t);
-      m.scale.set(s, s, s);
-      if (s >= 1) clearInterval(anim);
-    }, 16);
-  }
-  selected.clear(); selected.add(name);
-  updateUI(); updateMode('READY');
-  toast(type.toUpperCase() + ' added');
-  return name;
-}
-
-// ── SELECTION ─────────────────────────────
-function selectObj(name) {
-  selected.clear();
-  selected.add(name);
-  updateUI();
-}
-function selectAll() {
-  Object.keys(objects).forEach(n => selected.add(n));
-  updateUI();
-}
-
-// ── TRANSFORMS ────────────────────────────
-function scaleSel(f) { selected.forEach(n => { if(objects[n]) objects[n].scale.multiplyScalar(f); }); }
-function rotateSel(ax, deg) { selected.forEach(n => { if(objects[n]) objects[n].rotation[ax] += deg*Math.PI/180; }); }
-function centerSel() { selected.forEach(n => { if(objects[n]) { objects[n].position.x = 0; objects[n].position.z = 0; } }); }
-function deleteSel() {
-  selected.forEach(n => {
-    if (!objects[n]) return;
-    pivot.remove(objects[n]);
-    objects[n].geometry.dispose();
-    objects[n].material.dispose();
-    delete objects[n];
+function clearAll() {
+  Object.values(objects).forEach(m => {
+    pivot.remove(m); m.geometry.dispose(); m.material.dispose();
   });
-  selected.clear(); updateUI();
-}
-function dupSel() {
-  const toAdd = [];
-  selected.forEach(n => {
-    if (!objects[n]) return;
-    const m = objects[n];
-    toAdd.push({ name: n+'_copy'+(++objCounter), geo: m.geometry.clone(), props: m.userData.props, pos: [m.position.x+25, m.position.y, m.position.z+25] });
-  });
-  toAdd.forEach(t => { spawnShape({ name:t.name, type:'sphere', props:t.props, pos:t.pos }); });
+  objects = {}; objN = 0;
+  toast('Cleared');
 }
 
-// ── MATERIALS ─────────────────────────────
-function applyMat(preset) {
-  const P = {
-    holo:   { hex:0x00f5ff, metalness:.9, roughness:.05, emissive:0x003a44 },
-    chrome: { hex:0xe0eef8, metalness:1.0, roughness:.02 },
-    gold:   { hex:0xffd700, metalness:.95, roughness:.04 },
-    matte:  { hex:0x1a2030, metalness:.2, roughness:.95 },
-    glass:  { hex:0x88ddff, metalness:.1, roughness:.02, opacity:.35 },
-    plasma: { hex:0x7000ff, metalness:.85, roughness:.1, emissive:0x1a0040 },
-  };
-  const props = P[preset]; if (!props) return;
-  const targets = selected.size ? selected : new Set(Object.keys(objects));
-  targets.forEach(n => {
-    if (!objects[n]) return;
-    objects[n].userData.props = props;
-    const mat = objects[n].material;
-    mat.color.setHex(props.hex);
-    mat.metalness = props.metalness;
-    mat.roughness = props.roughness;
-    mat.emissive.setHex(props.emissive || 0);
-    mat.emissiveIntensity = props.emissive ? 1.2 : 0;
-    mat.transparent = !!props.opacity;
-    mat.opacity = props.opacity ?? 1;
-  });
-  toast('Material: ' + preset.toUpperCase());
-}
+// ── CAMERA CONTROL ─────────────────────────────────────────
+let drag = false, px = 0, py = 0;
+let rotX = 8, rotY = 0, tRotX = 8, tRotY = 0;
+let zoom = 220, tZoom = 220;
+const ease = 0.08;
 
-function applyColorToSel(props) {
-  if (!selected.size) return;
-  selected.forEach(n => {
-    if (!objects[n]) return;
-    objects[n].userData.props = props;
-    objects[n].material.color.setHex(props.hex);
-    objects[n].material.metalness = props.metalness ?? 0.85;
-    objects[n].material.roughness = props.roughness ?? 0.15;
-    objects[n].material.emissive.setHex(props.emissive || 0);
-    objects[n].material.emissiveIntensity = props.emissive ? 1.2 : 0;
-  });
-}
-
-// ── SCENE OPS ─────────────────────────────
-function clearScene() {
-  Object.keys(objects).forEach(n => {
-    pivot.remove(objects[n]);
-    objects[n].geometry.dispose();
-    objects[n].material.dispose();
-    delete objects[n];
-  });
-  selected.clear(); objCounter = 0;
-  updateUI(); toast('Scene cleared');
-}
-function toggleWireframe() {
-  wireframe = !wireframe;
-  Object.values(objects).forEach(m => { m.material.wireframe = wireframe; });
-  toast(wireframe ? 'Wireframe ON' : 'Wireframe OFF');
-}
-function setShape(btn, shape) {
-  activeShape = shape;
-  document.querySelectorAll('.shape-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-}
-
-// ── STL EXPORT ────────────────────────────
-function exportSTL() {
-  if (!Object.keys(objects).length) { toast('No objects to export'); return; }
-  const lines = ['solid hyperflex'];
-  Object.values(objects).forEach(mesh => {
-    const geo = mesh.geometry.clone();
-    geo.applyMatrix4(mesh.matrixWorld);
-    const pos = geo.attributes.position;
-    for (let i = 0; i < pos.count; i += 3) {
-      const v = [0,1,2].map(j => new THREE.Vector3().fromBufferAttribute(pos, i+j));
-      const n = new THREE.Vector3().crossVectors(v[1].clone().sub(v[0]), v[2].clone().sub(v[0])).normalize();
-      lines.push(`facet normal ${n.x} ${n.y} ${n.z}`, `  outer loop`,
-        ...v.map(vv => `    vertex ${vv.x} ${vv.y} ${vv.z}`), `  endloop`, `endfacet`);
-    }
-  });
-  lines.push('endsolid hyperflex');
-  const blob = new Blob([lines.join('\n')], { type:'text/plain' });
-  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-  a.download = 'hyperflex_model.stl'; a.click();
-  toast('STL exported');
-}
-
-// ── UI ────────────────────────────────────
-function updateUI() {
-  const names = Object.keys(objects);
-  document.getElementById('stat-obj').textContent = names.length.toString().padStart(3,'0');
-  document.getElementById('stat-sel').textContent = selected.size > 0 ? Array.from(selected)[0].substring(0,8) : 'NONE';
-  let verts = 0;
-  Object.values(objects).forEach(m => { verts += m.geometry.attributes.position?.count || 0; });
-  document.getElementById('stat-verts').textContent = verts.toLocaleString();
-  document.getElementById('sel-info').textContent = `${names.length} objects · ${selected.size} selected`;
-
-  const list = document.getElementById('obj-list');
-  list.innerHTML = '';
-  names.forEach(name => {
-    const m = objects[name]; if (!m) return;
-    const hex = '#' + (m.userData.props?.hex || 0x00f5ff).toString(16).padStart(6,'0');
-    const item = document.createElement('div');
-    item.className = 'obj-item' + (selected.has(name) ? ' selected' : '');
-    item.innerHTML = `<div class="obj-dot" style="background:${hex};box-shadow:0 0 4px ${hex}"></div><div class="obj-name">${name}</div><div class="obj-del" onclick="event.stopPropagation();delObj('${name}')">✕</div>`;
-    item.onclick = () => { selectObj(name); updateUI(); };
-    list.appendChild(item);
-  });
-}
-
-function delObj(name) {
-  if (!objects[name]) return;
-  pivot.remove(objects[name]);
-  objects[name].geometry.dispose();
-  objects[name].material.dispose();
-  delete objects[name];
-  selected.delete(name);
-  updateUI();
-}
-
-let toastTimer;
-function toast(msg) {
-  const el = document.getElementById('toast');
-  el.textContent = msg; el.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.classList.remove('show'), 2800);
-}
-
-function updateMode(m) { document.getElementById('top-mode').textContent = m; }
-
-// ── CAMERA CONTROL ────────────────────────
-let drag = false, dragPX = 0, dragPY = 0;
-let rotX = 12, rotY = 20, tRotX = 12, tRotY = 20;
-let panX = 0, panY = 0, tPanX = 0, tPanY = 0;
-let zoom = 280, tZoom = 280;
-const ease = 0.07;
-
-canvas.addEventListener('mousedown', e => { drag=true; dragPX=e.clientX; dragPY=e.clientY; });
+canvas.addEventListener('mousedown', e => { drag=true; px=e.clientX; py=e.clientY; });
 window.addEventListener('mouseup', () => drag=false);
 window.addEventListener('mousemove', e => {
-  document.getElementById('cursor').style.left = e.clientX+'px';
-  document.getElementById('cursor').style.top  = e.clientY+'px';
   if (!drag) return;
-  const dx = e.clientX - dragPX, dy = e.clientY - dragPY;
-  tRotY += dx * 0.3; tRotX = Math.max(-85, Math.min(85, tRotX + dy * 0.2));
-  dragPX = e.clientX; dragPY = e.clientY;
+  tRotY += (e.clientX-px)*0.35;
+  tRotX = Math.max(-70, Math.min(70, tRotX + (e.clientY-py)*0.25));
+  px=e.clientX; py=e.clientY;
 });
-canvas.addEventListener('wheel', e => { tZoom = Math.max(50, Math.min(1500, tZoom + e.deltaY * 0.3)); }, {passive:true});
+canvas.addEventListener('wheel', e => {
+  tZoom = Math.max(60, Math.min(800, tZoom + e.deltaY * 0.4));
+}, {passive:true});
 
-// Raycasting click select
-const raycaster = new THREE.Raycaster();
-const mouse2 = new THREE.Vector2();
-let clickStart = {x:0,y:0};
-canvas.addEventListener('mousedown', e => { clickStart.x=e.clientX; clickStart.y=e.clientY; });
-canvas.addEventListener('click', e => {
-  if (Math.abs(e.clientX-clickStart.x)>5 || Math.abs(e.clientY-clickStart.y)>5) return;
-  const rect = canvas.getBoundingClientRect();
-  mouse2.x = ((e.clientX-rect.left)/rect.width)*2 - 1;
-  mouse2.y = -((e.clientY-rect.top)/rect.height)*2 + 1;
-  raycaster.setFromCamera(mouse2, camera);
-  const meshes = Object.values(objects);
-  const hits = raycaster.intersectObjects(meshes, true);
-  if (hits.length) {
-    let obj = hits[0].object;
-    while (obj && !obj.userData.name && obj.parent) obj = obj.parent;
-    if (obj?.userData?.name) { selectObj(obj.userData.name); updateUI(); }
-  } else {
-    selected.clear(); updateUI();
-  }
+// Touch
+let tp = null;
+canvas.addEventListener('touchstart', e => { tp={x:e.touches[0].clientX,y:e.touches[0].clientY}; });
+canvas.addEventListener('touchmove', e => {
+  if(!tp) return;
+  tRotY += (e.touches[0].clientX-tp.x)*0.4;
+  tRotX = Math.max(-70,Math.min(70,tRotX+(e.touches[0].clientY-tp.y)*0.3));
+  tp={x:e.touches[0].clientX,y:e.touches[0].clientY};
 });
+canvas.addEventListener('touchend', () => tp=null);
 
-// ── CHAT / AI ─────────────────────────────
-const chatLog = document.getElementById('chat-log');
-let chatHistory = [];
+// ── AI BUILD ───────────────────────────────────────────────
+async function build() {
+  const inp = document.getElementById('prompt');
+  const cmd = inp.value.trim();
+  if (!cmd) return;
 
-function addChatMsg(role, text) {
-  const div = document.createElement('div');
-  div.className = 'chat-msg ' + role;
-  if (role === 'ai') div.innerHTML = '↳ ' + text;
-  else if (role === 'user') div.innerHTML = '→ ' + text;
-  else div.textContent = text;
-  chatLog.appendChild(div); chatLog.scrollTop = chatLog.scrollHeight;
-}
+  const btn = document.getElementById('go');
+  btn.disabled = true; btn.textContent = '...';
+  document.getElementById('status').textContent = 'Building...';
 
-function showThinking() {
-  const div = document.createElement('div');
-  div.className = 'chat-msg ai'; div.id = 'thinking';
-  div.innerHTML = '↳ <span class="thinking-dots"><span></span><span></span><span></span></span>';
-  chatLog.appendChild(div); chatLog.scrollTop = chatLog.scrollHeight;
-}
-function hideThinking() {
-  const el = document.getElementById('thinking');
-  if (el) el.remove();
-}
+  const token = localStorage.getItem('jarvis_token') || '';
 
-async function sendCmd() {
-  const inp = document.getElementById('chat-input');
-  const cmd = inp.value.trim(); if (!cmd) { spawnShape(); return; }
-  inp.value = '';
-  addChatMsg('user', cmd);
-  showThinking();
-  updateMode('PROCESSING');
-  document.getElementById('chat-send').textContent = '...';
+  const sys = `You control a holographic 3D scene. Build "${cmd}" using primitive shapes.
 
-  const sceneState = Object.keys(objects).map(n => {
-    const m = objects[n];
-    return `${n} at [${m.position.toArray().map(v=>Math.round(v)).join(',')}]`;
-  }).join(', ');
+Rules:
+- Respond ONLY with raw JSON, no markdown, no backticks
+- Use 8-25 parts for detail
+- All parts sit ON the ground (Y >= half their height)
+- Make objects recognizable and proportional
+- Center the object around X=0, Z=0
 
-  const systemPrompt = `You are JARVIS — a holographic 3D design AI. Build objects from primitive shapes.
-
-Available shapes: sphere, box, cylinder, cone, torus, knot
-Colors (integers): holo_blue=65535, gold=16766720, chrome=14737400, red=16721510, plasma=7340031, amber=16744448, emerald=65416, white=15792383, black=659488, steel=6316160, violet=11149567
-
-Current scene: ${sceneState || 'empty'}
-Selected: ${Array.from(selected).join(', ') || 'none'}
-
-Respond ONLY with valid JSON (no markdown, no backticks):
+JSON format:
 {
-  "response": "one sentence JARVIS-style reply",
-  "actions": [
-    {"type":"add","shape":"sphere","name":"Core","color":65535,"size":40,"pos":[0,40,0]},
-    {"type":"color","parts":["Name"],"color":16766720},
-    {"type":"material","parts":["Name"],"preset":"chrome"},
-    {"type":"scale","parts":["Name"],"factor":1.5},
-    {"type":"rotate","parts":["Name"],"axis":"y","deg":45},
-    {"type":"delete","parts":["Name"]},
-    {"type":"clear"}
+  "parts": [
+    {"name":"Seat","type":"box","color":4473924,"size":50,"pos":[0,12,0],"rot":[0,0,0],"metal":0.7,"rough":0.2},
+    {"name":"Leg1","type":"cylinder","color":3355443,"size":8,"pos":[-20,6,-20],"rot":[0,0,0],"metal":0.9,"rough":0.1}
   ]
 }
 
-Build 15-40 parts for complex objects. Position them on Y axis starting at Y=0.
-For a chair: legs, seat, back. For a drone: body, arms, rotors. Be creative and precise.`;
-
-  chatHistory.push({ role:'user', content:cmd });
+Types: box, sphere, cylinder, cone, torus, knot
+Color is an integer (e.g. steel=6579300, white=15921906, black=1118481, red=13369344, blue=255, gold=16766720, chrome=14737400)
+Size is diameter in scene units (30=small, 60=medium, 100=large)`;
 
   try {
-    const token = localStorage.getItem('jarvis_token') || '';
     const res = await fetch('https://api.heyjarvis.me/design-command', {
-      method:'POST',
-      headers:{ 'Content-Type':'application/json', 'Authorization':`Bearer ${token}` },
-      body: JSON.stringify({ command:cmd, systemPrompt, history:chatHistory })
+      method: 'POST',
+      headers: { 'Content-Type':'application/json', 'Authorization':`Bearer ${token}` },
+      body: JSON.stringify({ command: cmd, systemPrompt: sys, history: [] })
     });
-    const data = await res.json();
-    hideThinking();
 
-    if (data.response) addChatMsg('ai', data.response);
-    if (data.actions?.length) {
-      data.actions.forEach(execAction);
-      updateUI();
+    const raw = await res.json();
+    let data;
+
+    // design-command tries JSON.parse — it might return the parts directly or wrapped
+    if (raw.parts) {
+      data = raw;
+    } else if (raw.response) {
+      const clean = raw.response.replace(/```json\n?/g,'').replace(/```\n?/g,'').trim();
+      const match = clean.match(/\{[\s\S]*\}/);
+      data = match ? JSON.parse(match[0]) : null;
+    } else {
+      data = raw;
     }
-    chatHistory.push({ role:'assistant', content:JSON.stringify(data) });
-    if (chatHistory.length > 16) chatHistory = chatHistory.slice(-16);
-    updateMode('READY');
+
+    if (!data?.parts?.length) throw new Error('No parts');
+
+    clearAll();
+
+    // Find bounding box to auto-center camera
+    let maxY = 0;
+    data.parts.forEach(p => {
+      const y = (p.pos?.[1] || 0) + (p.size || 30)/2;
+      if (y > maxY) maxY = y;
+    });
+
+    data.parts.forEach(p => {
+      const geo = makeGeo(p.type || 'box', p.size || 30);
+      const mat = makeMat(
+        p.color || 0x4488ff,
+        p.metal ?? 0.8,
+        p.rough ?? 0.15,
+        p.emissive || 0
+      );
+      addObj(p.name || ('Part_'+(++objN)), geo, mat, p.pos || [0,15,0], p.rot || [0,0,0]);
+    });
+
+    // Auto-frame camera
+    tZoom = Math.max(120, maxY * 4);
+    tRotX = 15; tRotY = 20;
+
+    toast('Built: ' + cmd);
+    document.getElementById('status').textContent = `${data.parts.length} parts · drag to rotate · scroll to zoom`;
+    inp.value = '';
+
   } catch(e) {
-    hideThinking();
-    addChatMsg('err', 'Server offline — add shapes manually');
-    updateMode('LOCAL');
+    toast('Try again');
+    document.getElementById('status').textContent = 'Drag to rotate · Scroll to zoom';
   }
-  document.getElementById('chat-send').textContent = 'Build';
+
+  btn.disabled = false; btn.textContent = 'Build';
 }
 
-function execAction(a) {
-  switch(a.type) {
-    case 'add':
-      const props = { hex: a.color||65535, metalness:.85, roughness:.15 };
-      spawnShape({ type:a.shape||'sphere', name:a.name, props, size:a.size||30, pos:a.pos||[0,15,0] });
-      break;
-    case 'color':
-      const targets = a.parts?.length ? a.parts : Array.from(selected);
-      targets.forEach(n => {
-        if (!objects[n]) return;
-        objects[n].userData.props = { hex:a.color, metalness:.85, roughness:.15 };
-        objects[n].material.color.setHex(a.color);
-      });
-      break;
-    case 'material':
-      const s = new Set(a.parts || Array.from(selected));
-      const prev = new Set(selected);
-      selected.clear(); s.forEach(n=>selected.add(n));
-      applyMat(a.preset); selected.clear(); prev.forEach(n=>selected.add(n));
-      break;
-    case 'scale':
-      const sc = new Set(a.parts || Array.from(selected));
-      sc.forEach(n => { if(objects[n]) objects[n].scale.multiplyScalar(a.factor||1.2); });
-      break;
-    case 'rotate':
-      (a.parts||Array.from(selected)).forEach(n=>{ if(objects[n]) objects[n].rotation[a.axis||'y']+=((a.deg||15)*Math.PI/180); });
-      break;
-    case 'delete':
-      (a.parts||[]).forEach(n=>delObj(n));
-      break;
-    case 'clear': clearScene(); break;
-  }
-}
-
-document.getElementById('chat-input').addEventListener('keydown', e => {
-  if (e.key==='Enter' && !e.shiftKey) { e.preventDefault(); sendCmd(); }
+document.getElementById('prompt').addEventListener('keydown', e => {
+  if (e.key === 'Enter') build();
 });
 
-// ── ANIMATION ─────────────────────────────
+// ── TOAST ──────────────────────────────────────────────────
+let tt;
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('show');
+  clearTimeout(tt);
+  tt = setTimeout(() => el.classList.remove('show'), 2200);
+}
+
+// ── ANIMATE ────────────────────────────────────────────────
 let t = 0;
 function animate() {
-  requestAnimationFrame(animate); t += 0.01;
+  requestAnimationFrame(animate); t += 0.008;
   rotX += (tRotX-rotX)*ease;
   rotY += (tRotY-rotY)*ease;
-  panX += (tPanX-panX)*ease;
-  panY += (tPanY-panY)*ease;
   zoom += (tZoom-zoom)*ease;
   pivot.rotation.x = rotX*Math.PI/180;
   pivot.rotation.y = rotY*Math.PI/180;
-  pivot.position.x = -panX; pivot.position.y = -panY;
   camera.position.z = zoom;
-
-  // Holo light drift
-  holoLight.intensity = 6 + Math.sin(t*2)*2;
-  fillLight.intensity = 2 + Math.sin(t*1.3+1)*1;
-
-  // Selected glow pulse
-  Object.entries(objects).forEach(([name, m]) => {
-    if (selected.has(name)) {
-      m.material.emissiveIntensity = (m.userData.props?.emissive ? 1.2 : 0.15) + Math.sin(t*4)*0.08;
-      if (!m.userData.props?.emissive) m.material.emissive.setHex(0x003a44);
-    } else if (!m.userData.props?.emissive) {
-      m.material.emissiveIntensity = 0;
-    }
-  });
-
+  holo.intensity = 10 + Math.sin(t*1.8)*3;
+  fill.intensity = 3 + Math.sin(t*1.2)*1;
   renderer.render(scene, camera);
 }
 animate();
 
-// ── INIT ──────────────────────────────────
+// ── INIT ───────────────────────────────────────────────────
 setTimeout(() => {
-  document.getElementById('loader').style.opacity = '0';
-  setTimeout(() => document.getElementById('loader').style.display='none', 800);
-  toast('HYPERFLEX online — describe anything');
-  updateMode('STANDBY');
-  updateUI();
-}, 1200);
+  const el = document.getElementById('loading');
+  el.style.opacity = '0';
+  setTimeout(() => el.style.display = 'none', 600);
+}, 800);
 </script>
 </body>
 </html>
