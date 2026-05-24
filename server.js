@@ -986,35 +986,24 @@ async function generateImage(prompt) {
 }
 
 async function generateImageWithFace(faceImageBase64, prompt) {
-  const response = await axios.post(
-    'https://api.replicate.com/v1/models/tencentarc/photomaker/predictions',
-    {
-      input: {
-  prompt: `${prompt}, img, best quality, high quality`,
-  input_images: [`data:image/jpeg;base64,${faceImageBase64}`],
-  style_name: 'Photographic (Default)',
-  num_steps: 50,
-  style_strength_ratio: 35,
-  num_outputs: 1,
-  guidance_scale: 5,
-  negative_prompt: 'nsfw, lowres, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry',
-}
+  const { fal } = require('@fal-ai/client');
+  fal.config({ credentials: process.env.FAL_API_KEY });
+
+  const result = await fal.subscribe('fal-ai/photomaker', {
+    input: {
+      prompt: `${prompt}, img, best quality, high quality, photorealistic`,
+      input_image_urls: [`data:image/jpeg;base64,${faceImageBase64}`],
+      style_name: 'Photographic (Default)',
+      num_steps: 50,
+      style_strength_ratio: 20,
+      guidance_scale: 5,
+      negative_prompt: 'nsfw, lowres, bad anatomy, bad hands, text, error, cropped, worst quality, low quality, jpeg artifacts, watermark, blurry, deformed face',
     },
-    { headers: { Authorization: `Token ${process.env.REPLICATE_API_KEY}`, 'Content-Type': 'application/json' } }
-  );
+    pollInterval: 2000,
+  });
+  
 
-  let prediction = response.data;
-  while (prediction.status !== 'succeeded' && prediction.status !== 'failed') {
-    await new Promise(r => setTimeout(r, 1500));
-    const poll = await axios.get(`https://api.replicate.com/v1/predictions/${prediction.id}`, {
-      headers: { Authorization: `Token ${process.env.REPLICATE_API_KEY}` }
-    });
-    prediction = poll.data;
-  }
-
-  if (prediction.status === 'failed') throw new Error('Face image generation failed: ' + prediction.error);
-
-  const imageUrl = Array.isArray(prediction.output) ? prediction.output[0] : prediction.output;
+  const imageUrl = result.data.images[0].url;
   const filename = `img_${Date.now()}.webp`;
   const imgRes = await axios.get(imageUrl, { responseType: 'arraybuffer' });
   fs.writeFileSync(path.join(PUBLIC_DIR, filename), imgRes.data);
