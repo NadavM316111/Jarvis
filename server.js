@@ -989,35 +989,41 @@ async function generateImageWithFace(faceImageBase64, prompt) {
   const { fal } = require('@fal-ai/client');
   fal.config({ credentials: process.env.FAL_API_KEY });
 
-  try {
-    const result = await fal.subscribe('fal-ai/photomaker', {
-      input: {
-        prompt: `${prompt}, img, best quality, high quality, photorealistic`,
-        input_image_urls: [`data:image/jpeg;base64,${faceImageBase64}`],
-        style_name: 'Photographic (Default)',
-        num_steps: 25,
-        style_strength_ratio: 20,
-        guidance_scale: 5,
-        negative_prompt: 'nsfw, lowres, bad anatomy, bad hands, text, error, cropped, worst quality, low quality, jpeg artifacts, watermark, blurry, deformed face',
-      },
-      pollInterval: 2000,
-      logs: true,
-      onQueueUpdate: (update) => {
-        console.log('[FAL] status:', update.status);
-        if (update.logs) console.log('[FAL] logs:', update.logs.map(l => l.message).join('\n'));
-      },
-    });
+  // Upload the image to fal storage first
+  const imageBuffer = Buffer.from(faceImageBase64, 'base64');
+  const uploadedUrl = await fal.storage.upload(
+    new Blob([imageBuffer], { type: 'image/jpeg' }),
+    { filename: 'face.jpg' }
+  );
 
-    console.log('[FAL] full result:', JSON.stringify(result, null, 2).substring(0, 500));
-    const outputUrl = result.data.images[0].url;
-    const filename = `img_${Date.now()}.webp`;
-    const imgRes = await axios.get(outputUrl, { responseType: 'arraybuffer' });
-    fs.writeFileSync(path.join(PUBLIC_DIR, filename), imgRes.data);
-    return `https://api.heyjarvis.me/view/${filename}`;
-  } catch(e) {
-    console.log('[FAL] full error:', JSON.stringify(e.body, null, 2));
-    throw e;
-  }
+  // Create a zip with the single image
+  const JSZip = require('jszip');
+  const zip = new JSZip();
+  zip.file('face.jpg', imageBuffer);
+  const zipBuffer = await zip.generateAsync({ type: 'nodebuffer' });
+  const archiveUrl = await fal.storage.upload(
+    new Blob([zipBuffer], { type: 'application/zip' }),
+    { filename: 'faces.zip' }
+  );
+
+  const result = await fal.subscribe('fal-ai/photomaker', {
+    input: {
+      prompt: `${prompt}, img, best quality, high quality, photorealistic`,
+      image_archive_url: archiveUrl,
+      style_name: 'Photographic (Default)',
+      num_steps: 25,
+      style_strength_ratio: 20,
+      guidance_scale: 5,
+      negative_prompt: 'nsfw, lowres, bad anatomy, bad hands, text, error, cropped, worst quality, low quality, jpeg artifacts, watermark, blurry, deformed face',
+    },
+    pollInterval: 2000,
+  });
+
+  const outputUrl = result.data.images[0].url;
+  const filename = `img_${Date.now()}.webp`;
+  const imgRes = await axios.get(outputUrl, { responseType: 'arraybuffer' });
+  fs.writeFileSync(path.join(PUBLIC_DIR, filename), imgRes.data);
+  return `https://api.heyjarvis.me/view/${filename}`;
 }
 
 async function screenshotPage(url) {
