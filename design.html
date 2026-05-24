@@ -3,716 +3,545 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Design Studio — JARVIS</title>
+<title>Design Studio</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Fraunces:ital,wght@0,300;0,700;1,300;1,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Fraunces:ital,wght@0,300;0,700;1,300;1,700&display=swap');
 
 :root {
-  --bg: #06060a;
-  --bg2: #0c0c14;
-  --border: rgba(255,255,255,0.07);
-  --text: rgba(255,255,255,0.88);
-  --dim: rgba(255,255,255,0.35);
-  --muted: rgba(255,255,255,0.12);
-  --accent: #e8ff00;
-  --accent2: #ff6b35;
-  --accent3: #a78bfa;
-  --panel: rgba(12,12,20,0.95);
+  --bg: #07070d;
+  --bg2: #0d0d18;
+  --bg3: #111120;
+  --border: rgba(255,255,255,0.06);
+  --border2: rgba(255,255,255,0.1);
+  --text: rgba(255,255,255,0.9);
+  --dim: rgba(255,255,255,0.4);
+  --muted: rgba(255,255,255,0.14);
+  --accent: #c8ff00;
+  --accent-dim: rgba(200,255,0,0.08);
+  --accent-glow: rgba(200,255,0,0.15);
+  --orange: #ff6b35;
 }
 
-*,*::before,*::after { margin:0; padding:0; box-sizing:border-box; }
-html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--text); font-family:'DM Mono',monospace; }
-
-/* ── LAYOUT ── */
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; overflow:hidden; background:var(--bg); color:var(--text); font-family:'DM Mono', monospace; }
 #shell { display:flex; flex-direction:column; height:100vh; }
 
-/* ── TOP ── */
 #top {
-  height:52px; border-bottom:1px solid var(--border);
-  display:flex; align-items:center; padding:0 20px; gap:16px;
-  background:rgba(6,6,10,0.98); flex-shrink:0; position:relative; z-index:100;
+  height:50px; border-bottom:1px solid var(--border);
+  display:flex; align-items:center; padding:0 18px; gap:14px;
+  background:rgba(7,7,13,0.98); flex-shrink:0; z-index:100; position:relative;
 }
-.ds-logo {
-  font-family:'Fraunces',serif; font-weight:700; font-size:17px;
-  color:var(--accent); letter-spacing:1px; flex-shrink:0;
+#top::after {
+  content:''; position:absolute; bottom:0; left:0; right:0; height:1px;
+  background:linear-gradient(90deg, transparent, rgba(200,255,0,0.2), transparent);
 }
-.mode-tabs { display:flex; gap:2px; }
-.mode-tab {
-  padding:5px 14px; font-size:10px; letter-spacing:2px;
-  text-transform:uppercase; cursor:pointer;
-  border:1px solid transparent; color:var(--dim);
-  background:transparent; font-family:'DM Mono',monospace;
-  transition:all 0.2s;
-}
-.mode-tab:hover { color:var(--text); border-color:var(--border); }
-.mode-tab.active { color:var(--accent); border-color:var(--accent); background:rgba(232,255,0,0.06); }
-.top-spacer { flex:1; }
-.top-btn {
-  padding:6px 14px; font-size:9px; letter-spacing:2px;
-  text-transform:uppercase; cursor:pointer;
-  border:1px solid var(--border); color:var(--dim);
-  background:transparent; font-family:'DM Mono',monospace;
-  transition:all 0.2s;
-}
-.top-btn:hover { border-color:var(--accent); color:var(--accent); }
-.top-btn.go { border-color:var(--accent); color:var(--accent); background:rgba(232,255,0,0.08); }
-.top-btn.go:hover { background:rgba(232,255,0,0.15); }
+.logo { font-family:'Fraunces',serif; font-weight:700; font-size:16px; color:var(--accent); letter-spacing:0.5px; flex-shrink:0; }
+.sep { width:1px; height:20px; background:var(--border2); }
+.tabs { display:flex; gap:1px; background:var(--bg3); border:1px solid var(--border); border-radius:6px; padding:2px; }
+.tab { padding:4px 14px; font-size:9px; letter-spacing:2px; text-transform:uppercase; cursor:pointer; border-radius:4px; color:var(--dim); background:transparent; font-family:'DM Mono',monospace; border:none; transition:all 0.18s; }
+.tab:hover { color:var(--text); }
+.tab.active { background:var(--accent-dim); color:var(--accent); border:1px solid rgba(200,255,0,0.2); }
+.spacer { flex:1; }
+.top-actions { display:flex; gap:6px; }
+.tbtn { padding:5px 12px; font-size:9px; letter-spacing:1.5px; text-transform:uppercase; cursor:pointer; border:1px solid var(--border2); color:var(--dim); background:transparent; font-family:'DM Mono',monospace; border-radius:5px; transition:all 0.15s; }
+.tbtn:hover { border-color:var(--accent); color:var(--accent); background:var(--accent-dim); }
+.tbtn.primary { border-color:rgba(200,255,0,0.4); color:var(--accent); background:var(--accent-dim); }
+.tbtn.primary:hover { background:var(--accent-glow); }
 
-/* ── BODY ── */
 #body { display:flex; flex:1; min-height:0; }
 
-/* ── LEFT ── */
-#left {
-  width:240px; flex-shrink:0; border-right:1px solid var(--border);
-  display:flex; flex-direction:column; overflow:hidden;
-  background:var(--bg2);
-}
-.left-sec { padding:14px; border-bottom:1px solid var(--border); }
-.left-sec-title {
-  font-size:8px; letter-spacing:3px; color:var(--dim);
-  text-transform:uppercase; margin-bottom:10px;
-}
+#left { width:230px; flex-shrink:0; border-right:1px solid var(--border); display:flex; flex-direction:column; overflow:hidden; background:var(--bg2); }
+.lsec { padding:14px; border-bottom:1px solid var(--border); }
+.lsec-title { font-size:7px; letter-spacing:3px; color:var(--muted); text-transform:uppercase; margin-bottom:10px; display:flex; align-items:center; gap:6px; }
+.lsec-title::after { content:''; flex:1; height:1px; background:var(--border); }
+.chips { display:flex; gap:4px; flex-wrap:wrap; }
+.chip { padding:3px 9px; font-size:8px; letter-spacing:1px; border:1px solid var(--border); color:var(--dim); cursor:pointer; transition:all 0.12s; text-transform:uppercase; border-radius:3px; }
+.chip:hover { border-color:var(--accent); color:var(--accent); background:var(--accent-dim); }
+.chip.sel { border-color:var(--accent); color:var(--accent); background:var(--accent-dim); }
 
-/* Prompt area */
-#prompt-area {
-  flex:1; display:flex; flex-direction:column; padding:14px; gap:10px; overflow-y:auto;
-}
+#prompt-area { flex:1; display:flex; flex-direction:column; padding:14px; gap:10px; overflow-y:auto; min-height:0; }
 #prompt-area::-webkit-scrollbar { width:2px; }
-#prompt-area::-webkit-scrollbar-thumb { background:var(--border); }
-
-textarea#prompt {
-  flex:1; min-height:120px;
-  background:rgba(255,255,255,0.03);
-  border:1px solid var(--border);
-  border-radius:0; resize:none; outline:none;
-  padding:12px; color:var(--text);
-  font-family:'DM Mono',monospace; font-size:11px; line-height:1.6;
-  caret-color:var(--accent);
-}
-textarea#prompt:focus { border-color:rgba(232,255,0,0.3); }
-textarea#prompt::placeholder { color:var(--muted); }
-
-.generate-btn {
-  padding:12px; font-size:10px; letter-spacing:3px;
-  text-transform:uppercase; cursor:pointer;
-  border:1px solid var(--accent); color:var(--accent);
-  background:rgba(232,255,0,0.06); font-family:'DM Mono',monospace;
-  transition:all 0.2s; position:relative; overflow:hidden;
-}
-.generate-btn:hover { background:rgba(232,255,0,0.15); }
-.generate-btn:disabled { opacity:0.4; cursor:default; }
-.generate-btn::after { content:''; position:absolute; inset:0; background:linear-gradient(90deg,transparent,rgba(232,255,0,0.1),transparent); transform:translateX(-100%); animation:shimmer 2s infinite; }
+#prompt-area::-webkit-scrollbar-thumb { background:var(--border2); }
+#prompt-label { font-size:7px; letter-spacing:3px; color:var(--muted); text-transform:uppercase; }
+textarea#prompt { flex:1; min-height:110px; background:rgba(255,255,255,0.03); border:1px solid var(--border); resize:none; outline:none; border-radius:4px; padding:10px; color:var(--text); font-family:'DM Mono',monospace; font-size:11px; line-height:1.65; caret-color:var(--accent); transition:border-color 0.15s; }
+textarea#prompt:focus { border-color:rgba(200,255,0,0.25); }
+textarea#prompt::placeholder { color:var(--muted); font-size:10px; }
+#gen-btn { padding:11px; font-size:9px; letter-spacing:3px; text-transform:uppercase; cursor:pointer; border:1px solid rgba(200,255,0,0.4); color:var(--accent); background:var(--accent-dim); font-family:'DM Mono',monospace; border-radius:4px; transition:all 0.18s; position:relative; overflow:hidden; }
+#gen-btn:hover:not(:disabled) { background:var(--accent-glow); border-color:var(--accent); }
+#gen-btn:disabled { opacity:0.35; cursor:default; }
+#gen-btn .sh { position:absolute; inset:0; background:linear-gradient(90deg,transparent,rgba(200,255,0,0.12),transparent); transform:translateX(-100%); animation:shimmer 2s infinite; }
 @keyframes shimmer { to{transform:translateX(200%)} }
 
-/* History chips */
-.hist-chips { display:flex; flex-direction:column; gap:4px; }
-.hist-chip {
-  padding:6px 8px; font-size:9px; color:var(--dim);
-  border:1px solid var(--border); cursor:pointer;
-  transition:all 0.15s; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-}
-.hist-chip:hover { border-color:var(--accent); color:var(--accent); }
+.recent-list { display:flex; flex-direction:column; gap:3px; }
+.recent-item { padding:5px 8px; font-size:9px; color:var(--dim); border:1px solid var(--border); cursor:pointer; transition:all 0.12s; border-radius:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.recent-item:hover { border-color:rgba(200,255,0,0.3); color:var(--accent); }
 
-/* Options (per-mode) */
-.opt-row { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:8px; }
-.opt-chip {
-  padding:4px 10px; font-size:8px; letter-spacing:1px;
-  border:1px solid var(--border); color:var(--dim);
-  cursor:pointer; transition:all 0.15s; text-transform:uppercase;
-}
-.opt-chip:hover, .opt-chip.sel { border-color:var(--accent); color:var(--accent); background:rgba(232,255,0,0.06); }
+#canvas-area { flex:1; position:relative; overflow:hidden; background: radial-gradient(ellipse at 25% 25%, rgba(167,139,250,0.04) 0%, transparent 55%), radial-gradient(ellipse at 75% 75%, rgba(200,255,0,0.03) 0%, transparent 55%), var(--bg); }
+#canvas-area::before { content:''; position:absolute; inset:0; pointer-events:none; z-index:0; background-image:radial-gradient(rgba(255,255,255,0.04) 1px, transparent 1px); background-size:32px 32px; }
+#output-wrap { position:absolute; inset:0; z-index:1; display:flex; align-items:flex-start; justify-content:center; padding:32px; overflow:auto; }
+#output-wrap::-webkit-scrollbar { width:4px; height:4px; }
+#output-wrap::-webkit-scrollbar-thumb { background:var(--border2); border-radius:2px; }
 
-/* ── CANVAS AREA ── */
-#canvas-area {
-  flex:1; position:relative; overflow:hidden;
-  background: radial-gradient(ellipse at 30% 30%, rgba(167,139,250,0.04) 0%, transparent 60%),
-              radial-gradient(ellipse at 70% 70%, rgba(232,255,0,0.03) 0%, transparent 60%),
-              var(--bg);
-}
+#empty { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; pointer-events:none; z-index:0; }
+.empty-title { font-family:'Fraunces',serif; font-style:italic; font-size:26px; color:rgba(255,255,255,0.06); letter-spacing:1px; }
+.empty-sub { font-size:9px; color:rgba(255,255,255,0.1); letter-spacing:4px; text-transform:uppercase; }
 
-/* Dot grid */
-#canvas-area::before {
-  content:''; position:absolute; inset:0; pointer-events:none;
-  background-image: radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1px);
-  background-size:28px 28px;
-}
-
-#output-wrap {
-  position:absolute; inset:0;
-  display:flex; align-items:center; justify-content:center;
-  padding:40px; overflow:auto;
-}
-
-#empty-state {
-  text-align:center; pointer-events:none;
-}
-.empty-title {
-  font-family:'Fraunces',serif; font-style:italic;
-  font-size:28px; color:rgba(255,255,255,0.08); letter-spacing:1px;
-  margin-bottom:10px;
-}
-.empty-sub { font-size:10px; color:var(--muted); letter-spacing:3px; text-transform:uppercase; }
-
-/* The generated output card */
-#output-card {
-  width:100%; max-width:860px;
-  background:var(--bg2); border:1px solid var(--border);
-  position:relative; display:none;
-}
+#output-card { width:100%; max-width:900px; display:none; border:1px solid var(--border2); border-radius:8px; overflow:hidden; box-shadow:0 24px 80px rgba(0,0,0,0.6); }
 #output-card.show { display:block; }
+.card-bar { display:flex; align-items:center; gap:8px; padding:9px 14px; background:var(--bg3); border-bottom:1px solid var(--border); }
+.card-dots { display:flex; gap:5px; }
+.card-dot { width:10px; height:10px; border-radius:50%; }
+.card-label { font-size:9px; color:var(--dim); letter-spacing:2px; flex:1; text-align:center; }
+.card-actions { display:flex; gap:4px; }
+.cact { padding:3px 9px; font-size:8px; letter-spacing:1px; text-transform:uppercase; cursor:pointer; border:1px solid var(--border); color:var(--dim); background:transparent; font-family:'DM Mono',monospace; border-radius:3px; transition:all 0.12s; }
+.cact:hover { border-color:var(--accent); color:var(--accent); }
 
-.card-toolbar {
-  display:flex; align-items:center; gap:8px;
-  padding:10px 14px; border-bottom:1px solid var(--border);
-}
-.card-title { font-size:9px; color:var(--dim); letter-spacing:2px; flex:1; }
-.card-btn {
-  padding:4px 10px; font-size:8px; letter-spacing:1px;
-  text-transform:uppercase; cursor:pointer;
-  border:1px solid var(--border); color:var(--dim);
-  background:transparent; font-family:'DM Mono',monospace;
-  transition:all 0.15s;
-}
-.card-btn:hover { border-color:var(--accent); color:var(--accent); }
+#mockup-frame { width:100%; border:none; display:block; min-height:500px; background:#fff; }
+#output-content { padding:28px; background:var(--bg2); }
 
-#output-content { padding:24px; min-height:300px; }
-
-/* ── LOADING OVERLAY ── */
-#loading-overlay {
-  position:absolute; inset:0;
-  background:rgba(6,6,10,0.92);
-  display:none; flex-direction:column;
-  align-items:center; justify-content:center; gap:20px;
-  backdrop-filter:blur(4px); z-index:50;
-}
-#loading-overlay.show { display:flex; }
-.ld-ring {
-  width:48px; height:48px;
-  border:1px solid rgba(232,255,0,0.2);
-  border-top-color:var(--accent);
-  border-radius:50%;
-  animation:spin 0.9s linear infinite;
-}
+#loader { position:absolute; inset:0; z-index:50; background:rgba(7,7,13,0.92); backdrop-filter:blur(8px); display:none; flex-direction:column; align-items:center; justify-content:center; gap:16px; }
+#loader.show { display:flex; }
+.ld-ring { width:40px; height:40px; border:1px solid rgba(200,255,0,0.15); border-top-color:var(--accent); border-radius:50%; animation:spin 0.8s linear infinite; }
 @keyframes spin { to{transform:rotate(360deg)} }
-.ld-text { font-size:10px; letter-spacing:4px; color:var(--accent); text-transform:uppercase; }
-.ld-sub { font-size:9px; color:var(--dim); letter-spacing:2px; text-transform:uppercase; }
+.ld-label { font-size:9px; letter-spacing:4px; color:var(--accent); text-transform:uppercase; }
+.ld-sub { font-size:8px; letter-spacing:2px; color:var(--dim); text-transform:uppercase; }
 
-/* ── MOCKUP STYLES ── */
-.mockup-frame {
-  background:#fff; border-radius:8px; overflow:hidden;
-  box-shadow:0 40px 100px rgba(0,0,0,0.6); width:100%;
-}
-.mockup-frame.dark { background:#0f0f17; }
-.mockup-frame.mobile { max-width:375px; margin:0 auto; }
+#right { width:210px; flex-shrink:0; border-left:1px solid var(--border); display:flex; flex-direction:column; background:var(--bg2); overflow-y:auto; }
+#right::-webkit-scrollbar { width:2px; }
+#right::-webkit-scrollbar-thumb { background:var(--border2); }
+.rsec { padding:14px; border-bottom:1px solid var(--border); }
+.rsec-title { font-size:7px; letter-spacing:3px; color:var(--muted); text-transform:uppercase; margin-bottom:10px; display:flex; align-items:center; gap:6px; }
+.rsec-title::after { content:''; flex:1; height:1px; background:var(--border); }
+.rchips { display:flex; gap:3px; flex-wrap:wrap; }
+.rchip { padding:3px 8px; font-size:8px; letter-spacing:1px; border:1px solid var(--border); color:var(--dim); cursor:pointer; transition:all 0.12s; text-transform:uppercase; border-radius:3px; }
+.rchip:hover { border-color:var(--orange); color:var(--orange); background:rgba(255,107,53,0.06); }
+#meta-box { display:none; }
+#meta-text { font-size:9px; color:var(--dim); line-height:1.8; }
 
-/* ── BRAND KIT STYLES ── */
-.brand-kit { display:flex; flex-direction:column; gap:28px; }
-.bk-section-title { font-size:8px; letter-spacing:3px; color:var(--dim); text-transform:uppercase; margin-bottom:12px; }
+#toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%); z-index:500; background:var(--bg3); border:1px solid rgba(200,255,0,0.3); padding:8px 20px; font-size:9px; letter-spacing:2px; color:var(--accent); text-transform:uppercase; pointer-events:none; border-radius:5px; transition:opacity 0.25s; opacity:0; white-space:nowrap; }
+#toast.show { opacity:1; }
+
+.bk { display:flex; flex-direction:column; gap:28px; }
+.bk-sec-title { font-size:7px; letter-spacing:3px; color:var(--muted); text-transform:uppercase; margin-bottom:12px; }
 .bk-colors { display:flex; gap:10px; flex-wrap:wrap; }
-.bk-color-card {
-  display:flex; flex-direction:column; align-items:center; gap:6px;
-}
-.bk-swatch { width:72px; height:72px; border-radius:4px; }
+.bk-swatch-card { display:flex; flex-direction:column; align-items:center; gap:5px; }
+.bk-swatch { width:68px; height:68px; border-radius:6px; }
 .bk-hex { font-size:9px; color:var(--dim); letter-spacing:1px; }
 .bk-name { font-size:8px; color:var(--muted); text-transform:uppercase; letter-spacing:1px; }
-.bk-fonts { display:flex; flex-direction:column; gap:16px; }
-.bk-font-sample { }
-.bk-font-label { font-size:8px; color:var(--dim); letter-spacing:2px; text-transform:uppercase; margin-bottom:4px; }
-.bk-logo-area { display:flex; gap:20px; align-items:flex-start; flex-wrap:wrap; }
-.bk-logo-card {
-  padding:24px 32px;
-  display:flex; align-items:center; justify-content:center;
-  min-width:160px;
-}
-.bk-logo-light { background:#f5f5f0; }
-.bk-logo-dark { background:#0f0f17; }
-.bk-logo-color { background:var(--accent); }
-
-/* ── POSTER STYLES ── */
-.poster-wrap { display:flex; justify-content:center; }
-.poster {
-  width:500px; height:700px;
-  position:relative; overflow:hidden;
-  box-shadow:0 40px 100px rgba(0,0,0,0.7);
-}
-
-/* ── RIGHT PANEL ── */
-#right {
-  width:220px; flex-shrink:0; border-left:1px solid var(--border);
-  display:flex; flex-direction:column;
-  background:var(--bg2); overflow-y:auto;
-}
-#right::-webkit-scrollbar { width:2px; }
-#right::-webkit-scrollbar-thumb { background:var(--border); }
-.rsec { padding:14px; border-bottom:1px solid var(--border); }
-.rsec-title { font-size:8px; letter-spacing:3px; color:var(--dim); text-transform:uppercase; margin-bottom:10px; }
-.rsec-row { display:flex; gap:4px; flex-wrap:wrap; }
-.rsec-chip {
-  padding:4px 8px; font-size:8px; letter-spacing:1px;
-  border:1px solid var(--border); color:var(--dim);
-  cursor:pointer; transition:all 0.15s; text-transform:uppercase;
-}
-.rsec-chip:hover { border-color:var(--accent2); color:var(--accent2); }
-
-/* ── COPY CODE BLOCK ── */
-.code-block {
-  background:rgba(0,0,0,0.4); border:1px solid var(--border);
-  padding:12px; margin-top:16px; overflow-x:auto;
-  font-size:10px; line-height:1.7; color:rgba(255,255,255,0.7);
-}
-.code-block::-webkit-scrollbar { height:2px; }
-.code-block::-webkit-scrollbar-thumb { background:var(--border); }
-
-/* ── TOAST ── */
-#toast {
-  position:fixed; bottom:30px; left:50%; transform:translateX(-50%);
-  z-index:500; background:var(--bg2); border:1px solid var(--accent);
-  padding:8px 22px; font-size:10px; letter-spacing:2px; color:var(--accent);
-  text-transform:uppercase; pointer-events:none;
-  transition:opacity 0.3s; opacity:0;
-}
-#toast.show { opacity:1; }
+.bk-logos { display:flex; gap:12px; flex-wrap:wrap; }
+.bk-logo-box { padding:22px 28px; display:flex; align-items:center; justify-content:center; min-width:150px; border-radius:6px; }
 </style>
 </head>
 <body>
 <div id="shell">
 
 <div id="top">
-  <div class="ds-logo">Studio</div>
-  <div class="mode-tabs">
-    <button class="mode-tab active" onclick="setMode('mockup',this)">UI Mockup</button>
-    <button class="mode-tab" onclick="setMode('brand',this)">Brand Kit</button>
-    <button class="mode-tab" onclick="setMode('poster',this)">Creative</button>
+  <div class="logo">Studio</div>
+  <div class="sep"></div>
+  <div class="tabs">
+    <button class="tab active" onclick="setMode('mockup',this)">UI Mockup</button>
+    <button class="tab" onclick="setMode('brand',this)">Brand Kit</button>
+    <button class="tab" onclick="setMode('poster',this)">Creative</button>
   </div>
-  <div class="top-spacer"></div>
-  <button class="top-btn" onclick="copyOutput()">Copy</button>
-  <button class="top-btn" onclick="downloadOutput()">Save</button>
-  <button class="top-btn go" onclick="generate()">Generate →</button>
+  <div class="spacer"></div>
+  <div class="top-actions">
+    <button class="tbtn" onclick="copyOut()">Copy</button>
+    <button class="tbtn" onclick="saveOut()">Save</button>
+    <button class="tbtn primary" onclick="generate()">Generate →</button>
+  </div>
 </div>
 
 <div id="body">
-  <!-- LEFT -->
   <div id="left">
-    <!-- Dynamic options per mode -->
-    <div class="left-sec" id="mode-options">
-      <div class="left-sec-title">Style</div>
-      <div class="opt-row" id="style-chips"></div>
-      <div class="left-sec-title" style="margin-top:8px">Platform</div>
-      <div class="opt-row" id="platform-chips"></div>
+    <div class="lsec">
+      <div class="lsec-title">Style</div>
+      <div class="chips" id="style-chips"></div>
+      <div class="lsec-title" style="margin-top:12px">Format</div>
+      <div class="chips" id="fmt-chips"></div>
     </div>
-
     <div id="prompt-area">
-      <div class="left-sec-title">Describe</div>
-      <textarea id="prompt" placeholder="A minimal task manager app with a sidebar, dark theme, and kanban board..."></textarea>
-      <button class="generate-btn" onclick="generate()" id="gen-btn">Generate</button>
+      <div id="prompt-label">Describe</div>
+      <textarea id="prompt" placeholder="A dark analytics dashboard with sidebar, charts, and user stats..."></textarea>
+      <button id="gen-btn" onclick="generate()"><span class="sh"></span>Generate</button>
     </div>
-
-    <div class="left-sec">
-      <div class="left-sec-title">Recents</div>
-      <div class="hist-chips" id="hist-chips">
-        <div class="hist-chip" onclick="setPrompt(this.textContent)">Landing page for a crypto startup</div>
-        <div class="hist-chip" onclick="setPrompt(this.textContent)">Fitness app brand kit, energetic</div>
-        <div class="hist-chip" onclick="setPrompt(this.textContent)">Dark mode dashboard with charts</div>
+    <div class="lsec">
+      <div class="lsec-title">Recents</div>
+      <div class="recent-list" id="recents">
+        <div class="recent-item" onclick="useR(this)">Landing page for a crypto startup</div>
+        <div class="recent-item" onclick="useR(this)">Fitness app — bold energetic brand</div>
+        <div class="recent-item" onclick="useR(this)">Dark SaaS dashboard with charts</div>
       </div>
     </div>
   </div>
 
-  <!-- CANVAS -->
   <div id="canvas-area">
+    <div id="empty">
+      <div class="empty-title">Nothing here yet.</div>
+      <div class="empty-sub">Describe something and generate</div>
+    </div>
     <div id="output-wrap">
-      <div id="empty-state">
-        <div class="empty-title">Nothing yet.</div>
-        <div class="empty-sub">Describe what you want &amp; generate</div>
-      </div>
       <div id="output-card">
-        <div class="card-toolbar">
-          <div class="card-title" id="card-title">Output</div>
-          <button class="card-btn" onclick="generate()">Regenerate</button>
-          <button class="card-btn" onclick="copyOutput()">Copy HTML</button>
-          <button class="card-btn" onclick="downloadOutput()">Download</button>
+        <div class="card-bar">
+          <div class="card-dots">
+            <div class="card-dot" style="background:#ff5f56"></div>
+            <div class="card-dot" style="background:#febc2e"></div>
+            <div class="card-dot" style="background:#27c840"></div>
+          </div>
+          <div class="card-label" id="card-label">Output</div>
+          <div class="card-actions">
+            <button class="cact" onclick="generate()">Regenerate</button>
+            <button class="cact" onclick="copyOut()">Copy</button>
+            <button class="cact" onclick="saveOut()">Save</button>
+          </div>
         </div>
-        <div id="output-content"></div>
+        <iframe id="mockup-frame" sandbox="allow-scripts allow-same-origin allow-forms" scrolling="auto" style="display:none"></iframe>
+        <div id="output-content" style="display:none"></div>
       </div>
     </div>
-
-    <div id="loading-overlay">
+    <div id="loader">
       <div class="ld-ring"></div>
-      <div class="ld-text">Generating</div>
-      <div class="ld-sub" id="ld-sub">Designing your output...</div>
+      <div class="ld-label">Generating</div>
+      <div class="ld-sub" id="ld-sub">Working on it...</div>
     </div>
   </div>
 
-  <!-- RIGHT -->
   <div id="right">
     <div class="rsec">
-      <div class="rsec-title">Quick Prompts</div>
-      <div class="rsec-row">
-        <div class="rsec-chip" onclick="addToPrompt('dark theme')">dark</div>
-        <div class="rsec-chip" onclick="addToPrompt('minimal')">minimal</div>
-        <div class="rsec-chip" onclick="addToPrompt('glassmorphism')">glass</div>
-        <div class="rsec-chip" onclick="addToPrompt('bold typography')">bold</div>
-        <div class="rsec-chip" onclick="addToPrompt('colorful gradients')">gradient</div>
-        <div class="rsec-chip" onclick="addToPrompt('brutalist')">brutal</div>
-        <div class="rsec-chip" onclick="addToPrompt('luxury, premium feel')">luxury</div>
-        <div class="rsec-chip" onclick="addToPrompt('playful, rounded')">playful</div>
-        <div class="rsec-chip" onclick="addToPrompt('editorial layout')">editorial</div>
-        <div class="rsec-chip" onclick="addToPrompt('neon, cyberpunk')">neon</div>
-        <div class="rsec-chip" onclick="addToPrompt('serif, classic')">classic</div>
-        <div class="rsec-chip" onclick="addToPrompt('monochrome')">mono</div>
+      <div class="rsec-title">Style Modifiers</div>
+      <div class="rchips">
+        <div class="rchip" onclick="add('dark theme')">dark</div>
+        <div class="rchip" onclick="add('minimal clean')">minimal</div>
+        <div class="rchip" onclick="add('glassmorphism')">glass</div>
+        <div class="rchip" onclick="add('bold typography')">bold</div>
+        <div class="rchip" onclick="add('colorful gradients')">gradient</div>
+        <div class="rchip" onclick="add('brutalist design')">brutal</div>
+        <div class="rchip" onclick="add('luxury premium')">luxury</div>
+        <div class="rchip" onclick="add('playful rounded')">playful</div>
+        <div class="rchip" onclick="add('editorial layout')">editorial</div>
+        <div class="rchip" onclick="add('neon cyberpunk')">neon</div>
+        <div class="rchip" onclick="add('classic serif')">classic</div>
+        <div class="rchip" onclick="add('monochrome')">mono</div>
+        <div class="rchip" onclick="add('retro 90s')">retro</div>
       </div>
     </div>
     <div class="rsec">
       <div class="rsec-title">Components</div>
-      <div class="rsec-row">
-        <div class="rsec-chip" onclick="addToPrompt('with a sidebar navigation')">sidebar</div>
-        <div class="rsec-chip" onclick="addToPrompt('with a hero section')">hero</div>
-        <div class="rsec-chip" onclick="addToPrompt('with data charts')">charts</div>
-        <div class="rsec-chip" onclick="addToPrompt('with a pricing table')">pricing</div>
-        <div class="rsec-chip" onclick="addToPrompt('with a login form')">auth</div>
-        <div class="rsec-chip" onclick="addToPrompt('with cards and grid layout')">cards</div>
-        <div class="rsec-chip" onclick="addToPrompt('with a top navigation bar')">navbar</div>
-        <div class="rsec-chip" onclick="addToPrompt('with a modal dialog')">modal</div>
-        <div class="rsec-chip" onclick="addToPrompt('with a timeline')">timeline</div>
-        <div class="rsec-chip" onclick="addToPrompt('with a stats overview section')">stats</div>
+      <div class="rchips">
+        <div class="rchip" onclick="add('with sidebar navigation')">sidebar</div>
+        <div class="rchip" onclick="add('with hero section')">hero</div>
+        <div class="rchip" onclick="add('with data charts')">charts</div>
+        <div class="rchip" onclick="add('with pricing table')">pricing</div>
+        <div class="rchip" onclick="add('with login form')">auth</div>
+        <div class="rchip" onclick="add('with card grid')">cards</div>
+        <div class="rchip" onclick="add('with top navbar')">navbar</div>
+        <div class="rchip" onclick="add('with modal dialog')">modal</div>
+        <div class="rchip" onclick="add('with timeline')">timeline</div>
+        <div class="rchip" onclick="add('with stats section')">stats</div>
+        <div class="rchip" onclick="add('with search bar')">search</div>
       </div>
     </div>
     <div class="rsec">
-      <div class="rsec-title">Industries</div>
-      <div class="rsec-row">
-        <div class="rsec-chip" onclick="addToPrompt('for a fintech startup')">fintech</div>
-        <div class="rsec-chip" onclick="addToPrompt('for a health/wellness brand')">health</div>
-        <div class="rsec-chip" onclick="addToPrompt('for an AI product')">AI</div>
-        <div class="rsec-chip" onclick="addToPrompt('for a creative agency')">agency</div>
-        <div class="rsec-chip" onclick="addToPrompt('for a SaaS tool')">SaaS</div>
-        <div class="rsec-chip" onclick="addToPrompt('for a fashion brand')">fashion</div>
-        <div class="rsec-chip" onclick="addToPrompt('for a gaming platform')">gaming</div>
-        <div class="rsec-chip" onclick="addToPrompt('for a music app')">music</div>
+      <div class="rsec-title">Industry</div>
+      <div class="rchips">
+        <div class="rchip" onclick="add('fintech startup')">fintech</div>
+        <div class="rchip" onclick="add('health wellness')">health</div>
+        <div class="rchip" onclick="add('AI product')">AI</div>
+        <div class="rchip" onclick="add('creative agency')">agency</div>
+        <div class="rchip" onclick="add('SaaS tool')">SaaS</div>
+        <div class="rchip" onclick="add('fashion brand')">fashion</div>
+        <div class="rchip" onclick="add('gaming platform')">gaming</div>
+        <div class="rchip" onclick="add('music app')">music</div>
+        <div class="rchip" onclick="add('ecommerce store')">shop</div>
       </div>
     </div>
-    <div class="rsec" id="output-meta" style="display:none">
+    <div class="rsec" id="meta-box">
       <div class="rsec-title">Output Info</div>
-      <div id="meta-content" style="font-size:9px;color:var(--dim);line-height:1.8;letter-spacing:0.5px"></div>
+      <div id="meta-text"></div>
     </div>
   </div>
 </div>
-
 </div>
 <div id="toast"></div>
 
 <script>
-let currentMode = 'mockup';
-let currentOutput = '';
-let selectedStyle = '';
-let selectedPlatform = '';
+let mode = 'mockup';
+let selStyle = '';
+let selFmt = '';
 
 const MODES = {
   mockup: {
-    placeholder: 'A dark-themed dashboard with a sidebar, user stats, recent activity feed, and a chart section...',
-    styles: ['Dark', 'Light', 'Glass', 'Minimal', 'Bold', 'Retro'],
-    platforms: ['Desktop', 'Mobile', 'Tablet', 'Full Page'],
-    ldSub: 'Designing your UI...',
+    ph: 'A dark analytics dashboard with sidebar, live charts, user activity feed, and notification panel...',
+    styles: ['Dark','Light','Glass','Minimal','Bold','Retro','Luxury'],
+    fmts: ['Desktop','Mobile','Full Page','App Shell'],
+    sub: 'Designing your UI...',
   },
   brand: {
-    placeholder: 'A modern fintech startup called "Vault" — trustworthy, bold, with a dark premium feel...',
-    styles: ['Modern', 'Luxury', 'Playful', 'Minimal', 'Bold', 'Classic'],
-    platforms: ['Full Kit', 'Colors Only', 'Typography', 'Logo'],
-    ldSub: 'Building your brand...',
+    ph: 'A fintech startup called "Vault" — trustworthy, premium, dark with gold accents...',
+    styles: ['Modern','Luxury','Playful','Minimal','Bold','Classic'],
+    fmts: ['Full Kit','Colors Only','Typography','Logo Only'],
+    sub: 'Building your brand...',
   },
   poster: {
-    placeholder: 'A concert poster for an electronic music festival in Tokyo, neon colors, cyberpunk aesthetic...',
-    styles: ['Cyberpunk', 'Editorial', 'Retro', 'Luxury', 'Minimal', 'Brutalist'],
-    platforms: ['Poster', 'Social', 'Banner', 'Card'],
-    ldSub: 'Creating your design...',
+    ph: 'A concert poster for an electronic music festival in Tokyo, neon colors, cyberpunk aesthetic...',
+    styles: ['Cyberpunk','Editorial','Retro','Luxury','Minimal','Brutalist'],
+    fmts: ['Portrait Poster','Square Social','Wide Banner','Story Card'],
+    sub: 'Creating your design...',
   },
 };
 
-function setMode(mode, btn) {
-  currentMode = mode;
-  document.querySelectorAll('.mode-tab').forEach(b => b.classList.remove('active'));
+function setMode(m, btn) {
+  mode = m;
+  document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-
-  const cfg = MODES[mode];
-  document.getElementById('prompt').placeholder = cfg.placeholder;
-
-  const styleChips = document.getElementById('style-chips');
-  styleChips.innerHTML = '';
-  cfg.styles.forEach(s => {
-    const el = document.createElement('div');
-    el.className = 'opt-chip';
-    el.textContent = s;
-    el.onclick = () => { selectedStyle = s; document.querySelectorAll('#style-chips .opt-chip').forEach(c=>c.classList.remove('sel')); el.classList.add('sel'); };
-    styleChips.appendChild(el);
-  });
-
-  const platChips = document.getElementById('platform-chips');
-  platChips.innerHTML = '';
-  cfg.platforms.forEach(p => {
-    const el = document.createElement('div');
-    el.className = 'opt-chip';
-    el.textContent = p;
-    el.onclick = () => { selectedPlatform = p; document.querySelectorAll('#platform-chips .opt-chip').forEach(c=>c.classList.remove('sel')); el.classList.add('sel'); };
-    platChips.appendChild(el);
-  });
-
-  selectedStyle = '';
-  selectedPlatform = '';
+  const cfg = MODES[m];
+  document.getElementById('prompt').placeholder = cfg.ph;
+  buildChips('style-chips', cfg.styles, v => selStyle = v);
+  buildChips('fmt-chips', cfg.fmts, v => selFmt = v);
+  selStyle = ''; selFmt = '';
 }
 
-// Init mode options
-setMode('mockup', document.querySelector('.mode-tab.active'));
+function buildChips(id, items, onSel) {
+  const el = document.getElementById(id);
+  el.innerHTML = '';
+  items.forEach(s => {
+    const c = document.createElement('div');
+    c.className = 'chip'; c.textContent = s;
+    c.onclick = () => {
+      document.querySelectorAll('#'+id+' .chip').forEach(x => x.classList.remove('sel'));
+      c.classList.add('sel'); onSel(s);
+    };
+    el.appendChild(c);
+  });
+}
 
-function setPrompt(t) { document.getElementById('prompt').value = t; }
-function addToPrompt(t) {
+setMode('mockup', document.querySelector('.tab.active'));
+
+function add(t) {
   const el = document.getElementById('prompt');
   el.value = el.value.trim() + (el.value.trim() ? ', ' : '') + t;
   el.focus();
 }
+function useR(el) { document.getElementById('prompt').value = el.textContent.trim(); }
 
 function setLoading(show, sub) {
-  const ol = document.getElementById('loading-overlay');
-  ol.classList.toggle('show', show);
+  document.getElementById('loader').classList.toggle('show', show);
   if (sub) document.getElementById('ld-sub').textContent = sub;
 }
 
-function showOutput(html, title) {
-  document.getElementById('empty-state').style.display = 'none';
-  const card = document.getElementById('output-card');
-  card.classList.add('show');
-  document.getElementById('card-title').textContent = title || 'Output';
-  document.getElementById('output-content').innerHTML = html;
-  currentOutput = html;
-}
+// ── SYSTEM PROMPTS ────────────────────────────────────────
+const SYS = {
+  mockup: `You are an elite UI/UX designer. Generate a stunning, complete, working HTML page.
 
-// ── SYSTEM PROMPTS ──────────────────────
-const SYSTEMS = {
-  mockup: `You are a world-class UI designer. Generate a complete, beautiful HTML/CSS UI mockup based on the user's description.
+CRITICAL: Return ONLY valid JSON in this exact format:
+{"title":"Page Title","html":"FULL HTML HERE","meta":"colors and components used"}
 
-Rules:
-- Output ONLY a JSON object: {"title":"...", "html":"...", "meta":"..."}
-- "html" must be a complete self-contained HTML snippet (no doctype/html/body tags) with inline styles
-- Use CSS custom properties, modern layouts, beautiful typography
-- Make it visually stunning — dark themes, good contrast, realistic placeholder data
-- Include actual content (realistic names, numbers, text) not just [placeholder]
-- Use Google Fonts via @import if needed
-- "meta" is a short summary: colors used, fonts, components
-- No backticks, no markdown. Pure JSON.`,
+The "html" value must be:
+- A COMPLETE HTML document with <!DOCTYPE html>, <html>, <head>, <body>
+- Fully self-contained: all CSS in <style> tags, all JS in <script> tags
+- Google Fonts allowed via <link> tag
+- ALL interactive elements (buttons, tabs, dropdowns) must actually work with JavaScript
+- Realistic fake data — real names, numbers, dates, not placeholders
+- Visually stunning with proper spacing, shadows, gradients, modern design
+- IMPORTANT: Escape all special characters in the JSON string value
 
-  brand: `You are a brand identity designer. Generate a complete brand kit based on the description.
+Return NOTHING except the JSON object. No markdown, no backticks, no explanation.`,
 
-Output ONLY JSON: {"title":"...","brandName":"...","tagline":"...","colors":[{"hex":"#...","name":"...","role":"..."}],"fonts":{"heading":"font-name","body":"font-name","mono":"font-name (optional)"},"logoSVG":"...SVG string...","logoText":"...","voice":"...","meta":"..."}
+  brand: `You are a brand identity designer. Generate a complete brand kit.
 
-Rules:
-- 4-6 colors with semantic roles (primary, secondary, accent, neutral, dark, light)
-- Real Google Font names
-- logoSVG: a clean SVG wordmark or mark (200x60 viewBox), inline SVG string
-- voice: brand voice description (1-2 sentences)
-- No backticks, no markdown. Pure JSON.`,
+Return ONLY valid JSON:
+{"title":"Kit Title","brandName":"Name","tagline":"Tagline","colors":[{"hex":"#hex","name":"Name","role":"role"}],"fonts":{"heading":"FontName","body":"FontName"},"logoSVG":"SVG string","voice":"brand voice","meta":"summary"}
 
-  poster: `You are a graphic designer. Generate a creative HTML/CSS poster/graphic.
+Rules: 5-6 colors, real Google Font names, logoSVG is viewBox="0 0 200 60". No markdown. Pure JSON.`,
 
-Output ONLY JSON: {"title":"...","html":"...","meta":"..."}
+  poster: `You are a graphic designer. Generate a creative HTML/CSS visual.
 
-Rules:
-- "html" is a self-contained div (500px wide, 700px tall for poster; adjust for other formats)
-- Use absolute/relative positioning for dramatic layouts
-- Bold typography, strong visual hierarchy, creative use of color
-- Include realistic copy (event names, dates, taglines)
-- Can use CSS animations for subtle motion
-- No backticks, no markdown. Pure JSON.`,
+Return ONLY valid JSON: {"title":"Title","html":"FULL HTML DOCUMENT","meta":"summary"}
+
+The html must be a complete HTML document with a fixed 500x700 container for poster format. Bold layouts, strong typography, realistic copy, CSS animations allowed. No markdown. Pure JSON.`,
 };
 
 async function generate() {
   const prompt = document.getElementById('prompt').value.trim();
-  if (!prompt) { showToast('Enter a description first'); return; }
+  if (!prompt) { toast('Describe something first'); return; }
 
   const btn = document.getElementById('gen-btn');
   btn.disabled = true;
+  setLoading(true, MODES[mode].sub);
+  document.getElementById('empty').style.display = 'none';
 
-  const cfg = MODES[currentMode];
-  setLoading(true, cfg.ldSub);
-
-  const fullPrompt = [
-    prompt,
-    selectedStyle ? `Style: ${selectedStyle}` : '',
-    selectedPlatform ? `Format: ${selectedPlatform}` : '',
-  ].filter(Boolean).join('. ');
+  const full = [prompt, selStyle && 'Style: '+selStyle, selFmt && 'Format: '+selFmt].filter(Boolean).join('. ');
 
   try {
     const token = localStorage.getItem('jarvis_token') || '';
-    const res = await fetch('https://api.heyjarvis.me/design-command', {
+
+    // Use /ai-proxy to get raw AI response — avoids server-side JSON.parse issues
+    const res = await fetch('https://api.heyjarvis.me/ai-proxy', {
       method: 'POST',
-      headers: { 'Content-Type':'application/json', 'Authorization':`Bearer ${token}` },
-      body: JSON.stringify({
-        command: fullPrompt,
-        systemPrompt: SYSTEMS[currentMode],
-        history: [],
-      })
+      headers: { 'Content-Type':'application/json', 'Authorization':'Bearer '+token },
+      body: JSON.stringify({ prompt: full, system: SYS[mode] })
     });
 
     const raw = await res.json();
-    // design-command returns parsed JSON directly for brand/poster,
-    // or the raw text. Handle both.
-    let data;
-    if (typeof raw === 'object' && (raw.html || raw.colors || raw.brandName)) {
-      data = raw;
-    } else {
-      // Try to parse from .response
-      let text = typeof raw === 'string' ? raw : (raw.response || JSON.stringify(raw));
-      text = text.replace(/```json\n?/g,'').replace(/```\n?/g,'').trim();
-      const match = text.match(/\{[\s\S]*\}/);
-      data = match ? JSON.parse(match[0]) : null;
-    }
+    const text = (raw.response || '').trim();
+    const data = extractJSON(text);
 
     setLoading(false);
-    if (!data) { showToast('Parse error — try again'); btn.disabled=false; return; }
 
-    if (currentMode === 'mockup') {
-      renderMockup(data);
-    } else if (currentMode === 'brand') {
-      renderBrandKit(data);
-    } else if (currentMode === 'poster') {
-      renderPoster(data);
+    if (!data) {
+      toast('Parse error — retrying with simpler prompt');
+      btn.disabled = false;
+      return;
     }
 
-    // Save to history
-    const hc = document.getElementById('hist-chips');
-    const chip = document.createElement('div');
-    chip.className = 'hist-chip';
-    chip.textContent = prompt.length > 50 ? prompt.slice(0,50)+'...' : prompt;
-    chip.onclick = () => setPrompt(prompt);
-    hc.prepend(chip);
-    if (hc.children.length > 6) hc.removeChild(hc.lastChild);
+    if (mode === 'mockup' || mode === 'poster') renderFrame(data);
+    else renderBrand(data);
+
+    // Add to recents
+    const rec = document.getElementById('recents');
+    const item = document.createElement('div');
+    item.className = 'recent-item';
+    item.textContent = prompt.slice(0,52) + (prompt.length>52?'...':'');
+    item.onclick = () => useR(item);
+    rec.prepend(item);
+    if (rec.children.length > 6) rec.removeChild(rec.lastChild);
 
   } catch(e) {
     setLoading(false);
-    showToast('Generation failed — check connection');
+    toast('Error — check connection');
+    console.error(e);
   }
   btn.disabled = false;
 }
 
-function renderMockup(data) {
-  const html = `
-    <style>
-      .mockup-shell { font-family: system-ui, sans-serif; }
-    </style>
-    <div class="mockup-shell">
-      ${data.html || ''}
-    </div>
-  `;
-  showOutput(html, data.title || 'UI Mockup');
-  if (data.meta) {
-    document.getElementById('output-meta').style.display = 'block';
-    document.getElementById('meta-content').textContent = data.meta;
+function extractJSON(text) {
+  // 1. Direct parse
+  try { return JSON.parse(text); } catch {}
+  // 2. Strip markdown fences
+  let c = text.replace(/^```json\s*/i,'').replace(/^```\s*/i,'').replace(/```\s*$/i,'').trim();
+  try { return JSON.parse(c); } catch {}
+  // 3. Extract outermost braces
+  const s = c.indexOf('{'), e = c.lastIndexOf('}');
+  if (s !== -1 && e !== -1) {
+    try { return JSON.parse(c.slice(s, e+1)); } catch {}
   }
+  return null;
 }
 
-function renderBrandKit(data) {
-  const swatches = (data.colors || []).map(c => `
-    <div class="bk-color-card">
-      <div class="bk-swatch" style="background:${c.hex}"></div>
+function showCard(label) {
+  document.getElementById('output-card').classList.add('show');
+  document.getElementById('card-label').textContent = label;
+}
+
+function renderFrame(data) {
+  const html = data.html || '';
+  const frame = document.getElementById('mockup-frame');
+  const content = document.getElementById('output-content');
+  frame.style.display = 'block';
+  content.style.display = 'none';
+  // srcdoc renders the full HTML in iframe — buttons/JS work, no style conflicts
+  frame.srcdoc = html;
+  frame.onload = () => {
+    try {
+      const h = frame.contentDocument.documentElement.scrollHeight || frame.contentDocument.body.scrollHeight;
+      frame.style.height = Math.max(500, Math.min(h + 20, 2000)) + 'px';
+    } catch { frame.style.height = '650px'; }
+  };
+  showCard(data.title || (mode === 'poster' ? 'Creative' : 'UI Mockup'));
+  if (data.meta) { document.getElementById('meta-box').style.display='block'; document.getElementById('meta-text').textContent=data.meta; }
+}
+
+function renderBrand(data) {
+  const frame = document.getElementById('mockup-frame');
+  const content = document.getElementById('output-content');
+  frame.style.display = 'none';
+  content.style.display = 'block';
+
+  const hf = data.fonts?.heading || 'Georgia';
+  const bf = data.fonts?.body || 'system-ui';
+  const pri = data.colors?.[0]?.hex || '#fff';
+  const dark = data.colors?.find(c=>c.role?.toLowerCase().includes('dark'))?.hex || '#0f0f17';
+
+  const swatches = (data.colors||[]).map(c=>`
+    <div class="bk-swatch-card">
+      <div class="bk-swatch" style="background:${c.hex};border:1px solid rgba(255,255,255,0.08)"></div>
       <div class="bk-hex">${c.hex}</div>
       <div class="bk-name">${c.name}</div>
-      <div class="bk-name" style="color:rgba(255,255,255,0.2)">${c.role}</div>
-    </div>
-  `).join('');
+    </div>`).join('');
 
-  const primaryHex = data.colors?.[0]?.hex || '#ffffff';
-  const darkHex = data.colors?.find(c=>c.role?.includes('dark'))?.hex || '#0f0f17';
-
-  const headingFont = data.fonts?.heading || 'Georgia';
-  const bodyFont = data.fonts?.body || 'system-ui';
-
-  const html = `
-    <link href="https://fonts.googleapis.com/css2?family=${encodeURIComponent(headingFont)}:wght@400;700&family=${encodeURIComponent(bodyFont)}:wght@400;500&display=swap" rel="stylesheet">
-    <div class="brand-kit">
+  content.innerHTML = `
+    <link href="https://fonts.googleapis.com/css2?family=${encodeURIComponent(hf)}:wght@400;700&family=${encodeURIComponent(bf)}:wght@400;500&display=swap" rel="stylesheet">
+    <div class="bk">
       <div>
-        <div class="bk-section-title">Logo</div>
-        <div class="bk-logo-area">
-          <div class="bk-logo-card bk-logo-light">
-            ${data.logoSVG || `<span style="font-family:'${headingFont}',sans-serif;font-size:24px;font-weight:700;color:${darkHex}">${data.brandName||'Brand'}</span>`}
-          </div>
-          <div class="bk-logo-card bk-logo-dark">
-            ${data.logoSVG || `<span style="font-family:'${headingFont}',sans-serif;font-size:24px;font-weight:700;color:#ffffff">${data.brandName||'Brand'}</span>`}
-          </div>
-          <div class="bk-logo-card bk-logo-color" style="background:${primaryHex}">
-            ${data.logoSVG || `<span style="font-family:'${headingFont}',sans-serif;font-size:24px;font-weight:700;color:${darkHex}">${data.brandName||'Brand'}</span>`}
-          </div>
+        <div class="bk-sec-title">Logo</div>
+        <div class="bk-logos">
+          <div class="bk-logo-box" style="background:#f5f4f0">${data.logoSVG||`<span style="font-family:'${hf}',serif;font-size:26px;font-weight:700;color:${dark}">${data.brandName||''}</span>`}</div>
+          <div class="bk-logo-box" style="background:#0f0f17">${data.logoSVG||`<span style="font-family:'${hf}',serif;font-size:26px;font-weight:700;color:#fff">${data.brandName||''}</span>`}</div>
+          <div class="bk-logo-box" style="background:${pri}">${data.logoSVG||`<span style="font-family:'${hf}',serif;font-size:26px;font-weight:700;color:${dark}">${data.brandName||''}</span>`}</div>
         </div>
       </div>
-
       <div>
-        <div class="bk-section-title">Brand Name &amp; Tagline</div>
-        <div style="font-family:'${headingFont}',sans-serif;font-size:32px;font-weight:700;color:var(--text);margin-bottom:6px">${data.brandName||''}</div>
-        <div style="font-family:'${bodyFont}',sans-serif;font-size:14px;color:var(--dim)">${data.tagline||''}</div>
+        <div class="bk-sec-title">Identity</div>
+        <div style="font-family:'${hf}',serif;font-size:34px;font-weight:700;color:var(--text);margin-bottom:6px;line-height:1">${data.brandName||''}</div>
+        <div style="font-family:'${bf}',sans-serif;font-size:14px;color:var(--dim)">${data.tagline||''}</div>
       </div>
-
       <div>
-        <div class="bk-section-title">Color Palette</div>
+        <div class="bk-sec-title">Color Palette</div>
         <div class="bk-colors">${swatches}</div>
       </div>
-
       <div>
-        <div class="bk-section-title">Typography</div>
-        <div class="bk-fonts">
-          <div class="bk-font-sample">
-            <div class="bk-font-label">${headingFont} — Heading</div>
-            <div style="font-family:'${headingFont}',sans-serif;font-size:28px;font-weight:700;color:var(--text)">The quick brown fox</div>
+        <div class="bk-sec-title">Typography</div>
+        <div style="display:flex;flex-direction:column;gap:16px">
+          <div>
+            <div style="font-size:7px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-bottom:6px">${hf} — Display</div>
+            <div style="font-family:'${hf}',serif;font-size:30px;font-weight:700;color:var(--text);line-height:1.1">The quick brown fox</div>
           </div>
-          <div class="bk-font-sample">
-            <div class="bk-font-label">${bodyFont} — Body</div>
-            <div style="font-family:'${bodyFont}',sans-serif;font-size:15px;color:var(--dim);line-height:1.7">Consistent visual identity builds trust and recognition across every touchpoint of your brand experience.</div>
+          <div>
+            <div style="font-size:7px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-bottom:6px">${bf} — Body</div>
+            <div style="font-family:'${bf}',sans-serif;font-size:14px;color:var(--dim);line-height:1.7;max-width:480px">Consistent visual identity builds trust and recognition across every touchpoint of your brand experience.</div>
           </div>
         </div>
       </div>
+      ${data.voice?`<div><div class="bk-sec-title">Brand Voice</div><div style="font-size:13px;color:var(--dim);line-height:1.7;font-style:italic;border-left:2px solid var(--accent);padding-left:14px">"${data.voice}"</div></div>`:''}
+    </div>`;
 
-      ${data.voice ? `<div>
-        <div class="bk-section-title">Brand Voice</div>
-        <div style="font-size:13px;color:var(--dim);line-height:1.7;font-style:italic">"${data.voice}"</div>
-      </div>` : ''}
-    </div>
-  `;
-  showOutput(html, data.brandName ? `${data.brandName} — Brand Kit` : 'Brand Kit');
-  if (data.meta) {
-    document.getElementById('output-meta').style.display = 'block';
-    document.getElementById('meta-content').textContent = data.meta;
+  showCard(data.brandName ? data.brandName+' — Brand Kit' : 'Brand Kit');
+  if (data.meta) { document.getElementById('meta-box').style.display='block'; document.getElementById('meta-text').textContent=data.meta; }
+}
+
+function copyOut() {
+  const frame = document.getElementById('mockup-frame');
+  const content = document.getElementById('output-content');
+  const text = frame.style.display !== 'none' ? (frame.srcdoc||'') : content.innerHTML;
+  navigator.clipboard.writeText(text).then(() => toast('Copied'));
+}
+
+function saveOut() {
+  const frame = document.getElementById('mockup-frame');
+  const content = document.getElementById('output-content');
+  let html = '';
+  if (frame.style.display !== 'none') {
+    html = frame.srcdoc || '';
+    if (!html) { toast('Nothing to save'); return; }
+  } else {
+    if (!content.innerHTML.trim()) { toast('Nothing to save'); return; }
+    html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><style>body{margin:0;background:#07070d;color:#fff;font-family:system-ui;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:40px}</style></head><body>${content.innerHTML}</body></html>`;
   }
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([html],{type:'text/html'}));
+  a.download = 'studio-output.html'; a.click();
+  toast('Saved');
 }
 
-function renderPoster(data) {
-  showOutput(`<div class="poster-wrap">${data.html||''}</div>`, data.title || 'Creative');
-  if (data.meta) {
-    document.getElementById('output-meta').style.display = 'block';
-    document.getElementById('meta-content').textContent = data.meta;
-  }
-}
-
-function copyOutput() {
-  const el = document.getElementById('output-content');
-  const text = el.innerHTML;
-  navigator.clipboard.writeText(text).then(() => showToast('Copied to clipboard'));
-}
-
-function downloadOutput() {
-  const el = document.getElementById('output-content');
-  if (!el.innerHTML.trim()) { showToast('Nothing to download'); return; }
-  const full = `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>body{margin:0;background:#06060a;color:#fff;font-family:system-ui,sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:40px}</style></head><body>${el.innerHTML}</body></html>`;
-  const blob = new Blob([full], {type:'text/html'});
-  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-  a.download = `design-studio-output.html`; a.click();
-  showToast('Saved');
-}
-
-let toastTimer;
-function showToast(msg) {
+let tt;
+function toast(msg) {
   const el = document.getElementById('toast');
   el.textContent = msg; el.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.classList.remove('show'), 2500);
+  clearTimeout(tt);
+  tt = setTimeout(() => el.classList.remove('show'), 2400);
 }
 
-// Enter to generate
 document.getElementById('prompt').addEventListener('keydown', e => {
-  if (e.key === 'Enter' && e.metaKey) generate();
+  if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) generate();
 });
 </script>
 </body>
