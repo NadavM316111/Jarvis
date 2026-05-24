@@ -2041,7 +2041,10 @@ app.get('/proxy-model', async (req, res) => {
 });
 
 // ============ STATIC FILE VIEWER ============
-app.use('/view', express.static(PUBLIC_DIR));
+app.use('/view', (req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  next();
+}, express.static(PUBLIC_DIR));
 
 // ============ SPOKEN UPDATES TOGGLE (per-user) ============
 const userSpokenUpdatesEnabled = {};
