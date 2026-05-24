@@ -40,16 +40,23 @@ interface DailyCheck {
 }
 
 function formatMessage(text: string) {
+  const images: string[] = [];
   return text
     .replace(/\[PROGRESS:\d+%\].*?\[\/PROGRESS\]/g, '')
     .replace(/\[CONTINUE_BUTTON:.*?\]/g, '')
+    .replace(/!\[.*?\]\((https?:\/\/[^\)]+)\)/g, '$1')
     .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
     .replace(/\*(.*?)\*/g, '<em>$1</em>')
     .replace(/#{1,3} (.*?)(\n|$)/g, '<strong>$1</strong><br/>')
     .replace(/^- (.*?)$/gm, '• $1')
+    .replace(/(https?:\/\/[^\s<"]+\.(webp|png|jpg|jpeg))/g, (_, url) => {
+      const idx = images.length;
+      images.push(`<div style="margin-top:8px"><img src="${url}" style="max-width:100%;border-radius:12px;display:block;" /><a href="${url}" download style="display:inline-flex;align-items:center;gap:4px;margin-top:6px;font-size:11px;color:#60a5fa;text-decoration:none;opacity:0.7;">↓ Download</a></div>`);
+      return `__IMG_${idx}__`;
+    })
     .replace(/\n/g, '<br/>')
-    .replace(/(https?:\/\/[^\s<"]+\.(webp|png|jpg|jpeg))/g, '<div style="margin-top:8px"><img src="$1" style="max-width:100%;border-radius:12px;display:block;" /><a href="$1" download style="display:inline-flex;align-items:center;gap:4px;margin-top:6px;font-size:11px;color:#60a5fa;text-decoration:none;opacity:0.7;">↓ Download</a></div>')
-    .replace(/(https?:\/\/[^\s<"]+)/g, '<a href="$1" target="_blank" rel="noopener noreferrer" style="color:#60a5fa;text-decoration:underline;word-break:break-all;">$1</a>');
+    .replace(/(https?:\/\/[^\s<"]+)/g, '<a href="$1" target="_blank" rel="noopener noreferrer" style="color:#60a5fa;text-decoration:underline;word-break:break-all;">$1</a>')
+    .replace(/__IMG_(\d+)__/g, (_, idx) => images[parseInt(idx)]);
 }
 
 function renderMessageExtras(content: string, onContinue: (prompt: string) => void) {

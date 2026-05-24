@@ -979,7 +979,10 @@ async function generateImage(prompt) {
   const filename = `img_${Date.now()}.webp`;
   const imgRes = await axios.get(imageUrl, { responseType: 'arraybuffer' });
   fs.writeFileSync(path.join(PUBLIC_DIR, filename), imgRes.data);
-  return `https://api.heyjarvis.me/view/${filename}`;
+  const url = process.env.RAILWAY_ENVIRONMENT 
+  ? `https://api.heyjarvis.me/view/${filename}`
+  : `http://localhost:3001/view/${filename}`;
+return url;
 }
 // ============ COMPUTER ACTIONS (Nadav-only) ============
 async function executeAction(action) {
@@ -1129,6 +1132,7 @@ async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame
     'NEVER say you cannot do something without trying first.',
     'Be helpful, precise, and confident like JARVIS from Iron Man.',
     'MAX 2 sentences for voice responses. No markdown, bullets, or asterisks in voice responses.',
+    'IMAGES: When sharing a generated image URL, NEVER use markdown image syntax like ![...](url). Just say the text response and include the raw URL on its own line.',
     '',
     '═══ CAPABILITIES ═══',
     'web_search: Search the web for any information.',

@@ -1,18 +1,25 @@
 {
   "updates": [
     {
+      "id": 1779589757212,
+      "message": "🚀 Tonight's highlights: SpaceX launched a Starship test flight today, OpenAI reportedly cracked an 80-year-old math mystery, and GitHub suffered a security breach. Big stories in tech worth following tomorrow morning!",
+      "time": "10:29:17 PM",
+      "date": "5/23/2026",
+      "read": true
+    },
+    {
       "id": 1779588620674,
       "message": "🌧️ Marathon Weather Tonight: Currently 83°F with a heat index of 91°F — warm and humid. There's a 30% chance of showers and thunderstorms overnight, so if you're heading out to dinner (Castaway or Lalo's?), you may want to head out soon before any rain rolls in. Low around 80°F.",
       "time": "10:10:20 PM",
       "date": "5/23/2026",
-      "read": false
+      "read": true
     },
     {
       "id": 1779588232504,
       "message": "🌦️ Marathon Keys Weather Tonight: Currently 83°F (feels like 91°F), humid at 79%. 30% chance of showers and thunderstorms tonight — low around 80°F. If you're still out at dinner with Gabriel, keep an eye on the sky!",
       "time": "10:03:52 PM",
       "date": "5/23/2026",
-      "read": false
+      "read": true
     },
     {
       "id": 1778535756349,
