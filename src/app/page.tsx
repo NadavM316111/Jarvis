@@ -1238,11 +1238,15 @@ const abortRef = useRef<AbortController | null>(null);
               </div>
               <button
                 onClick={async () => {
-                  const res = await fetch(`${API}/auth/me`, { headers: { Authorization: `Bearer ${token}` } });
-                  const data = await res.json();
-                  setMemoryData(data.memory);
-                  setShowMemory(true);
-                }}
+  const [meRes, summRes] = await Promise.all([
+    fetch(`${API}/auth/me`, { headers: { Authorization: `Bearer ${token}` } }),
+    fetch(`${API}/memory-summaries`, { headers: { Authorization: `Bearer ${token}` } })
+  ]);
+  const meData = await meRes.json();
+  const summData = await summRes.json();
+  setMemoryData({ ...meData.memory, _conversationHistory: summData.summaries });
+  setShowMemory(true);
+}}
                 style={{ padding: '7px 14px', borderRadius: 10, fontSize: 12, fontWeight: 500, background: 'rgba(99,102,241,0.15)', border: '1px solid rgba(99,102,241,0.3)', color: '#a5b4fc', cursor: 'pointer' }}
               >
                 View
@@ -1343,13 +1347,27 @@ const abortRef = useRef<AbortController | null>(null);
               {Object.entries(memoryData)
                 .filter(([key, val]) => !['token', 'password', 'subscribed', 'dailyMessageCount', 'lastMessageDate'].includes(key) && val !== null && val !== undefined && val !== '')
                 .map(([key, val]) => (
-                  <div key={key} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 12, padding: '12px 14px' }}>
-                    <div style={{ fontSize: 10, color: 'rgba(99,102,241,0.8)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>{key}</div>
-                    <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', lineHeight: 1.5, wordBreak: 'break-word' }}>
-                      {typeof val === 'object' ? JSON.stringify(val, null, 2) : String(val)}
-                    </div>
-                  </div>
-                ))}
+  <div key={key} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 12, padding: '12px 14px' }}>
+    <div style={{ fontSize: 10, color: 'rgba(99,102,241,0.8)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>
+      {key === '_conversationHistory' ? 'Conversation History' : key}
+    </div>
+    <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', lineHeight: 1.5, wordBreak: 'break-word' }}>
+      {key === '_conversationHistory'
+        ? (val as any[]).length === 0
+          ? 'No history yet'
+          : (val as any[]).map((s: any, i: number) => (
+              <div key={i} style={{ marginBottom: 8, paddingBottom: 8, borderBottom: i < (val as any[]).length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none' }}>
+                <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 10, marginBottom: 3 }}>
+                  {new Date(s.created_at).toLocaleDateString()}
+                </div>
+                {s.summary}
+              </div>
+            ))
+        : typeof val === 'object' ? JSON.stringify(val, null, 2) : String(val)
+      }
+    </div>
+  </div>
+))}
             </div>
           </div>
         </div>

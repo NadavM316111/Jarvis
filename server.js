@@ -1800,7 +1800,23 @@ app.post('/auth/login', async (req, res) => {
   } catch (e) { res.status(401).json({ error: e.message }); }
 });
 app.get('/auth/me', authMiddleware, (req, res) => {
-  res.json({ user: req.user, memory: getSession(req.user.userId).userMemory });
+  const session = getSession(req.user.userId);
+  // Ensure basic fields are always populated
+  if (!session.userMemory.userName) session.userMemory.userName = req.user.name;
+  if (!session.userMemory.email) session.userMemory.email = req.user.email;
+  res.json({ user: req.user, memory: session.userMemory });
+});
+
+app.get('/memory-summaries', authMiddleware, async (req, res) => {
+  try {
+    const rows = await memorySql`
+      SELECT summary, created_at 
+      FROM conversation_summaries 
+      WHERE user_id = ${req.user.userId} 
+      ORDER BY created_at DESC LIMIT 20
+    `;
+    res.json({ summaries: rows });
+  } catch (e) { res.json({ summaries: [] }); }
 });
 
 // ============ FACE RECOGNITION (Nadav-only) ============
