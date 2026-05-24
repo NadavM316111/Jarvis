@@ -955,7 +955,32 @@ async function search3DModels(query, source = 'both') {
   }
   return results;
 }
-
+async function generateImage(prompt) {
+  const response = await axios.post(
+    'https://api.replicate.com/v1/models/black-forest-labs/flux-schnell/predictions',
+    { input: { prompt, num_outputs: 1, output_format: 'webp', output_quality: 90 } },
+    { headers: { Authorization: `Token ${process.env.REPLICATE_API_KEY}`, 'Content-Type': 'application/json' } }
+  );
+  
+  let prediction = response.data;
+  // Poll until done
+  while (prediction.status !== 'succeeded' && prediction.status !== 'failed') {
+    await new Promise(r => setTimeout(r, 1000));
+    const poll = await axios.get(`https://api.replicate.com/v1/predictions/${prediction.id}`, {
+      headers: { Authorization: `Token ${process.env.REPLICATE_API_KEY}` }
+    });
+    prediction = poll.data;
+  }
+  
+  if (prediction.status === 'failed') throw new Error('Image generation failed');
+  
+  const imageUrl = prediction.output[0];
+  // Download and save to public dir
+  const filename = `img_${Date.now()}.webp`;
+  const imgRes = await axios.get(imageUrl, { responseType: 'arraybuffer' });
+  fs.writeFileSync(path.join(PUBLIC_DIR, filename), imgRes.data);
+  return `https://api.heyjarvis.me/view/${filename}`;
+}
 // ============ COMPUTER ACTIONS (Nadav-only) ============
 async function executeAction(action) {
   switch (action.type) {
@@ -1077,6 +1102,15 @@ async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame
       required: ['title', 'slides', 'filename']
     }
   },
+  { 
+  name: 'generate_image', 
+  description: 'Generate an image from a text prompt using Flux Schnell. Use for any image generation request.', 
+  input_schema: { 
+    type: 'object', 
+    properties: { prompt: { type: 'string', description: 'Detailed image description' } }, 
+    required: ['prompt'] 
+  } 
+},
   { name: 'finish', description: 'Task complete. Deliver final response.', input_schema: { type: 'object', properties: { response: { type: 'string' } }, required: ['response'] } }
 ];
 
@@ -1480,6 +1514,10 @@ for (const f of otherFiles) {
         else if (block.name === 'search_3d_models') {
           result = JSON.stringify(await search3DModels(block.input.query, block.input.source || 'both'), null, 2);
         }
+        else if (block.name === 'generate_image') {
+  const imageUrl = await generateImage(block.input.prompt);
+  result = `Image generated: ${imageUrl}`;
+}
         else if (block.name === 'remember') {
           const cat = block.input.category;
           if (!session.userMemory[cat]) session.userMemory[cat] = {};
