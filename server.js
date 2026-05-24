@@ -1818,7 +1818,26 @@ app.get('/memory-summaries', authMiddleware, async (req, res) => {
     res.json({ summaries: rows });
   } catch (e) { res.json({ summaries: [] }); }
 });
-
+app.get('/memory-insights', authMiddleware, async (req, res) => {
+  try {
+    const rows = await memorySql`
+      SELECT summary FROM conversation_summaries 
+      WHERE user_id = ${req.user.userId} 
+      ORDER BY created_at DESC LIMIT 20
+    `;
+    if (rows.length === 0) return res.json({ insights: [] });
+    
+    const summaries = rows.map(r => r.summary).join('\n\n');
+    const response = await anthropic.messages.create({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 600,
+      messages: [{ role: 'user', content: `Based on these conversation summaries, extract 6-10 memorable facts about this user. Focus on personality, interests, preferences, habits, and style. Return ONLY a JSON array of strings, each a short fact starting with "Likes", "Prefers", "Is", "Has", "Enjoys", etc. No markdown, no preamble.\n\nSummaries:\n${summaries}` }]
+    });
+    const text = response.content[0].text.replace(/```json|```/g, '').trim();
+    const insights = JSON.parse(text);
+    res.json({ insights });
+  } catch (e) { res.json({ insights: [] }); }
+});
 // ============ FACE RECOGNITION (Nadav-only) ============
 app.post('/face-status', authMiddleware, (req, res) => {
   if (req.user.userId !== NADAV_USER_ID) return res.json({ ok: true });

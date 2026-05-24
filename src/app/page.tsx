@@ -1239,15 +1239,15 @@ const abortRef = useRef<AbortController | null>(null);
               <button
                 onClick={async () => {
   try {
-    const [meRes, summRes] = await Promise.all([
+    const [meRes, insightsRes] = await Promise.all([
       fetch(`${API}/auth/me`, { headers: { Authorization: `Bearer ${token}` } }),
-      fetch(`${API}/memory-summaries`, { headers: { Authorization: `Bearer ${token}` } })
+      fetch(`${API}/memory-insights`, { headers: { Authorization: `Bearer ${token}` } })
     ]);
     const meData = await meRes.json();
-    const summData = await summRes.json();
-    setMemoryData({ ...meData.memory, _conversationHistory: summData.summaries || [] });
+    const insightsData = await insightsRes.json();
+    setMemoryData({ ...meData.memory, _insights: insightsData.insights || [] });
   } catch (e) {
-    setMemoryData({ userName, email: '', _conversationHistory: [] });
+    setMemoryData({ userName, email: '', _insights: [] });
   }
   setShowMemory(true);
 }}
@@ -1353,22 +1353,20 @@ const abortRef = useRef<AbortController | null>(null);
                 .map(([key, val]) => (
   <div key={key} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 12, padding: '12px 14px' }}>
     <div style={{ fontSize: 10, color: 'rgba(99,102,241,0.8)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>
-      {key === '_conversationHistory' ? 'Conversation History' : key}
+      {key === '_insights' ? 'What JARVIS knows about you' : key}
     </div>
     <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', lineHeight: 1.5, wordBreak: 'break-word' }}>
-      {key === '_conversationHistory'
-        ? (val as any[]).length === 0
-          ? 'No history yet'
-          : (val as any[]).map((s: any, i: number) => (
-              <div key={i} style={{ marginBottom: 8, paddingBottom: 8, borderBottom: i < (val as any[]).length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none' }}>
-                <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 10, marginBottom: 3 }}>
-                  {new Date(s.created_at).toLocaleDateString()}
-                </div>
-                {s.summary}
-              </div>
-            ))
-        : typeof val === 'object' ? JSON.stringify(val, null, 2) : String(val)
-      }
+      {key === '_insights'
+  ? (val as any[]).length === 0
+    ? 'Not enough conversations yet'
+    : (val as any[]).map((fact: string, i: number) => (
+        <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginBottom: 6 }}>
+          <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'rgba(99,102,241,0.7)', flexShrink: 0, marginTop: 5 }} />
+          <div>{fact}</div>
+        </div>
+      ))
+  : typeof val === 'object' ? JSON.stringify(val, null, 2) : String(val)
+}
     </div>
   </div>
 ))}
