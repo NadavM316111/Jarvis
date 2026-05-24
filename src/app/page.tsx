@@ -1041,6 +1041,9 @@ if (!convId) {
         addMessageToConv(finalConvId, { role: "assistant", content: "Daily token limit reached. Come back later or upgrade to Pro.", source: "text", timestamp: Date.now() });
       } else if (data.message === 'On it.') {
         addMessageToConv(finalConvId, { role: "assistant", content: "On it...", source: "text", timestamp: Date.now() });
+        if (/image|generate|draw|picture|photo/i.test(userMsg)) {
+          setTimeout(() => addMessageToConv(finalConvId, { role: "assistant", content: '__IMAGE_LOADING__', source: "text", timestamp: Date.now() }), 300);
+        }
       } else if (data.message) {
         addMessageToConv(finalConvId, { role: "assistant", content: data.message, source: "text", timestamp: Date.now() });
         const urlMatch = data.message.match(/https:\/\/api\.heyjarvis\.me\/view\/[^\s)]+/);
@@ -1502,6 +1505,22 @@ style={!spokenUpdates ? { color: 'var(--jarvis-text-sub)', background: 'var(--ja
             )}
 
             {!voiceRunning && messages.map((msg, i) => (
+  msg.content === '__IMAGE_LOADING__' ? (
+    <div key={i} className="flex gap-2">
+      <div className="w-6 h-6 rounded-full flex-shrink-0 mt-1" style={{ background: orbBg }} />
+      <div style={{ background: 'var(--jarvis-msg-ai)', border: '1px solid var(--jarvis-border)' }} className="px-4 py-3 rounded-2xl rounded-tl-sm">
+        <div style={{ width: 260, height: 180, borderRadius: 12, background: 'linear-gradient(135deg, rgba(99,102,241,0.15), rgba(139,92,246,0.1))', border: '1px solid rgba(99,102,241,0.2)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
+          <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'rgba(99,102,241,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(139,92,246,0.8)" strokeWidth="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+          </div>
+          <div style={{ fontSize: 12, color: 'rgba(139,92,246,0.7)', fontWeight: 500 }}>Generating image...</div>
+          <div style={{ display: 'flex', gap: 4 }}>
+            {[0,1,2].map(j => <div key={j} style={{ width: 6, height: 6, borderRadius: '50%', background: 'rgba(99,102,241,0.6)', animation: 'voiceBounce 1.2s ease-in-out infinite', animationDelay: `${j * 0.2}s` }} />)}
+          </div>
+        </div>
+      </div>
+    </div>
+  ) : (
   <div key={i} className={`flex gap-2 group/msg ${msg.role === "user" ? "flex-row-reverse" : ""}`}>
     {msg.role === "assistant" && (<div className="w-6 h-6 rounded-full flex-shrink-0 mt-1" style={{ background: orbBg, boxShadow: orbGlow }} />)}
     <div className="max-w-[85%]">
@@ -1522,6 +1541,7 @@ className={`px-4 py-3 rounded-2xl text-sm leading-relaxed ${msg.role === "assist
       </div>
     </div>
   </div>
+)
 ))}
 
             {loading && !voiceRunning && (
