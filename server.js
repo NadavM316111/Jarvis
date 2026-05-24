@@ -984,6 +984,41 @@ async function generateImage(prompt) {
     : `http://localhost:3001/view/${filename}`;
   return url;
 }
+
+async function generateImageWithFace(faceImageBase64, prompt) {
+  // Upload face image to get a URL first
+  const uploadRes = await axios.post(
+    'https://api.replicate.com/v1/deployments/zsxkib/instant-id/predictions',
+    {
+      input: {
+        image: `data:image/jpeg;base64,${faceImageBase64}`,
+        prompt: prompt,
+        negative_prompt: 'lowres, bad anatomy, bad hands, cropped, worst quality',
+        num_inference_steps: 30,
+        guidance_scale: 5,
+      }
+    },
+    { headers: { Authorization: `Token ${process.env.REPLICATE_API_KEY}`, 'Content-Type': 'application/json' } }
+  );
+
+  let prediction = uploadRes.data;
+  while (prediction.status !== 'succeeded' && prediction.status !== 'failed') {
+    await new Promise(r => setTimeout(r, 1500));
+    const poll = await axios.get(`https://api.replicate.com/v1/predictions/${prediction.id}`, {
+      headers: { Authorization: `Token ${process.env.REPLICATE_API_KEY}` }
+    });
+    prediction = poll.data;
+  }
+
+  if (prediction.status === 'failed') throw new Error('Face image generation failed: ' + prediction.error);
+
+  const imageUrl = prediction.output?.[0] || prediction.output;
+  const filename = `img_${Date.now()}.webp`;
+  const imgRes = await axios.get(imageUrl, { responseType: 'arraybuffer' });
+  fs.writeFileSync(path.join(PUBLIC_DIR, filename), imgRes.data);
+  return `https://api.heyjarvis.me/view/${filename}`;
+}
+
 async function screenshotPage(url) {
   try {
     const puppeteer = require('puppeteer');
@@ -1245,6 +1280,18 @@ async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame
     required: ['query', 'category']
   }
 },
+{
+  name: 'generate_image_with_face',
+  description: 'Generate an image using an uploaded face photo as reference. Use when the user uploads a photo of themselves and wants to be shown in a different scenario, with tattoos, in a different style, etc.',
+  input_schema: {
+    type: 'object',
+    properties: {
+      prompt: { type: 'string', description: 'Description of the desired image' },
+      faceImageIndex: { type: 'number', description: 'Index of the uploaded image to use as face reference (0 = first image)' }
+    },
+    required: ['prompt']
+  }
+},
   { name: 'finish', description: 'Task complete. Deliver final response.', input_schema: { type: 'object', properties: { response: { type: 'string' } }, required: ['response'] } }
 ];
 
@@ -1265,6 +1312,7 @@ async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame
     'MAX 2 sentences for voice responses. No markdown, bullets, or asterisks in voice responses.',
     'IMAGES: When sharing a generated image URL, NEVER use markdown image syntax like ![...](url). Just say the text response and include the raw URL on its own line.',
     'SHOPPING: When the user says "order", "buy", "get me", "purchase" anything — ALWAYS use the shop tool first. NEVER use ACTION blocks for shopping. NEVER open Amazon directly. ALWAYS call the shop tool and let it return the order card.',
+    'generate_image_with_face: When user uploads a photo of themselves and wants to be shown differently (tattoos, different outfit, different style, etc.) — use this instead of generate_image.',
     '',
     '═══ CAPABILITIES ═══',
     'web_search: Search the web for any information.',
@@ -1653,6 +1701,16 @@ for (const f of otherFiles) {
         else if (block.name === 'generate_image') {
   const imageUrl = await generateImage(block.input.prompt);
   result = `Image generated: ${imageUrl}`;
+}
+else if (block.name === 'generate_image_with_face') {
+  const faceIdx = block.input.faceImageIndex || 0;
+  const faceFile = imageFiles[faceIdx];
+  if (!faceFile) {
+    result = 'No image uploaded to use as face reference. Ask the user to upload a photo first.';
+  } else {
+    const imageUrl = await generateImageWithFace(faceFile.data, block.input.prompt);
+    result = `Image generated: ${imageUrl}`;
+  }
 }
         else if (block.name === 'remember') {
           const cat = block.input.category;
