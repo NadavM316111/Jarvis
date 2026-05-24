@@ -986,22 +986,24 @@ async function generateImage(prompt) {
 }
 
 async function generateImageWithFace(faceImageBase64, prompt) {
-  // Upload face image to get a URL first
-  const uploadRes = await axios.post(
-    'https://api.replicate.com/v1/deployments/zsxkib/instant-id/predictions',
+  const response = await axios.post(
+    'https://api.replicate.com/v1/models/tencentarc/photomaker/predictions',
     {
       input: {
-        image: `data:image/jpeg;base64,${faceImageBase64}`,
-        prompt: prompt,
-        negative_prompt: 'lowres, bad anatomy, bad hands, cropped, worst quality',
-        num_inference_steps: 30,
-        guidance_scale: 5,
-      }
+  prompt: `${prompt}, img, best quality, high quality`,
+  input_images: [`data:image/jpeg;base64,${faceImageBase64}`],
+  style_name: 'Photographic (Default)',
+  num_steps: 50,
+  style_strength_ratio: 35,
+  num_outputs: 1,
+  guidance_scale: 5,
+  negative_prompt: 'nsfw, lowres, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry',
+}
     },
     { headers: { Authorization: `Token ${process.env.REPLICATE_API_KEY}`, 'Content-Type': 'application/json' } }
   );
 
-  let prediction = uploadRes.data;
+  let prediction = response.data;
   while (prediction.status !== 'succeeded' && prediction.status !== 'failed') {
     await new Promise(r => setTimeout(r, 1500));
     const poll = await axios.get(`https://api.replicate.com/v1/predictions/${prediction.id}`, {
@@ -1012,7 +1014,7 @@ async function generateImageWithFace(faceImageBase64, prompt) {
 
   if (prediction.status === 'failed') throw new Error('Face image generation failed: ' + prediction.error);
 
-  const imageUrl = prediction.output?.[0] || prediction.output;
+  const imageUrl = Array.isArray(prediction.output) ? prediction.output[0] : prediction.output;
   const filename = `img_${Date.now()}.webp`;
   const imgRes = await axios.get(imageUrl, { responseType: 'arraybuffer' });
   fs.writeFileSync(path.join(PUBLIC_DIR, filename), imgRes.data);
