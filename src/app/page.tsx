@@ -937,13 +937,31 @@ const abortRef = useRef<AbortController | null>(null);
   }, [token]);
 
   const handleFileAttach = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    if (!files.length) return;
-    const MAX = 200;
-    const toProcess = files.slice(0, MAX);
-    for (const file of toProcess) {
-      if (file.size > 10 * 1024 * 1024) continue;
-      await new Promise<void>(resolve => {
+  const files = Array.from(e.target.files || []);
+  if (!files.length) return;
+  for (const file of files.slice(0, 200)) {
+    if (file.size > 10 * 1024 * 1024) continue;
+    await new Promise<void>(resolve => {
+      if (file.type.startsWith('image/')) {
+        const img = new Image();
+        const url = URL.createObjectURL(file);
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const max = 1024;
+          let w = img.width, h = img.height;
+          if (w > max || h > max) {
+            if (w > h) { h = Math.round(h * max / w); w = max; }
+            else { w = Math.round(w * max / h); h = max; }
+          }
+          canvas.width = w; canvas.height = h;
+          canvas.getContext('2d')!.drawImage(img, 0, 0, w, h);
+          const base64 = canvas.toDataURL('image/jpeg', 0.85).split(',')[1];
+          setAttachedFiles(prev => [...prev, { data: base64, type: 'image/jpeg', name: file.name }]);
+          URL.revokeObjectURL(url);
+          resolve();
+        };
+        img.src = url;
+      } else {
         const reader = new FileReader();
         reader.onload = () => {
           const base64 = (reader.result as string).split(',')[1];
@@ -952,10 +970,11 @@ const abortRef = useRef<AbortController | null>(null);
         };
         reader.onerror = () => resolve();
         reader.readAsDataURL(file);
-      });
-    }
-    e.target.value = '';
-  };
+      }
+    });
+  }
+  e.target.value = '';
+};
 
   function newConversation() {
     const id = generateId();
