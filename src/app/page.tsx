@@ -625,6 +625,7 @@ const [memoryData, setMemoryData] = useState<any>(null);
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [audioLevel, setAudioLevel] = useState(0);
+  const videoInputRef = useRef<HTMLInputElement>(null);
   const [showUpdates, setShowUpdates] = useState(false);
   const [updates, setUpdates] = useState<Update[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -1766,14 +1767,15 @@ className={`px-4 py-3 rounded-2xl text-sm leading-relaxed ${msg.role === "assist
           <input ref={fileInputRef} type="file" multiple accept="image/*,video/*,.pdf,.txt,.js,.ts,.py,.md,.json,.csv,.doc,.docx" onChange={handleFileAttach} className="hidden" />
           <input ref={folderInputRef} type="file" multiple onChange={handleFileAttach} className="hidden" {...{ webkitdirectory: 'true' } as any} />
           <div className="flex items-center gap-2">
-            <div className="flex flex-col gap-1 flex-shrink-0">
-              <button onClick={() => fileInputRef.current?.click()} className="w-11 h-5 flex items-center justify-center rounded-t-xl hover:bg-black/5 transition-all" style={{ color: 'var(--jarvis-text-dim)' }} title="Attach files">
-                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
-              </button>
-              <button onClick={() => folderInputRef.current?.click()} className="w-11 h-5 flex items-center justify-center rounded-b-xl hover:bg-black/5 transition-all" style={{ color: 'var(--jarvis-text-dim)' }} title="Attach folder">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
-              </button>
-            </div>
+            <input ref={videoInputRef} type="file" multiple accept="video/*" onChange={handleFileAttach} className="hidden" />
+<div className="flex flex-col gap-1 flex-shrink-0">
+  <button onClick={() => fileInputRef.current?.click()} className="w-11 h-5 flex items-center justify-center rounded-t-xl hover:bg-black/5 transition-all" style={{ color: 'var(--jarvis-text-dim)' }} title="Attach files">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+  </button>
+  <button onClick={() => videoInputRef.current?.click()} className="w-11 h-5 flex items-center justify-center rounded-b-xl hover:bg-black/5 transition-all" style={{ color: 'var(--jarvis-text-dim)' }} title="Attach video">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+  </button>
+</div>
             <textarea
   value={input}
   onChange={e => {
