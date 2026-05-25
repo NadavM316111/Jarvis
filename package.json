@@ -3,11 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint"
-  },
+  "dev": "next dev",
+  "build": "next build",
+  "start": "next start",
+  "lint": "eslint",
+  "postinstall": "apt-get install -y ffmpeg 2>/dev/null || true"
+},
   "dependencies": {
     "@anthropic-ai/sdk": "^0.82.0",
     "@fal-ai/client": "^1.10.1",
