@@ -1024,11 +1024,13 @@ async function generateVideo(prompt, durationSeconds = 5) {
   const { fal } = require('@fal-ai/client');
   fal.config({ credentials: process.env.FAL_API_KEY });
 
-  const result = await fal.subscribe('fal-ai/seedance/v1/lite/text-to-video', {
+  const result = await fal.subscribe('bytedance/seedance-2.0/fast/text-to-video', {
     input: {
       prompt,
       duration: durationSeconds <= 5 ? '5' : '10',
       resolution: '720p',
+      aspect_ratio: '16:9',
+      generate_audio: true,
     },
     pollInterval: 3000,
     onQueueUpdate: (update) => {
