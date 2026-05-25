@@ -5,6 +5,18 @@ const Anthropic = require('@anthropic-ai/sdk');
 let screenshot;
 try { screenshot = require('screenshot-desktop'); } catch(e) { screenshot = null; }
 const { execSync, exec, spawn } = require('child_process');
+// Install ffmpeg if not available
+try {
+  execSync('which ffmpeg', { stdio: 'ignore' });
+} catch(e) {
+  console.log('[FFMPEG] Installing ffmpeg...');
+  try {
+    execSync('apt-get install -y ffmpeg', { stdio: 'inherit' });
+    console.log('[FFMPEG] Installed successfully');
+  } catch(e2) {
+    console.log('[FFMPEG] Install failed:', e2.message);
+  }
+}
 let robot;
 try { robot = require('@jitsi/robotjs'); } catch(e) { robot = null; }
 const axios = require('axios');
