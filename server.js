@@ -1109,13 +1109,12 @@ async function editVideo(instructions, videoFiles) {
   const outputFilename = `vid_${Date.now()}.mp4`;
   const outputPath = path.join(PUBLIC_DIR, outputFilename);
   const lower = instructions.toLowerCase();
-
   const ffmpeg = require('fluent-ffmpeg');
   const ffmpegPath = require('ffmpeg-static');
   ffmpeg.setFfmpegPath(ffmpegPath);
 
-  await new Promise((resolve, reject) => {
-    if (inputPaths.length === 1) {
+  if (inputPaths.length === 1) {
+    await new Promise((resolve, reject) => {
       let cmd = ffmpeg(inputPaths[0]);
       const vFilters = [];
       const aFilters = [];
@@ -1123,19 +1122,36 @@ async function editVideo(instructions, videoFiles) {
       if (lower.includes('black and white') || lower.includes('grayscale')) vFilters.push('hue=s=0');
       if (lower.includes('slow') || lower.includes('slow motion')) { vFilters.push('setpts=2.0*PTS'); aFilters.push('atempo=0.5'); }
       if (lower.includes('speed up') || lower.includes('fast')) { vFilters.push('setpts=0.5*PTS'); aFilters.push('atempo=2.0'); }
-      if (lower.includes('fade in')) vFilters.push('fade=t=in:st=0:d=1');
-      if (lower.includes('fade out')) vFilters.push('fade=t=out:st=4:d=1');
-      const captionMatch = instructions.match(/(?:add|caption|text|title)[:\s]+["']?([^"'\n,]+)["']?/i);
-      if (captionMatch) vFilters.push(`drawtext=text='${captionMatch[1].trim().replace(/'/g, "\\'")}':fontcolor=white:fontsize=48:x=(w-text_w)/2:y=h-80:box=1:boxcolor=black@0.5:boxborderw=10`);
-      if (vFilters.length) cmd = cmd.videoFilters(vFilters);
-      if (aFilters.length) cmd = cmd.audioFilters(aFilters);
-      cmd.output(outputPath).on('end', resolve).on('error', reject).run();
-    } else {
-      let cmd = ffmpeg();
-      inputPaths.forEach(p => cmd.input(p));
-      cmd.on('end', resolve).on('error', reject).mergeToFile(outputPath, tempDir);
+      if (vFilters.length) cmd = cmd.videoFilters(vFilters.join(','));
+      if (aFilters.length) cmd = cmd.audioFilters(aFilters.join(','));
+      cmd.outputOptions(['-c:v libx264', '-preset fast', '-crf 23', '-c:a aac', '-movflags +faststart'])
+        .output(outputPath).on('end', resolve).on('error', reject).run();
+    });
+  } else {
+    // Normalize each video first
+    const normalizedPaths = [];
+    for (let i = 0; i < inputPaths.length; i++) {
+      const normPath = path.join(tempDir, `norm_${Date.now()}_${i}.mp4`);
+      normalizedPaths.push(normPath);
+      await new Promise((res, rej) => {
+        ffmpeg(inputPaths[i])
+          .outputOptions(['-c:v libx264', '-preset fast', '-crf 23', '-c:a aac', '-ar 44100', '-vf scale=1280:720', '-r 30'])
+          .output(normPath).on('end', res).on('error', rej).run();
+      });
     }
-  });
+    // Concat normalized videos
+    const listFile = path.join(tempDir, `list_${Date.now()}.txt`);
+    fs.writeFileSync(listFile, normalizedPaths.map(p => `file '${p}'`).join('\n'));
+    await new Promise((resolve, reject) => {
+      ffmpeg()
+        .input(listFile)
+        .inputOptions(['-f concat', '-safe 0'])
+        .outputOptions(['-c copy'])
+        .output(outputPath)
+        .on('end', () => { normalizedPaths.forEach(p => { try { fs.unlinkSync(p); } catch {} }); resolve(); })
+        .on('error', reject).run();
+    });
+  }
 
   inputPaths.forEach(p => { try { fs.unlinkSync(p); } catch {} });
   return `https://api.heyjarvis.me/view/${outputFilename}`;
