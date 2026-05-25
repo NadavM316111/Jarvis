@@ -941,7 +941,8 @@ const abortRef = useRef<AbortController | null>(null);
   const files = Array.from(e.target.files || []);
   if (!files.length) return;
   for (const file of files.slice(0, 200)) {
-    if (file.size > 10 * 1024 * 1024) continue;
+    if (file.type.startsWith('video/') && file.size > 100 * 1024 * 1024) { alert(`Video ${file.name} is too large (max 100MB)`); continue; }
+    if (!file.type.startsWith('video/') && file.size > 10 * 1024 * 1024) continue;
     await new Promise<void>(resolve => {
       if (file.type.startsWith('image/')) {
         const img = new Image();

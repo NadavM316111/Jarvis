@@ -1134,23 +1134,33 @@ async function editVideo(instructions, videoFiles) {
       const normPath = path.join(tempDir, `norm_${Date.now()}_${i}.mp4`);
       normalizedPaths.push(normPath);
       await new Promise((res, rej) => {
-        ffmpeg(inputPaths[i])
-          .outputOptions(['-c:v libx264', '-preset fast', '-crf 23', '-c:a aac', '-ar 44100', '-vf scale=1280:720', '-r 30'])
-          .output(normPath).on('end', res).on('error', rej).run();
-      });
+  ffmpeg(inputPaths[i])
+    .outputOptions(['-c:v libx264', '-preset fast', '-crf 23', '-c:a aac', '-ar 44100', '-vf scale=1280:720', '-r 30'])
+    .output(normPath)
+    .on('end', () => { console.log(`[VIDEO EDIT] Normalized video ${i}`); res(); })
+    .on('error', (err) => { console.log(`[VIDEO EDIT] Normalize error video ${i}:`, err.message); rej(err); })
+    .on('stderr', (line) => console.log(`[VIDEO EDIT] ffmpeg:`, line))
+    .run();
+});
     }
     // Concat normalized videos
     const listFile = path.join(tempDir, `list_${Date.now()}.txt`);
     fs.writeFileSync(listFile, normalizedPaths.map(p => `file '${p}'`).join('\n'));
     await new Promise((resolve, reject) => {
-      ffmpeg()
-        .input(listFile)
-        .inputOptions(['-f concat', '-safe 0'])
-        .outputOptions(['-c copy'])
-        .output(outputPath)
-        .on('end', () => { normalizedPaths.forEach(p => { try { fs.unlinkSync(p); } catch {} }); resolve(); })
-        .on('error', reject).run();
-    });
+  ffmpeg()
+    .input(listFile)
+    .inputOptions(['-f concat', '-safe 0'])
+    .outputOptions(['-c copy'])
+    .output(outputPath)
+    .on('end', () => { 
+      console.log('[VIDEO EDIT] Concat complete:', outputPath);
+      normalizedPaths.forEach(p => { try { fs.unlinkSync(p); } catch {} }); 
+      resolve(); 
+    })
+    .on('error', (err) => { console.log('[VIDEO EDIT] Concat error:', err.message); reject(err); })
+    .on('stderr', (line) => console.log('[VIDEO EDIT] concat ffmpeg:', line))
+    .run();
+});
   }
 
   inputPaths.forEach(p => { try { fs.unlinkSync(p); } catch {} });
