@@ -961,16 +961,30 @@ const abortRef = useRef<AbortController | null>(null);
           resolve();
         };
         img.src = url;
-      } else {
-        const reader = new FileReader();
-        reader.onload = () => {
-          const base64 = (reader.result as string).split(',')[1];
-          setAttachedFiles(prev => [...prev, { data: base64, type: file.type || 'application/octet-stream', name: (file as any).webkitRelativePath || file.name }]);
-          resolve();
-        };
-        reader.onerror = () => resolve();
-        reader.readAsDataURL(file);
-      }
+      } else if (file.type.startsWith('video/')) {
+  if (file.size > 100 * 1024 * 1024) {
+    alert(`Video ${file.name} is too large (max 100MB)`);
+    resolve();
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = () => {
+    const base64 = (reader.result as string).split(',')[1];
+    setAttachedFiles(prev => [...prev, { data: base64, type: file.type, name: file.name }]);
+    resolve();
+  };
+  reader.onerror = () => resolve();
+  reader.readAsDataURL(file);
+} else {
+  const reader = new FileReader();
+  reader.onload = () => {
+    const base64 = (reader.result as string).split(',')[1];
+    setAttachedFiles(prev => [...prev, { data: base64, type: file.type || 'application/octet-stream', name: (file as any).webkitRelativePath || file.name }]);
+    resolve();
+  };
+  reader.onerror = () => resolve();
+  reader.readAsDataURL(file);
+}
     });
   }
   e.target.value = '';
@@ -1115,7 +1129,7 @@ const abortRef = useRef<AbortController | null>(null);
         addMessageToConv(finalConvId, { role: "assistant", content: "Daily token limit reached. Come back later or upgrade to Pro.", source: "text", timestamp: Date.now() });
       } else if (data.message === 'On it.') {
         addMessageToConv(finalConvId, { role: "assistant", content: "On it...", source: "text", timestamp: Date.now() });
-        if (/image|generate|draw|picture|photo/i.test(userMsg)) {
+        if (/image|generate|draw|picture|photo|tattoo|face|style|video/i.test(userMsg)) {
           setTimeout(() => addMessageToConv(finalConvId, { role: "assistant", content: '__IMAGE_LOADING__', source: "text", timestamp: Date.now() }), 300);
         }
       } else if (data.message) {
@@ -1749,7 +1763,7 @@ className={`px-4 py-3 rounded-2xl text-sm leading-relaxed ${msg.role === "assist
 
         {/* Input bar */}
         <div className="flex-shrink-0 border-t border-white/5 px-3 py-3" style={{ background: 'var(--jarvis-bg)', paddingBottom: 'max(12px, env(safe-area-inset-bottom))' }}>
-          <input ref={fileInputRef} type="file" multiple accept="image/*,.pdf,.txt,.js,.ts,.py,.md,.json,.csv,.doc,.docx" onChange={handleFileAttach} className="hidden" />
+          <input ref={fileInputRef} type="file" multiple accept="image/*,video/*,.pdf,.txt,.js,.ts,.py,.md,.json,.csv,.doc,.docx" onChange={handleFileAttach} className="hidden" />
           <input ref={folderInputRef} type="file" multiple onChange={handleFileAttach} className="hidden" {...{ webkitdirectory: 'true' } as any} />
           <div className="flex items-center gap-2">
             <div className="flex flex-col gap-1 flex-shrink-0">

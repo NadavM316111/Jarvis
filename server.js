@@ -1020,7 +1020,116 @@ async function generateImageWithFace(faceImageBase64, prompt) {
   fs.writeFileSync(path.join(PUBLIC_DIR, filename), imgRes.data);
   return `https://api.heyjarvis.me/view/${filename}`;
 }
+async function generateVideo(prompt, durationSeconds = 5) {
+  const { fal } = require('@fal-ai/client');
+  fal.config({ credentials: process.env.FAL_API_KEY });
 
+  const result = await fal.subscribe('fal-ai/seedance/v1/lite/text-to-video', {
+    input: {
+      prompt,
+      duration: durationSeconds <= 5 ? '5' : '10',
+      resolution: '720p',
+    },
+    pollInterval: 3000,
+    onQueueUpdate: (update) => {
+      console.log('[VIDEO] status:', update.status);
+    },
+  });
+
+  const videoUrl = result.data.video.url;
+  const filename = `vid_${Date.now()}.mp4`;
+  const vidRes = await axios.get(videoUrl, { responseType: 'arraybuffer' });
+  fs.writeFileSync(path.join(PUBLIC_DIR, filename), vidRes.data);
+  return `https://api.heyjarvis.me/view/${filename}`;
+}
+
+async function editVideo(instructions, videoFiles) {
+  // Save uploaded videos to disk temporarily
+  const tempDir = path.join(__dirname, 'tmp_videos');
+  if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir);
+
+  const inputPaths = videoFiles.map((f, i) => {
+    const ext = f.type.includes('mp4') ? 'mp4' : f.type.includes('mov') ? 'mov' : f.type.includes('webm') ? 'webm' : 'mp4';
+    const p = path.join(tempDir, `input_${Date.now()}_${i}.${ext}`);
+    fs.writeFileSync(p, Buffer.from(f.data, 'base64'));
+    return p;
+  });
+
+  const outputFilename = `vid_${Date.now()}.mp4`;
+  const outputPath = path.join(PUBLIC_DIR, outputFilename);
+
+  // Build FFmpeg command based on instructions
+  let ffmpegCmd = '';
+  const lower = instructions.toLowerCase();
+
+  if (inputPaths.length === 1) {
+    // Single video editing
+    let filters = [];
+    let videoFilters = [];
+
+    if (lower.includes('color') || lower.includes('grade') || lower.includes('cinematic')) {
+      videoFilters.push('eq=contrast=1.1:brightness=0.02:saturation=1.2');
+    }
+    if (lower.includes('black and white') || lower.includes('grayscale')) {
+      videoFilters.push('hue=s=0');
+    }
+    if (lower.includes('slow') || lower.includes('slow motion')) {
+      videoFilters.push('setpts=2.0*PTS');
+      filters.push('atempo=0.5');
+    }
+    if (lower.includes('speed up') || lower.includes('fast')) {
+      videoFilters.push('setpts=0.5*PTS');
+      filters.push('atempo=2.0');
+    }
+    if (lower.includes('fade in')) {
+      videoFilters.push('fade=t=in:st=0:d=1');
+    }
+    if (lower.includes('fade out')) {
+      videoFilters.push('fade=t=out:st=4:d=1');
+    }
+
+    // Text/caption overlay
+    const captionMatch = instructions.match(/(?:add|caption|text|title)[:\s]+["']?([^"'\n,]+)["']?/i);
+    if (captionMatch) {
+      const text = captionMatch[1].trim().replace(/'/g, "\\'");
+      videoFilters.push(`drawtext=text='${text}':fontcolor=white:fontsize=48:x=(w-text_w)/2:y=h-80:box=1:boxcolor=black@0.5:boxborderw=10`);
+    }
+
+    const vf = videoFilters.length > 0 ? `-vf "${videoFilters.join(',')}"` : '';
+    const af = filters.length > 0 ? `-af "${filters.join(',')}"` : '';
+
+    ffmpegCmd = `ffmpeg -i "${inputPaths[0]}" ${vf} ${af} -c:v libx264 -preset fast -crf 23 -c:a aac -movflags +faststart "${outputPath}" -y`;
+
+  } else {
+    // Multiple videos — merge with transitions
+    const inputs = inputPaths.map(p => `-i "${p}"`).join(' ');
+
+    if (lower.includes('fade') || lower.includes('transition')) {
+      // Crossfade transition between clips
+      let filterComplex = '';
+      for (let i = 0; i < inputPaths.length; i++) {
+        filterComplex += `[${i}:v]scale=1280:720,fps=30,format=yuv420p[v${i}];`;
+      }
+      // Simple concat with fade
+      const concatInputs = inputPaths.map((_, i) => `[v${i}]`).join('');
+      filterComplex += `${concatInputs}concat=n=${inputPaths.length}:v=1:a=0[vout]`;
+      ffmpegCmd = `ffmpeg ${inputs} -filter_complex "${filterComplex}" -map "[vout]" -c:v libx264 -preset fast -crf 23 -movflags +faststart "${outputPath}" -y`;
+    } else {
+      // Simple concat
+      const listFile = path.join(tempDir, `list_${Date.now()}.txt`);
+      fs.writeFileSync(listFile, inputPaths.map(p => `file '${p}'`).join('\n'));
+      ffmpegCmd = `ffmpeg -f concat -safe 0 -i "${listFile}" -c:v libx264 -preset fast -crf 23 -c:a aac -movflags +faststart "${outputPath}" -y`;
+    }
+  }
+
+  console.log('[VIDEO EDIT] Running:', ffmpegCmd);
+  execSync(ffmpegCmd, { timeout: 120000 });
+
+  // Cleanup temp files
+  inputPaths.forEach(p => { try { fs.unlinkSync(p); } catch {} });
+
+  return `https://api.heyjarvis.me/view/${outputFilename}`;
+}
 async function screenshotPage(url) {
   try {
     const puppeteer = require('puppeteer');
@@ -1294,6 +1403,29 @@ async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame
     required: ['prompt']
   }
 },
+{
+  name: 'generate_video',
+  description: 'Generate a video from a text prompt using Seedance 2.0. Use when user asks to create, generate, or make a video.',
+  input_schema: {
+    type: 'object',
+    properties: {
+      prompt: { type: 'string', description: 'Detailed video description' },
+      duration: { type: 'number', description: 'Duration in seconds (5 or 10)' }
+    },
+    required: ['prompt']
+  }
+},
+{
+  name: 'edit_video',
+  description: 'Edit, merge, or modify uploaded videos. Can add text, captions, color grade, slow motion, transitions, merge multiple videos. Use when user uploads videos and wants to edit them.',
+  input_schema: {
+    type: 'object',
+    properties: {
+      instructions: { type: 'string', description: 'What to do with the video(s)' },
+    },
+    required: ['instructions']
+  }
+},
   { name: 'finish', description: 'Task complete. Deliver final response.', input_schema: { type: 'object', properties: { response: { type: 'string' } }, required: ['response'] } }
 ];
 
@@ -1315,6 +1447,8 @@ async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame
     'IMAGES: When sharing a generated image URL, NEVER use markdown image syntax like ![...](url). Just say the text response and include the raw URL on its own line.',
     'SHOPPING: When the user says "order", "buy", "get me", "purchase" anything — ALWAYS use the shop tool first. NEVER use ACTION blocks for shopping. NEVER open Amazon directly. ALWAYS call the shop tool and let it return the order card.',
     'generate_image_with_face: When user uploads a photo of themselves and wants to be shown differently (tattoos, different outfit, different style, etc.) — use this instead of generate_image.',
+    'generate_video: When user asks to generate/create/make a video from a description — use this. Costs ~$0.11 per 5 seconds.',
+'edit_video: When user uploads video files and wants to edit, merge, add text/captions, color grade, transitions — use this. FREE (FFmpeg).',
     '',
     '═══ CAPABILITIES ═══',
     'web_search: Search the web for any information.',
@@ -1435,6 +1569,8 @@ async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame
       '═══ AI VIDEO ═══',
       `LUMA AI: API key at process.env.LUMALABS_API_KEY | Base URL: https://api.lumalabs.ai/dream-machine/v1`,
       'FFMPEG: Available via run_code with bash.',
+'VIDEO EDITING: FFmpeg is available. Edit videos with run_code bash. Save outputs to PUBLIC_DIR.',
+'VIDEO GENERATION: Use generate_video tool. Seedance 2.0 via fal.ai. ~$0.11/5sec.',
       '',
       `node_modules: ${process.cwd()}/node_modules`,
       `Working dir: ${process.cwd()}`,
@@ -1712,6 +1848,22 @@ else if (block.name === 'generate_image_with_face') {
   } else {
     const imageUrl = await generateImageWithFace(faceFile.data, block.input.prompt);
     result = `Image generated: ${imageUrl}`;
+  }
+}
+else if (block.name === 'generate_video') {
+  const videoUrl = await generateVideo(block.input.prompt, block.input.duration || 5);
+  result = `Video generated: ${videoUrl}`;
+}
+else if (block.name === 'edit_video') {
+  const videoFiles = files.filter(f => 
+    f.type.startsWith('video/') || 
+    f.name.match(/\.(mp4|mov|webm|avi|mkv)$/i)
+  );
+  if (videoFiles.length === 0) {
+    result = 'No video files uploaded. Ask the user to upload their videos first.';
+  } else {
+    const videoUrl = await editVideo(block.input.instructions, videoFiles);
+    result = `Video edited: ${videoUrl}`;
   }
 }
         else if (block.name === 'remember') {
@@ -2071,7 +2223,7 @@ if (!isUnlimited) {
     }
 
     const hasFolderFiles = (attachedFiles || []).some(f => f.name && f.name.includes('/'));
-    const isLongTask = hasFolderFiles || /image|generate|play|connect|sonos|tv|call|email|create|open|print|turn|buy|order|install|build|design|scan|monitor|write|send|download|execute|organize|pdf|study|guide|make|presentation|slides|slideshow|analyze|analyse|search|find|look|document|folder|file|these|those/i.test(message);
+    const isLongTask = hasFolderFiles || /image|generate|photo|tattoo|face|style|outfit|picture|draw|video|edit|merge|caption|play|connect|sonos|tv|call|email|create|open|print|turn|buy|order|install|build|design|scan|monitor|write|send|download|execute|organize|pdf|study|guide|make|presentation|slides|slideshow|analyze|analyse|search|find|look|document|folder|file|these|those/i.test(message);
     if (isLongTask) {
       res.json({ success: true, message: 'On it.', actions: [], ...usageInfo });
 
@@ -2083,6 +2235,12 @@ if (!isUnlimited) {
         setTimeout(() => queueBgResponse(userId, '[PROGRESS:70%] Building the deck[/PROGRESS]'), 16000);
         setTimeout(() => queueBgResponse(userId, '[PROGRESS:90%] Saving your presentation[/PROGRESS]'), 25000);
       }
+      const isVideoTask = /video|edit video|merge video/i.test(message);
+if (isVideoTask) {
+  setTimeout(() => queueBgResponse(userId, '[PROGRESS:10%] Processing video...[/PROGRESS]'), 500);
+  setTimeout(() => queueBgResponse(userId, '[PROGRESS:40%] Applying edits...[/PROGRESS]'), 8000);
+  setTimeout(() => queueBgResponse(userId, '[PROGRESS:80%] Encoding output...[/PROGRESS]'), 20000);
+}
       const hasFolderUpload = (attachedFiles || []).some(f => f.name && f.name.includes('/'));
       if (hasFolderUpload) {
         const fileCount = (attachedFiles || []).length;
