@@ -1024,9 +1024,47 @@ async function generateVideo(prompt, durationSeconds = 5) {
   const { fal } = require('@fal-ai/client');
   fal.config({ credentials: process.env.FAL_API_KEY });
 
+  const enhancedPrompt = `${prompt}. All text and speech in English only. Professional English voiceover.`;
+
   const result = await fal.subscribe('bytedance/seedance-2.0/fast/text-to-video', {
     input: {
-      prompt,
+      prompt: enhancedPrompt,
+      duration: durationSeconds <= 5 ? '5' : '10',
+      resolution: '720p',
+      aspect_ratio: '16:9',
+      generate_audio: true,
+      negative_prompt: 'non-english speech, foreign language, gibberish, mumbling',
+    },
+    pollInterval: 3000,
+    onQueueUpdate: (update) => {
+      console.log('[VIDEO] status:', update.status);
+    },
+  });
+
+  const videoUrl = result.data.video.url;
+  const filename = `vid_${Date.now()}.mp4`;
+  const vidRes = await axios.get(videoUrl, { responseType: 'arraybuffer' });
+  fs.writeFileSync(path.join(PUBLIC_DIR, filename), vidRes.data);
+  return `https://api.heyjarvis.me/view/${filename}`;
+}
+
+async function generateVideoFromImage(imageBase64, imageType, prompt, durationSeconds = 5) {
+  const { fal } = require('@fal-ai/client');
+  fal.config({ credentials: process.env.FAL_API_KEY });
+
+  // Upload image to fal storage first
+  const imageBuffer = Buffer.from(imageBase64, 'base64');
+  const imageUrl = await fal.storage.upload(
+    new Blob([imageBuffer], { type: imageType }),
+    { filename: 'reference.jpg' }
+  );
+
+  const enhancedPrompt = `${prompt}. All text and speech in English only. Professional English voiceover.`;
+
+  const result = await fal.subscribe('bytedance/seedance-2.0/fast/image-to-video', {
+    input: {
+      prompt: enhancedPrompt,
+      image_url: imageUrl,
       duration: durationSeconds <= 5 ? '5' : '10',
       resolution: '720p',
       aspect_ratio: '16:9',
@@ -1034,7 +1072,7 @@ async function generateVideo(prompt, durationSeconds = 5) {
     },
     pollInterval: 3000,
     onQueueUpdate: (update) => {
-      console.log('[VIDEO] status:', update.status);
+      console.log('[VIDEO IMG] status:', update.status);
     },
   });
 
@@ -1418,6 +1456,19 @@ async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame
   }
 },
 {
+  name: 'generate_video_from_image',
+  description: 'Generate a video using an uploaded image as a visual reference (logo, product photo, brand asset). Use when user uploads an image AND wants a video.',
+  input_schema: {
+    type: 'object',
+    properties: {
+      prompt: { type: 'string', description: 'Detailed video description' },
+      imageIndex: { type: 'number', description: 'Index of uploaded image to use (0 = first)' },
+      duration: { type: 'number', description: 'Duration in seconds (5 or 10)' }
+    },
+    required: ['prompt']
+  }
+},
+{
   name: 'edit_video',
   description: 'Edit, merge, or modify uploaded videos. Can add text, captions, color grade, slow motion, transitions, merge multiple videos. Use when user uploads videos and wants to edit them.',
   input_schema: {
@@ -1451,6 +1502,7 @@ async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame
     'generate_image_with_face: When user uploads a photo of themselves and wants to be shown differently (tattoos, different outfit, different style, etc.) — use this instead of generate_image.',
     'generate_video: When user asks to generate/create/make a video from a description — use this. Costs ~$0.11 per 5 seconds.',
 'edit_video: When user uploads video files and wants to edit, merge, add text/captions, color grade, transitions — use this. FREE (FFmpeg).',
+'generate_video_from_image: When user uploads a logo, product image, or any reference image AND wants a video — use this instead of generate_video. It animates from the image.',
     '',
     '═══ CAPABILITIES ═══',
     'web_search: Search the web for any information.',
@@ -1855,6 +1907,16 @@ else if (block.name === 'generate_image_with_face') {
 else if (block.name === 'generate_video') {
   const videoUrl = await generateVideo(block.input.prompt, block.input.duration || 5);
   result = `Video generated: ${videoUrl}`;
+}
+else if (block.name === 'generate_video_from_image') {
+  const imgIdx = block.input.imageIndex ?? 0;
+  const imgFile = imageFiles[imgIdx] || imageFiles[0];
+  if (!imgFile) {
+    result = 'No image uploaded. Ask the user to upload their logo or reference image first.';
+  } else {
+    const videoUrl = await generateVideoFromImage(imgFile.data, imgFile.type, block.input.prompt, block.input.duration || 5);
+    result = `Video generated: ${videoUrl}`;
+  }
 }
 else if (block.name === 'edit_video') {
   const videoFiles = files.filter(f => 
