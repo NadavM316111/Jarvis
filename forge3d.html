@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>FORGE — 3D Studio</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@300;400;500;600&display=swap');
 :root{--cyan:#00f5ff;--purple:#a855f7;--dark:#02040a;--panel:rgba(4,8,18,0.93);--border:rgba(0,245,255,0.1);--border2:rgba(0,245,255,0.25);--text:rgba(255,255,255,0.85);--sub:rgba(255,255,255,0.35);--sidebar:340px}
@@ -152,18 +153,16 @@ body{background:var(--dark);font-family:'Syne',sans-serif;overflow:hidden;height
   <div id="messages">
     <div class="msg ai">
       <div class="msg-orb ai"></div>
-      <div class="msg-bubble">Hey! Describe anything and I'll build it in stunning 3D. Try:<br><br>
-        <strong>"a sleek red sports car"</strong><br>
-        <strong>"a modern office chair"</strong><br>
-        <strong>"a sci-fi spaceship"</strong><br>
-        <strong>"a luxury gold watch"</strong><br>
-        <strong>"a humanoid robot"</strong><br><br>
-        I understand materials, colors, proportions and style. The more detail you give, the better it looks.
+      <div class="msg-bubble">Hey! Tell me what to find and I'll pull a real 3D model ready for printing. Try:<br><br>
+        <strong>"a dragon"</strong> · <strong>"a chess knight"</strong><br>
+        <strong>"a sports car"</strong> · <strong>"a cat"</strong><br>
+        <strong>"a skull"</strong> · <strong>"a sword"</strong><br><br>
+        I search a library of 7,000+ free models. If the first isn't right, just say <strong>"try another"</strong>. Say <strong>"spin"</strong> to rotate, <strong>"clear"</strong> to reset.
       </div>
     </div>
   </div>
   <div id="sidebar-input-wrap">
-    <textarea id="sidebar-input" placeholder="Describe anything to build in 3D..." rows="1" onkeydown="handleKey(event)"></textarea>
+    <textarea id="sidebar-input" placeholder="Find a model: dragon, car, skull, cat..." rows="1" onkeydown="handleKey(event)"></textarea>
     <button id="sidebar-send" onclick="sendMessage()">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
     </button>
@@ -171,7 +170,7 @@ body{background:var(--dark);font-family:'Syne',sans-serif;overflow:hidden;height
 </div>
 
 <div id="obj-info">
-  <div class="info-chip">Parts: <span id="info-parts">0</span></div>
+  <div class="info-chip">Loaded: <span id="info-parts">0</span></div>
   <div class="info-chip">H:<span id="info-h">0</span> W:<span id="info-w">0</span></div>
 </div>
 
@@ -305,15 +304,14 @@ function addObj(name,geo,mat,pos,rot,scale){
   return m;
 }
 function clearAll(){
-  Object.values(objects).forEach(m=>{pivot.remove(m);m.geometry.dispose();(Array.isArray(m.material)?m.material:[m.material]).forEach(x=>x.dispose());});
-  objects={};pCount=0;updateInfo();toast('Scene cleared');
+  disposeModel();updateInfo();toast('Scene cleared');
 }
 function updateInfo(){
   document.getElementById('info-parts').textContent=pCount;
-  document.getElementById('tool-label').textContent=pCount?pCount+' parts':'Say anything to build';
+  document.getElementById('tool-label').textContent=pCount?'Model loaded':'Find a model';
   if(!pCount){document.getElementById('obj-info').classList.remove('visible');return;}
   document.getElementById('obj-info').classList.add('visible');
-  const box=new THREE.Box3();Object.values(objects).forEach(m=>box.expandByObject(m));
+  const box=new THREE.Box3();pivot.children.forEach(m=>box.expandByObject(m));
   const sz=new THREE.Vector3();box.getSize(sz);
   document.getElementById('info-h').textContent=Math.round(sz.y);
   document.getElementById('info-w').textContent=Math.round(Math.max(sz.x,sz.z));
@@ -449,152 +447,151 @@ function hideDots(){const el=document.getElementById('dots');if(el)el.remove();d
 const esc=t=>t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 function handleKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();}}
 
-const SYS=`You are FORGE, an elite 3D AI artist. You build stunning, hyper-detailed 3D scenes using Three.js primitive shapes combined creatively.
+// AI interprets the user's request into a clean search term + an intent.
+const SYS=`You are FORGE, a 3D model assistant. The user describes something they want as a real 3D model for printing or viewing. Your job: turn their words into the best SEARCH TERM for a 3D model library (Poly Pizza), and detect intent.
 
-RESPOND ONLY WITH RAW JSON. No markdown. No backticks. No explanation. Pure JSON only.
+RESPOND ONLY WITH RAW JSON. No markdown, no backticks, no prose.
 
 FORMAT:
-{"label":"Name","parts":[{"name":"UniqueName","type":"roundbox","color":14737400,"size":60,"pos":[0,30,0],"rot":[0,0,0],"scale":[1,1,1],"metal":0.9,"rough":0.05,"emissive":0,"opacity":1.0}]}
+{"action":"search","query":"dragon","label":"Dragon","reply":"Finding a dragon for you..."}
 
-GEOMETRY TYPES: sphere halfsphere cylinder tube tapered cone disc thindisc ring torus torusknot capsule roundbox flatbox wedge box
+RULES:
+- "query" = 1-2 plain nouns that a 3D model library would have. Strip adjectives/colors/styles. "a sleek red sports car" -> query:"sports car". "a fierce dragon statue" -> query:"dragon". "chess knight piece" -> query:"chess knight".
+- "label" = nice display name (Title Case).
+- "reply" = one short friendly sentence.
+- If the user says spin/rotate -> {"action":"spin"}
+- If the user says stop -> {"action":"stop"}
+- If the user says clear/reset -> {"action":"clear"}
+- If the user says "try another"/"next"/"different one" -> {"action":"next"}
+- If the user asks a question (not a thing to find) -> {"action":"chat","reply":"<your 1-2 sentence answer>"}
+- Always prefer "search" when the user names any physical object, animal, character, or thing.`;
 
-COLORS (integers): chrome=14737400 silver=12632256 black=1118481 glossblack=526344 white=15921906 cream=15987699 red=13369344 darkred=8388608 blue=3329258 navy=1315890 cyan=52479 gold=16766720 bronze=8430592 copper=11748609 carbon=2105376 darkgray=4473924 titanium=9803152 rubber=2236962 glass=8830975 tintedglass=4456448 orange=16746240 yellow=16776960 green=3407872 purple=8388736 maroon=8388608 ivory=16119285
+let lastResults=[], lastIdx=0, lastLabel='';
 
-MATERIALS:
-- Polished chrome: metal=0.95 rough=0.03
-- Brushed metal: metal=0.85 rough=0.2
-- Matte plastic: metal=0.0 rough=0.85
-- Rubber: metal=0.0 rough=0.95
-- Glass: metal=0.05 rough=0.02 opacity=0.18 (use transparent parts sparingly)
-- Carbon fiber: metal=0.3 rough=0.4
-- Painted car: metal=0.7 rough=0.08
-- Glowing LED: emissive=16776800
-- Glowing red: emissive=16711680
-- Glowing cyan: emissive=52479
-- Glowing blue: emissive=255
+function disposeModel(){
+  for(let i=pivot.children.length-1;i>=0;i--){const ch=pivot.children[i];pivot.remove(ch);ch.traverse?.(o=>{if(o.geometry)o.geometry.dispose();if(o.material){(Array.isArray(o.material)?o.material:[o.material]).forEach(m=>m.dispose());}});}
+  objects={};pCount=0;
+}
 
-GROUND RULE: pos[1] >= (size * scaleY) / 2. Ground is Y=0.
+function frameModel(root){
+  const box=new THREE.Box3().setFromObject(root);
+  const size=new THREE.Vector3();box.getSize(size);
+  const center=new THREE.Vector3();box.getCenter(center);
+  const maxDim=Math.max(size.x,size.y,size.z)||1;
+  const target=120;                 // desired on-screen size
+  const s=target/maxDim;
+  root.scale.setScalar(s);
+  // recompute after scaling, drop it onto the ground centered
+  const box2=new THREE.Box3().setFromObject(root);
+  const c2=new THREE.Vector3();box2.getCenter(c2);
+  root.position.x-=c2.x; root.position.z-=c2.z;
+  root.position.y-=box2.min.y;      // sit on ground (no floating, no sinking)
+  tzoom=Math.max(160,target*2.4);trx=16;try_=22;
+}
 
-DETAIL: Use 25-50 parts. Stack and overlap shapes. Think like a sculptor.
+function loadGLB(url, label){
+  return new Promise((resolve,reject)=>{
+    if(!THREE.GLTFLoader){addAI("3D loader didn't load — refresh the page.");reject();return;}
+    const loader=new THREE.GLTFLoader();
+    // route through our own server to dodge CORS
+    const proxied=`${API}/proxy-model?url=${encodeURIComponent(url)}`;
+    loader.load(proxied,(gltf)=>{
+      disposeModel();
+      const root=gltf.scene||gltf.scenes[0];
+      root.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true;
+        // make sure nothing is invisible/transparent-by-accident
+        if(o.material){o.material.side=THREE.DoubleSide;}
+      }});
+      pivot.add(root);
+      objects={model:root};pCount=1;
+      frameModel(root);
+      updateInfo();
+      resolve();
+    },undefined,(err)=>{console.log('[GLB]',err);reject(err);});
+  });
+}
 
-KEY TECHNIQUES:
-- roundbox for all body panels (NEVER flat box for visible surfaces)
-- disc+ring+cylinder = realistic wheel (ring=rim, cylinder=tire, disc=hubcap)
-- capsule for ergonomic/organic shapes
-- tube for pipes, cables, antenna
-- sphere for rivets, sensors, headlights, eyes
-- halfsphere for domes, bumpers, pods
-- flatbox for windows, panels, screens
-- thindisc for buttons, decals, details
-- wedge for fins, aero elements
+async function runSearch(query,label){
+  showDots();
+  document.getElementById('top-status').textContent='Searching...';
+  const token=localStorage.getItem('jarvis_token')||'';
+  try{
+    const r=await fetch(`${API}/search-models`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({query})});
+    const data=await r.json();
+    lastResults=data.results||[];lastIdx=0;lastLabel=label||query;
+    hideDots();
+    if(!lastResults.length){addAI(`I couldn't find a model for "<strong>${esc(query)}</strong>". Try a simpler word — like "car", "dragon", "skull", "cat".`);busy=false;document.getElementById('top-status').textContent='Ready';return;}
+    await loadCurrent();
+  }catch(e){
+    hideDots();addAI("Search failed — check the connection and try again.");console.error(e);
+    busy=false;document.getElementById('top-status').textContent='Ready';
+  }
+}
 
-SPORTS CAR RECIPE (proportions that work):
-Body: roundbox size=80 scale=[2.8,0.35,1.15] pos=[0,14,0] color=red metal=0.7 rough=0.08
-Cabin: roundbox size=60 scale=[1.35,0.4,0.92] pos=[-2,29,0] same color
-Front bumper: roundbox size=25 scale=[2.2,0.28,0.4] pos=[0,8,49] color=glossblack
-Rear bumper: roundbox size=25 scale=[2.2,0.28,0.4] pos=[0,8,-49] color=glossblack
-Side skirts x2: roundbox size=20 scale=[2.5,0.12,0.15] pos=[±55,4,0] color=carbon
-Hood: roundbox size=45 scale=[1.5,0.12,0.8] pos=[25,20,4] slight forward tilt
-Windshield: flatbox size=48 scale=[1.15,0.9,0.08] pos=[10,33,18] rot=[22,0,0] glass
-Rear window: flatbox size=38 scale=[1.1,0.75,0.08] pos=[-12,31,-16] rot=[-28,0,0] glass
-4 wheels at [±56,7,±34]: ring size=28 (rim chrome) + cylinder size=26 scale=[1,0.45,1] (tire rubber) + disc size=18 (hubcap chrome)
-Headlights x2: sphere size=8 pos=[±22,15,50] emissive=16776800
-Taillights x2: disc size=7 pos=[±20,14,-50] rot=[90,0,0] emissive=16711680
-Side mirrors x2: roundbox size=10 scale=[0.4,0.5,0.8] pos=[±58,26,12]
-Exhaust x2: cylinder size=8 scale=[1,0.6,1] pos=[±12,5,-51] rot=[90,0,0] chrome
-
-CHAIR RECIPE:
-Seat: roundbox size=55 scale=[1.1,0.16,1.05] pos=[0,42,0] color=cream metal=0 rough=0.7
-Seat cushion: halfsphere size=50 scale=[1.05,0.18,1.0] pos=[0,44,0] slightly lighter
-Backrest: roundbox size=52 scale=[0.85,1.15,0.12] pos=[0,72,-20] same color
-Back padding: halfsphere size=38 scale=[0.8,0.25,0.3] pos=[0,68,-14] lighter
-Armrests x2: capsule size=32 scale=[0.35,1,0.35] pos=[±32,50,2] rot=[0,0,90] dark
-5 legs: tapered size=28 scale=[0.5,1.2,0.5] at 72deg intervals, chrome
-Column: cylinder size=10 scale=[1,2.5,1] pos=[0,20,0] chrome
-5 casters: sphere size=7 at leg ends
-
-SPECIAL: If user says spin/rotate respond: SPIN
-If user says stop: STOP
-If user says clear/reset: CLEAR
-If user asks a question: answer in 1-2 sentences (not JSON).
-Be creative and add details the user didn't mention — that's what makes it beautiful.`;
+async function loadCurrent(){
+  const m=lastResults[lastIdx];
+  if(!m){addAI("No more matches. Try describing it differently.");busy=false;document.getElementById('top-status').textContent='Ready';return;}
+  showDots();document.getElementById('top-status').textContent='Loading...';
+  try{
+    await loadGLB(m.url,lastLabel);
+    hideDots();
+    const more=lastResults.length-lastIdx-1;
+    addAI(`Loaded <strong>${esc(lastLabel)}</strong> by ${esc(m.creator||'unknown')}.${more>0?` Say <strong>"try another"</strong> for ${more} more option${more>1?'s':''}.`:''} Say <strong>"spin"</strong>, or use the print button.`);
+  }catch(e){
+    hideDots();
+    // auto-skip a broken model
+    lastIdx++;
+    if(lastIdx<lastResults.length){addAI("That one wouldn't load — trying the next match...");await loadCurrent();return;}
+    addAI("Couldn't load that model. Try a different search.");
+  }
+  busy=false;document.getElementById('top-status').textContent=pCount?'Loaded':'Ready';
+}
 
 async function sendMessage(){
   const inp=document.getElementById('sidebar-input');
   const text=inp.value.trim();
   if(!text||busy)return;
   inp.value='';inp.style.height='auto';
-  addUser(text);busy=true;showDots();
-  document.getElementById('top-status').textContent='Building...';
+  addUser(text);busy=true;
 
-  if(text.match(/^spin$/i)){hideDots();autoSpin.on=!autoSpin.on;addAI(autoSpin.on?'Spinning! Say "stop" to pause.':'Stopped.');busy=false;document.getElementById('top-status').textContent='Ready';return;}
-  if(text.match(/^stop$/i)){hideDots();autoSpin.on=false;addAI('Stopped.');busy=false;return;}
-  if(text.match(/^(clear|reset)$/i)){hideDots();clearAll();addAI('Cleared. What shall I build?');busy=false;document.getElementById('top-status').textContent='Ready';return;}
+  // fast client-side commands
+  if(/^spin$/i.test(text)){autoSpin.on=!autoSpin.on;addAI(autoSpin.on?'Spinning! Say "stop" to pause.':'Stopped.');busy=false;return;}
+  if(/^stop$/i.test(text)){autoSpin.on=false;addAI('Stopped.');busy=false;return;}
+  if(/^(clear|reset)$/i.test(text)){disposeModel();updateInfo();addAI('Cleared. What should I find?');busy=false;return;}
+  if(/^(try another|next|another|different)/i.test(text)){
+    if(lastResults.length>1){lastIdx=(lastIdx+1)%lastResults.length;addUser&&0;await loadCurrent();}
+    else{addAI("I only found one match for that. Try a new search.");busy=false;}
+    return;
+  }
 
+  showDots();document.getElementById('top-status').textContent='Thinking...';
   const token=localStorage.getItem('jarvis_token')||'';
   try{
-    const res=await fetch(`${API}/design-command`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({command:text,systemPrompt:SYS,history:hist.slice(-8)})});
+    const res=await fetch(`${API}/design-command`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({command:text,systemPrompt:SYS,history:hist.slice(-6)})});
     const raw=await res.json();
     hideDots();
-    // Direct parts on raw (server pre-parsed the JSON)
-    if(raw.parts?.length){
-      clearAll();
-      let maxY=0;
-      raw.parts.forEach(p=>{const y=(p.pos?.[1]||0)+(p.size||30)*(p.scale?.[1]||1)/2;if(y>maxY)maxY=y;});
-      raw.parts.forEach(p=>{
-        const geo=G(p.type||'sphere',p.size||30);
-        const hex=p.color!=null?'#'+Math.max(0,p.color).toString(16).padStart(6,'0'):'#4488ff';
-        const mat=M(hex,p.metal??0.85,p.rough??0.1,p.emissive||0,(p.opacity||1)<1,p.opacity||1);
-        addObj(p.name||('P'+(++oCount)),geo,mat,p.pos||[0,15,0],p.rot||[0,0,0],p.scale||[1,1,1]);
-      });
-      tzoom=Math.max(140,maxY*3.5);trx=16;try_=22;
-      updateInfo();
-      hist.push({role:'user',content:text},{role:'assistant',content:'Built: '+raw.label});
-      addAI(`Built <strong>${raw.label||'model'}</strong> — ${raw.parts.length} parts. Say "spin", "clear", or describe changes.`);
-      busy=false;document.getElementById('top-status').textContent=raw.parts.length+' parts';
-      return;
+    // server JSON-parses; support both shapes
+    let d=raw;
+    if(raw.response||raw.message){
+      const txt=(raw.response||raw.message||'').replace(/```json|```/g,'').trim();
+      try{d=JSON.parse(txt);}catch(_){d={action:'chat',reply:txt};}
     }
-
-    let reply=raw.response||raw.message||'';
-    const trimmed=reply.trim();
-    if(trimmed==='SPIN'){autoSpin.on=!autoSpin.on;addAI(autoSpin.on?'Spinning!':'Stopped.');busy=false;document.getElementById('top-status').textContent='Ready';return;}
-    if(trimmed==='STOP'){autoSpin.on=false;addAI('Stopped.');busy=false;return;}
-    if(trimmed==='CLEAR'){clearAll();addAI('Cleared!');busy=false;return;}
-
-    // Parse JSON
-    const clean=reply.replace(/```json\n?/g,'').replace(/```\n?/g,'').trim();
-    const match=clean.match(/\{[\s\S]*\}/);
-    if(match){
-      try{
-        const data=JSON.parse(match[0]);
-        if(data.parts?.length){
-          clearAll();
-          let maxY=0;
-          data.parts.forEach(p=>{const y=(p.pos?.[1]||0)+(p.size||30)*(p.scale?.[1]||1)/2;if(y>maxY)maxY=y;});
-          data.parts.forEach(p=>{
-            const geo=G(p.type||'sphere',p.size||30);
-            const hex=p.color!=null?'#'+Math.max(0,p.color).toString(16).padStart(6,'0'):'#4488ff';
-            const mat=M(hex,p.metal??0.85,p.rough??0.1,p.emissive||0,(p.opacity||1)<1,p.opacity||1);
-            addObj(p.name||('P'+(++oCount)),geo,mat,p.pos||[0,15,0],p.rot||[0,0,0],p.scale||[1,1,1]);
-          });
-          tzoom=Math.max(140,maxY*3.5);trx=16;try_=22;
-          updateInfo();
-          hist.push({role:'user',content:text},{role:'assistant',content:'Built: '+data.label});
-          addAI(`Built <strong>${data.label||'model'}</strong> — ${data.parts.length} parts. Say "spin", "clear", or describe changes like "make it blue" or "add more detail".`);
-          busy=false;document.getElementById('top-status').textContent=data.parts.length+' parts';
-          return;
-        }
-      }catch(e2){console.log('[PARSE]',e2);}
-    }
-    if(reply)addAI(reply);
-    else addAI("Describe anything — a car, robot, chair, spaceship, building, watch, helmet...");
-    hist.push({role:'user',content:text},{role:'assistant',content:reply});
+    hist.push({role:'user',content:text},{role:'assistant',content:JSON.stringify(d)});
+    const act=(d.action||'search').toLowerCase();
+    if(act==='spin'){autoSpin.on=!autoSpin.on;addAI(autoSpin.on?'Spinning!':'Stopped.');busy=false;document.getElementById('top-status').textContent='Ready';return;}
+    if(act==='stop'){autoSpin.on=false;addAI('Stopped.');busy=false;document.getElementById('top-status').textContent='Ready';return;}
+    if(act==='clear'){disposeModel();updateInfo();addAI('Cleared.');busy=false;document.getElementById('top-status').textContent='Ready';return;}
+    if(act==='next'){if(lastResults.length>1){lastIdx=(lastIdx+1)%lastResults.length;await loadCurrent();}else{addAI("Only one match — try a new search.");busy=false;}return;}
+    if(act==='chat'){addAI(d.reply||"Tell me what to find and I'll pull a 3D model.");busy=false;document.getElementById('top-status').textContent='Ready';return;}
+    // default: search
+    if(d.reply)addAI(d.reply);
+    await runSearch(d.query||text, d.label||text);
   }catch(e){
-    hideDots();addAI("Something went wrong. Try again.");
-    console.error(e);
+    hideDots();addAI("Something went wrong. Try again.");console.error(e);
+    busy=false;document.getElementById('top-status').textContent='Ready';
   }
-  busy=false;document.getElementById('top-status').textContent='Ready';
 }
+
 
 // ─── RENDER ──────────────────────────────────────────────────
 let tick=0;

@@ -2448,7 +2448,45 @@ app.get('/pulse/', (req, res) => res.sendFile(path.join(PUBLIC_DIR, 'pulse', 'in
 // cinevault routes moved to apps/cinevault.js
 
 app.use('/pulse', express.static(path.join(PUBLIC_DIR, 'pulse')));
+const POLY_PIZZA_KEY = 'ec866ed43a284b54b287037c7102a5d1';
 
+app.post('/search-models', async (req, res) => {
+  const { query } = req.body;
+  try {
+    const r = await fetch(`https://api.poly.pizza/v1.1/search/${encodeURIComponent(query)}?limit=12`, {
+      headers: { 'x-auth-token': POLY_PIZZA_KEY }
+    });
+    const data = await r.json();
+    // Poly Pizza returns { results: [...] }; field casing can vary, so normalize defensively.
+    const list = data.results || data.Results || [];
+    const results = list.map(m => ({
+      title:     m.Title || m.title || 'Model',
+      url:       m.Download || m.download || m.GLB || m.glb || m.url,
+      thumbnail: m.Thumbnail || m.thumbnail || '',
+      creator:   (m.Creator && (m.Creator.Username || m.Creator.username)) || m.creator || 'Unknown'
+    })).filter(m => m.url && /\.glb($|\?)/i.test(m.url));
+    res.json({ results });
+  } catch (e) {
+    console.error('Model search error:', e.message);
+    res.json({ results: [] });
+  }
+});
+
+// Proxy GLB downloads to dodge CORS
+app.get('/proxy-model', async (req, res) => {
+  try {
+    const url = req.query.url;
+    if (!url || !/^https?:\/\//.test(url)) return res.status(400).send('bad url');
+    const r = await fetch(url);
+    const buf = Buffer.from(await r.arrayBuffer());
+    res.set('Content-Type', 'model/gltf-binary');
+    res.set('Access-Control-Allow-Origin', '*');
+    res.send(buf);
+  } catch (e) {
+    console.error('Proxy error:', e.message);
+    res.status(500).send('proxy failed');
+  }
+});
 // cinevault static moved to apps/cinevault.js
 app.post('/design-command', async (req, res) => {
   const { command, systemPrompt, history } = req.body;
@@ -2460,58 +2498,10 @@ app.post('/design-command', async (req, res) => {
   } catch (e) { console.error('Design error:', e.message); res.json({ response: 'Processing...', actions: [] }); }
 });
 
-// ============ MODEL SEARCH & PROXY ============
-app.post('/search-models', async (req, res) => {
-  const { query } = req.body;
-  const results = [];
-  try {
-    const r = await axios.get(`https://poly.pizza/api/search/${encodeURIComponent(query)}`, {
-      headers: { 'User-Agent': 'Mozilla/5.0', 'Referer': 'https://poly.pizza/', 'Origin': 'https://poly.pizza' },
-      timeout: 8000
-    });
-    const items = r.data?.results || [];
-    for (const m of items.slice(0, 8)) {
-      const publicID = m.publicID || m.publicId || '';
-      if (!publicID) continue;
-      const cacheFile = path.join(MODEL_CACHE_DIR, `${publicID}.glb`);
-      if (fs.existsSync(cacheFile)) {
-        results.push({ source: 'Poly Pizza', name: m.title || 'Model', thumbnail: m.previewUrl || null, downloads: 0, format: 'GLB', downloadUrl: `/model-cache/${publicID}.glb` });
-        continue;
-      }
-      for (const glbUrl of [`https://poly.pizza/m/${publicID}.glb`, `https://poly.pizza/api/model/${publicID}/download`]) {
-        try {
-          const glbRes = await axios.get(glbUrl, { responseType: 'arraybuffer', timeout: 20000, maxRedirects: 10, headers: { 'User-Agent': 'Mozilla/5.0', 'Referer': 'https://poly.pizza/', 'Accept': '*/*' } });
-          const ct = glbRes.headers['content-type'] || '';
-          const data = Buffer.from(glbRes.data);
-          if (data.length > 1000 && (ct.includes('octet') || ct.includes('gltf') || ct.includes('model') || data.slice(0,4).toString() === 'glTF')) {
-            fs.writeFileSync(cacheFile, data);
-            results.push({ source: 'Poly Pizza', name: m.title || 'Model', thumbnail: m.previewUrl || null, downloads: 0, format: 'GLB', downloadUrl: `/model-cache/${publicID}.glb` });
-            break;
-          }
-        } catch(e) {}
-      }
-    }
-  } catch (e) {}
-  res.json({ results: results.slice(0, 4) });
-});
+
 
 app.use('/model-cache', express.static(MODEL_CACHE_DIR));
 
-app.get('/proxy-model', async (req, res) => {
-  const { url } = req.query;
-  if (!url) return res.status(400).json({ error: 'No URL' });
-  const allowed = ['poly.pizza', 'static.poly.pizza', 'sketchfab.com', 'nasa.gov', 'si.edu', 'github.com', 'raw.githubusercontent.com'];
-  try {
-    const urlObj = new URL(url);
-    if (!allowed.some(h => urlObj.hostname.includes(h))) return res.status(403).json({ error: 'Domain not allowed' });
-    const response = await axios.get(url, { responseType: 'arraybuffer', timeout: 30000, maxRedirects: 10, headers: { 'User-Agent': 'Mozilla/5.0', 'Referer': 'https://poly.pizza/', 'Accept': '*/*' } });
-    res.set('Content-Type', response.headers['content-type'] || 'model/gltf-binary');
-    res.set('Access-Control-Allow-Origin', '*');
-    res.send(response.data);
-  } catch (e) {
-    res.status(500).json({ error: e.message });
-  }
-});
 
 // ============ STATIC FILE VIEWER ============
 app.use('/view', (req, res, next) => {
