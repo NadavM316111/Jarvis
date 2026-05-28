@@ -52,12 +52,16 @@ body{background:var(--dark);font-family:'Syne',sans-serif;overflow:hidden;height
 #toggle-sidebar{width:32px;height:32px;border-radius:9px;background:rgba(0,245,255,.08);border:1px solid var(--border);color:var(--cyan);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
 #top-status{font-size:9px;letter-spacing:2px;color:var(--sub);font-family:'Space Mono',monospace;text-transform:uppercase}
 #toolbar{position:fixed;bottom:0;left:0;right:var(--sidebar);z-index:50;height:64px;display:flex;align-items:center;padding:0 18px;gap:8px;background:linear-gradient(0deg,rgba(2,4,10,.98) 0%,transparent 100%)}
-.tool-btn{width:38px;height:38px;border-radius:11px;background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--sub);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.tool-btn{width:38px;height:38px;border-radius:11px;background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--sub);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;position:relative}
 .tool-btn:hover{border-color:var(--border2);color:var(--text);background:rgba(255,255,255,.08)}
 .tool-btn.active{border-color:var(--cyan);color:var(--cyan);background:rgba(0,245,255,.1)}
+.tool-btn.cam-btn.active{border-color:#a855f7;color:#a855f7;background:rgba(168,85,247,.12);box-shadow:0 0 10px rgba(168,85,247,.3)}
 .tool-btn.danger:hover{border-color:rgba(255,80,80,.4);color:rgba(255,100,100,.8)}
 .tool-btn.print-btn{border-color:rgba(168,85,247,.3);color:rgba(168,85,247,.7)}
 .tool-btn.print-btn:hover,.tool-btn.print-btn.connected{background:rgba(168,85,247,.12);border-color:rgba(168,85,247,.6);color:#a855f7;box-shadow:0 0 10px rgba(168,85,247,.3)}
+.tool-live{position:absolute;top:4px;right:4px;width:6px;height:6px;border-radius:50%;background:#ef4444;animation:livePulse 1s ease-in-out infinite;display:none}
+.tool-btn.cam-btn.active .tool-live{display:block}
+@keyframes livePulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(0.8)}}
 #tool-label{font-size:9px;letter-spacing:2px;color:var(--sub);font-family:'Space Mono',monospace;text-transform:uppercase;margin-left:auto}
 #toast{position:fixed;top:62px;left:50%;transform:translateX(-50%);background:rgba(2,4,10,.92);border:1px solid var(--border2);padding:7px 18px;border-radius:9px;font-size:10px;letter-spacing:1.5px;font-family:'Space Mono',monospace;color:var(--cyan);text-transform:uppercase;opacity:0;transition:opacity .25s;pointer-events:none;z-index:200;white-space:nowrap}
 #toast.show{opacity:1}
@@ -95,10 +99,17 @@ body{background:var(--dark);font-family:'Syne',sans-serif;overflow:hidden;height
 #grid-overlay{position:fixed;inset:0;pointer-events:none;z-index:5;background-image:linear-gradient(rgba(0,245,255,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(0,245,255,.02) 1px,transparent 1px);background-size:60px 60px;opacity:0;transition:opacity .3s}
 #grid-overlay.show{opacity:1}
 #gesture-hint{position:fixed;bottom:74px;left:50%;transform:translateX(-50%);font-size:9px;color:rgba(255,255,255,.1);letter-spacing:2px;font-family:'Space Mono',monospace;text-transform:uppercase;pointer-events:none;z-index:10;white-space:nowrap}
+/* Camera feed */
+#cam-feed{position:fixed;bottom:74px;right:calc(var(--sidebar)+14px);width:180px;height:135px;border-radius:12px;border:1px solid rgba(168,85,247,.5);object-fit:cover;z-index:55;display:none;transform:scaleX(-1)}
+#cam-overlay{position:fixed;bottom:74px;right:calc(var(--sidebar)+14px);width:180px;padding:5px 8px;background:rgba(4,8,20,.9);border-radius:0 0 12px 12px;border:1px solid rgba(168,85,247,.4);border-top:none;font-size:8px;font-family:'Space Mono',monospace;color:#a855f7;z-index:56;display:none;text-align:center;letter-spacing:1px}
+/* Hand tracking canvas */
 #hand-canvas{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:60;display:none}
-#hand-video{position:fixed;bottom:74px;left:14px;width:160px;height:120px;border-radius:10px;border:1px solid rgba(168,85,247,.5);object-fit:cover;transform:scaleX(-1);z-index:55;display:none}
-#hand-status{position:fixed;bottom:74px;left:14px;width:160px;padding:4px 8px;background:rgba(4,8,20,.92);border-radius:0 0 10px 10px;border:1px solid rgba(168,85,247,.4);border-top:none;font-size:8px;font-family:'Space Mono',monospace;color:#a855f7;letter-spacing:1px;z-index:56;display:none;text-align:center}
-@media(max-width:700px){:root{--sidebar:100vw}.c-tr{right:14px}.c-br{right:14px}#topbar{right:0}#toolbar{right:0}}
+/* Loading model indicator */
+#model-loading{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(2,4,10,.95);border:1px solid var(--border2);border-radius:14px;padding:20px 30px;z-index:150;display:none;flex-direction:column;align-items:center;gap:12px}
+#model-loading.show{display:flex}
+.ml-ring{width:28px;height:28px;border:1px solid rgba(0,245,255,.2);border-top-color:var(--cyan);border-radius:50%;animation:spin 1s linear infinite}
+.ml-txt{font-size:10px;letter-spacing:2px;color:var(--sub);font-family:'Space Mono',monospace}
+@media(max-width:700px){:root{--sidebar:100vw}.c-tr{right:14px}.c-br{right:14px}#topbar{right:0}#toolbar{right:0}#cam-feed,#cam-overlay{right:14px}}
 </style>
 </head>
 <body>
@@ -106,6 +117,7 @@ body{background:var(--dark);font-family:'Syne',sans-serif;overflow:hidden;height
 <div id="grid-overlay"></div>
 <div class="corner c-tl"></div><div class="corner c-tr"></div><div class="corner c-bl"></div><div class="corner c-br"></div>
 <div id="loading"><div class="ld-ring"></div><div class="ld-name">Forge</div></div>
+<div id="model-loading"><div class="ml-ring"></div><div class="ml-txt" id="ml-txt">IMPORTING MODEL</div></div>
 
 <div id="topbar">
   <div id="logo">FORGE</div>
@@ -128,8 +140,13 @@ body{background:var(--dark);font-family:'Syne',sans-serif;overflow:hidden;height
   <button class="tool-btn" id="grid-btn" title="Toggle grid" onclick="toggleGrid()">
     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
   </button>
-  <button class="tool-btn" title="Screenshot" onclick="screenshot()">
+  <!-- CAMERA TOGGLE BUTTON -->
+  <button class="tool-btn cam-btn" id="cam-btn" title="Toggle camera" onclick="toggleCamera()">
+    <div class="tool-live"></div>
     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+  </button>
+  <button class="tool-btn" title="Screenshot" onclick="screenshot()">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="8 17 12 21 16 17"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.88 18.09A5 5 0 0018 9h-1.26A8 8 0 103 16.29"/></svg>
   </button>
   <button class="tool-btn danger" title="Clear scene" onclick="clearAll()">
     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6m5 0V4a1 1 0 011-1h2a1 1 0 011 1v2"/></svg>
@@ -149,11 +166,11 @@ body{background:var(--dark);font-family:'Syne',sans-serif;overflow:hidden;height
   <div id="messages">
     <div class="msg ai">
       <div class="msg-orb ai"></div>
-      <div class="msg-bubble">Hey! Describe anything to build in extreme detail. Try <strong>"a sleek sports car with low body, wide wheels with spokes, glass windshield and rear spoiler"</strong>. Hit <strong>Move</strong> to orbit with your hands via camera.</div>
+      <div class="msg-bubble">Hey! I import real 3D models — try <strong>"import a sports car"</strong>, <strong>"import a drone"</strong>, or <strong>"import a chair"</strong>. I'll search Poly Pizza's free 3D library and load the actual GLB model. Hit <strong>Move</strong> for hand tracking, or the camera button to toggle your webcam.</div>
     </div>
   </div>
   <div id="sidebar-input-wrap">
-    <textarea id="sidebar-input" placeholder="Describe what to build..." rows="1" onkeydown="handleKey(event)"></textarea>
+    <textarea id="sidebar-input" placeholder="Import a car, drone, chair..." rows="1" onkeydown="handleKey(event)"></textarea>
     <button id="sidebar-send" onclick="sendMessage()">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
     </button>
@@ -161,15 +178,14 @@ body{background:var(--dark);font-family:'Syne',sans-serif;overflow:hidden;height
 </div>
 
 <div id="obj-info">
-  <div class="info-chip">Parts: <span id="info-parts">0</span></div>
-  <div class="info-chip">H: <span id="info-height">0</span>u</div>
-  <div class="info-chip">W: <span id="info-width">0</span>u</div>
+  <div class="info-chip">Objects: <span id="info-parts">0</span></div>
+  <div class="info-chip">Mode: <span id="info-mode">GLB</span></div>
 </div>
 
 <div id="print-modal">
   <div id="print-panel">
     <h3>3D Print via Bluetooth</h3>
-    <p>Uses the Web Bluetooth API (Chrome + HTTPS required). Click "Scan nearby" to discover real BLE printers in range. The demo buttons below simulate the connection flow.</p>
+    <p>Uses the Web Bluetooth API (Chrome + HTTPS). "Scan nearby" opens Chrome's real BLE device picker. Demo buttons simulate the flow.</p>
     <div id="bt-list">
       <div class="bt-device" onclick="demoConnect(this,'Bambu Lab X1C')"><div class="bt-dot"></div><div><div class="bt-name">Bambu Lab X1C</div><div class="bt-type">FDM · BLE 5.0</div></div><div class="bt-signal">-62 dBm</div></div>
       <div class="bt-device" onclick="demoConnect(this,'Prusa MK4')"><div class="bt-dot"></div><div><div class="bt-name">Prusa MK4</div><div class="bt-type">FDM · BLE 4.2</div></div><div class="bt-signal">-74 dBm</div></div>
@@ -177,170 +193,332 @@ body{background:var(--dark);font-family:'Syne',sans-serif;overflow:hidden;height
     </div>
     <div id="print-actions">
       <div class="print-action secondary" onclick="closePrint()">Cancel</div>
-      <div class="print-action primary" id="scan-btn" onclick="scanBT()">Scan nearby (real BT)</div>
+      <div class="print-action primary" id="scan-btn" onclick="scanBT()">Scan nearby</div>
     </div>
   </div>
 </div>
 
-<video id="hand-video" autoplay playsinline muted></video>
+<!-- Camera feed + hand canvas -->
+<video id="cam-feed" autoplay playsinline muted></video>
+<div id="cam-overlay">CAMERA LIVE</div>
 <canvas id="hand-canvas"></canvas>
-<div id="hand-status">HAND TRACKING</div>
+
 <div id="toast"></div>
 <div id="gesture-hint">Drag · Pinch zoom · Two-finger rotate</div>
 
 <script>
-// ─── SCENE ───────────────────────────────────────────────────
+// ─── SCENE SETUP ────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
 const scene = new THREE.Scene();
-scene.fog = new THREE.FogExp2(0x000510, 0.0022);
+scene.fog = new THREE.FogExp2(0x000510, 0.0018);
 const camera = new THREE.PerspectiveCamera(42, innerWidth/innerHeight, 0.1, 3000);
 camera.position.set(0, 80, 280);
 const renderer = new THREE.WebGLRenderer({canvas, antialias:true});
 renderer.setPixelRatio(Math.min(devicePixelRatio,2));
 renderer.setSize(innerWidth, innerHeight);
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.2;
+renderer.toneMappingExposure = 1.3;
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.setClearColor(0x020408);
-window.addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);});
+window.addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);document.getElementById('hand-canvas').width=innerWidth;document.getElementById('hand-canvas').height=innerHeight;});
 
 // Lights
-scene.add(new THREE.AmbientLight(0x0a1020,5));
-const sun=new THREE.DirectionalLight(0xffffff,3.5);
-sun.position.set(120,250,180);sun.castShadow=true;
-sun.shadow.mapSize.width=2048;sun.shadow.mapSize.height=2048;
-sun.shadow.camera.near=1;sun.shadow.camera.far=800;
-sun.shadow.camera.left=-200;sun.shadow.camera.right=200;
-sun.shadow.camera.top=200;sun.shadow.camera.bottom=-200;
-sun.shadow.bias=-0.0005;scene.add(sun);
-const holo=new THREE.PointLight(0x00f5ff,18,600);holo.position.set(0,80,100);scene.add(holo);
-const fill=new THREE.PointLight(0x5500cc,5,500);fill.position.set(-120,100,-80);scene.add(fill);
-const rim=new THREE.DirectionalLight(0x0040a0,2.5);rim.position.set(-150,60,-200);scene.add(rim);
-const rim2=new THREE.PointLight(0x00ffaa,3,400);rim2.position.set(150,40,-120);scene.add(rim2);
+scene.add(new THREE.AmbientLight(0x112030, 6));
+const sun = new THREE.DirectionalLight(0xffffff, 4);
+sun.position.set(120,250,180); sun.castShadow=true;
+sun.shadow.mapSize.width=2048; sun.shadow.mapSize.height=2048;
+sun.shadow.camera.near=1; sun.shadow.camera.far=800;
+sun.shadow.camera.left=-200; sun.shadow.camera.right=200;
+sun.shadow.camera.top=200; sun.shadow.camera.bottom=-200;
+sun.shadow.bias=-0.0005; scene.add(sun);
+const holo = new THREE.PointLight(0x00f5ff, 20, 600);
+holo.position.set(0,80,100); scene.add(holo);
+const fill = new THREE.PointLight(0x5500cc, 6, 500);
+fill.position.set(-120,100,-80); scene.add(fill);
+const rim = new THREE.DirectionalLight(0x0060c0, 3);
+rim.position.set(-150,60,-200); scene.add(rim);
+const rim2 = new THREE.PointLight(0x00ffaa, 4, 400);
+rim2.position.set(150,40,-120); scene.add(rim2);
+const top = new THREE.DirectionalLight(0xffffff, 2);
+top.position.set(0,300,0); scene.add(top);
 
 // Ground
-const ground=new THREE.Mesh(new THREE.PlaneGeometry(3000,3000,80,80),new THREE.MeshStandardMaterial({color:0x000814,metalness:0.95,roughness:0.85}));
-ground.rotation.x=-Math.PI/2;ground.position.y=-1;ground.receiveShadow=true;scene.add(ground);
-const gridHelper=new THREE.GridHelper(600,30,0x002233,0x001122);
-gridHelper.position.y=-0.5;gridHelper.material.transparent=true;gridHelper.material.opacity=0.4;scene.add(gridHelper);
-const pivot=new THREE.Object3D();scene.add(pivot);
+const ground = new THREE.Mesh(
+  new THREE.PlaneGeometry(3000,3000),
+  new THREE.MeshStandardMaterial({color:0x000814,metalness:0.95,roughness:0.85})
+);
+ground.rotation.x=-Math.PI/2; ground.position.y=-1; ground.receiveShadow=true; scene.add(ground);
+const gridHelper = new THREE.GridHelper(600,30,0x002233,0x001122);
+gridHelper.position.y=-0.5; gridHelper.material.transparent=true; gridHelper.material.opacity=0.4; scene.add(gridHelper);
 
-// ─── GEOMETRY ────────────────────────────────────────────────
-function makeGeo(type,size) {
-  const s=size;
-  switch(type) {
-    case 'sphere': return new THREE.SphereGeometry(s/2,64,48);
-    case 'box': return new THREE.BoxGeometry(s,s,s,6,6,6);
-    case 'roundbox': {
-      const r=s*0.12,hw=s/2-r;
-      const sh=new THREE.Shape();
-      sh.moveTo(-hw,s/2);sh.lineTo(hw,s/2);sh.quadraticCurveTo(s/2,s/2,s/2,hw);
-      sh.lineTo(s/2,-hw);sh.quadraticCurveTo(s/2,-s/2,hw,-s/2);
-      sh.lineTo(-hw,-s/2);sh.quadraticCurveTo(-s/2,-s/2,-s/2,-hw);
-      sh.lineTo(-s/2,hw);sh.quadraticCurveTo(-s/2,s/2,-hw,s/2);
-      const g=new THREE.ExtrudeGeometry(sh,{depth:s,bevelEnabled:true,bevelThickness:r,bevelSize:r,bevelSegments:12,steps:2});
-      g.center();return g;
-    }
-    case 'cylinder': return new THREE.CylinderGeometry(s*0.4,s*0.4,s,64,6);
-    case 'tapered': return new THREE.CylinderGeometry(s*0.22,s*0.42,s,64,6);
-    case 'cone': return new THREE.ConeGeometry(s/2,s*1.3,64,8);
-    case 'torus': return new THREE.TorusGeometry(s/2,s/7,32,100);
-    case 'torusknot': return new THREE.TorusKnotGeometry(s/3,s/10,256,24,2,3);
-    case 'capsule': {
-      const pts=[];const r2=s*0.22,h2=s*0.6;
-      for(let i=0;i<=20;i++){const a=(i/20)*Math.PI/2;pts.push(new THREE.Vector2(Math.sin(a)*r2,-h2+r2-Math.cos(a)*r2));}
-      for(let i=0;i<=20;i++){const a=(i/20)*Math.PI/2;pts.push(new THREE.Vector2(Math.cos(a)*r2,h2-r2+Math.sin(a)*r2));}
-      return new THREE.LatheGeometry(pts,64);
-    }
-    case 'disc': return new THREE.CylinderGeometry(s/2,s/2,s*0.08,64,2);
-    case 'thindisc': return new THREE.CylinderGeometry(s/2,s/2,s*0.03,64,1);
-    case 'halfball': return new THREE.SphereGeometry(s/2,64,32,0,Math.PI*2,0,Math.PI/2);
-    case 'ring': return new THREE.TorusGeometry(s/2,s*0.09,20,80);
-    case 'wedge': {
-      const sh2=new THREE.Shape();
-      sh2.moveTo(-s/2,0);sh2.lineTo(s/2,0);sh2.lineTo(s/2,s*0.55);sh2.quadraticCurveTo(0,s*0.65,-s/2,0);
-      return new THREE.ExtrudeGeometry(sh2,{depth:s*0.65,bevelEnabled:true,bevelThickness:s*0.04,bevelSize:s*0.04,bevelSegments:8});
-    }
-    case 'arch': {
-      const sh3=new THREE.Shape(),w=s,h3=s*1.2,wall=s*0.18;
-      sh3.moveTo(0,0);sh3.lineTo(0,h3-w/2);sh3.absarc(w/2,h3-w/2,w/2,Math.PI,0,false);
-      sh3.lineTo(w,0);sh3.lineTo(w-wall,0);sh3.lineTo(w-wall,h3-w/2);
-      sh3.absarc(w/2,h3-w/2,w/2-wall,0,Math.PI,true);sh3.lineTo(wall,0);sh3.lineTo(0,0);
-      const g3=new THREE.ExtrudeGeometry(sh3,{depth:wall*1.5,bevelEnabled:true,bevelSize:wall*0.12,bevelThickness:wall*0.12,bevelSegments:6});
-      g3.center();return g3;
-    }
-    case 'spoiler': {
-      const sh4=new THREE.Shape();
-      sh4.moveTo(-s/2,0);sh4.quadraticCurveTo(0,s*0.25,s/2,0);
-      return new THREE.ExtrudeGeometry(sh4,{depth:s*0.05,bevelEnabled:true,bevelThickness:s*0.02,bevelSize:s*0.02,bevelSegments:4});
-    }
-    default: return new THREE.SphereGeometry(s/2,48,32);
+const pivot = new THREE.Object3D(); scene.add(pivot);
+
+// ─── GLB LOADER ─────────────────────────────────────────────
+// Load the GLTFLoader from CDN
+let GLTFLoader = null;
+function loadGLTFLoader() {
+  return new Promise((resolve) => {
+    if(GLTFLoader){resolve();return;}
+    const s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js';
+    s.onload = () => { GLTFLoader = THREE.GLTFLoader; resolve(); };
+    s.onerror = () => resolve(); // fail silently, fallback to primitives
+    document.head.appendChild(s);
+  });
+}
+loadGLTFLoader();
+
+// ─── MODEL LIBRARY ──────────────────────────────────────────
+// Curated free GLB models from publicly accessible CDNs
+const MODEL_LIBRARY = {
+  car:       'https://modelviewer.dev/shared-assets/models/glTF-Sample-Assets/Models/ToyCar/glTF-Binary/ToyCar.glb',
+  sportscar: 'https://modelviewer.dev/shared-assets/models/glTF-Sample-Assets/Models/ToyCar/glTF-Binary/ToyCar.glb',
+  vehicle:   'https://modelviewer.dev/shared-assets/models/glTF-Sample-Assets/Models/ToyCar/glTF-Binary/ToyCar.glb',
+  helmet:    'https://modelviewer.dev/shared-assets/models/glTF-Sample-Assets/Models/DamagedHelmet/glTF-Binary/DamagedHelmet.glb',
+  astronaut: 'https://modelviewer.dev/shared-assets/models/Astronaut.glb',
+  robot:     'https://modelviewer.dev/shared-assets/models/RobotExpressive/RobotExpressive.glb',
+  duck:      'https://modelviewer.dev/shared-assets/models/glTF-Sample-Assets/Models/Duck/glTF-Binary/Duck.glb',
+  fox:       'https://modelviewer.dev/shared-assets/models/glTF-Sample-Assets/Models/Fox/glTF-Binary/Fox.glb',
+  horse:     'https://modelviewer.dev/shared-assets/models/glTF-Sample-Assets/Models/Horse/glTF-Binary/Horse.glb',
+  lantern:   'https://modelviewer.dev/shared-assets/models/glTF-Sample-Assets/Models/LanternPole/glTF-Binary/LanternPole.glb',
+  avocado:   'https://modelviewer.dev/shared-assets/models/glTF-Sample-Assets/Models/Avocado/glTF-Binary/Avocado.glb',
+  shoe:      'https://modelviewer.dev/shared-assets/models/glTF-Sample-Assets/Models/MaterialsVariantsShoe/glTF-Binary/MaterialsVariantsShoe.glb',
+  drone:     'https://cdn.jsdelivr.net/gh/mrdoob/three.js@r128/examples/models/gltf/Parrot.glb',
+  bird:      'https://cdn.jsdelivr.net/gh/mrdoob/three.js@r128/examples/models/gltf/Parrot.glb',
+  fish:      'https://cdn.jsdelivr.net/gh/mrdoob/three.js@r128/examples/models/gltf/Fish.glb',
+  horse2:    'https://cdn.jsdelivr.net/gh/mrdoob/three.js@r128/examples/models/gltf/Horse.glb',
+  flamingo:  'https://cdn.jsdelivr.net/gh/mrdoob/three.js@r128/examples/models/gltf/Flamingo.glb',
+  stork:     'https://cdn.jsdelivr.net/gh/mrdoob/three.js@r128/examples/models/gltf/Stork.glb',
+};
+
+function matchModel(query) {
+  const q = query.toLowerCase();
+  for(const [key, url] of Object.entries(MODEL_LIBRARY)) {
+    if(q.includes(key)) return {key, url};
   }
+  // fuzzy fallbacks
+  if(q.match(/car|vehicle|truck|suv|sedan/)) return {key:'car', url:MODEL_LIBRARY.car};
+  if(q.match(/robot|mech|android/)) return {key:'robot', url:MODEL_LIBRARY.robot};
+  if(q.match(/person|human|man|woman|figure/)) return {key:'astronaut', url:MODEL_LIBRARY.astronaut};
+  if(q.match(/animal|creature|bird|parrot/)) return {key:'bird', url:MODEL_LIBRARY.bird};
+  if(q.match(/helmet|head|armor/)) return {key:'helmet', url:MODEL_LIBRARY.helmet};
+  return null;
 }
 
-function makeMat(hex,metal=0.85,rough=0.12,emissive=0,transparent=false,opacity=1) {
-  return new THREE.MeshStandardMaterial({
-    color:new THREE.Color(hex),metalness:metal,roughness:rough,
-    emissive:new THREE.Color(emissive||0),emissiveIntensity:emissive?1.8:0,
-    transparent,opacity
+// ─── JARVIS PROXY SEARCH ────────────────────────────────────
+const API = 'https://api.heyjarvis.me';
+
+async function searchAndLoadModel(query) {
+  showModelLoading('SEARCHING MODELS');
+  // Try library first
+  const lib = matchModel(query);
+  if(lib) {
+    await loadGLBFromUrl(lib.url, lib.key, query);
+    return;
+  }
+  // Try JARVIS proxy search
+  const token = localStorage.getItem('jarvis_token')||'';
+  try {
+    const res = await fetch(`${API}/search-models`, {
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},
+      body: JSON.stringify({query})
+    });
+    const data = await res.json();
+    if(data.results && data.results.length > 0) {
+      const model = data.results[0];
+      const url = model.downloadUrl ? `${API}${model.downloadUrl}` : model.url;
+      showModelLoading('LOADING: '+model.name.substring(0,20).toUpperCase());
+      await loadGLBFromUrl(url, model.name, query);
+      return;
+    }
+  } catch(e) { console.log('[SEARCH]', e); }
+  // Final fallback — build with primitives
+  hideModelLoading();
+  return null; // signal to use AI primitive builder
+}
+
+let loadedModels = [];
+
+async function loadGLBFromUrl(url, name, originalQuery) {
+  if(!GLTFLoader) await loadGLTFLoader();
+  if(!GLTFLoader) {
+    hideModelLoading();
+    addAIMsg("GLB loader unavailable. Try refreshing.");
+    return;
+  }
+  return new Promise((resolve) => {
+    const loader = new THREE.GLTFLoader();
+    loader.load(
+      url,
+      (gltf) => {
+        hideModelLoading();
+        // Clear previous models
+        loadedModels.forEach(m => { pivot.remove(m); });
+        loadedModels = [];
+
+        const model = gltf.scene;
+        // Auto-scale to fit nicely
+        const box = new THREE.Box3().setFromObject(model);
+        const size = new THREE.Vector3();
+        box.getSize(size);
+        const maxDim = Math.max(size.x, size.y, size.z);
+        const targetSize = 100;
+        const scale = targetSize / maxDim;
+        model.scale.setScalar(scale);
+
+        // Center on ground
+        box.setFromObject(model);
+        const center = new THREE.Vector3();
+        box.getCenter(center);
+        model.position.set(-center.x, -box.min.y * scale, -center.z);
+
+        // Enable shadows on all meshes
+        model.traverse(child => {
+          if(child.isMesh) {
+            child.castShadow = true;
+            child.receiveShadow = true;
+          }
+        });
+
+        pivot.add(model);
+        loadedModels.push(model);
+
+        // Nice camera angle
+        tZoom = 220; tRotX = 18; tRotY = 30;
+        updateInfo(name);
+        addAIMsg(`Loaded <strong>${name}</strong> — real 3D model. Drag to orbit, scroll to zoom. Try "make it spin" or ask me to import something else.`);
+        resolve();
+      },
+      (progress) => {
+        if(progress.total > 0) {
+          const pct = Math.round(progress.loaded / progress.total * 100);
+          showModelLoading('LOADING '+pct+'%');
+        }
+      },
+      (error) => {
+        hideModelLoading();
+        console.log('[GLB ERROR]', error);
+        addAIMsg("Couldn't load that model. Try: car, robot, astronaut, helmet, duck, flamingo, fox, shoe, avocado.");
+        resolve();
+      }
+    );
   });
 }
 
-// ─── OBJECTS ────────────────────────────────────────────────
-let objects={},objCount=0,partCount=0;
-function addObj(name,geo,mat,pos=[0,0,0],rot=[0,0,0],scale=[1,1,1]) {
+// ─── PRIMITIVE FALLBACK ─────────────────────────────────────
+function makeGeo(type, size) {
+  const s=size;
+  switch(type) {
+    case 'sphere': return new THREE.SphereGeometry(s/2,64,48);
+    case 'cylinder': return new THREE.CylinderGeometry(s*0.4,s*0.4,s,64,6);
+    case 'box': return new THREE.BoxGeometry(s,s,s,4,4,4);
+    case 'torus': return new THREE.TorusGeometry(s/2,s/7,32,100);
+    case 'cone': return new THREE.ConeGeometry(s/2,s*1.3,64,8);
+    case 'disc': return new THREE.CylinderGeometry(s/2,s/2,s*0.08,64,2);
+    default: return new THREE.SphereGeometry(s/2,48,32);
+  }
+}
+function makeMat(hex,metal=0.85,rough=0.12,emissive=0,transparent=false,opacity=1) {
+  return new THREE.MeshStandardMaterial({color:new THREE.Color(hex),metalness:metal,roughness:rough,emissive:new THREE.Color(emissive||0),emissiveIntensity:emissive?1.8:0,transparent,opacity});
+}
+let primitiveObjects={}, objCount=0, partCount=0;
+function addPrim(name,geo,mat,pos,rot,scale) {
   const mesh=new THREE.Mesh(geo,mat);
   mesh.position.set(...pos);mesh.rotation.set(...rot.map(r=>r*Math.PI/180));mesh.scale.set(...scale);
-  mesh.castShadow=true;mesh.receiveShadow=true;pivot.add(mesh);objects[name]=mesh;partCount++;
+  mesh.castShadow=true;mesh.receiveShadow=true;pivot.add(mesh);primitiveObjects[name]=mesh;partCount++;
   const tgt=new THREE.Vector3(...scale);mesh.scale.multiplyScalar(0.001);let t=0;
   const a=setInterval(()=>{t=Math.min(t+0.07,1);const e=1-Math.pow(1-t,3);mesh.scale.set(tgt.x*e,tgt.y*e,tgt.z*e);if(t>=1)clearInterval(a);},14);
-  updateInfo();return mesh;
 }
+
 function clearAll() {
-  Object.values(objects).forEach(m=>{pivot.remove(m);if(Array.isArray(m.material))m.material.forEach(x=>x.dispose());else m.material.dispose();m.geometry.dispose();});
-  objects={};partCount=0;updateInfo();toast('Scene cleared');
+  loadedModels.forEach(m=>{pivot.remove(m);});loadedModels=[];
+  Object.values(primitiveObjects).forEach(m=>{pivot.remove(m);m.geometry.dispose();m.material.dispose();});
+  primitiveObjects={};partCount=0;updateInfo('Empty');toast('Scene cleared');
 }
-function updateInfo() {
-  document.getElementById('info-parts').textContent=partCount;
-  document.getElementById('tool-label').textContent=partCount+' parts';
-  if(!partCount){document.getElementById('obj-info').classList.remove('visible');return;}
-  document.getElementById('obj-info').classList.add('visible');
-  const box=new THREE.Box3();Object.values(objects).forEach(m=>box.expandByObject(m));
-  const sz=new THREE.Vector3();box.getSize(sz);
-  document.getElementById('info-height').textContent=Math.round(sz.y);
-  document.getElementById('info-width').textContent=Math.round(Math.max(sz.x,sz.z));
+
+function updateInfo(label) {
+  const total = loadedModels.length + Object.keys(primitiveObjects).length;
+  document.getElementById('info-parts').textContent = total;
+  document.getElementById('info-mode').textContent = loadedModels.length>0 ? 'GLB' : 'PRIM';
+  document.getElementById('tool-label').textContent = label ? label.substring(0,18) : total+' objects';
+  if(total>0) document.getElementById('obj-info').classList.add('visible');
+  else document.getElementById('obj-info').classList.remove('visible');
+}
+
+// ─── MODEL LOADING UI ────────────────────────────────────────
+function showModelLoading(txt) {
+  document.getElementById('ml-txt').textContent = txt;
+  document.getElementById('model-loading').classList.add('show');
+}
+function hideModelLoading() {
+  document.getElementById('model-loading').classList.remove('show');
 }
 
 // ─── CAMERA CONTROLS ────────────────────────────────────────
-let currentMode='orbit',drag=false,px=0,py=0;
+let currentMode='orbit',drag=false,mpx=0,mpy=0;
 let rotX=12,rotY=0,tRotX=12,tRotY=0,zoom=280,tZoom=280,panX=0,panY=0,tPanX=0,tPanY=0;
 const ease=0.075;
+let autoSpin = false;
+
 function setMode(m){currentMode=m;document.querySelectorAll('.mode-btn:not(.move-btn)').forEach(b=>b.classList.toggle('active',b.dataset.mode===m));toast('Mode: '+m.toUpperCase());}
-function resetCamera(){tRotX=12;tRotY=0;tZoom=280;tPanX=0;tPanY=0;toast('Camera reset');}
-canvas.addEventListener('mousedown',e=>{if(moveMode)return;drag=true;px=e.clientX;py=e.clientY;canvas.style.cursor='grabbing';});
+function resetCamera(){tRotX=12;tRotY=0;tZoom=280;tPanX=0;tPanY=0;autoSpin=false;toast('Camera reset');}
+
+canvas.addEventListener('mousedown',e=>{if(moveMode)return;drag=true;mpx=e.clientX;mpy=e.clientY;canvas.style.cursor='grabbing';});
 window.addEventListener('mouseup',()=>{drag=false;canvas.style.cursor='default';});
 window.addEventListener('mousemove',e=>{
   if(!drag||moveMode)return;
-  const dx=e.clientX-px,dy=e.clientY-py;
+  const dx=e.clientX-mpx,dy=e.clientY-mpy;
   if(currentMode==='orbit'){tRotY+=dx*0.38;tRotX=Math.max(-80,Math.min(80,tRotX+dy*0.28));}
   else if(currentMode==='pan'){tPanX+=dx*0.5;tPanY-=dy*0.5;}
-  px=e.clientX;py=e.clientY;
+  mpx=e.clientX;mpy=e.clientY;
 });
 canvas.addEventListener('wheel',e=>{tZoom=Math.max(50,Math.min(900,tZoom+e.deltaY*0.45));},{passive:true});
-let touches=[],lastPD=0,lastTA=0;
-canvas.addEventListener('touchstart',e=>{e.preventDefault();touches=Array.from(e.touches);if(touches.length===1){px=touches[0].clientX;py=touches[0].clientY;}if(touches.length===2){lastPD=gpd(touches);lastTA=gta(touches);}},{passive:false});
+
+let touches2=[],lpd=0,lta=0;
+canvas.addEventListener('touchstart',e=>{e.preventDefault();touches2=Array.from(e.touches);if(touches2.length===1){mpx=touches2[0].clientX;mpy=touches2[0].clientY;}if(touches2.length===2){lpd=gpd2(touches2);lta=gta2(touches2);}},{passive:false});
 canvas.addEventListener('touchmove',e=>{
   e.preventDefault();const t=Array.from(e.touches);
-  if(t.length===1&&!moveMode){const dx=t[0].clientX-px,dy=t[0].clientY-py;tRotY+=dx*0.5;tRotX=Math.max(-80,Math.min(80,tRotX+dy*0.38));px=t[0].clientX;py=t[0].clientY;}
-  if(t.length===2){const d=gpd(t);tZoom=Math.max(50,Math.min(900,tZoom+(lastPD-d)*1.2));lastPD=d;const a=gta(t);tRotY+=(a-lastTA)*25;lastTA=a;}
-  touches=t;
+  if(t.length===1&&!moveMode){const dx=t[0].clientX-mpx,dy=t[0].clientY-mpy;tRotY+=dx*0.5;tRotX=Math.max(-80,Math.min(80,tRotX+dy*0.38));mpx=t[0].clientX;mpy=t[0].clientY;}
+  if(t.length===2){const d=gpd2(t);tZoom=Math.max(50,Math.min(900,tZoom+(lpd-d)*1.2));lpd=d;const a=gta2(t);tRotY+=(a-lta)*25;lta=a;}
+  touches2=t;
 },{passive:false});
-function gpd(t){const dx=t[0].clientX-t[1].clientX,dy=t[0].clientY-t[1].clientY;return Math.sqrt(dx*dx+dy*dy);}
-function gta(t){return Math.atan2(t[1].clientY-t[0].clientY,t[1].clientX-t[0].clientX);}
+function gpd2(t){const dx=t[0].clientX-t[1].clientX,dy=t[0].clientY-t[1].clientY;return Math.sqrt(dx*dx+dy*dy);}
+function gta2(t){return Math.atan2(t[1].clientY-t[0].clientY,t[1].clientX-t[0].clientX);}
+
+// ─── CAMERA TOGGLE ──────────────────────────────────────────
+let camStream=null, camOn=false;
+
+async function toggleCamera() {
+  const btn=document.getElementById('cam-btn');
+  const vid=document.getElementById('cam-feed');
+  const ovl=document.getElementById('cam-overlay');
+  if(!camOn) {
+    try {
+      camStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:320,height:240},audio:false});
+      vid.srcObject=camStream;
+      vid.style.display='block';
+      ovl.style.display='block';
+      btn.classList.add('active');
+      camOn=true;
+      toast('Camera on');
+    } catch(e) {
+      toast('Camera denied');
+    }
+  } else {
+    if(camStream){camStream.getTracks().forEach(t=>t.stop());camStream=null;}
+    vid.style.display='none';ovl.style.display='none';
+    btn.classList.remove('active');
+    camOn=false;
+    // Also stop move mode if active
+    if(moveMode){moveMode=false;document.querySelector('.move-btn').classList.remove('active');stopHandTracking();}
+    toast('Camera off');
+  }
+}
 
 // ─── HAND TRACKING ──────────────────────────────────────────
-let moveMode=false,handsInst=null,handCam=null,handStream=null,lastHandPos=null,lastHandPD=0;
+let moveMode=false,handsInst=null,handCamInst=null,lastHandPos=null,lastHandPD2=0;
 
 function toggleMove() {
   const btn=document.querySelector('.move-btn');
@@ -354,48 +532,41 @@ function toggleMove() {
 }
 
 async function startHandTracking() {
-  const vid=document.getElementById('hand-video');
   const hc=document.getElementById('hand-canvas');
-  const hs=document.getElementById('hand-status');
-  vid.style.display='block';hc.style.display='block';hs.style.display='block';
-  hc.width=innerWidth;hc.height=innerHeight;
+  hc.width=innerWidth;hc.height=innerHeight;hc.style.display='block';
+
+  // Make sure camera is on
+  if(!camOn) await toggleCamera();
+
   try {
-    handStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:320,height:240}});
-    vid.srcObject=handStream;
-    // Load MediaPipe Hands dynamically
-    if(typeof Hands==='undefined') {
-      hs.textContent='LOADING MEDIAPIPE...';
-      await loadScript('https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js');
-      await loadScript('https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js');
-      await new Promise(r=>setTimeout(r,500));
-    }
+    await loadScript('https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js');
+    await loadScript('https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js');
+    await new Promise(r=>setTimeout(r,600));
+
     handsInst=new Hands({locateFile:f=>`https://cdn.jsdelivr.net/npm/@mediapipe/hands/${f}`});
-    handsInst.setOptions({maxNumHands:2,modelComplexity:1,minDetectionConfidence:0.7,minTrackingConfidence:0.6});
+    handsInst.setOptions({maxNumHands:2,modelComplexity:1,minDetectionConfidence:0.72,minTrackingConfidence:0.65});
     handsInst.onResults(onHandResults);
-    handCam=new Camera(vid,{onFrame:async()=>{if(handsInst&&moveMode)await handsInst.send({image:vid});},width:320,height:240});
-    handCam.start();
-    hs.textContent='ACTIVE - WAVE TO ORBIT';
+
+    const vid=document.getElementById('cam-feed');
+    handCamInst=new Camera(vid,{
+      onFrame:async()=>{if(handsInst&&moveMode)await handsInst.send({image:vid});},
+      width:320,height:240
+    });
+    handCamInst.start();
+    document.getElementById('cam-overlay').textContent='HAND TRACKING ACTIVE';
   } catch(e) {
-    hs.textContent='CAM ERROR';
+    console.error('[HANDS]',e);
     document.querySelector('.move-btn').classList.remove('active');
     moveMode=false;
-    console.error('[HANDS]',e);
-    toast('Camera error: '+e.message.substring(0,30));
+    toast('Hand tracking failed');
   }
 }
 
-function loadScript(src) {
-  return new Promise((resolve,reject)=>{
-    if(document.querySelector(`script[src="${src}"]`)){resolve();return;}
-    const s=document.createElement('script');s.src=src;s.onload=resolve;s.onerror=reject;document.head.appendChild(s);
-  });
-}
-
 function stopHandTracking() {
-  ['hand-video','hand-canvas','hand-status'].forEach(id=>{document.getElementById(id).style.display='none';});
-  if(handCam){try{handCam.stop();}catch(e){}handCam=null;}
-  if(handStream){handStream.getTracks().forEach(t=>t.stop());handStream=null;}
+  document.getElementById('hand-canvas').style.display='none';
+  if(handCamInst){try{handCamInst.stop();}catch(e){}handCamInst=null;}
   if(handsInst){handsInst.close();handsInst=null;}
+  if(camOn) document.getElementById('cam-overlay').textContent='CAMERA LIVE';
   lastHandPos=null;
 }
 
@@ -403,98 +574,64 @@ function onHandResults(results) {
   const hc=document.getElementById('hand-canvas');
   const ctx=hc.getContext('2d');
   ctx.clearRect(0,0,hc.width,hc.height);
-  if(!results.multiHandLandmarks||!results.multiHandLandmarks.length){
-    lastHandPos=null;document.getElementById('hand-status').textContent='NO HANDS';return;
-  }
+  if(!results.multiHandLandmarks||!results.multiHandLandmarks.length){lastHandPos=null;return;}
   const hands=results.multiHandLandmarks;
-  document.getElementById('hand-status').textContent=hands.length===2?'TWO HANDS = ZOOM':'ORBIT MODE';
   for(const lm of hands) drawHand(ctx,lm,hc.width,hc.height);
-
   if(hands.length===1) {
-    const lm=hands[0];
-    const palm=lm[9];
-    const nx=1-palm.x,ny=palm.y; // mirrored x
-    // Pinch detection (thumb tip vs index tip)
+    const lm=hands[0],palm=lm[9];
+    const nx=1-palm.x,ny=palm.y;
     const th=lm[4],ix=lm[8];
     const pinch=Math.hypot(th.x-ix.x,th.y-ix.y)<0.06;
-    if(lastHandPos&&!pinch){
-      const dx=(nx-lastHandPos.x)*innerWidth;
-      const dy=(ny-lastHandPos.y)*innerHeight;
-      tRotY+=dx*0.55;
-      tRotX=Math.max(-80,Math.min(80,tRotX+dy*0.45));
-    }
-    // Draw pinch indicator
-    const tx2=(1-th.x)*hc.width,ty2=th.y*hc.height;
-    const ix2=(1-ix.x)*hc.width,iy2=ix.y*hc.height;
-    ctx.beginPath();ctx.arc((tx2+ix2)/2,(ty2+iy2)/2,pinch?18:8,0,Math.PI*2);
+    if(lastHandPos&&!pinch){tRotY+=(nx-lastHandPos.x)*innerWidth*0.55;tRotX=Math.max(-80,Math.min(80,tRotX+(ny-lastHandPos.y)*innerHeight*0.45));}
+    const tx=(1-th.x)*hc.width,ty=th.y*hc.height,ix2=(1-ix.x)*hc.width,iy=ix.y*hc.height;
+    ctx.beginPath();ctx.arc((tx+ix2)/2,(ty+iy)/2,pinch?20:9,0,Math.PI*2);
     ctx.fillStyle=pinch?'rgba(0,245,255,0.35)':'rgba(0,245,255,0.12)';ctx.fill();
     ctx.strokeStyle='rgba(0,245,255,0.85)';ctx.lineWidth=2;ctx.stroke();
     lastHandPos={x:nx,y:ny};
-  } else if(hands.length===2) {
-    const c0={x:1-hands[0][9].x,y:hands[0][9].y};
-    const c1={x:1-hands[1][9].x,y:hands[1][9].y};
+  } else if(hands.length===2){
+    const c0={x:1-hands[0][9].x,y:hands[0][9].y},c1={x:1-hands[1][9].x,y:hands[1][9].y};
     const d=Math.hypot(c0.x-c1.x,c0.y-c1.y);
-    if(lastHandPD>0){tZoom=Math.max(50,Math.min(900,tZoom+(lastHandPD-d)*420));}
-    lastHandPD=d;lastHandPos=null;
+    if(lastHandPD2>0)tZoom=Math.max(50,Math.min(900,tZoom+(lastHandPD2-d)*450));
+    lastHandPD2=d;lastHandPos=null;
   }
 }
 
-function drawHand(ctx,lm,w,h) {
+function drawHand(ctx,lm,w,h){
   const conn=[[0,1],[1,2],[2,3],[3,4],[0,5],[5,6],[6,7],[7,8],[5,9],[9,10],[10,11],[11,12],[9,13],[13,14],[14,15],[15,16],[13,17],[17,18],[18,19],[19,20],[0,17]];
   ctx.strokeStyle='rgba(0,245,255,0.45)';ctx.lineWidth=1.5;
-  for(const [a,b] of conn){ctx.beginPath();ctx.moveTo((1-lm[a].x)*w,lm[a].y*h);ctx.lineTo((1-lm[b].x)*w,lm[b].y*h);ctx.stroke();}
+  for(const[a,b]of conn){ctx.beginPath();ctx.moveTo((1-lm[a].x)*w,lm[a].y*h);ctx.lineTo((1-lm[b].x)*w,lm[b].y*h);ctx.stroke();}
   const tips=[4,8,12,16,20];
-  for(let i=0;i<lm.length;i++){
-    ctx.beginPath();ctx.arc((1-lm[i].x)*w,lm[i].y*h,tips.includes(i)?5:3,0,Math.PI*2);
-    ctx.fillStyle=tips.includes(i)?'rgba(0,245,255,0.9)':'rgba(0,245,255,0.4)';ctx.fill();
-  }
+  for(let i=0;i<lm.length;i++){ctx.beginPath();ctx.arc((1-lm[i].x)*w,lm[i].y*h,tips.includes(i)?5:3,0,Math.PI*2);ctx.fillStyle=tips.includes(i)?'rgba(0,245,255,0.9)':'rgba(0,245,255,0.4)';ctx.fill();}
 }
 
-// ─── UI ────────────────────────────────────────────────────
+function loadScript(src){
+  return new Promise((res,rej)=>{
+    if(document.querySelector(`script[src="${src}"]`)){res();return;}
+    const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=rej;document.head.appendChild(s);
+  });
+}
+
+// ─── UI ─────────────────────────────────────────────────────
 let sidebarOpen=true;
 function toggleSidebar(){sidebarOpen=!sidebarOpen;document.getElementById('sidebar').classList.toggle('closed',!sidebarOpen);}
 let gridOn=false;
 function toggleGrid(){gridOn=!gridOn;document.getElementById('grid-overlay').classList.toggle('show',gridOn);document.getElementById('grid-btn').classList.toggle('active',gridOn);}
 function screenshot(){renderer.render(scene,camera);const l=document.createElement('a');l.download='forge-3d.png';l.href=canvas.toDataURL('image/png');l.click();toast('Screenshot saved');}
-function openPrint(){if(!partCount){toast('Build something first');return;}document.getElementById('print-modal').classList.add('open');}
+function openPrint(){document.getElementById('print-modal').classList.add('open');}
 function closePrint(){document.getElementById('print-modal').classList.remove('open');}
-
-// Real Web Bluetooth
-async function scanBT() {
+async function scanBT(){
   const btn=document.getElementById('scan-btn');
-  if(!navigator.bluetooth){toast('Need Chrome + HTTPS for BT');return;}
+  if(!navigator.bluetooth){toast('Need Chrome + HTTPS');return;}
   btn.textContent='Scanning...';
-  try {
-    const device=await navigator.bluetooth.requestDevice({
-      filters:[{namePrefix:'Bambu'},{namePrefix:'Prusa'},{namePrefix:'Elegoo'},{namePrefix:'Creality'},{namePrefix:'Ender'},{namePrefix:'AnkerMake'}],
-      optionalServices:['generic_access']
-    });
-    btn.textContent='Scan nearby (real BT)';closePrint();
-    document.getElementById('bt-btn').classList.add('connected');
-    toast('Connected: '+device.name);
-    addAIMsg('Connected to <strong>'+device.name+'</strong> via Bluetooth. Estimated print time ~2h 40m at 0.2mm layer height.');
-  } catch(e) {
-    btn.textContent='Scan nearby (real BT)';
-    if(e.name!=='NotFoundError')toast('BT: '+e.message.substring(0,30));
-    else toast('No printers found nearby');
-  }
+  try{const d=await navigator.bluetooth.requestDevice({filters:[{namePrefix:'Bambu'},{namePrefix:'Prusa'},{namePrefix:'Elegoo'},{namePrefix:'Creality'}],optionalServices:['generic_access']});btn.textContent='Scan nearby';closePrint();document.getElementById('bt-btn').classList.add('connected');toast('BT: '+d.name);addAIMsg('Connected to <strong>'+d.name+'</strong> via Bluetooth.');}
+  catch(e){btn.textContent='Scan nearby';if(e.name!=='NotFoundError')toast('BT: '+e.message.substring(0,28));else toast('No printers found');}
 }
-function demoConnect(el,name) {
-  document.querySelectorAll('.bt-device').forEach(d=>{d.style.borderColor='';d.style.background='';});
-  el.style.borderColor='#a855f7';el.style.background='rgba(168,85,247,0.1)';
-  setTimeout(()=>{
-    closePrint();document.getElementById('bt-btn').classList.add('connected');
-    toast('Demo: '+name);
-    addAIMsg('Demo mode: <strong>'+name+'</strong> paired. Real Bluetooth requires Chrome over HTTPS with a physical printer nearby. Click "Scan nearby" for the real Web BT picker.');
-  },700);
-}
-
+function demoConnect(el,name){document.querySelectorAll('.bt-device').forEach(d=>{d.style.borderColor='';d.style.background='';});el.style.borderColor='#a855f7';el.style.background='rgba(168,85,247,0.1)';setTimeout(()=>{closePrint();document.getElementById('bt-btn').classList.add('connected');toast('Demo: '+name);addAIMsg('Demo: <strong>'+name+'</strong> paired. Use "Scan nearby" for a real printer.');},700);}
 let toastTimer;
 function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2500);}
 
-// ─── JARVIS CHAT ────────────────────────────────────────────
-const API='https://api.heyjarvis.me';
-let convHistory=[],isThinking=false;
+// ─── JARVIS CHAT ─────────────────────────────────────────────
+let convHistory=[], isThinking=false;
 function addUserMsg(t){const m=document.getElementById('messages');m.innerHTML+=`<div class="msg user"><div class="msg-orb user"></div><div class="msg-bubble">${esc(t)}</div></div>`;m.scrollTop=m.scrollHeight;}
 function addAIMsg(t){const m=document.getElementById('messages');m.innerHTML+=`<div class="msg ai"><div class="msg-orb ai"></div><div class="msg-bubble">${t}</div></div>`;m.scrollTop=m.scrollHeight;}
 function showThinking(){const m=document.getElementById('messages');m.innerHTML+=`<div class="msg ai" id="thinking-msg"><div class="msg-orb ai"></div><div class="msg-bubble"><div class="thinking-dots"><span></span><span></span><span></span></div></div></div>`;m.scrollTop=m.scrollHeight;document.getElementById('ai-orb').classList.add('thinking');}
@@ -507,87 +644,65 @@ async function sendMessage() {
   const text=inp.value.trim();
   if(!text||isThinking)return;
   inp.value='';inp.style.height='auto';
-  addUserMsg(text);convHistory.push({role:'user',content:text});
+  addUserMsg(text);
   isThinking=true;showThinking();
   document.getElementById('top-status').textContent='Thinking...';
-  const token=localStorage.getItem('jarvis_token')||'';
 
-  const sys=`You are FORGE's 3D AI co-pilot. Control a Three.js 3D scene with primitive shapes.
-
-RESPOND ONLY WITH RAW JSON. Zero prose, zero markdown, zero backticks.
-
-GEOMETRY RULES — make it look BEAUTIFUL:
-- Use 20-40 parts for rich detail on complex objects
-- Y positions: every part must have pos[1] >= (its height)/2 so it sits on the ground
-- For CARS: use roundbox scaled wide and low for the body (e.g. scale:[3.5,0.5,1.4]), layer a smaller roundbox on top for the cabin roof, 4 wheels each made of a wide torus + inner disc + center sphere, front grille = thin roundbox, headlights = small spheres, exhausts = tiny cylinders, spoiler = flat roundbox at rear
-- Use roundbox instead of box for everything that should look smooth and realistic
-- High metalness (0.9+) and low roughness (0.05-0.1) for chrome/metal parts
-- Glass: opacity 0.3, metal 0.1, rough 0.05, color 8830975
-- Carbon fiber: color 2105376, metal 0.3, rough 0.4
-- Tires: color 2236962, metal 0, rough 0.9, torus type
-- Wheel spokes: use thin disc or cylinder scaled small, rotated to create spoke effect
-
-AVAILABLE TYPES: sphere box roundbox cylinder tapered cone torus torusknot capsule disc thindisc halfball ring wedge arch spoiler
-
-COLOR INTEGERS: chrome=14737400 silver=12632256 black=1118481 white=15921906 red=13369344 blue=3329258 gold=16766720 darkgray=4473924 rubber=2236962 glass=8830975 orange=16746240 carbon=2105376 yellow=16776960
-
-JSON FORMAT:
-{"action":"build","label":"label","parts":[{"name":"UniqueName","type":"roundbox","color":14737400,"size":60,"pos":[0,15,0],"rot":[0,0,0],"scale":[3.5,0.5,1.4],"metal":0.9,"rough":0.05,"emissive":0,"opacity":1.0}]}
-
-EDIT FORMAT: {"action":"edit","label":"...","edits":[{"name":"PartName","pos":[...],"rot":[...],"scale":[...]}]}
-CLEAR FORMAT: {"action":"clear"}`;
-
-  try {
-    const res=await fetch(`${API}/design-command`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({command:text,systemPrompt:sys,history:convHistory.slice(-8)})});
-    const raw=await res.json();
-    let data=null;
-    if(raw.parts||raw.action)data=raw;
-    else if(raw.response){const clean=raw.response.replace(/```json\n?/g,'').replace(/```\n?/g,'').trim();const m=clean.match(/\{[\s\S]*\}/);if(m)try{data=JSON.parse(m[0]);}catch(e2){}}
-    hideThinking();
-    if(!data)throw new Error('parse fail');
-
-    if(data.action==='clear'){clearAll();addAIMsg("Cleared. What shall I build?");}
-    else if(data.action==='edit'&&data.edits){
-      let n=0;
-      data.edits.forEach(e=>{const o=objects[e.name];if(!o)return;if(e.pos)o.position.set(...e.pos);if(e.rot)o.rotation.set(...e.rot.map(r=>r*Math.PI/180));if(e.scale)o.scale.set(...e.scale);if(e.color!==undefined)o.material.color.set(e.color);n++;});
-      addAIMsg(data.label||`Updated ${n} parts.`);updateInfo();
-    } else if(data.parts&&data.parts.length>0){
-      if(data.action==='build')clearAll();
-      let maxY=0;data.parts.forEach(p=>{const y=(p.pos?.[1]||0)+(p.size||30)/2;if(y>maxY)maxY=y;});
-      data.parts.forEach(p=>{
-        const geo=makeGeo(p.type||'sphere',p.size||30);
-        const hex=p.color!==undefined?'#'+p.color.toString(16).padStart(6,'0'):'#4488ff';
-        const mat=makeMat(hex,p.metal??0.85,p.rough??0.12,p.emissive||0,(p.opacity||1)<1,p.opacity||1);
-        addObj(p.name||('P'+(++objCount)),geo,mat,p.pos||[0,15,0],p.rot||[0,0,0],p.scale||[1,1,1]);
-      });
-      tZoom=Math.max(120,maxY*3.8);tRotX=14;tRotY=18;
-      convHistory.push({role:'assistant',content:JSON.stringify({action:'build',label:data.label})});
-      addAIMsg((data.label||'Done')+` — <strong>${data.parts.length} parts</strong>. Say "make it shinier", "add chrome wheels", "rotate 30 degrees", etc.`);
-    } else {
-      addAIMsg("Try something more specific like <strong>\"a low sports car with wide body, spoke wheels and spoiler\"</strong>.");
-    }
-  } catch(e) {
-    hideThinking();addAIMsg("Something went wrong. Try again.");console.error(e);
+  // Check for spin/animation commands
+  if(text.match(/spin|rotate|turn|animate/i)){
+    hideThinking();autoSpin=!autoSpin;
+    addAIMsg(autoSpin?'Auto-spinning now. Say "stop" to stop.':'Stopped spinning.');
+    isThinking=false;document.getElementById('top-status').textContent='Ready';return;
   }
-  isThinking=false;
-  document.getElementById('top-status').textContent=partCount+' parts in scene';
+  if(text.match(/stop|freeze/i)&&autoSpin){hideThinking();autoSpin=false;addAIMsg('Stopped.');isThinking=false;return;}
+  if(text.match(/clear|reset|empty/i)){hideThinking();clearAll();addAIMsg('Scene cleared. What should I import?');isThinking=false;return;}
+
+  // Import/search request
+  const isImport = text.match(/import|load|show|get|find|search|bring|fetch|add/i) || text.match(/a |an /i);
+  if(isImport || text.length < 60) {
+    hideThinking();
+    const result = await searchAndLoadModel(text);
+    if(result === null) {
+      // Fallback: tell user what's available
+      addAIMsg("I couldn't find that model. Try: <strong>car, robot, astronaut, helmet, duck, flamingo, fox, shoe, avocado, bird, horse</strong> — or describe something else and I'll search our proxy.");
+    }
+    isThinking=false;document.getElementById('top-status').textContent='Ready';return;
+  }
+
+  // For other requests, use JARVIS AI
+  const token=localStorage.getItem('jarvis_token')||'';
+  const sys=`You are FORGE's 3D AI assistant. Help users with the 3D studio. Available models to import: car, sportscar, robot, astronaut, helmet, duck, fox, horse, flamingo, bird, shoe, avocado, lantern, drone. Tell users to say "import [thing]" to load a real GLB model. Also tell them about: spin/rotate (auto-spin), clear/reset, camera button for webcam, Move button for hand tracking. Keep responses under 3 sentences.`;
+  try {
+    const res=await fetch(`${API}/design-command`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({command:text,systemPrompt:sys,history:convHistory.slice(-6)})});
+    const raw=await res.json();
+    hideThinking();
+    const reply=raw.response||raw.message||"Try saying 'import a car' or 'import a robot'!";
+    addAIMsg(reply);
+    convHistory.push({role:'user',content:text},{role:'assistant',content:reply});
+  } catch(e){hideThinking();addAIMsg("Try: import car, import robot, import astronaut.");}
+  isThinking=false;document.getElementById('top-status').textContent='Ready';
 }
 
-// ─── RENDER LOOP ────────────────────────────────────────────
+// ─── RENDER LOOP ─────────────────────────────────────────────
 let t=0;
 function animate(){
-  requestAnimationFrame(animate);t+=0.006;
+  requestAnimationFrame(animate);t+=0.008;
   rotX+=(tRotX-rotX)*ease;rotY+=(tRotY-rotY)*ease;
   zoom+=(tZoom-zoom)*ease;panX+=(tPanX-panX)*ease;panY+=(tPanY-panY)*ease;
+  if(autoSpin) tRotY += 0.4;
   pivot.rotation.x=rotX*Math.PI/180;pivot.rotation.y=rotY*Math.PI/180;
   camera.position.z=zoom;camera.position.x=-panX*0.5;camera.position.y=80+panY*0.3;
   camera.lookAt(0,panY*0.3+20,0);
-  holo.intensity=14+Math.sin(t*1.6)*4;fill.intensity=4+Math.sin(t*1.1)*1.5;rim2.intensity=2.5+Math.sin(t*.8)*1;
+  holo.intensity=14+Math.sin(t*1.6)*4;fill.intensity=4+Math.sin(t*1.1)*1.5;rim2.intensity=3+Math.sin(t*.8)*1.2;
   renderer.render(scene,camera);
 }
 animate();
-setTimeout(()=>{const el=document.getElementById('loading');el.style.opacity='0';setTimeout(()=>el.style.display='none',600);},1000);
+
+setTimeout(()=>{const el=document.getElementById('loading');el.style.opacity='0';setTimeout(()=>el.style.display='none',600);},900);
 document.getElementById('sidebar-input').addEventListener('input',function(){this.style.height='auto';this.style.height=Math.min(this.scrollHeight,110)+'px';});
+
+// Auto-load a nice model on start
+setTimeout(()=>loadGLBFromUrl(MODEL_LIBRARY.astronaut,'Astronaut','astronaut'),1200);
 </script>
 </body>
 </html>
