@@ -40,15 +40,24 @@ interface DailyCheck {
 }
 
 function formatMessage(text: string) {
+  const images: string[] = [];
   return text
     .replace(/\[PROGRESS:\d+%\].*?\[\/PROGRESS\]/g, '')
     .replace(/\[CONTINUE_BUTTON:.*?\]/g, '')
+    .replace(/!\[.*?\]\((https?:\/\/[^\)]+)\)/g, '$1')
     .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
     .replace(/\*(.*?)\*/g, '<em>$1</em>')
     .replace(/#{1,3} (.*?)(\n|$)/g, '<strong>$1</strong><br/>')
     .replace(/^- (.*?)$/gm, '• $1')
+    .replace(/(https?:\/\/[^\s<"]+\.(webp|png|jpg|jpeg))/g, (_, url) => {
+  const idx = images.length;
+  const downloadFn = `(async function(){try{const r=await fetch('${url}');const b=await r.blob();const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='jarvis-image.webp';a.click();}catch(e){window.open('${url}','_blank');}})()`;
+  images.push(`<div style="margin-top:8px"><img src="${url}" style="max-width:100%;border-radius:12px;display:block;" /></div>`);
+  return `__IMG_${idx}__`;
+})
     .replace(/\n/g, '<br/>')
-    .replace(/(https?:\/\/[^\s<"]+)/g, '<a href="$1" target="_blank" rel="noopener noreferrer" style="color:#60a5fa;text-decoration:underline;word-break:break-all;">$1</a>');
+    .replace(/(https?:\/\/[^\s<"]+)/g, '<a href="$1" target="_blank" rel="noopener noreferrer" style="color:#60a5fa;text-decoration:underline;word-break:break-all;">$1</a>')
+    .replace(/__IMG_(\d+)__/g, (_, idx) => images[parseInt(idx)]);
 }
 
 function renderMessageExtras(content: string, onContinue: (prompt: string) => void) {
@@ -102,65 +111,34 @@ const API = typeof window !== 'undefined' && window.location.hostname !== 'local
 
 const FREE_LIMIT = 20;
 
+function openUrl(url: string) {
+  const invoke = (window as any).__TAURI_INVOKE__;
+  if (invoke) {
+    invoke('execute_shell', { command: `open "${url}"` });
+  } else {
+    window.open(url, '_blank');
+  }
+}
 // ── Usage bar component ──────────────────────────────────────
-function UsageBar({ used, limit, onUpgrade }: { used: number; limit: number; onUpgrade: () => void }) {
-  const pct = Math.min((used / limit) * 100, 100);
-  const remaining = limit - used;
-  const isWarning = used >= 15 && used < limit;
-  const isLimit = used >= limit;
-
-  const barColor = isLimit
-    ? 'rgba(239,68,68,0.8)'
-    : isWarning
-    ? 'rgba(245,158,11,0.8)'
-    : 'rgba(59,130,246,0.7)';
-
-  const textColor = isLimit
-    ? 'rgba(252,165,165,0.9)'
-    : isWarning
-    ? 'rgba(253,230,138,0.9)'
-    : 'rgba(147,197,253,0.7)';
-
+function TokenBar({ cost, cap, onUpgrade }: { cost: number; cap: number; onUpgrade: () => void }) {
+  const pct = Math.min((cost / cap) * 100, 100);
+  const isWarning = pct >= 70 && pct < 100;
+  const isLimit = pct >= 100;
+  const barColor = isLimit ? 'rgba(239,68,68,0.8)' : isWarning ? 'rgba(245,158,11,0.8)' : 'rgba(59,130,246,0.7)';
+  const textColor = isLimit ? 'rgba(252,165,165,0.9)' : isWarning ? 'rgba(253,230,138,0.9)' : 'rgba(147,197,253,0.6)';
+  const bars = 12;
   return (
-    <div style={{
-      padding: '6px 12px',
-      background: isLimit
-        ? 'rgba(239,68,68,0.06)'
-        : isWarning
-        ? 'rgba(245,158,11,0.06)'
-        : 'rgba(255,255,255,0.02)',
-      borderBottom: `1px solid ${isLimit ? 'rgba(239,68,68,0.15)' : isWarning ? 'rgba(245,158,11,0.12)' : 'rgba(255,255,255,0.05)'}`,
-      display: 'flex',
-      alignItems: 'center',
-      gap: '10px',
-    }}>
-      {/* Bar */}
-      <div style={{ flex: 1, height: '3px', background: 'rgba(255,255,255,0.07)', borderRadius: '999px', overflow: 'hidden' }}>
-        <div style={{
-          height: '100%',
-          width: `${pct}%`,
-          background: barColor,
-          borderRadius: '999px',
-          transition: 'width 0.4s ease',
-        }} />
+    <div style={{ padding: '5px 12px', background: isLimit ? 'rgba(239,68,68,0.05)' : 'var(--jarvis-card)', borderBottom: `1px solid var(--jarvis-border)`, display: 'flex', alignItems: 'center', gap: '10px' }}>
+      <div style={{ display: 'flex', gap: '2px', alignItems: 'center' }}>
+        {Array.from({ length: bars }).map((_, i) => {
+          const filled = (i / bars) * 100 < pct;
+          return <div key={i} style={{ width: '3px', height: '10px', borderRadius: '2px', background: filled ? barColor : 'var(--jarvis-border)', transition: 'background 0.3s' }} />;
+        })}
       </div>
-
-      {/* Label */}
-      <span style={{ fontSize: '11px', color: textColor, whiteSpace: 'nowrap', flexShrink: 0 }}>
-        {isLimit ? 'Daily limit reached' : `${remaining} message${remaining === 1 ? '' : 's'} left today`}
+      <span style={{ fontSize: '10px', color: textColor, whiteSpace: 'nowrap', flexShrink: 0 }}>
+        {isLimit ? 'Daily tokens used' : 'Daily tokens'}
       </span>
-
-      {/* Upgrade link */}
-      <button
-        onClick={onUpgrade}
-        style={{
-          fontSize: '11px', fontWeight: 500,
-          color: isLimit ? 'rgba(252,165,165,1)' : 'rgba(96,165,250,0.8)',
-          background: 'transparent', border: 'none', cursor: 'pointer',
-          padding: '0', textDecoration: 'underline', flexShrink: 0,
-          textUnderlineOffset: '2px',
-        }}
-      >
+      <button onClick={onUpgrade} style={{ fontSize: '10px', fontWeight: 500, color: isLimit ? 'rgba(252,165,165,1)' : 'rgba(96,165,250,0.7)', background: 'transparent', border: 'none', cursor: 'pointer', padding: 0, textDecoration: 'underline', flexShrink: 0, textUnderlineOffset: '2px' }}>
         Go Pro
       </button>
     </div>
@@ -297,37 +275,68 @@ function VoiceModeModal({
     } catch { setVoiceState('idle'); }
   }, [token, speak, onMessageSent]);
 
-  const startListening = useCallback(() => {
-    if (isListeningRef.current) return;
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    if (!SpeechRecognition) return;
-    wakeRecRef.current?.abort();
-    const rec = new SpeechRecognition();
-    rec.continuous = false;
-    rec.interimResults = true;
-    rec.lang = 'en-US';
-    recognitionRef.current = rec;
-    isListeningRef.current = true;
-    setVoiceState('listening');
-    setTranscript('');
-    setResponse('');
-    let finalTranscript = '';
-    rec.onresult = (e: any) => {
-      let interim = '';
-      for (let i = e.resultIndex; i < e.results.length; i++) {
-        if (e.results[i].isFinal) finalTranscript += e.results[i][0].transcript;
-        else interim += e.results[i][0].transcript;
-      }
-      setTranscript(finalTranscript || interim);
-    };
-    rec.onend = () => {
-      isListeningRef.current = false;
-      if (finalTranscript.trim()) sendToJarvisRef.current(finalTranscript.trim());
-      else setVoiceState('idle');
-    };
-    rec.onerror = () => { isListeningRef.current = false; setVoiceState('idle'); };
-    rec.start();
-  }, [sendToJarvis]);
+  const startListening = useCallback(async () => {
+  if (isListeningRef.current) return;
+  const invoke = (window as any).__TAURI_INVOKE__;
+  
+  // ── TAURI: use sox recording ──────────────────────────
+  if (invoke) {
+  isListeningRef.current = true;
+  setVoiceState('listening');
+  setTranscript('');
+  setResponse('');
+  try {
+    const audioBase64 = await invoke('record_audio', { durationSecs: 5 });
+    setVoiceState('thinking');
+    const res = await fetch(`${API}/transcribe`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ audioBase64 }),
+    });
+    const data = await res.json();
+    const text = data.transcript?.trim();
+    if (text) { setTranscript(text); sendToJarvisRef.current(text); }
+    else setVoiceState('idle');
+  } catch (e) { console.log('[VOICE] Error:', e); setVoiceState('idle'); }
+  finally { isListeningRef.current = false; }
+  return;
+}
+
+  // ── BROWSER: use webkitSpeechRecognition ─────────────
+  const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+  console.log('[VOICE] SpeechRecognition available:', !!SpeechRecognition);
+  if (!SpeechRecognition) { console.log('[VOICE] No speech recognition available'); return; }
+  wakeRecRef.current?.abort();
+  const rec = new SpeechRecognition();
+  rec.continuous = false;
+  rec.interimResults = true;
+  rec.lang = 'en-US';
+  recognitionRef.current = rec;
+  isListeningRef.current = true;
+  setVoiceState('listening');
+  setTranscript('');
+  setResponse('');
+  let finalTranscript = '';
+  rec.onresult = (e: any) => {
+    let interim = '';
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      if (e.results[i].isFinal) finalTranscript += e.results[i][0].transcript;
+      else interim += e.results[i][0].transcript;
+    }
+    setTranscript(finalTranscript || interim);
+  };
+  rec.onend = () => {
+    isListeningRef.current = false;
+    if (finalTranscript.trim()) sendToJarvisRef.current(finalTranscript.trim());
+    else setVoiceState('idle');
+  };
+  rec.onerror = (e: any) => {
+    console.log('[VOICE] Recognition error:', e.error, e.message);
+    isListeningRef.current = false;
+    setVoiceState('idle');
+  };
+  rec.start();
+}, [token, sendToJarvis]);
 
   useEffect(() => { startListeningRef.current = startListening; }, [startListening]);
   useEffect(() => { sendToJarvisRef.current = sendToJarvis; }, [sendToJarvis]);
@@ -378,7 +387,7 @@ function VoiceModeModal({
           }, 350);
         }
       };
-      rec.onend = () => { if (wakeLoopRef.current) setTimeout(loop, 200); };
+      rec.onend = () => { if (wakeLoopRef.current) setTimeout(loop, 500); };
       rec.onerror = () => { if (wakeLoopRef.current) setTimeout(loop, 500); };
       try { rec.start(); } catch {}
     };
@@ -459,7 +468,7 @@ function VoiceModeModal({
             <div style={{ position: 'absolute', width: 200, height: 200, borderRadius: '50%', background: (orbConfig as any).ringColor, animation: 'voicePulse1 2s ease-out infinite 0.5s' }} />
           </>
         )}
-        <div onClick={handleOrbClick} style={{ width: 140, height: 140, borderRadius: '50%', background: orbConfig.gradient, boxShadow: orbConfig.glow, transform: `scale(${orbConfig.scale})`, transition: 'transform 0.1s ease, box-shadow 0.2s ease', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden' }}>
+        <div onClick={handleOrbClick} style={{ width: 140, height: 140, borderRadius: '50%', background: orbConfig.gradient, boxShadow: orbConfig.glow, transform: `scale(${orbConfig.scale})`, transition: 'transform 0.1s ease, box-shadow 0.2s ease', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden', pointerEvents: 'all', zIndex: 10 }}>
           <div style={{ position: 'absolute', top: '15%', left: '20%', width: '35%', height: '30%', background: 'rgba(255,255,255,0.18)', borderRadius: '50%', filter: 'blur(8px)' }} />
           {voiceState === 'idle' && (<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.9)" strokeWidth="1.8"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>)}
           {voiceState === 'listening' && (<div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>{[0, 1, 2, 3, 4].map(i => { const h = (8 + (audioLevel / 255) * 28 * (0.4 + Math.abs(Math.sin(Date.now() / 100 + i * 0.9)) * 0.6)) + 'px'; return (<div key={i} style={{ width: 4, borderRadius: 2, background: 'rgba(255,255,255,0.95)', height: h, transition: 'height 0.05s', animation: 'voiceBar' + (i % 3) + ' 0.6s ease-in-out infinite', animationDelay: (i * 0.1) + 's' }} />); })}</div>)}
@@ -480,12 +489,124 @@ function VoiceModeModal({
         @keyframes voiceBar0 { 0%, 100% { height: 8px; } 50% { height: 28px; } }
         @keyframes voiceBar1 { 0%, 100% { height: 14px; } 50% { height: 8px; } }
         @keyframes voiceBar2 { 0%, 100% { height: 20px; } 50% { height: 36px; } }
+        @keyframes spin { to { transform: rotate(360deg); } }
       `}</style>
     </div>
   );
 }
+function MessageActions({ content, role, onEdit }: { content: string; role: 'user' | 'assistant'; onEdit?: () => void }) {
+  const [copied, setCopied] = useState(false);
+  const copy = () => {
+    const plain = content.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ');
+    navigator.clipboard.writeText(plain).catch(() => {});
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+  return (
+    <div style={{ display: 'flex', gap: '4px', marginTop: '6px', justifyContent: role === 'user' ? 'flex-end' : 'flex-start' }}>
+      <button onClick={copy} style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '3px 8px', borderRadius: '7px', fontSize: '11px', background: copied ? 'rgba(52,211,153,0.12)' : 'var(--jarvis-card)', border: `1px solid ${copied ? 'rgba(52,211,153,0.3)' : 'var(--jarvis-border)'}`, color: copied ? '#34d399' : 'var(--jarvis-text-sub)', cursor: 'pointer' }}>
+        {copied ? <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 6L9 17l-5-5"/></svg> : <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>}
+        {copied ? 'Copied' : 'Copy'}
+      </button>
+      {role === 'user' && onEdit && (
+        <button onClick={onEdit} style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '3px 8px', borderRadius: '7px', fontSize: '11px', background: 'var(--jarvis-card)', border: '1px solid var(--jarvis-border)', color: 'var(--jarvis-text-sub)', cursor: 'pointer' }}>
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"/></svg>
+          Edit
+        </button>
+      )}
+    </div>
+  );
+}
 
+function OrderCard({ content }: { content: string }) {
+  const match = content.match(/__ORDER_CARD__([\s\S]+)__ORDER_CARD__/);
+  if (!match) return null;
+  try {
+    const { query, results } = JSON.parse(match[1]);
+    const logos: Record<string, string> = {
+      amazon: '🛒', ebay: '🏷️', instacart: '🛍️', doordash: '🚗', ubereats: '🍔'
+    };
+    return (
+      <div style={{ background: 'var(--jarvis-msg-ai)', border: '1px solid var(--jarvis-border)', borderRadius: 16, padding: '16px', maxWidth: 380 }}>
+        <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+          Best options for "{query}"
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          {results.map((r: any, i: number) => (
+            <div key={i} style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12, padding: '12px 14px', display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div style={{ fontSize: 22, flexShrink: 0 }}>{logos[r.logo] || '🛒'}</div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.9)', marginBottom: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{r.store}</div>
+                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{r.price ? `${r.price} · ` : ''}{r.note}</div>
+              </div>
+              <a href={r.url} target="_blank" rel="noopener noreferrer"
+                style={{ flexShrink: 0, padding: '8px 14px', borderRadius: 10, fontSize: 12, fontWeight: 600, background: r.color, color: 'white', textDecoration: 'none', whiteSpace: 'nowrap' }}>
+                Open & Buy
+              </a>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  } catch { return null; }
+}
 export default function Home() {
+  const [lightMode, setLightMode] = useState(false);
+
+useEffect(() => {
+  const saved = localStorage.getItem('jarvis_light');
+  if (saved === 'true') { setLightMode(true); document.documentElement.classList.add('light'); }
+}, []);
+
+const toggleLight = () => {
+  const next = !lightMode;
+  setLightMode(next);
+  localStorage.setItem('jarvis_light', String(next));
+  document.documentElement.classList.toggle('light', next);
+};
+  useEffect(() => {
+  const interval = setInterval(() => {
+    if ((window as any).__TAURI_INTERNALS__ && !(window as any).__TAURI_INVOKE__) {
+      try {
+        Object.defineProperty(window, '__TAURI_INVOKE__', {
+          value: (cmd: string, args: any) => (window as any).__TAURI_INTERNALS__.invoke(cmd, args),
+          writable: false,
+          configurable: true,
+        });
+        console.log('[JARVIS] Tauri invoke ready');
+        clearInterval(interval);
+      } catch(e) {
+        clearInterval(interval);
+      }
+    } else if ((window as any).__TAURI_INVOKE__) {
+      clearInterval(interval);
+    }
+  }, 100);
+  return () => clearInterval(interval);
+}, []);
+
+  useEffect(() => {
+  const invoke = (window as any).__TAURI_INVOKE__;
+  if (!invoke) return;
+  
+  const interval = setInterval(async () => {
+    try {
+      const result = await invoke('execute_shell', { 
+        command: 'cat /tmp/jarvis_wake.flag 2>/dev/null' 
+      });
+      if (!result?.trim()) return;
+      const ts = parseFloat(result.trim());
+      if (Date.now() / 1000 - ts < 3) {
+        // Fresh wake word — clear flag and open voice mode
+        await invoke('execute_shell', { command: 'rm /tmp/jarvis_wake.flag' });
+        setVoiceModeOpen(true);
+      }
+    } catch {}
+  }, 500);
+  
+  return () => clearInterval(interval);
+}, []);
+
   const [token, setToken] = useState<string | null>(null);
   const [userName, setUserName] = useState('');
   const [authMode, setAuthMode] = useState<'login' | 'signup'>('login');
@@ -494,14 +615,17 @@ export default function Home() {
   const [authName, setAuthName] = useState('');
   const [authError, setAuthError] = useState('');
   const [authLoading, setAuthLoading] = useState(false);
-
+  const [showMemory, setShowMemory] = useState(false);
+const [memoryData, setMemoryData] = useState<any>(null);
   const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [memoryLoading, setMemoryLoading] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [audioLevel, setAudioLevel] = useState(0);
+  const videoInputRef = useRef<HTMLInputElement>(null);
   const [showUpdates, setShowUpdates] = useState(false);
   const [updates, setUpdates] = useState<Update[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -520,8 +644,21 @@ export default function Home() {
   const [checkingOut, setCheckingOut] = useState(false);
 
   // ── Daily message usage ──────────────────────────────────
-  const [messagesUsed, setMessagesUsed] = useState(0);
+  const [dailyCost, setDailyCost] = useState(0);
+  const [msUntilReset, setMsUntilReset] = useState<number | null>(null);
   const [limitReached, setLimitReached] = useState(false);
+  const [showCapModal, setShowCapModal] = useState(false);
+  const DAILY_CAP = 0.75;
+  useEffect(() => {
+  if (!msUntilReset) return;
+  const interval = setInterval(() => {
+    setMsUntilReset(prev => {
+      if (!prev || prev <= 60000) return null;
+      return prev - 60000;
+    });
+  }, 60000);
+  return () => clearInterval(interval);
+}, [msUntilReset]);
 
   const bottomRef = useRef<HTMLDivElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -535,6 +672,7 @@ export default function Home() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const folderInputRef = useRef<HTMLInputElement>(null);
   const tokenRef = useRef<string | null>(null);
+const abortRef = useRef<AbortController | null>(null);
 
   useEffect(() => { activeIdRef.current = activeId; }, [activeId]);
   useEffect(() => { tokenRef.current = token; }, [token]);
@@ -550,13 +688,14 @@ export default function Home() {
       window.history.replaceState({}, '', '/');
     }
     // Fetch initial usage
-    fetch(`${API}/message-usage`, { headers: { Authorization: `Bearer ${token}` } })
-      .then(r => r.json()).then(d => {
-        if (!d.subscribed) {
-          setMessagesUsed(d.messagesUsed || 0);
-          setLimitReached((d.messagesUsed || 0) >= FREE_LIMIT);
-        }
-      }).catch(() => {});
+    fetch(`${API}/daily-cost`, { headers: { Authorization: `Bearer ${token}` } })
+  .then(r => r.json()).then(d => {
+    if (!d.unlimited) {
+      setDailyCost(d.cost || 0);
+      setLimitReached(d.limitReached || false);
+      if (d.msUntilReset) setMsUntilReset(d.msUntilReset);
+    }
+  }).catch(() => {});
   }, [token]);
 
   const activeConv = conversations.find(c => c.id === activeId);
@@ -622,20 +761,20 @@ export default function Home() {
         for (const r of data.responses) {
           if (r.message === '__SUBSCRIBED__') { setSubscribed(true); continue; }
           let convId = activeIdRef.current;
-if (!convId) {
-  const existingConvs = JSON.parse(localStorage.getItem('jarvis_conversations') || '[]');
-  if (existingConvs.length > 0) {
-    convId = existingConvs[0].id;
-    setActiveId(convId);
-    activeIdRef.current = convId;
-  } else {
-    convId = generateId();
-    const conv: Conversation = { id: convId, title: r.message.slice(0, 40), messages: [], createdAt: Date.now() };
-    setConversations(prev => [conv, ...prev]);
-    setActiveId(convId);
-    activeIdRef.current = convId;
-  }
-}
+          if (!convId) {
+            const existingConvs = JSON.parse(localStorage.getItem('jarvis_conversations') || '[]');
+            if (existingConvs.length > 0) {
+              convId = existingConvs[0].id;
+              setActiveId(convId);
+              activeIdRef.current = convId;
+            } else {
+              convId = generateId();
+              const conv: Conversation = { id: convId, title: r.message.slice(0, 40), messages: [], createdAt: Date.now() };
+              setConversations(prev => [conv, ...prev]);
+              setActiveId(convId);
+              activeIdRef.current = convId;
+            }
+          }
           const isProgress = r.message.includes('[PROGRESS:');
           if (isProgress) {
             setConversations(prev => prev.map(c => {
@@ -649,15 +788,33 @@ if (!convId) {
             }));
             continue;
           }
-           if (convId) addMessageToConv(convId, { role: "assistant", content: r.message, source: "text", timestamp: r.timestamp ?? Date.now() });
+
+          // ── Image URL: replace __IMAGE_LOADING__ placeholder if present ──
+          const isImageUrl = /https:\/\/api\.heyjarvis\.me\/view\/img_[^\s)]+\.webp/.test(r.message);
+          if (isImageUrl) {
+            setConversations(prev => prev.map(c => {
+              if (c.id !== convId) return c;
+              const hasPlaceholder = c.messages.some(m => m.content === '__IMAGE_LOADING__');
+              const msgs = c.messages.map(m =>
+                m.content === '__IMAGE_LOADING__'
+                  ? { ...m, content: r.message }
+                  : m
+              );
+              if (!hasPlaceholder) msgs.push({ role: 'assistant' as const, content: r.message, source: 'text' as const, timestamp: Date.now() });
+              return { ...c, messages: msgs };
+            }));
+          } else if (convId) {
+            addMessageToConv(convId, { role: "assistant", content: r.message, source: "text", timestamp: r.timestamp ?? Date.now() });
+          }
+
           const urlMatch2 = r.message.match(/https:\/\/api\.heyjarvis\.me\/view\/[^\s)]+/);
-          if (urlMatch2) setTimeout(() => window.open(urlMatch2[0], '_blank'), 500);
+          if (urlMatch2) setTimeout(() => openUrl(urlMatch2[0]), 500);
           const ytMatch2 = r.message.match(/https:\/\/(www\.)?youtube\.com\/watch\?[^\s<>"')]+/);
-          if (ytMatch2) setTimeout(() => window.open(ytMatch2[0], '_blank'), 500);
+          if (ytMatch2) setTimeout(() => openUrl(ytMatch2[0]), 500);
           // Execute Mac actions from bg responses
           const actionMatches2 = r.message.match(/ACTION:\{[\s\S]*?\}/g);
-          if (actionMatches2 && (window as any).__TAURI__) {
-            const { invoke } = await import('@tauri-apps/api/core');
+          if (actionMatches2 && (window as any).__TAURI_INVOKE__) {
+            const invoke = (window as any).__TAURI_INVOKE__;
             for (const action of actionMatches2) {
               try {
                 const parsed = JSON.parse(action.replace('ACTION:', ''));
@@ -781,25 +938,59 @@ if (!convId) {
   }, [token]);
 
   const handleFileAttach = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    if (!files.length) return;
-    const MAX = 200;
-    const toProcess = files.slice(0, MAX);
-    for (const file of toProcess) {
-      if (file.size > 10 * 1024 * 1024) continue;
-      await new Promise<void>(resolve => {
-        const reader = new FileReader();
-        reader.onload = () => {
-          const base64 = (reader.result as string).split(',')[1];
-          setAttachedFiles(prev => [...prev, { data: base64, type: file.type || 'application/octet-stream', name: (file as any).webkitRelativePath || file.name }]);
+  const files = Array.from(e.target.files || []);
+  if (!files.length) return;
+  for (const file of files.slice(0, 200)) {
+    if (file.type.startsWith('video/') && file.size > 100 * 1024 * 1024) { alert(`Video ${file.name} is too large (max 100MB)`); continue; }
+    if (!file.type.startsWith('video/') && file.size > 10 * 1024 * 1024) continue;
+    await new Promise<void>(resolve => {
+      if (file.type.startsWith('image/')) {
+        const img = new Image();
+        const url = URL.createObjectURL(file);
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const max = 1024;
+          let w = img.width, h = img.height;
+          if (w > max || h > max) {
+            if (w > h) { h = Math.round(h * max / w); w = max; }
+            else { w = Math.round(w * max / h); h = max; }
+          }
+          canvas.width = w; canvas.height = h;
+          canvas.getContext('2d')!.drawImage(img, 0, 0, w, h);
+          const base64 = canvas.toDataURL('image/jpeg', 0.85).split(',')[1];
+          setAttachedFiles(prev => [...prev, { data: base64, type: 'image/jpeg', name: file.name }]);
+          URL.revokeObjectURL(url);
           resolve();
         };
-        reader.onerror = () => resolve();
-        reader.readAsDataURL(file);
-      });
-    }
-    e.target.value = '';
+        img.src = url;
+      } else if (file.type.startsWith('video/')) {
+  if (file.size > 100 * 1024 * 1024) {
+    alert(`Video ${file.name} is too large (max 100MB)`);
+    resolve();
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = () => {
+    const base64 = (reader.result as string).split(',')[1];
+    setAttachedFiles(prev => [...prev, { data: base64, type: file.type, name: file.name }]);
+    resolve();
   };
+  reader.onerror = () => resolve();
+  reader.readAsDataURL(file);
+} else {
+  const reader = new FileReader();
+  reader.onload = () => {
+    const base64 = (reader.result as string).split(',')[1];
+    setAttachedFiles(prev => [...prev, { data: base64, type: file.type || 'application/octet-stream', name: (file as any).webkitRelativePath || file.name }]);
+    resolve();
+  };
+  reader.onerror = () => resolve();
+  reader.readAsDataURL(file);
+}
+    });
+  }
+  e.target.value = '';
+};
 
   function newConversation() {
     const id = generateId();
@@ -915,30 +1106,45 @@ if (!convId) {
 
     setLoading(true);
     try {
-      const res = await fetch(`${API}/chat`, { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` }, body: JSON.stringify({ message: userMsg, attachedFiles: filesToSend }) });
+      abortRef.current = new AbortController();
+      const res = await fetch(`${API}/chat`, { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` }, body: JSON.stringify({ message: userMsg, attachedFiles: filesToSend }), signal: abortRef.current.signal });
       const data = await res.json();
-
-      // Update usage from response
-      if (!subscribed && data.messagesUsed != null) {
-        setMessagesUsed(data.messagesUsed);
-        setLimitReached(data.limitReached || data.messagesUsed >= FREE_LIMIT);
+      if (!subscribed) {
+  fetch(`${API}/daily-cost`, { headers: { Authorization: `Bearer ${token}` } })
+    .then(r => r.json()).then(d => {
+      if (!d.unlimited) {
+        setDailyCost(d.cost || 0);
+        setLimitReached(d.limitReached || false);
+        if (d.msUntilReset) setMsUntilReset(d.msUntilReset);
       }
+    }).catch(() => {});
+}
+      // Update usage from response
+      
 
       if (data.limitReached) {
-        addMessageToConv(finalConvId, { role: "assistant", content: "You've used all 20 free messages for today. Upgrade to Pro for unlimited messages.", source: "text", timestamp: Date.now() });
+        if (data.dailyCostCap) {
+          setLimitReached(true);
+          setMsUntilReset(data.msUntilReset || null);
+          setShowCapModal(true);
+        }
+        addMessageToConv(finalConvId, { role: "assistant", content: "Daily token limit reached. Come back later or upgrade to Pro.", source: "text", timestamp: Date.now() });
       } else if (data.message === 'On it.') {
         addMessageToConv(finalConvId, { role: "assistant", content: "On it...", source: "text", timestamp: Date.now() });
+        if (/image|generate|draw|picture|photo|tattoo|face|style|video/i.test(userMsg)) {
+          setTimeout(() => addMessageToConv(finalConvId, { role: "assistant", content: '__IMAGE_LOADING__', source: "text", timestamp: Date.now() }), 300);
+        }
       } else if (data.message) {
         addMessageToConv(finalConvId, { role: "assistant", content: data.message, source: "text", timestamp: Date.now() });
         const urlMatch = data.message.match(/https:\/\/api\.heyjarvis\.me\/view\/[^\s)]+/);
-        if (urlMatch) setTimeout(() => window.open(urlMatch[0], '_blank'), 500);
+        if (urlMatch) setTimeout(() => openUrl(urlMatch[0]), 500);
         const ytMatch = data.message.match(/https:\/\/(www\.)?youtube\.com\/watch\?[^\s<>"')]+/);
-        if (ytMatch) { const w = window.open(ytMatch[0], '_blank'); if (w) w.focus(); }
+        if (ytMatch) openUrl(ytMatch[0]);
 
         // Execute Mac actions if present
         const actionMatches = data.message.match(/ACTION:\{[\s\S]*?\}/g);
-        if (actionMatches && (window as any).__TAURI__) {
-          const { invoke } = await import('@tauri-apps/api/core');
+        if (actionMatches && (window as any).__TAURI_INVOKE__) {
+          const invoke = (window as any).__TAURI_INVOKE__;
           for (const action of actionMatches) {
             try {
               const parsed = JSON.parse(action.replace('ACTION:', ''));
@@ -947,11 +1153,15 @@ if (!convId) {
               } else if (parsed.type === 'SHELL') {
                 await invoke('execute_shell', { command: parsed.command });
               }
-            } catch (e) { console.log('Action error:', e); }
+            } catch (e) { 
+  console.log('Action parse error:', e);
+  console.log('Raw action string:', action);
+  console.log('After replace:', action.replace('ACTION:', ''));
+}
           }
         }
       }
-    } catch {}
+    } catch (e: any) { if (e?.name === 'AbortError') return; }
     setLoading(false);
   };
 
@@ -1021,8 +1231,7 @@ if (!convId) {
   }
 
   return (
-    <div style={{ height: '100dvh', fontFamily: "-apple-system, 'SF Pro Display', sans-serif" }} className="bg-[#060608] flex overflow-hidden">
-
+    <div style={{ height: '100dvh', fontFamily: "-apple-system, 'SF Pro Display', sans-serif", background: 'var(--jarvis-bg)', color: 'var(--jarvis-text)' }} className="flex overflow-hidden">
       {/* Settings modal */}
       {showSettings && (
         <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
@@ -1041,8 +1250,57 @@ if (!convId) {
               <div className="text-white/40 text-xs mb-1">Account</div>
               <div className="text-white font-medium">{userName}</div>
               <div className={`text-sm mt-1 font-medium ${subscribed ? 'text-green-400' : 'text-yellow-400/80'}`}>
-                {subscribed ? '✦ Pro — Unlimited messages' : `Free — ${Math.max(0, FREE_LIMIT - messagesUsed)} messages left today`}
+                {subscribed ? '✦ Pro — Unlimited messages' : 'Free plan'}
               </div>
+            </div>
+
+            {/* Light mode toggle */}
+            <div className="mb-4 p-4 rounded-xl border border-white/10 bg-white/3 flex items-center justify-between">
+              <div>
+                <div className="text-white/70 text-sm font-medium">Light mode</div>
+                <div className="text-white/30 text-xs mt-0.5">Easier on the eyes in bright environments</div>
+              </div>
+              <button
+                onClick={toggleLight}
+                style={{ width: 44, height: 24, borderRadius: 12, background: lightMode ? '#3b82f6' : 'rgba(255,255,255,0.1)', border: `1px solid ${lightMode ? '#3b82f6' : 'rgba(255,255,255,0.15)'}`, transition: 'all 0.2s', position: 'relative', flexShrink: 0, cursor: 'pointer' }}
+              >
+                <div style={{ width: 18, height: 18, borderRadius: '50%', background: 'white', position: 'absolute', top: 2, left: lightMode ? 22 : 2, transition: 'left 0.2s', boxShadow: '0 1px 3px rgba(0,0,0,0.3)' }} />
+              </button>
+            </div>
+
+            <div className="mb-4 p-4 rounded-xl border border-white/10 bg-white/3 flex items-center justify-between">
+              <div>
+                <div className="text-white/70 text-sm font-medium">JARVIS Memory</div>
+                <div className="text-white/30 text-xs mt-0.5">See what JARVIS knows about you</div>
+              </div>
+             
+<button
+  disabled={memoryLoading}
+  onClick={async () => {
+    setMemoryLoading(true);
+    try {
+      const [meRes, insightsRes] = await Promise.all([
+        fetch(`${API}/auth/me`, { headers: { Authorization: `Bearer ${token}` } }),
+        fetch(`${API}/memory-insights`, { headers: { Authorization: `Bearer ${token}` } })
+      ]);
+      const meData = await meRes.json();
+      const insightsData = await insightsRes.json();
+      setMemoryData({ ...meData.memory, _insights: insightsData.insights || [] });
+    } catch (e) {
+      setMemoryData({ userName, email: '', _insights: [] });
+    }
+    setMemoryLoading(false);
+    setShowMemory(true);
+  }}
+  style={{ padding: '7px 14px', borderRadius: 10, fontSize: 12, fontWeight: 500, background: 'rgba(99,102,241,0.15)', border: '1px solid rgba(99,102,241,0.3)', color: '#a5b4fc', cursor: memoryLoading ? 'default' : 'pointer', opacity: memoryLoading ? 0.7 : 1, display: 'flex', alignItems: 'center', gap: 6 }}
+>
+  {memoryLoading ? (
+    <>
+      <div style={{ width: 10, height: 10, borderRadius: '50%', border: '1.5px solid #a5b4fc', borderTopColor: 'transparent', animation: 'spin 0.7s linear infinite' }} />
+      Loading...
+    </>
+  ) : 'View'}
+</button>
             </div>
 
             {subscribed ? (
@@ -1064,24 +1322,24 @@ if (!convId) {
               // ── FREE USER: show upgrade card ──
               <>
                 {/* Usage bar in modal */}
-                <div className="mb-4 p-4 rounded-xl border border-white/8 bg-white/3">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="text-white/50 text-xs">Daily messages</div>
-                    <div className={`text-xs font-medium ${messagesUsed >= FREE_LIMIT ? 'text-red-400' : messagesUsed >= 15 ? 'text-amber-400' : 'text-white/40'}`}>
-                      {messagesUsed} / {FREE_LIMIT}
-                    </div>
-                  </div>
-                  <div style={{ height: '4px', background: 'rgba(255,255,255,0.07)', borderRadius: '999px', overflow: 'hidden' }}>
-                    <div style={{
-                      height: '100%',
-                      width: `${Math.min((messagesUsed / FREE_LIMIT) * 100, 100)}%`,
-                      background: messagesUsed >= FREE_LIMIT ? 'rgba(239,68,68,0.8)' : messagesUsed >= 15 ? 'rgba(245,158,11,0.8)' : 'rgba(59,130,246,0.7)',
-                      borderRadius: '999px',
-                      transition: 'width 0.4s ease',
-                    }} />
-                  </div>
-                  <div className="text-white/25 text-xs mt-2">Resets at midnight</div>
-                </div>
+<div className="mb-4 p-4 rounded-xl border border-white/8 bg-white/3">
+  <div className="flex items-center justify-between mb-2">
+    <div className="text-white/50 text-xs">Daily tokens</div>
+    <div className={`text-xs font-medium ${dailyCost >= DAILY_CAP ? 'text-red-400' : dailyCost >= DAILY_CAP * 0.7 ? 'text-amber-400' : 'text-white/40'}`}>
+      {Math.round((dailyCost / DAILY_CAP) * 100)}% used
+    </div>
+  </div>
+  <div style={{ height: '4px', background: 'rgba(255,255,255,0.07)', borderRadius: '999px', overflow: 'hidden' }}>
+    <div style={{
+      height: '100%',
+      width: `${Math.min((dailyCost / DAILY_CAP) * 100, 100)}%`,
+      background: dailyCost >= DAILY_CAP ? 'rgba(239,68,68,0.8)' : dailyCost >= DAILY_CAP * 0.7 ? 'rgba(245,158,11,0.8)' : 'rgba(59,130,246,0.7)',
+      borderRadius: '999px',
+      transition: 'width 0.4s ease',
+    }} />
+  </div>
+  <div className="text-white/25 text-xs mt-2">Resets at midnight ET</div>
+</div>
 
                 <div className="p-4 rounded-xl border border-blue-500/20 bg-blue-500/5">
                   <div className="text-white font-medium mb-1">Upgrade to Pro</div>
@@ -1121,6 +1379,62 @@ if (!convId) {
         </div>
       )}
 
+      {showMemory && memoryData && (
+        <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
+          <div className="bg-[#0a0a0f] border border-white/10 rounded-2xl p-6 w-full max-w-md max-h-[80vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <div className="text-white font-semibold">JARVIS Memory</div>
+                <div className="text-white/30 text-xs mt-0.5">What JARVIS knows about you</div>
+              </div>
+              <button onClick={() => setShowMemory(false)} className="text-white/30 hover:text-white/60">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+              </button>
+            </div>
+            <div className="flex flex-col gap-3">
+              {Object.entries(memoryData)
+                .filter(([key, val]) => !['token', 'password', 'subscribed', 'dailyMessageCount', 'lastMessageDate'].includes(key) && val !== null && val !== undefined && val !== '')
+                .map(([key, val]) => (
+  <div key={key} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 12, padding: '12px 14px' }}>
+    <div style={{ fontSize: 10, color: 'rgba(99,102,241,0.8)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>
+      {key === '_insights' ? 'What JARVIS knows about you' : key}
+    </div>
+    <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', lineHeight: 1.5, wordBreak: 'break-word' }}>
+      {key === '_insights'
+  ? (val as any[]).length === 0
+    ? 'Not enough conversations yet'
+    : (val as any[]).map((fact: string, i: number) => (
+        <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginBottom: 6 }}>
+          <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'rgba(99,102,241,0.7)', flexShrink: 0, marginTop: 5 }} />
+          <div>{fact}</div>
+        </div>
+      ))
+  : typeof val === 'object' ? JSON.stringify(val, null, 2) : String(val)
+}
+    </div>
+  </div>
+))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showCapModal && (
+        <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
+          <div className="bg-[#0a0a0f] border border-white/10 rounded-2xl p-6 w-full max-w-xs text-center">
+            <div className="text-2xl mb-2">⏳</div>
+            <div className="text-white font-semibold mb-1">Daily tokens used</div>
+            <div className="text-white/40 text-xs mb-4">
+              {msUntilReset ? `Resets in ${Math.ceil(msUntilReset / 3600000)}h ${Math.ceil((msUntilReset % 3600000) / 60000)}m` : 'Resets at midnight ET'}
+            </div>
+            <button onClick={() => { setShowCapModal(false); setShowSettings(true); }} className="w-full py-2.5 bg-blue-600 hover:bg-blue-500 rounded-xl text-white text-sm font-medium transition-all mb-2">Go Pro — $25/mo</button>
+            <button onClick={() => setShowCapModal(false)} className="w-full py-2 text-white/30 text-xs hover:text-white/50 transition-all">Wait it out</button>
+          </div>
+        </div>
+      )}
+
       {voiceModeOpen && token && (
         <VoiceModeModal token={token} userName={userName} onClose={() => setVoiceModeOpen(false)} onMessageSent={handleVoiceModeMessage} />
       )}
@@ -1131,44 +1445,47 @@ if (!convId) {
 
       {/* SIDEBAR */}
       <div
-        className="fixed md:relative inset-y-0 left-0 z-40 md:z-auto flex flex-col bg-[#07070a] border-r border-white/5 transition-transform duration-300"
-        style={{ width: '260px', transform: sidebarOpen ? 'translateX(0)' : 'translateX(-100%)', height: '100dvh' }}
+        className="fixed md:relative inset-y-0 left-0 z-40 md:z-auto flex flex-col border-r border-white/5 transition-transform duration-300"
+style={{ width: '260px', transform: sidebarOpen ? 'translateX(0)' : 'translateX(-100%)', height: '100dvh', background: 'var(--jarvis-bg-alt)' }}
+
       >
         <div className="flex items-center justify-between px-4 py-4 border-b border-white/5 flex-shrink-0">
           <div className="flex items-center gap-2.5">
             <div className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-400 to-blue-700" style={{ boxShadow: "0 0 12px rgba(96,165,250,0.5)" }} />
-            <span className="text-white text-sm font-semibold tracking-wide">JARVIS</span>
+            <span style={{ color: 'var(--jarvis-text)' }} className="text-sm font-semibold tracking-wide">JARVIS</span>
           </div>
-          <button onClick={() => setSidebarOpen(false)} className="w-8 h-8 flex items-center justify-center rounded-lg text-white/30 hover:text-white/60 hover:bg-white/5 transition-all">
+          <button onClick={() => setSidebarOpen(false)} className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-black/5 transition-all" style={{ color: 'var(--jarvis-text-sub)' }}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
           </button>
         </div>
 
         <div className="px-3 pt-3 pb-2 flex-shrink-0">
-          <button onClick={newConversation} className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/20 text-blue-300 text-xs font-medium transition-all mb-2">
+          <button onClick={newConversation} className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/30 text-blue-500 text-xs font-medium transition-all mb-2">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             New conversation
           </button>
-          <button onClick={() => { setVoiceModeOpen(true); setSidebarOpen(false); }} className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl border text-xs font-medium transition-all mb-2 bg-gradient-to-r from-blue-600/20 via-purple-600/15 to-pink-600/20 border-white/10 text-white/70 hover:text-white hover:border-white/20">
+          <button onClick={() => { setVoiceModeOpen(true); setSidebarOpen(false); }} className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl border text-xs font-medium transition-all mb-2 bg-gradient-to-r from-blue-600/20 via-purple-600/15 to-pink-600/20 border-black/10 hover:border-black/20" style={{ color: 'var(--jarvis-text-sub)' }}>
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
             Voice mode
           </button>
           <button
   onClick={async () => {
   const url = `${API}/auth/google?token=${token}`;
-  if ((window as any).__TAURI__) {
-    const { invoke } = await import('@tauri-apps/api/core');
+  const invoke = (window as any).__TAURI_INVOKE__;
+  if (invoke) {
     await invoke('execute_shell', { command: `open "${url}"` });
   } else {
     window.open(url, '_blank');
   }
 }}
-  className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl border text-xs font-medium transition-all mb-2 ${googleConnected ? 'bg-green-500/15 border-green-500/30 text-green-400' : 'bg-white/5 border-white/10 text-white/50 hover:text-white/70'}`}
+  className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl border text-xs font-medium transition-all mb-2 ${googleConnected ? 'bg-green-500/15 border-green-500/30 text-green-600' : 'border-black/10 hover:border-black/20'}`}
+style={!googleConnected ? { color: 'var(--jarvis-text-sub)', background: 'var(--jarvis-card)' } : undefined}
 >
   <div className={`w-2 h-2 rounded-full ${googleConnected ? 'bg-green-400' : 'bg-white/20'}`} />
   {googleConnected ? 'Google connected' : 'Connect Google'}
 </button>
-          <button onClick={async () => { const res = await fetch(`${API}/voice/spoken-updates`, { method: 'POST', headers: { 'Content-Type': 'application/json' } }); const data = await res.json(); setSpokenUpdates(data.enabled); }} className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl border text-xs font-medium transition-all ${spokenUpdates ? 'bg-purple-500/15 border-purple-500/30 text-purple-400' : 'bg-white/5 border-white/10 text-white/50 hover:text-white/70'}`}>
+          <button onClick={async () => { const res = await fetch(`${API}/voice/spoken-updates`, { method: 'POST', headers: { 'Content-Type': 'application/json' } }); const data = await res.json(); setSpokenUpdates(data.enabled); }} className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl border text-xs font-medium transition-all ${spokenUpdates ? 'bg-purple-500/15 border-purple-500/30 text-purple-500' : 'border-black/10 hover:border-black/20'}`}
+style={!spokenUpdates ? { color: 'var(--jarvis-text-sub)', background: 'var(--jarvis-card)' } : undefined}>
             <div className={`w-2 h-2 rounded-full ${spokenUpdates ? 'bg-purple-400 animate-pulse' : 'bg-white/20'}`} />
             {spokenUpdates ? 'Spoken updates — on' : 'Spoken updates — off'}
           </button>
@@ -1188,20 +1505,20 @@ if (!convId) {
           ))}
         </div>
 
-        <div className="px-4 py-3 border-t border-white/5 flex items-center gap-2.5 flex-shrink-0">
+        <div className="px-4 py-3 flex items-center gap-2.5 flex-shrink-0" style={{ borderTop: '1px solid var(--jarvis-border)' }}>
           <div className="w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
             {userName.charAt(0).toUpperCase()}
           </div>
           <div className="flex-1 min-w-0">
-            <div className="text-white/70 text-xs font-medium truncate">{userName}</div>
-            <div className={`text-xs ${subscribed ? 'text-green-400' : 'text-yellow-400/70'}`}>
-              {subscribed ? 'Pro — unlimited' : `${Math.max(0, FREE_LIMIT - messagesUsed)} msg left today`}
-            </div>
+            <div className="text-xs font-medium truncate" style={{ color: 'var(--jarvis-text)' }}>{userName}</div>
+<div className={`text-xs ${subscribed ? 'text-green-500' : 'text-amber-500'}`}>
+  {subscribed ? 'Pro — unlimited' : `${Math.round((dailyCost / DAILY_CAP) * 100)}% tokens used`}
+</div>
           </div>
-          <button onClick={() => setShowSettings(true)} className="text-white/25 hover:text-white/50 transition-all p-1">
+          <button onClick={() => setShowSettings(true)} className="transition-all p-1" style={{ color: 'var(--jarvis-text-dim)' }}>
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
           </button>
-          <button onClick={logout} className="text-white/25 hover:text-white/50 transition-all p-1">
+          <button onClick={logout} className="transition-all p-1" style={{ color: 'var(--jarvis-text-dim)' }}>
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
           </button>
         </div>
@@ -1210,38 +1527,39 @@ if (!convId) {
       {/* MAIN CONTENT */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden" style={{ height: '100dvh' }}>
         {/* Top bar */}
-        <div className="px-3 py-3 flex items-center gap-2 border-b border-white/5 flex-shrink-0 bg-[#060608]">
-          <button onClick={() => setSidebarOpen(!sidebarOpen)} className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-white/5 transition-all text-white/40 hover:text-white/70 flex-shrink-0">
+        <div className="px-3 py-3 flex items-center gap-2 border-b border-white/5 flex-shrink-0" style={{ background: 'var(--jarvis-bg)' }}>
+          <button onClick={() => setSidebarOpen(!sidebarOpen)} className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-black/5 transition-all flex-shrink-0" style={{ color: 'var(--jarvis-text-sub)' }}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
           </button>
           <div className="flex items-center gap-2 flex-1 min-w-0">
             <div className="w-6 h-6 rounded-full flex-shrink-0 transition-all duration-100" style={{ background: orbBg, boxShadow: orbGlow, transform: `scale(${orbScale})` }} />
             <div className="min-w-0">
-              <div className="text-white/85 text-sm font-medium leading-none">JARVIS</div>
-              <div className="text-white/30 text-xs mt-0.5">{statusText}</div>
+              <div style={{ color: 'var(--jarvis-text)' }} className="text-sm font-medium leading-none">JARVIS</div>
+              <div style={{ color: 'var(--jarvis-text-sub)' }} className="text-xs mt-0.5">{statusText}</div>
             </div>
           </div>
           {cameraActive && (
-            <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-white/5 flex-shrink-0">
-              <div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
-              <span className="text-white/30 text-xs">cam</span>
+            <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg flex-shrink-0" style={{ background: 'var(--jarvis-card)', border: '1px solid var(--jarvis-border)' }}>
+  <div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+  <span className="text-xs" style={{ color: 'var(--jarvis-text-sub)' }}>cam</span>
             </div>
           )}
-          <button onClick={() => setVoiceModeOpen(true)} className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-white/5 transition-all flex-shrink-0" title="Voice mode">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.35)" strokeWidth="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+          <button onClick={() => setVoiceModeOpen(true)} className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-black/5 transition-all flex-shrink-0" title="Voice mode">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--jarvis-text-sub)" strokeWidth="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
           </button>
-          <button onClick={logout} className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-white/5 transition-all text-white/30 hover:text-white/60 flex-shrink-0">
+          <button onClick={logout} className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-black/5 transition-all flex-shrink-0" style={{ color: 'var(--jarvis-text-sub)' }}>
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
           </button>
-          <button onClick={() => { setShowUpdates(!showUpdates); if (!showUpdates) markAllRead(); }} className="relative w-10 h-10 flex items-center justify-center rounded-xl hover:bg-white/5 transition-all flex-shrink-0">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.35)" strokeWidth="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <button onClick={() => { setShowUpdates(!showUpdates); if (!showUpdates) markAllRead(); }} className="relative w-10 h-10 flex items-center justify-center rounded-xl hover:bg-black/5 transition-all flex-shrink-0">
+             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--jarvis-text-sub)" strokeWidth="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
             {unreadCount > 0 && (<span className="absolute top-1 right-1 w-3.5 h-3.5 bg-blue-500 rounded-full text-white flex items-center justify-center font-bold" style={{ fontSize: '9px' }}>{unreadCount}</span>)}
           </button>
         </div>
 
         {/* Usage bar — only shown for free users */}
+        {/* Token bar — only shown for free users */}
         {!subscribed && (
-          <UsageBar used={messagesUsed} limit={FREE_LIMIT} onUpgrade={openUpgrade} />
+          <TokenBar cost={dailyCost} cap={DAILY_CAP} onUpgrade={openUpgrade} />
         )}
 
         {/* Updates panel */}
@@ -1299,7 +1617,31 @@ if (!convId) {
             </div>
           </div>
         )}
+        {/* Limit reached banner — above input, outside scroll */}
+        {!subscribed && limitReached && (
+          <div style={{ background: 'linear-gradient(135deg, rgba(239,68,68,0.12), rgba(220,38,38,0.08))', borderTop: '1px solid rgba(239,68,68,0.3)', borderBottom: '1px solid rgba(239,68,68,0.15)', padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', flexShrink: 0 }}>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ color: 'rgba(252,165,165,1)', fontSize: '13px', fontWeight: 600, marginBottom: '2px' }}>Daily token limit reached</div>
+              <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '11px' }}>
+                {msUntilReset ? `Resets in ${Math.floor(msUntilReset / 3600000)}h ${Math.floor((msUntilReset % 3600000) / 60000)}m` : 'Resets at midnight ET'}
+              </div>
+            </div>
+            <div style={{ display: 'flex', gap: '8px', flexShrink: 0 }}>
+              <button onClick={() => setShowCapModal(true)} style={{ padding: '7px 14px', borderRadius: '10px', fontSize: '12px', fontWeight: 500, background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)', color: 'rgba(252,165,165,1)', cursor: 'pointer' }}>Wait it out</button>
+              <button onClick={async () => {
+  const res = await fetch(`${API}/create-checkout`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({})
+  });
+  const data = await res.json();
+  if (data.url) window.location.href = data.url;
+}} style={{ padding: '7px 14px', borderRadius: '10px', fontSize: '12px', fontWeight: 600, background: 'rgba(59,130,246,1)', border: 'none', color: 'white', cursor: 'pointer' }}>Go Pro</button>
+            </div>
+          </div>
+        )}
 
+        
         {/* Messages area */}
         <div className="flex-1 overflow-y-auto overscroll-contain" style={{ WebkitOverflowScrolling: 'touch' }}>
           <div className="px-3 py-4 flex flex-col gap-3">
@@ -1330,17 +1672,47 @@ if (!convId) {
             )}
 
             {!voiceRunning && messages.map((msg, i) => (
-              <div key={i} className={`flex gap-2 ${msg.role === "user" ? "flex-row-reverse" : ""}`}>
-                {msg.role === "assistant" && (<div className="w-6 h-6 rounded-full flex-shrink-0 mt-1" style={{ background: orbBg, boxShadow: orbGlow }} />)}
-                <div className={`max-w-[85%] px-4 py-3 rounded-2xl text-sm leading-relaxed ${msg.role === "assistant" ? "bg-white/5 border border-white/7 text-white/85 rounded-tl-sm" : "bg-blue-600 text-white rounded-tr-sm"}`}>
-                  {msg.source === "voice" && <div className="text-xs opacity-40 mb-1">{msg.role === "user" ? "voice" : "spoken"}</div>}
-                  {msg.fileName && !msg.imageUrl && (<div className="flex items-center gap-1.5 mb-2 opacity-70"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg><span className="text-xs">{msg.fileName}</span></div>)}
-                  <span dangerouslySetInnerHTML={{ __html: formatMessage(msg.content) }} />
-                  {msg.imageUrl && <img src={msg.imageUrl} alt={msg.fileName || 'attachment'} className="mt-2 rounded-xl max-w-full" style={{ maxHeight: '200px', objectFit: 'contain' }} />}
-                  {msg.role === 'assistant' && renderMessageExtras(msg.content, (prompt) => { setInput(prompt); setTimeout(() => send(), 50); })}
-                </div>
-              </div>
-            ))}
+  msg.content === '__IMAGE_LOADING__' ? (
+    <div key={i} className="flex gap-2">
+      <div className="w-6 h-6 rounded-full flex-shrink-0 mt-1" style={{ background: orbBg }} />
+      <div style={{ background: 'var(--jarvis-msg-ai)', border: '1px solid var(--jarvis-border)' }} className="px-4 py-3 rounded-2xl rounded-tl-sm">
+        <div style={{ width: 260, height: 180, borderRadius: 12, background: 'linear-gradient(135deg, rgba(99,102,241,0.15), rgba(139,92,246,0.1))', border: '1px solid rgba(99,102,241,0.2)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
+          <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'rgba(99,102,241,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(139,92,246,0.8)" strokeWidth="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+          </div>
+          <div style={{ fontSize: 12, color: 'rgba(139,92,246,0.7)', fontWeight: 500 }}>Generating image...</div>
+          <div style={{ display: 'flex', gap: 4 }}>
+            {[0,1,2].map(j => <div key={j} style={{ width: 6, height: 6, borderRadius: '50%', background: 'rgba(99,102,241,0.6)', animation: 'voiceBounce 1.2s ease-in-out infinite', animationDelay: `${j * 0.2}s` }} />)}
+          </div>
+        </div>
+      </div>
+    </div>
+  ) : (
+  <div key={i} className={`flex gap-2 group/msg ${msg.role === "user" ? "flex-row-reverse" : ""}`}>
+    {msg.role === "assistant" && (<div className="w-6 h-6 rounded-full flex-shrink-0 mt-1" style={{ background: orbBg, boxShadow: orbGlow }} />)}
+    <div className="max-w-[85%]">
+      <div style={msg.role === "assistant" ? { background: 'var(--jarvis-msg-ai)', border: '1px solid var(--jarvis-border)', color: 'var(--jarvis-text)' } : { background: 'var(--jarvis-msg-user)' }}
+className={`px-4 py-3 rounded-2xl text-sm leading-relaxed ${msg.role === "assistant" ? "rounded-tl-sm" : "text-white rounded-tr-sm"}`}>
+        {msg.source === "voice" && <div className="text-xs opacity-40 mb-1">{msg.role === "user" ? "voice" : "spoken"}</div>}
+        {msg.fileName && !msg.imageUrl && (<div className="flex items-center gap-1.5 mb-2 opacity-70"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg><span className="text-xs">{msg.fileName}</span></div>)}
+        {msg.content.includes('__ORDER_CARD__') 
+          ? <OrderCard content={msg.content} />
+          : <span dangerouslySetInnerHTML={{ __html: formatMessage(msg.content) }} />
+        }
+        {msg.imageUrl && <img src={msg.imageUrl} alt={msg.fileName || 'attachment'} className="mt-2 rounded-xl max-w-full" style={{ maxHeight: '200px', objectFit: 'contain' }} />}
+        {msg.role === 'assistant' && renderMessageExtras(msg.content, (prompt) => { setInput(prompt); setTimeout(() => send(), 50); })}
+      </div>
+      <div className="opacity-0 group-hover/msg:opacity-100 transition-opacity duration-150">
+        <MessageActions
+          content={msg.content}
+          role={msg.role}
+          onEdit={msg.role === 'user' ? () => setInput(msg.content) : undefined}
+        />
+      </div>
+    </div>
+  </div>
+)
+))}
 
             {loading && !voiceRunning && (
               <div className="flex gap-2">
@@ -1352,15 +1724,7 @@ if (!convId) {
             )}
 
             {/* Limit reached inline prompt */}
-            {!subscribed && limitReached && !loading && (
-              <div className="flex justify-center py-4">
-                <div className="px-5 py-4 rounded-2xl border border-red-500/20 bg-red-500/5 text-center max-w-xs">
-                  <div className="text-red-300 text-sm font-medium mb-1">Daily limit reached</div>
-                  <div className="text-white/30 text-xs mb-3">You've used all 20 free messages for today. Resets at midnight.</div>
-                  <button onClick={openUpgrade} className="px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded-xl text-white text-xs font-medium transition-all">Upgrade to Pro</button>
-                </div>
-              </div>
-            )}
+
 
             <div ref={bottomRef} />
           </div>
@@ -1368,7 +1732,7 @@ if (!convId) {
 
         {/* Attached file preview */}
         {attachedFiles.length > 0 && (
-          <div className="px-3 pt-2 flex-shrink-0 bg-[#060608]">
+          <div className="flex-shrink-0 border-t border-white/5 px-3 py-3" style={{ background: 'var(--jarvis-bg)' }}>
             <div className="flex items-center gap-2 flex-wrap">
               {Array.from(new Set(attachedFiles.filter(f => f.name.includes('/')).map(f => f.name.substring(0, f.name.indexOf('/'))))).map(folderName => (
                 <div key={folderName} className="flex items-center gap-2">
@@ -1400,42 +1764,50 @@ if (!convId) {
         )}
 
         {/* Input bar */}
-        <div className="flex-shrink-0 bg-[#060608] border-t border-white/5 px-3 py-3" style={{ paddingBottom: 'max(12px, env(safe-area-inset-bottom))' }}>
-          <input ref={fileInputRef} type="file" multiple accept="image/*,.pdf,.txt,.js,.ts,.py,.md,.json,.csv,.doc,.docx" onChange={handleFileAttach} className="hidden" />
+        <div className="flex-shrink-0 border-t border-white/5 px-3 py-3" style={{ background: 'var(--jarvis-bg)', paddingBottom: 'max(12px, env(safe-area-inset-bottom))' }}>
+          <input ref={fileInputRef} type="file" multiple accept="image/*,video/*,.pdf,.txt,.js,.ts,.py,.md,.json,.csv,.doc,.docx" onChange={handleFileAttach} className="hidden" />
           <input ref={folderInputRef} type="file" multiple onChange={handleFileAttach} className="hidden" {...{ webkitdirectory: 'true' } as any} />
           <div className="flex items-center gap-2">
-            <div className="flex flex-col gap-1 flex-shrink-0">
-              <button onClick={() => fileInputRef.current?.click()} className="w-11 h-5 flex items-center justify-center rounded-t-xl hover:bg-white/5 transition-all text-white/30 hover:text-white/60" title="Attach files">
-                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
-              </button>
-              <button onClick={() => folderInputRef.current?.click()} className="w-11 h-5 flex items-center justify-center rounded-b-xl hover:bg-white/5 transition-all text-white/30 hover:text-white/60" title="Attach folder">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
-              </button>
-            </div>
-            <input
-              value={input}
-              onChange={e => setInput(e.target.value)}
-              onKeyDown={e => e.key === "Enter" && !e.shiftKey && send()}
-              placeholder={!subscribed && limitReached ? "Daily limit reached — upgrade to Pro" : "Message JARVIS..."}
-              disabled={loading || (!subscribed && limitReached)}
-              autoComplete="off"
-              autoCorrect="off"
-              autoCapitalize="sentences"
-              style={{ fontSize: '16px', opacity: !subscribed && limitReached ? 0.5 : 1 }}
-              className="flex-1 bg-white/5 border border-white/10 rounded-2xl text-white px-4 py-3 outline-none placeholder:text-white/25 focus:border-blue-500/40 transition-all min-w-0"
-            />
+            <input ref={videoInputRef} type="file" multiple accept="video/*" onChange={handleFileAttach} className="hidden" />
+<div className="flex flex-col gap-1 flex-shrink-0">
+  <button onClick={() => fileInputRef.current?.click()} className="w-11 h-5 flex items-center justify-center rounded-t-xl hover:bg-black/5 transition-all" style={{ color: 'var(--jarvis-text-dim)' }} title="Attach files">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+  </button>
+  <button onClick={() => videoInputRef.current?.click()} className="w-11 h-5 flex items-center justify-center rounded-b-xl hover:bg-black/5 transition-all" style={{ color: 'var(--jarvis-text-dim)' }} title="Attach video">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+  </button>
+</div>
+            <textarea
+  value={input}
+  onChange={e => {
+    setInput(e.target.value);
+    e.target.style.height = 'auto';
+    e.target.style.height = Math.min(e.target.scrollHeight, 200) + 'px';
+  }}
+  onKeyDown={e => e.key === "Enter" && !e.shiftKey && (e.preventDefault(), send())}
+  placeholder={!subscribed && limitReached ? "Daily limit reached — upgrade to Pro" : "Message JARVIS..."}
+  disabled={loading || (!subscribed && limitReached)}
+  autoComplete="off"
+  autoCorrect="off"
+  autoCapitalize="sentences"
+  rows={1}
+  className="flex-1 rounded-2xl px-4 py-3 outline-none transition-all min-w-0"
+  style={{ fontSize: '16px', opacity: !subscribed && limitReached ? 0.5 : 1, resize: 'none', overflowY: 'auto', lineHeight: '1.5', background: 'var(--jarvis-card)', border: '1px solid var(--jarvis-border)', color: 'var(--jarvis-text)' }}
+/>
             <button
-              onClick={!subscribed && limitReached ? openUpgrade : send}
-              disabled={loading || (subscribed ? false : limitReached ? false : !input.trim() && attachedFiles.length === 0)}
-              className={`w-11 h-11 rounded-xl flex items-center justify-center transition-all flex-shrink-0 ${!subscribed && limitReached ? 'bg-blue-600/60 hover:bg-blue-600' : 'bg-blue-600 hover:bg-blue-500 disabled:opacity-30'}`}
-              title={!subscribed && limitReached ? 'Upgrade to Pro' : 'Send'}
-            >
-              {!subscribed && limitReached ? (
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-              ) : (
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-              )}
-            </button>
+  onClick={loading ? () => { abortRef.current?.abort(); setLoading(false); } : (!subscribed && limitReached ? openUpgrade : send)}
+  disabled={!loading && (subscribed ? false : limitReached ? false : !input.trim() && attachedFiles.length === 0)}
+  className={`w-11 h-11 rounded-xl flex items-center justify-center transition-all flex-shrink-0 ${loading ? 'bg-white/10 hover:bg-white/15' : !subscribed && limitReached ? 'bg-blue-600/60 hover:bg-blue-600' : 'bg-blue-600 hover:bg-blue-500 disabled:opacity-30'}`}
+  title={loading ? 'Stop' : !subscribed && limitReached ? 'Upgrade to Pro' : 'Send'}
+>
+  {loading ? (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>
+  ) : !subscribed && limitReached ? (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+  ) : (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+  )}
+</button>
           </div>
         </div>
       </div>

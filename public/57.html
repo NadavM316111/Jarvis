@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>57</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #1a1a2e;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        h1 {
+            color: #fff;
+            font-size: 48px;
+            margin-bottom: 20px;
+            font-weight: 200;
+            letter-spacing: 8px;
+        }
+        .toolbar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            background: #16213e;
+            padding: 15px 25px;
+            border-radius: 50px;
+            align-items: center;
+        }
+        .color-picker {
+            width: 40px;
+            height: 40px;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            background: none;
+        }
+        .color-picker::-webkit-color-swatch {
+            border-radius: 50%;
+            border: 2px solid #fff;
+        }
+        .size-slider {
+            width: 100px;
+            accent-color: #e94560;
+        }
+        .size-display {
+            color: #fff;
+            font-size: 14px;
+            min-width: 30px;
+        }
+        button {
+            background: #e94560;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        button:hover {
+            background: #ff6b6b;
+            transform: scale(1.05);
+        }
+        button.eraser {
+            background: #0f3460;
+        }
+        button.eraser.active {
+            background: #e94560;
+        }
+        canvas {
+            background: #fff;
+            border-radius: 12px;
+            cursor: crosshair;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .instructions {
+            color: #666;
+            margin-top: 15px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <h1>57</h1>
+    <div class="toolbar">
+        <input type="color" class="color-picker" id="colorPicker" value="#e94560">
+        <input type="range" class="size-slider" id="sizeSlider" min="1" max="50" value="5">
+        <span class="size-display" id="sizeDisplay">5px</span>
+        <button class="eraser" id="eraserBtn">Eraser</button>
+        <button id="clearBtn">Clear</button>
+        <button id="saveBtn">Save</button>
+    </div>
+    <canvas id="canvas" width="900" height="600"></canvas>
+    <p class="instructions">Click and drag to draw</p>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const colorPicker = document.getElementById('colorPicker');
+        const sizeSlider = document.getElementById('sizeSlider');
+        const sizeDisplay = document.getElementById('sizeDisplay');
+        const eraserBtn = document.getElementById('eraserBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const saveBtn = document.getElementById('saveBtn');
+
+        let isDrawing = false;
+        let lastX = 0;
+        let lastY = 0;
+        let isEraser = false;
+
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.lineWidth = 5;
+        ctx.strokeStyle = colorPicker.value;
+
+        function startDrawing(e) {
+            isDrawing = true;
+            [lastX, lastY] = getPos(e);
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+            const [x, y] = getPos(e);
+            
+            ctx.beginPath();
+            ctx.moveTo(lastX, lastY);
+            ctx.lineTo(x, y);
+            ctx.stroke();
+            
+            [lastX, lastY] = [x, y];
+        }
+
+        function stopDrawing() {
+            isDrawing = false;
+        }
+
+        function getPos(e) {
+            const rect = canvas.getBoundingClientRect();
+            const x = (e.clientX || e.touches[0].clientX) - rect.left;
+            const y = (e.clientY || e.touches[0].clientY) - rect.top;
+            return [x, y];
+        }
+
+        // Mouse events
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', stopDrawing);
+        canvas.addEventListener('mouseout', stopDrawing);
+
+        // Touch events
+        canvas.addEventListener('touchstart', (e) => { e.preventDefault(); startDrawing(e); });
+        canvas.addEventListener('touchmove', (e) => { e.preventDefault(); draw(e); });
+        canvas.addEventListener('touchend', stopDrawing);
+
+        colorPicker.addEventListener('input', (e) => {
+            ctx.strokeStyle = e.target.value;
+            isEraser = false;
+            eraserBtn.classList.remove('active');
+        });
+
+        sizeSlider.addEventListener('input', (e) => {
+            ctx.lineWidth = e.target.value;
+            sizeDisplay.textContent = e.target.value + 'px';
+        });
+
+        eraserBtn.addEventListener('click', () => {
+            isEraser = !isEraser;
+            eraserBtn.classList.toggle('active');
+            ctx.strokeStyle = isEraser ? '#ffffff' : colorPicker.value;
+        });
+
+        clearBtn.addEventListener('click', () => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        });
+
+        saveBtn.addEventListener('click', () => {
+            const link = document.createElement('a');
+            link.download = '57-drawing.png';
+            link.href = canvas.toDataURL();
+            link.click();
+        });
+    </script>
+</body>
+</html>

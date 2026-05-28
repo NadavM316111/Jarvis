@@ -5,6 +5,18 @@ const Anthropic = require('@anthropic-ai/sdk');
 let screenshot;
 try { screenshot = require('screenshot-desktop'); } catch(e) { screenshot = null; }
 const { execSync, exec, spawn } = require('child_process');
+// Install ffmpeg if not available
+try {
+  execSync('which ffmpeg', { stdio: 'ignore' });
+} catch(e) {
+  console.log('[FFMPEG] Installing ffmpeg...');
+  try {
+    execSync('apt-get install -y ffmpeg', { stdio: 'inherit' });
+    console.log('[FFMPEG] Installed successfully');
+  } catch(e2) {
+    console.log('[FFMPEG] Install failed:', e2.message);
+  }
+}
 let robot;
 try { robot = require('@jitsi/robotjs'); } catch(e) { robot = null; }
 const axios = require('axios');
@@ -600,9 +612,8 @@ app.use('/chat', chatLimiter);
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 const { neon: memoryNeon } = require('@neondatabase/serverless');
 const memorySql = memoryNeon(process.env.DATABASE_URL);
-async function logApiUsage(userId, service, model, inputTokens, outputTokens, ttChars, endpoint) {
+async function logApiUsage(userId, service, model, inputTokens, outputTokens, ttsChars, endpoint) {
   try {
-    // Pricing (per 1M tokens)
     const pricing = {
       'claude-opus-4-5':    { in: 15.00, out: 75.00 },
       'claude-sonnet-4-6':  { in: 3.00,  out: 15.00 },
@@ -612,15 +623,14 @@ async function logApiUsage(userId, service, model, inputTokens, outputTokens, tt
     if (service === 'anthropic' && pricing[model]) {
       cost = (inputTokens / 1_000_000) * pricing[model].in + (outputTokens / 1_000_000) * pricing[model].out;
     } else if (service === 'elevenlabs') {
-      cost = (ttChars / 1000) * 0.18; // ~$0.18 per 1k chars on turbo
+      cost = (ttsChars / 1000) * 0.18;
     }
     await memorySql`
       INSERT INTO api_usage (user_id, service, model, input_tokens, output_tokens, tts_chars, cost_usd, endpoint)
-      VALUES (${userId}, ${service}, ${model || ''}, ${inputTokens || 0}, ${outputTokens || 0}, ${ttChars || 0}, ${cost}, ${endpoint || ''})
+      VALUES (${userId}, ${service}, ${model || ''}, ${inputTokens || 0}, ${outputTokens || 0}, ${ttsChars || 0}, ${cost}, ${endpoint || ''})
     `;
   } catch (e) { console.log('[USAGE] Log error:', e.message); }
 }
-
 async function saveConversationSummary(userId, conversationHistory) {
   if (!conversationHistory || conversationHistory.length < 2) return;
   try {
@@ -644,6 +654,19 @@ async function loadMemorySummaries(userId) {
   } catch (e) { return ''; }
 }
 const NADAV_USER_ID = 'nadavminkowitz_gmail_com';
+const UNLIMITED_USERS = new Set(['nlmwtpu_gmail_com', 'nadavminkowitz_gmail_com']);
+const FAMILY_USERS = new Set([
+  'cminkowitz32_posnackstudent_org',
+  'gminkowitz31_posnackstudent_org',
+  'danielmink_gmail_com',
+  'dm_minkholdings_com',
+  'shimonredd09_gmail_com',
+  'admin_prufli_com',
+  'arielomer1013_gmail_com',
+]);
+const FAMILY_DAILY_MSG_LIMIT = 25;
+const FREE_DAILY_COST_CAP = 0.75;
+const FREE_LIMIT = 20; // kept for family message cap
 process.env.TWILIO_PHONE_NUMBER = '+15054776732';
 // ============ STATE ============
 const PROACTIVE_LOG_FILE = path.join(__dirname, 'proactive_log.json');
@@ -945,7 +968,324 @@ async function search3DModels(query, source = 'both') {
   }
   return results;
 }
+async function generateImage(prompt) {
+  const enhancedPrompt = `${prompt}, photorealistic, ultra detailed, 8k, sharp focus, professional photography, natural lighting, hyper realistic`;
 
+  const response = await axios.post(
+    'https://api.replicate.com/v1/models/black-forest-labs/flux-dev/predictions',
+    { input: { prompt: enhancedPrompt, num_outputs: 1, output_format: 'webp', output_quality: 90, num_inference_steps: 28 } },
+    { headers: { Authorization: `Token ${process.env.REPLICATE_API_KEY}`, 'Content-Type': 'application/json' } }
+  );
+
+  let prediction = response.data;
+  while (prediction.status !== 'succeeded' && prediction.status !== 'failed') {
+    await new Promise(r => setTimeout(r, 1000));
+    const poll = await axios.get(`https://api.replicate.com/v1/predictions/${prediction.id}`, {
+      headers: { Authorization: `Token ${process.env.REPLICATE_API_KEY}` }
+    });
+    prediction = poll.data;
+  }
+
+  if (prediction.status === 'failed') throw new Error('Image generation failed');
+
+  const imageUrl = prediction.output[0];
+  const filename = `img_${Date.now()}.webp`;
+  const imgRes = await axios.get(imageUrl, { responseType: 'arraybuffer' });
+  fs.writeFileSync(path.join(PUBLIC_DIR, filename), imgRes.data);
+  const url = process.env.RAILWAY_ENVIRONMENT
+    ? `https://api.heyjarvis.me/view/${filename}`
+    : `http://localhost:3001/view/${filename}`;
+  return url;
+}
+
+async function generateImageWithFace(faceImageBase64, prompt) {
+  const response = await axios.post(
+    'https://api.replicate.com/v1/models/tencentarc/photomaker/predictions',
+    {
+      input: {
+  prompt: `${prompt}, img, best quality, high quality`,
+  input_images: [`data:image/jpeg;base64,${faceImageBase64}`],
+  style_name: 'Photographic (Default)',
+  num_steps: 25,
+  style_strength_ratio: 35,
+  num_outputs: 1,
+  guidance_scale: 5,
+  negative_prompt: 'nsfw, lowres, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry',
+}
+    },
+    { headers: { Authorization: `Token ${process.env.REPLICATE_API_KEY}`, 'Content-Type': 'application/json' } }
+  );
+
+  let prediction = response.data;
+  while (prediction.status !== 'succeeded' && prediction.status !== 'failed') {
+    await new Promise(r => setTimeout(r, 1500));
+    const poll = await axios.get(`https://api.replicate.com/v1/predictions/${prediction.id}`, {
+      headers: { Authorization: `Token ${process.env.REPLICATE_API_KEY}` }
+    });
+    prediction = poll.data;
+  }
+
+  if (prediction.status === 'failed') throw new Error('Face image generation failed: ' + prediction.error);
+
+  const imageUrl = Array.isArray(prediction.output) ? prediction.output[0] : prediction.output;
+  const filename = `img_${Date.now()}.webp`;
+  const imgRes = await axios.get(imageUrl, { responseType: 'arraybuffer' });
+  fs.writeFileSync(path.join(PUBLIC_DIR, filename), imgRes.data);
+  return `https://api.heyjarvis.me/view/${filename}`;
+}
+async function generateVideo(prompt, durationSeconds = 5) {
+  const { fal } = require('@fal-ai/client');
+  fal.config({ credentials: process.env.FAL_API_KEY });
+
+  const enhancedPrompt = `${prompt}. All text and speech in English only. Professional English voiceover.`;
+
+  const result = await fal.subscribe('bytedance/seedance-2.0/fast/text-to-video', {
+    input: {
+      prompt: enhancedPrompt,
+      duration: durationSeconds <= 5 ? '5' : '10',
+      resolution: '720p',
+      aspect_ratio: '16:9',
+      generate_audio: true,
+      negative_prompt: 'non-english speech, foreign language, gibberish, mumbling',
+    },
+    pollInterval: 3000,
+    onQueueUpdate: (update) => {
+      console.log('[VIDEO] status:', update.status);
+    },
+  });
+
+  const videoUrl = result.data.video.url;
+  const filename = `vid_${Date.now()}.mp4`;
+  const vidRes = await axios.get(videoUrl, { responseType: 'arraybuffer' });
+  fs.writeFileSync(path.join(PUBLIC_DIR, filename), vidRes.data);
+  return `https://api.heyjarvis.me/view/${filename}`;
+}
+
+async function generateVideoFromImage(imageBase64, imageType, prompt, durationSeconds = 5) {
+  const { fal } = require('@fal-ai/client');
+  fal.config({ credentials: process.env.FAL_API_KEY });
+
+  // Upload image to fal storage first
+  const imageBuffer = Buffer.from(imageBase64, 'base64');
+  const imageUrl = await fal.storage.upload(
+    new Blob([imageBuffer], { type: imageType }),
+    { filename: 'reference.jpg' }
+  );
+
+  const enhancedPrompt = `${prompt}. All text and speech in English only. Professional English voiceover.`;
+
+  const result = await fal.subscribe('bytedance/seedance-2.0/fast/image-to-video', {
+    input: {
+      prompt: enhancedPrompt,
+      image_url: imageUrl,
+      duration: durationSeconds <= 5 ? '5' : '10',
+      resolution: '720p',
+      aspect_ratio: '16:9',
+      generate_audio: true,
+    },
+    pollInterval: 3000,
+    onQueueUpdate: (update) => {
+      console.log('[VIDEO IMG] status:', update.status);
+    },
+  });
+
+  const videoUrl = result.data.video.url;
+  const filename = `vid_${Date.now()}.mp4`;
+  const vidRes = await axios.get(videoUrl, { responseType: 'arraybuffer' });
+  fs.writeFileSync(path.join(PUBLIC_DIR, filename), vidRes.data);
+  return `https://api.heyjarvis.me/view/${filename}`;
+}
+
+async function editVideo(instructions, videoFiles) {
+  const tempDir = path.join(__dirname, 'tmp_videos');
+  if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir);
+
+  const inputPaths = videoFiles.map((f, i) => {
+    const ext = f.type.includes('mp4') ? 'mp4' : f.type.includes('mov') ? 'mov' : f.type.includes('webm') ? 'webm' : 'mp4';
+    const p = path.join(tempDir, `input_${Date.now()}_${i}.${ext}`);
+    fs.writeFileSync(p, Buffer.from(f.data, 'base64'));
+    return p;
+  });
+
+  const outputFilename = `vid_${Date.now()}.mp4`;
+  const outputPath = path.join(PUBLIC_DIR, outputFilename);
+  const lower = instructions.toLowerCase();
+  const ffmpeg = require('fluent-ffmpeg');
+  const ffmpegPath = require('ffmpeg-static');
+  ffmpeg.setFfmpegPath(ffmpegPath);
+
+  if (inputPaths.length === 1) {
+    await new Promise((resolve, reject) => {
+      let cmd = ffmpeg(inputPaths[0]);
+      const vFilters = [];
+      const aFilters = [];
+      if (lower.includes('color') || lower.includes('grade') || lower.includes('cinematic')) vFilters.push('eq=contrast=1.1:brightness=0.02:saturation=1.2');
+      if (lower.includes('black and white') || lower.includes('grayscale')) vFilters.push('hue=s=0');
+      if (lower.includes('slow') || lower.includes('slow motion')) { vFilters.push('setpts=2.0*PTS'); aFilters.push('atempo=0.5'); }
+      if (lower.includes('speed up') || lower.includes('fast')) { vFilters.push('setpts=0.5*PTS'); aFilters.push('atempo=2.0'); }
+      if (vFilters.length) cmd = cmd.videoFilters(vFilters.join(','));
+      if (aFilters.length) cmd = cmd.audioFilters(aFilters.join(','));
+      cmd.outputOptions(['-c:v libx264', '-preset fast', '-crf 23', '-c:a aac', '-movflags +faststart'])
+        .output(outputPath).on('end', resolve).on('error', reject).run();
+    });
+  } else {
+    // Normalize each video first
+    const normalizedPaths = [];
+    for (let i = 0; i < inputPaths.length; i++) {
+      const normPath = path.join(tempDir, `norm_${Date.now()}_${i}.mp4`);
+      normalizedPaths.push(normPath);
+      await new Promise((res, rej) => {
+  ffmpeg(inputPaths[i])
+    .outputOptions(['-c:v libx264', '-preset fast', '-crf 23', '-c:a aac', '-ar 44100', '-vf scale=1280:720', '-r 30'])
+    .output(normPath)
+    .on('end', () => { console.log(`[VIDEO EDIT] Normalized video ${i}`); res(); })
+    .on('error', (err) => { console.log(`[VIDEO EDIT] Normalize error video ${i}:`, err.message); rej(err); })
+    .on('stderr', (line) => console.log(`[VIDEO EDIT] ffmpeg:`, line))
+    .run();
+});
+    }
+    // Concat normalized videos
+    const listFile = path.join(tempDir, `list_${Date.now()}.txt`);
+    fs.writeFileSync(listFile, normalizedPaths.map(p => `file '${p}'`).join('\n'));
+    await new Promise((resolve, reject) => {
+  ffmpeg()
+    .input(listFile)
+    .inputOptions(['-f concat', '-safe 0'])
+    .outputOptions(['-c copy'])
+    .output(outputPath)
+    .on('end', () => { 
+      console.log('[VIDEO EDIT] Concat complete:', outputPath);
+      normalizedPaths.forEach(p => { try { fs.unlinkSync(p); } catch {} }); 
+      resolve(); 
+    })
+    .on('error', (err) => { console.log('[VIDEO EDIT] Concat error:', err.message); reject(err); })
+    .on('stderr', (line) => console.log('[VIDEO EDIT] concat ffmpeg:', line))
+    .run();
+});
+  }
+
+  inputPaths.forEach(p => { try { fs.unlinkSync(p); } catch {} });
+  return `https://api.heyjarvis.me/view/${outputFilename}`;
+}
+
+async function screenshotPage(url) {
+  try {
+    const puppeteer = require('puppeteer');
+    const browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'], headless: 'new' });
+    const page = await browser.newPage();
+    await page.setViewport({ width: 1280, height: 800 });
+    await page.setUserAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36');
+    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 12000 });
+    await new Promise(r => setTimeout(r, 2000));
+    const filename = `shop_${Date.now()}.png`;
+    const outPath = path.join(PUBLIC_DIR, filename);
+    await page.screenshot({ path: outPath, fullPage: false });
+    await browser.close();
+    return `https://api.heyjarvis.me/view/${filename}`;
+  } catch (e) {
+    console.log('[SCREENSHOT] Failed:', e.message);
+    return null;
+  }
+}
+async function shopSearch(query, category, location = '') {
+  const results = [];
+
+  if (category === 'product') {
+    // Amazon
+    try {
+      const amazonSearch = await webSearch(`${query} site:amazon.com buy`);
+      const amazonResult = amazonSearch.find(r => r.url.includes('amazon.com/') && r.url.includes('/dp/'));
+      if (amazonResult) {
+        results.push({
+          store: 'Amazon',
+          name: amazonResult.title.replace(' - Amazon.com', '').replace(' | Amazon.com', ''),
+          url: amazonResult.url,
+          note: 'Prime eligible — fast shipping',
+          color: '#FF9900',
+          logo: 'amazon'
+        });
+      }
+    } catch (e) {}
+
+    // eBay
+    try {
+      const ebaySearch = await webSearch(`${query} site:ebay.com buy it now`);
+      const ebayResult = ebaySearch.find(r => r.url.includes('ebay.com/itm/'));
+      if (ebayResult) {
+        // Try to extract price from description
+        const priceMatch = ebayResult.description?.match(/\$[\d,]+\.?\d*/);
+        results.push({
+          store: 'eBay',
+          name: ebayResult.title.replace(' | eBay', ''),
+          url: ebayResult.url,
+          price: priceMatch ? priceMatch[0] : null,
+          note: 'Buy It Now',
+          color: '#86B817',
+          logo: 'ebay'
+        });
+      }
+    } catch (e) {}
+  }
+
+  if (category === 'grocery') {
+    try {
+      const instacartSearch = await webSearch(`${query} site:instacart.com`);
+      const instacartResult = instacartSearch.find(r => r.url.includes('instacart.com'));
+      if (instacartResult) {
+        results.push({
+          store: 'Instacart',
+          name: instacartResult.title.replace(' - Instacart', ''),
+          url: instacartResult.url || `https://www.instacart.com/store/s?k=${encodeURIComponent(query)}`,
+          note: 'Delivery in ~1 hour',
+          color: '#43B02A',
+          logo: 'instacart'
+        });
+      } else {
+        results.push({
+          store: 'Instacart',
+          name: query,
+          url: `https://www.instacart.com/store/s?k=${encodeURIComponent(query)}`,
+          note: 'Search on Instacart',
+          color: '#43B02A',
+          logo: 'instacart'
+        });
+      }
+    } catch (e) {}
+  }
+
+  if (category === 'food') {
+    // DoorDash
+    try {
+      results.push({
+        store: 'DoorDash',
+        name: query,
+        url: `https://www.doordash.com/search/store/${encodeURIComponent(query)}/`,
+        note: 'Order on DoorDash',
+        color: '#FF3008',
+        logo: 'doordash'
+      });
+    } catch (e) {}
+
+    // Uber Eats
+    try {
+      results.push({
+        store: 'Uber Eats',
+        name: query,
+        url: `https://www.ubereats.com/search?q=${encodeURIComponent(query)}`,
+        note: 'Order on Uber Eats',
+        color: '#06C167',
+        logo: 'ubereats'
+      });
+    } catch (e) {}
+  }
+
+  if (results.length === 0) {
+    return JSON.stringify({ error: 'No results found' });
+  }
+
+  // Return as special order card format
+  return `__ORDER_CARD__${JSON.stringify({ query, results })}__ORDER_CARD__`;
+}
 // ============ COMPUTER ACTIONS (Nadav-only) ============
 async function executeAction(action) {
   switch (action.type) {
@@ -1017,6 +1357,7 @@ async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame
   const session = getSession(userId);
   const { conversationHistory, userMemory } = session;
   const isNadav = userId === NADAV_USER_ID;
+  const isMacDesktop = true; // local server always serves Mac desktop app
   const userName = userMemory.userName || session.name || 'User';
   const userLocation = userMemory.location || (isNadav ? 'Fort Lauderdale, Florida' : 'Unknown');
 
@@ -1027,7 +1368,7 @@ async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame
   { name: 'remember', description: 'Save to persistent memory across sessions.', input_schema: { type: 'object', properties: { category: { type: 'string' }, key: { type: 'string' }, value: { type: 'string' } }, required: ['category', 'key', 'value'] } },
   { name: 'proactive_update', description: 'Push a notification to the user.', input_schema: { type: 'object', properties: { message: { type: 'string' } }, required: ['message'] } },
   { name: 'search_3d_models', description: 'Search Thingiverse and Printables for 3D models.', input_schema: { type: 'object', properties: { query: { type: 'string' }, source: { type: 'string', enum: ['thingiverse', 'printables', 'both'] } }, required: ['query'] } },
-  ...(isNadav ? [
+  ...(isNadav || isMacDesktop ? [
     { name: 'execute_actions', description: 'Execute computer actions: OPEN_URL, OPEN_APP, CLICK, TYPE, ENTER, HOTKEY, SELECT_ALL_AND_DELETE, SEND_EMAIL, RUN', input_schema: { type: 'object', properties: { actions: { type: 'array', items: { type: 'object', properties: { type: { type: 'string' }, value: { type: 'string' } } } }, summary: { type: 'string' } }, required: ['actions', 'summary'] } },
     { name: 'read_file', description: 'Read, list, or search files on the computer.', input_schema: { type: 'object', properties: { path: { type: 'string' }, action: { type: 'string', enum: ['read', 'list', 'search'] }, query: { type: 'string' } }, required: ['path', 'action'] } },
     { name: 'get_system_info', description: 'Get battery, top processes, disk space.', input_schema: { type: 'object', properties: {} } },
@@ -1066,6 +1407,76 @@ async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame
       required: ['title', 'slides', 'filename']
     }
   },
+  { 
+  name: 'generate_image', 
+  description: 'Generate an image from a text prompt using Flux Schnell. Use for any image generation request.', 
+  input_schema: { 
+    type: 'object', 
+    properties: { prompt: { type: 'string', description: 'Detailed image description' } }, 
+    required: ['prompt'] 
+  } 
+},
+{
+  name: 'shop',
+  description: 'Search for and find the best place to buy any product. Searches Amazon, eBay, Instacart, DoorDash, and Uber Eats. Returns a structured result with the best option.',
+  input_schema: {
+    type: 'object',
+    properties: {
+      query: { type: 'string', description: 'What the user wants to buy or order' },
+      category: { type: 'string', enum: ['product', 'grocery', 'food'], description: 'product=Amazon/eBay, grocery=Instacart, food=DoorDash/UberEats' },
+      location: { type: 'string', description: 'User location for food/grocery delivery' }
+    },
+    required: ['query', 'category']
+  }
+},
+{
+  name: 'generate_image_with_face',
+  description: 'Generate an image using an uploaded face photo as reference. Use when the user uploads a photo of themselves and wants to be shown in a different scenario, with tattoos, in a different style, etc.',
+  input_schema: {
+    type: 'object',
+    properties: {
+      prompt: { type: 'string', description: 'Description of the desired image' },
+      faceImageIndex: { type: 'number', description: 'Index of the uploaded image to use as face reference (0 = first image)' }
+    },
+    required: ['prompt']
+  }
+},
+{
+  name: 'generate_video',
+  description: 'Generate a video from a text prompt using Seedance 2.0. Use when user asks to create, generate, or make a video.',
+  input_schema: {
+    type: 'object',
+    properties: {
+      prompt: { type: 'string', description: 'Detailed video description' },
+      duration: { type: 'number', description: 'Duration in seconds (5 or 10)' }
+    },
+    required: ['prompt']
+  }
+},
+{
+  name: 'generate_video_from_image',
+  description: 'Generate a video using an uploaded image as a visual reference (logo, product photo, brand asset). Use when user uploads an image AND wants a video.',
+  input_schema: {
+    type: 'object',
+    properties: {
+      prompt: { type: 'string', description: 'Detailed video description' },
+      imageIndex: { type: 'number', description: 'Index of uploaded image to use (0 = first)' },
+      duration: { type: 'number', description: 'Duration in seconds (5 or 10)' }
+    },
+    required: ['prompt']
+  }
+},
+{
+  name: 'edit_video',
+  description: 'Edit, merge, or modify uploaded videos. Can add text, captions, color grade, slow motion, transitions, merge multiple videos. Use when user uploads videos and wants to edit them.',
+  input_schema: {
+    type: 'object',
+    properties: {
+      instructions: { type: 'string', description: 'What to do with the video(s)' },
+    },
+    required: ['instructions']
+  }
+},
   { name: 'finish', description: 'Task complete. Deliver final response.', input_schema: { type: 'object', properties: { response: { type: 'string' } }, required: ['response'] } }
 ];
 
@@ -1084,6 +1495,12 @@ async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame
     'NEVER say you cannot do something without trying first.',
     'Be helpful, precise, and confident like JARVIS from Iron Man.',
     'MAX 2 sentences for voice responses. No markdown, bullets, or asterisks in voice responses.',
+    'IMAGES: When sharing a generated image URL, NEVER use markdown image syntax like ![...](url). Just say the text response and include the raw URL on its own line.',
+    'SHOPPING: When the user says "order", "buy", "get me", "purchase" anything — ALWAYS use the shop tool first. NEVER use ACTION blocks for shopping. NEVER open Amazon directly. ALWAYS call the shop tool and let it return the order card.',
+    'generate_image_with_face: When user uploads a photo of themselves and wants to be shown differently (tattoos, different outfit, different style, etc.) — use this instead of generate_image.',
+    'generate_video: When user asks to generate/create/make a video from a description — use this. Costs ~$0.11 per 5 seconds.',
+'edit_video: When user uploads video files and wants to edit, merge, add text/captions, color grade, transitions — use this. FREE (FFmpeg).',
+'generate_video_from_image: When user uploads a logo, product image, or any reference image AND wants a video — use this instead of generate_video. It animates from the image.',
     '',
     '═══ CAPABILITIES ═══',
     'web_search: Search the web for any information.',
@@ -1092,7 +1509,7 @@ async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame
     'remember: Save information about the user for future sessions.',
     'proactive_update: Send the user a notification.',
     'search_3d_models: Search Thingiverse and Printables for 3D printable models.',
-    ...(isNadav ? [
+    ...(isNadav || isMacDesktop ? [
       '',
       '═══ NADAV-ONLY FEATURES ═══',
       'execute_actions: Control Nadav\'s PC (clicks, typing, opening apps/URLs).',
@@ -1121,9 +1538,12 @@ async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame
 'PHONE CALLS: To call someone by name: ACTION:{"type":"SHELL","command":"open facetime://Daniel"}',
 'APPLE TV: To open TV app and play a movie, use TWO ACTION blocks. First open it: ACTION:{"type":"SHELL","command":"open /System/Applications/TV.app"} then activate and search: ACTION:{"type":"APPLESCRIPT","script":"delay 3\\ntell application \\"TV\\" to activate\\ndelay 2\\ntell application \\"System Events\\"\\nkeystroke \\"f\\" using {command down}\\ndelay 1\\nkeystroke \\"MOVIENAME\\"\\ndelay 1\\nkey code 36\\nend tell"}',
 'APPLE TV SEARCH: Always use open /System/Applications/TV.app to launch it. Then tell application TV to activate before sending keystrokes. Replace MOVIENAME with actual movie name.',
-'APPLE MUSIC: To play music, use this AppleScript — it searches and plays without needing to open the app first: ACTION:{"type":"APPLESCRIPT","script":"tell application \\"Music\\"\\nset searching to search for \\"ARTIST OR SONG\\"\\nif searching is not {} then\\nplay item 1 of searching\\nend if\\nend tell"}',
-'APPLE MUSIC PLAY ARTIST: To play a specific artist: ACTION:{"type":"APPLESCRIPT","script":"tell application \\"Music\\"\\nplay playlist \\"ARTIST\\" by artist \\"ARTIST\\"\\nend tell"} OR simply: ACTION:{"type":"APPLESCRIPT","script":"tell application \\"Music\\"\nset allTracks to every track whose artist contains \\"ARTIST\\"\\nif allTracks is not {} then\\nplay item 1 of allTracks\\nend if\\nend tell"}',
-'NOTE: On Mac the Music app is called Music not Apple Music. Always use tell application \\"Music\\" never tell application \\"Apple Music\\".',
+'APPLE MUSIC: To play a song or artist, use this osascript — it searches the library and plays the first result automatically: ACTION:{"type":"SHELL","command":"osascript -e \'tell application \\"Music\\" to play (search playlist \\"Library\\" for \\"SONGNAME\\")\'"}',
+'APPLE MUSIC ARTIST: To play all songs by an artist: ACTION:{"type":"SHELL","command":"osascript -e \'tell application \\"Music\\"\nset t to (every track of playlist \\"Library\\" whose artist contains \\"ARTIST\\")\nif t is not {} then play item 1 of t\nend tell\'"}',
+'APPLE MUSIC CRITICAL: NEVER open a URL or search page. ALWAYS use osascript to search and play directly. The user should never have to click anything.',
+'MORE APP EXAMPLES: open -a \\"Spotify\\"  |  open -a \\"Notes\\"  |  open -a \\"Calculator\\"  |  open -a \\"System Preferences\\"',
+'NEVER use tell application blocks to open apps — always use open -a \\"App Name\\" instead.',
+'NOTE: On Mac the Music app is called Music not Apple Music.',
 'NOTIFICATIONS: To send a native Mac notification: ACTION:{"type":"SHELL","command":"osascript -e \'display notification \\"MESSAGE\\" with title \\"JARVIS\\"\'"}',
 'CALENDAR: To add a calendar event: ACTION:{"type":"APPLESCRIPT","script":"tell application \\"Calendar\\"\\nactivate\\ntell calendar \\"Calendar\\"\\nmake new event at end of events with properties {summary:\\"EVENT NAME\\", start date:date \\"DATE\\", end date:date \\"DATE\\"}\\nend tell\\nend tell"}',
 'REMINDERS: To add a reminder: ACTION:{"type":"APPLESCRIPT","script":"tell application \\"Reminders\\"\\nmake new reminder with properties {name:\\"REMINDER TEXT\\", due date:date \\"DATE\\"}\\nend tell"}',
@@ -1151,8 +1571,8 @@ async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame
       'User files live in: /Users/nadavminkowitz/Documents, Downloads, Desktop',
 `ALL HTML files for viewing: Save to ${PUBLIC_DIR}/filename.html → serves at https://api.heyjarvis.me/view/filename.html`,
 `CRITICAL: When building websites or HTML files, ALWAYS save to ${PUBLIC_DIR} (the Railway server's public directory), NEVER to local Mac paths. The file will be instantly accessible at https://api.heyjarvis.me/view/filename.html`,
-      'If told "Open HyperFlex": OPEN_URL http://localhost:3001/hyperflex',
-      'If told "Open Design studio": OPEN_URL http://localhost:3001/design',
+      'If told "Open HyperFlex": OPEN_URL https://api.heyjarvis.me/hyperflex',
+'If told "Open Design studio": OPEN_URL https://api.heyjarvis.me/design',
       'YOUTUBE for Nadav: Use web_search to find the YouTube URL, then execute_actions OPEN_URL with the full youtube.com/watch?v= URL to open it in his browser.',
 'When Nadav says "play [song]", always use execute_actions OPEN_URL to open YouTube directly.',
       '',
@@ -1201,12 +1621,22 @@ async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame
       '═══ AI VIDEO ═══',
       `LUMA AI: API key at process.env.LUMALABS_API_KEY | Base URL: https://api.lumalabs.ai/dream-machine/v1`,
       'FFMPEG: Available via run_code with bash.',
+'VIDEO EDITING: FFmpeg is available. Edit videos with run_code bash. Save outputs to PUBLIC_DIR.',
+'VIDEO GENERATION: Use generate_video tool. Seedance 2.0 via fal.ai. ~$0.11/5sec.',
       '',
       `node_modules: ${process.cwd()}/node_modules`,
       `Working dir: ${process.cwd()}`,
       `Credentials: .env.local | Google: credentials.json + token.json`,
       '',
     ] : [
+  '',
+  '═══ MAC DESKTOP CONTROL ═══',
+  'The user is running the JARVIS desktop app on a Mac. You have FULL control of their Mac.',
+  'To control the Mac, include ACTION:{"type":"APPLESCRIPT","script":"YOUR SCRIPT"} anywhere in your response.',
+  'To run shell commands, include ACTION:{"type":"SHELL","command":"YOUR COMMAND"}.',
+  'ALWAYS include ACTION blocks for Mac tasks. NEVER say you cannot control the Mac.',
+  'Set volume: ACTION:{"type":"SHELL","command":"osascript -e \'set volume output volume 50\'"}',
+  'This is Mac NOT Windows. Never give Windows instructions.',
   '',
   '═══ CAPABILITIES ═══',
   'You are FULLY POWERFUL — same as JARVIS from Iron Man.',
@@ -1261,6 +1691,7 @@ async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame
 'To comment: const { postYouTubeComment } = require("./gmail_multi");',
 '',
   '═══ GMAIL & CALENDAR ═══',
+'CRITICAL: Gmail is ALREADY connected via OAuth tokens stored in Neon DB. NEVER look for credentials.json or token.json files — they do not exist on this server. NEVER tell the user to find credential files. Just call getRecentEmails(userId) directly and it works.',
 'To read emails: use run_code with node:',
 'const { getRecentEmails } = require("./gmail_multi");',
 `const emails = await getRecentEmails("${userId}", 10);`,
@@ -1391,7 +1822,7 @@ for (const f of otherFiles) {
   while (iterations < 25) {
     iterations++;
 
-    const isComplexTask = /build|website|html|code|program|script|3d model|generate image|luma|video|spreadsheet|presentation|app|clone|platform|saas|pdf|study guide/i.test(userMessage);
+    const isComplexTask = /build|website|html|code|program|script|3d model|generate image|luma|video|spreadsheet|presentation|app|clone|platform|saas|pdf|study guide|shop|order a|buy me/i.test(userMessage);
     const response = await anthropic.messages.create({
       model: isComplexTask ? 'claude-opus-4-5' : 'claude-sonnet-4-6',
 
@@ -1400,13 +1831,7 @@ for (const f of otherFiles) {
       tools,
       messages
     });
-    logApiUsage(
-  userId, 'anthropic',
-  isComplexTask ? 'claude-opus-4-5' : 'claude-sonnet-4-6',
-  response.usage.input_tokens,
-  response.usage.output_tokens,
-  0, '/chat'
-);
+    logApiUsage(userId, 'anthropic', isComplexTask ? 'claude-opus-4-5' : 'claude-sonnet-4-6', response.usage.input_tokens, response.usage.output_tokens, 0, '/chat');
 
 
     messages.push({ role: 'assistant', content: response.content });
@@ -1463,6 +1888,46 @@ for (const f of otherFiles) {
         else if (block.name === 'search_3d_models') {
           result = JSON.stringify(await search3DModels(block.input.query, block.input.source || 'both'), null, 2);
         }
+        else if (block.name === 'generate_image') {
+  const imageUrl = await generateImage(block.input.prompt);
+  result = `Image generated: ${imageUrl}`;
+}
+else if (block.name === 'generate_image_with_face') {
+  const faceIdx = block.input.faceImageIndex || 0;
+  const faceFile = imageFiles[faceIdx];
+  if (!faceFile) {
+    result = 'No image uploaded to use as face reference. Ask the user to upload a photo first.';
+  } else {
+    const imageUrl = await generateImageWithFace(faceFile.data, block.input.prompt);
+    result = `Image generated: ${imageUrl}`;
+  }
+}
+else if (block.name === 'generate_video') {
+  const videoUrl = await generateVideo(block.input.prompt, block.input.duration || 5);
+  result = `Video generated: ${videoUrl}`;
+}
+else if (block.name === 'generate_video_from_image') {
+  const imgIdx = block.input.imageIndex ?? 0;
+  const imgFile = imageFiles[imgIdx] || imageFiles[0];
+  if (!imgFile) {
+    result = 'No image uploaded. Ask the user to upload their logo or reference image first.';
+  } else {
+    const videoUrl = await generateVideoFromImage(imgFile.data, imgFile.type, block.input.prompt, block.input.duration || 5);
+    result = `Video generated: ${videoUrl}`;
+  }
+}
+else if (block.name === 'edit_video') {
+  const videoFiles = files.filter(f => 
+    f.type.startsWith('video/') || 
+    f.name.match(/\.(mp4|mov|webm|avi|mkv)$/i)
+  );
+  if (videoFiles.length === 0) {
+    result = 'No video files uploaded. Ask the user to upload their videos first.';
+  } else {
+    const videoUrl = await editVideo(block.input.instructions, videoFiles);
+    result = `Video edited: ${videoUrl}`;
+  }
+}
         else if (block.name === 'remember') {
           const cat = block.input.category;
           if (!session.userMemory[cat]) session.userMemory[cat] = {};
@@ -1476,6 +1941,18 @@ for (const f of otherFiles) {
           addProactiveUpdate(block.input.message, userId);
           result = 'Update sent.';
         }
+        else if (block.name === 'shop') {
+  const shopResult = await shopSearch(block.input.query, block.input.category, block.input.location || userLocation);
+  // If it's an order card, return it directly as the final response
+  if (shopResult.includes('__ORDER_CARD__')) {
+    finalResponse = shopResult;
+    toolResults.push({ type: 'tool_result', tool_use_id: block.id, content: 'Order card created and displayed to user.' });
+    messages.push({ role: 'user', content: toolResults });
+    finished = true;
+    break;
+  }
+  result = shopResult;
+}
         else if (block.name === 'finish') {
           finalResponse = block.input.response;
           toolResults.push({ type: 'tool_result', tool_use_id: block.id, content: 'Done.' });
@@ -1523,6 +2000,7 @@ async function runProactiveBrain() {
     proactiveLastRun[userId] = Date.now();
     try {
       const { userMemory } = sessions[userId];
+      const isMacDesktop = true; // local server always serves Mac desktop app
       const isNadav = userId === NADAV_USER_ID;
       const prompt = [
         `Proactive check for ${userMemory.userName || 'User'}. Time: ${now.toLocaleString()}`,
@@ -1596,9 +2074,58 @@ app.post('/auth/login', async (req, res) => {
   } catch (e) { res.status(401).json({ error: e.message }); }
 });
 app.get('/auth/me', authMiddleware, (req, res) => {
-  res.json({ user: req.user, memory: getSession(req.user.userId).userMemory });
+  const session = getSession(req.user.userId);
+  // Ensure basic fields are always populated
+  if (!session.userMemory.userName) session.userMemory.userName = req.user.name;
+  if (!session.userMemory.email) session.userMemory.email = req.user.email;
+  res.json({ user: req.user, memory: session.userMemory });
 });
 
+app.get('/memory-summaries', authMiddleware, async (req, res) => {
+  try {
+    const rows = await memorySql`
+      SELECT summary, created_at 
+      FROM conversation_summaries 
+      WHERE user_id = ${req.user.userId} 
+      ORDER BY created_at DESC LIMIT 20
+    `;
+    res.json({ summaries: rows });
+  } catch (e) { res.json({ summaries: [] }); }
+});
+app.get('/memory-insights', authMiddleware, async (req, res) => {
+  try {
+    const rows = await memorySql`
+      SELECT summary FROM conversation_summaries 
+      WHERE user_id = ${req.user.userId} 
+      ORDER BY created_at DESC LIMIT 20
+    `;
+    if (rows.length === 0) return res.json({ insights: [] });
+    
+    const summaries = rows.map(r => r.summary).join('\n\n');
+    const response = await anthropic.messages.create({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 600,
+      messages: [{ 
+        role: 'user', 
+        content: `Based on these conversation summaries, extract 6-10 memorable facts about this user. Focus on personality, interests, preferences, habits, and style.\n\nRespond with ONLY a raw JSON array like this example:\n["Enjoys shopping on Amazon", "Likes grunge music", "Has an Eric Clapton shirt"]\n\nNo markdown backticks, no explanation, just the array.\n\nSummaries:\n${summaries}` 
+      }]
+    });
+    let text = response.content[0].text.trim();
+    // Strip any markdown if present
+    text = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+    // Find the array in the response
+    const match = text.match(/\[[\s\S]*\]/);
+    if (!match) {
+      console.log('[INSIGHTS] No array found in response:', text);
+      return res.json({ insights: [] });
+    }
+    const insights = JSON.parse(match[0]);
+    res.json({ insights });
+  } catch (e) { 
+    console.log('[INSIGHTS] Error:', e.message);
+    res.json({ insights: [] }); 
+  }
+});
 // ============ FACE RECOGNITION (Nadav-only) ============
 app.post('/face-status', authMiddleware, (req, res) => {
   if (req.user.userId !== NADAV_USER_ID) return res.json({ ok: true });
@@ -1694,28 +2221,38 @@ if (authToken) {
   saveUserMemory(userId, session.userMemory);
 }
 
-    const isSubscribed = isNadav || session.userMemory.subscribed === true;
-    const FREE_LIMIT = 20;
+    const isUnlimited = UNLIMITED_USERS.has(userId) || session.userMemory.subscribed === true;
+const isFamily = FAMILY_USERS.has(userId);
+const isSubscribed = isUnlimited;
 
-    if (!isSubscribed) {
-      const today = new Date().toDateString();
-      if (session.userMemory.lastMessageDate !== today) {
-        session.userMemory.dailyMessageCount = 0;
-        session.userMemory.lastMessageDate = today;
-      }
-      const used = session.userMemory.dailyMessageCount || 0;
-      if (used >= FREE_LIMIT) {
-        return res.json({
-          success: false,
-          limitReached: true,
-          messagesUsed: used,
-          messagesLimit: FREE_LIMIT,
-          message: `You've used all ${FREE_LIMIT} free messages for today. Upgrade to Pro for unlimited messages.`,
-        });
-      }
-      session.userMemory.dailyMessageCount = used + 1;
-      saveUserMemory(userId, session.userMemory);
+if (!isUnlimited) {
+  const today = new Date().toDateString();
+  if (session.userMemory.lastMessageDate !== today) {
+    session.userMemory.dailyMessageCount = 0;
+    session.userMemory.lastMessageDate = today;
+  }
+
+  if (isFamily) {
+    const used = session.userMemory.dailyMessageCount || 0;
+    if (used >= FAMILY_DAILY_MSG_LIMIT) {
+      return res.json({ success: false, limitReached: true, message: `Daily message limit reached. Come back tomorrow.` });
     }
+    session.userMemory.dailyMessageCount = (used + 1);
+    saveUserMemory(userId, session.userMemory);
+  } else {
+    // Free user — cost-based cap
+    const dailySpend = await getDailySpend(userId);
+    if (dailySpend >= FREE_DAILY_COST_CAP) {
+      const now = new Date();
+      const etOffset = -5 * 60;
+      const etNow = new Date(now.getTime() + (now.getTimezoneOffset() + etOffset) * 60000);
+      const midnight = new Date(etNow);
+      midnight.setHours(24, 0, 0, 0);
+      const msUntilReset = midnight - etNow;
+      return res.json({ success: false, limitReached: true, dailyCostCap: true, msUntilReset, message: `Daily token limit reached.` });
+    }
+  }
+}
 
     const usageInfo = isSubscribed ? { messagesUsed: null, messagesLimit: null } : {
       messagesUsed: session.userMemory.dailyMessageCount,
@@ -1748,7 +2285,7 @@ if (authToken) {
     }
 
     const hasFolderFiles = (attachedFiles || []).some(f => f.name && f.name.includes('/'));
-    const isLongTask = hasFolderFiles || /play|connect|sonos|tv|call|email|create|open|print|turn|buy|order|install|build|design|scan|monitor|write|send|download|execute|organize|pdf|study|guide|make|presentation|slides|slideshow|analyze|analyse|search|find|look|document|folder|file|these|those/i.test(message);
+    const isLongTask = hasFolderFiles || /image|generate|photo|tattoo|face|style|outfit|picture|draw|video|edit|merge|caption|play|connect|sonos|tv|call|email|create|open|print|turn|buy|order|install|build|design|scan|monitor|write|send|download|execute|organize|pdf|study|guide|make|presentation|slides|slideshow|analyze|analyse|search|find|look|document|folder|file|these|those/i.test(message);
     if (isLongTask) {
       res.json({ success: true, message: 'On it.', actions: [], ...usageInfo });
 
@@ -1760,6 +2297,12 @@ if (authToken) {
         setTimeout(() => queueBgResponse(userId, '[PROGRESS:70%] Building the deck[/PROGRESS]'), 16000);
         setTimeout(() => queueBgResponse(userId, '[PROGRESS:90%] Saving your presentation[/PROGRESS]'), 25000);
       }
+      const isVideoTask = /video|edit video|merge video/i.test(message);
+if (isVideoTask) {
+  setTimeout(() => queueBgResponse(userId, '[PROGRESS:10%] Processing video...[/PROGRESS]'), 500);
+  setTimeout(() => queueBgResponse(userId, '[PROGRESS:40%] Applying edits...[/PROGRESS]'), 8000);
+  setTimeout(() => queueBgResponse(userId, '[PROGRESS:80%] Encoding output...[/PROGRESS]'), 20000);
+}
       const hasFolderUpload = (attachedFiles || []).some(f => f.name && f.name.includes('/'));
       if (hasFolderUpload) {
         const fileCount = (attachedFiles || []).length;
@@ -1971,7 +2514,10 @@ app.get('/proxy-model', async (req, res) => {
 });
 
 // ============ STATIC FILE VIEWER ============
-app.use('/view', express.static(PUBLIC_DIR));
+app.use('/view', (req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  next();
+}, express.static(PUBLIC_DIR));
 
 // ============ SPOKEN UPDATES TOGGLE (per-user) ============
 const userSpokenUpdatesEnabled = {};
@@ -2240,24 +2786,6 @@ app.post('/api/tts', async (req, res) => {
     res.send(response.data);
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
-
-app.get('/usage-dashboard', authMiddleware, async (req, res) => {
-  if (req.user.userId !== NADAV_USER_ID) return res.status(403).json({ error: 'Admin only' });
-  const rows = await memorySql`
-    SELECT user_id, service, model,
-           SUM(input_tokens) as total_input,
-           SUM(output_tokens) as total_output,
-           SUM(tts_chars) as total_chars,
-           SUM(cost_usd) as total_cost,
-           COUNT(*) as calls,
-           MAX(created_at) as last_call
-    FROM api_usage
-    WHERE created_at > NOW() - INTERVAL '7 days'
-    GROUP BY user_id, service, model
-    ORDER BY total_cost DESC
-  `;
-  res.json({ usage: rows });
-});
 // ============ STRIPE ============
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
@@ -2311,11 +2839,67 @@ app.post('/stripe-webhook', express.raw({ type: 'application/json' }), async (re
   res.json({ received: true });
 });
 
+
+async function getDailySpend(userId) {
+  try {
+    const rows = await memorySql`
+      SELECT COALESCE(SUM(cost_usd), 0) as total
+      FROM api_usage
+      WHERE user_id = ${userId}
+      AND created_at > NOW() - INTERVAL '24 hours'
+    `;
+    return parseFloat(rows[0]?.total || 0);
+  } catch (e) { return 0; }
+}
+
+app.get('/daily-cost', authMiddleware, async (req, res) => {
+  const userId = req.user.userId;
+  if (UNLIMITED_USERS.has(userId) || getSession(userId).userMemory.subscribed) {
+    return res.json({ cost: 0, cap: null, unlimited: true });
+  }
+  if (FAMILY_USERS.has(userId)) {
+    const session = getSession(userId);
+    const today = new Date().toDateString();
+    if (session.userMemory.lastMessageDate !== today) session.userMemory.dailyMessageCount = 0;
+    return res.json({ cost: 0, cap: null, unlimited: false, family: true, messagesUsed: session.userMemory.dailyMessageCount || 0, messagesLimit: FAMILY_DAILY_MSG_LIMIT });
+  }
+  const cost = await getDailySpend(userId);
+  res.json({ cost, cap: FREE_DAILY_COST_CAP, unlimited: false, limitReached: cost >= FREE_DAILY_COST_CAP });
+});
+
+// Secret console unlock
+app.post('/jarvis-unlock', authMiddleware, async (req, res) => {
+  if (req.body.code !== 'tony-stark-2025') return res.status(403).json({ error: 'No.' });
+  const session = getSession(req.user.userId);
+  session.userMemory.subscribed = true;
+  await saveUserMemory(req.user.userId, session.userMemory);
+  queueBgResponse(req.user.userId, '__SUBSCRIBED__');
+  res.json({ ok: true, message: 'Activated.' });
+});
 app.get('/subscription-status', authMiddleware, async (req, res) => {
   const session = getSession(req.user.userId);
   const isNadav = req.user.userId === NADAV_USER_ID;
   res.json({ subscribed: isNadav || session.userMemory.subscribed === true });
 });
+
+app.post('/transcribe', authMiddleware, async (req, res) => {
+  try {
+    const { audioBase64 } = req.body;
+    const audioBuffer = Buffer.from(audioBase64, 'base64');
+    const FormData = require('form-data');
+    const form = new FormData();
+    form.append('file', audioBuffer, { filename: 'audio.wav', contentType: 'audio/wav' });
+    form.append('model_id', 'scribe_v1');
+    const response = await axios.post('https://api.elevenlabs.io/v1/speech-to-text', form, {
+      headers: { ...form.getHeaders(), 'xi-api-key': process.env.ELEVENLABS_API_KEY }
+    });
+    res.json({ transcript: response.data.text });
+  } catch (e) {
+    res.status(500).json({ error: e.message, transcript: '' });
+  }
+});
+
+
 app.listen(3001, () => {
   console.log('\n╔════════════════════════════════════════╗');
   console.log('║       J.A.R.V.I.S. ONLINE              ║');
