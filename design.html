@@ -582,8 +582,10 @@ const MODES = {
 const SYSTEMS = {
   landing: `You are a world-class startup landing page designer and copywriter. Generate a complete, stunning HTML/CSS landing page pitch based on the user's product description.
 
-Output ONLY a JSON object with NO markdown, NO backticks, NO preamble:
-{"title":"...", "html":"...", "meta":"..."}
+Output ONLY this exact tagged format — no JSON, no markdown, no backticks:
+<TITLE>page title here</TITLE>
+<HTML>complete html and css here</HTML>
+<META>one sentence design note</META>
 
 RULES for "html":
 - Complete self-contained HTML/CSS (no doctype/html/body tags). All CSS must be inline or in a <style> block at the top.
@@ -763,18 +765,29 @@ async function doGenerate() {
     });
 
     let data;
-    const ct = res.headers.get('content-type') || '';
-    if (ct.includes('application/json')) {
-      const raw = await res.json();
-      if (raw && typeof raw === 'object' && (raw.html || raw.colors || raw.brandName)) {
-        data = raw;
-      } else {
-        const text = raw?.response ?? raw?.text ?? raw?.result ?? JSON.stringify(raw);
-        data = extractJSON(text);
-      }
-    } else {
-      data = extractJSON(await res.text());
-    }
+const rawText = await res.text();
+
+if (currentMode === 'landing') {
+  const titleMatch = rawText.match(/<TITLE>([\s\S]*?)<\/TITLE>/i);
+  const htmlMatch  = rawText.match(/<HTML>([\s\S]*?)<\/HTML>/i);
+  const metaMatch  = rawText.match(/<META>([\s\S]*?)<\/META>/i);
+  if (htmlMatch) {
+    data = {
+      title: titleMatch?.[1]?.trim() || 'Landing Page',
+      html:  htmlMatch[1].trim(),
+      meta:  metaMatch?.[1]?.trim() || ''
+    };
+  }
+} else {
+  // brand + poster still use JSON (no raw HTML, so no quote conflicts)
+  try {
+    const json = rawText.replace(/```json|```/g,'').trim();
+    const parsed = JSON.parse(json);
+    data = (parsed.html || parsed.colors || parsed.brandName) ? parsed : extractJSON(parsed.response ?? json);
+  } catch(e) {
+    data = extractJSON(rawText);
+  }
+}
 
     setLoading(false);
     if (!data) { showToast('Parse error — try again'); reEnableBtns(btn); return; }
