@@ -92,10 +92,7 @@ body{background:var(--dark);font-family:'Syne',sans-serif;overflow:hidden;height
 #obj-info.visible{opacity:1}
 .info-chip{padding:4px 9px;border-radius:7px;background:rgba(2,4,10,.85);border:1px solid var(--border);font-size:9px;font-family:'Space Mono',monospace;color:var(--sub);letter-spacing:1px;backdrop-filter:blur(8px)}
 .info-chip span{color:var(--cyan)}
-#loading{position:fixed;inset:0;z-index:500;background:var(--dark);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;transition:opacity .6s}
-.ld-ring{width:38px;height:38px;border:1px solid rgba(0,245,255,.15);border-top-color:var(--cyan);border-radius:50%;animation:spin 1s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.ld-name{font-size:14px;letter-spacing:7px;color:rgba(0,245,255,.5);text-transform:uppercase;font-family:'Space Mono',monospace}
 #grid-overlay{position:fixed;inset:0;pointer-events:none;z-index:5;background-image:linear-gradient(rgba(0,245,255,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(0,245,255,.02) 1px,transparent 1px);background-size:60px 60px;opacity:0;transition:opacity .3s}
 #grid-overlay.show{opacity:1}
 #gesture-hint{position:fixed;bottom:74px;left:50%;transform:translateX(-50%);font-size:9px;color:rgba(255,255,255,.1);letter-spacing:2px;font-family:'Space Mono',monospace;text-transform:uppercase;pointer-events:none;z-index:10;white-space:nowrap}
@@ -116,7 +113,6 @@ body{background:var(--dark);font-family:'Syne',sans-serif;overflow:hidden;height
 <canvas id="canvas"></canvas>
 <div id="grid-overlay"></div>
 <div class="corner c-tl"></div><div class="corner c-tr"></div><div class="corner c-bl"></div><div class="corner c-br"></div>
-<div id="loading"><div class="ld-ring"></div><div class="ld-name">Forge</div></div>
 <div id="model-loading"><div class="ml-ring"></div><div class="ml-txt" id="ml-txt">IMPORTING MODEL</div></div>
 
 <div id="topbar">
@@ -781,8 +777,7 @@ function animate(){
 }
 animate();
 
-// Always dismiss loading screen after 1.5s no matter what
-setTimeout(()=>{const el=document.getElementById('loading');el.style.opacity='0';setTimeout(()=>el.style.display='none',600);},1500);
+
 document.getElementById('sidebar-input').addEventListener('input',function(){this.style.height='auto';this.style.height=Math.min(this.scrollHeight,110)+'px';});
 </script>
 </body>
