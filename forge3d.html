@@ -166,11 +166,11 @@ body{background:var(--dark);font-family:'Syne',sans-serif;overflow:hidden;height
   <div id="messages">
     <div class="msg ai">
       <div class="msg-orb ai"></div>
-      <div class="msg-bubble">Hey! I import real 3D models — try <strong>"import a sports car"</strong>, <strong>"import a drone"</strong>, or <strong>"import a chair"</strong>. I'll search Poly Pizza's free 3D library and load the actual GLB model. Hit <strong>Move</strong> for hand tracking, or the camera button to toggle your webcam.</div>
+      <div class="msg-bubble">Hey! Say <strong>"import car"</strong>, <strong>"import robot"</strong>, <strong>"import fox"</strong> to load real GLB models. Or say <strong>"build a chair"</strong>, <strong>"build a spaceship"</strong>, <strong>"build a house"</strong> to generate anything with AI. Hit the camera button for your webcam, <strong>Move</strong> for hand tracking.</div>
     </div>
   </div>
   <div id="sidebar-input-wrap">
-    <textarea id="sidebar-input" placeholder="Import a car, drone, chair..." rows="1" onkeydown="handleKey(event)"></textarea>
+    <textarea id="sidebar-input" placeholder="import car · build a spaceship · import robot" rows="1" onkeydown="handleKey(event)"></textarea>
     <button id="sidebar-send" onclick="sendMessage()">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
     </button>
@@ -262,7 +262,7 @@ function loadGLTFLoader() {
     if(GLTFLoader){resolve();return;}
     const s = document.createElement('script');
     s.src = 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js';
-    s.onload = () => { GLTFLoader = THREE.GLTFLoader; resolve(); };
+    s.onload = () => { GLTFLoader = THREE.GLTFLoader || window.GLTFLoader; resolve(); };
     s.onerror = () => resolve(); // fail silently, fallback to primitives
     document.head.appendChild(s);
   });
@@ -271,25 +271,32 @@ loadGLTFLoader();
 
 // ─── MODEL LIBRARY ──────────────────────────────────────────
 // Curated free GLB models from publicly accessible CDNs
+// CORS-verified GLB sources
+const B = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/main/Models';
+const T = 'https://raw.githubusercontent.com/mrdoob/three.js/r128/examples/models/gltf';
 const MODEL_LIBRARY = {
-  car:       'https://modelviewer.dev/shared-assets/models/glTF-Sample-Assets/Models/ToyCar/glTF-Binary/ToyCar.glb',
-  sportscar: 'https://modelviewer.dev/shared-assets/models/glTF-Sample-Assets/Models/ToyCar/glTF-Binary/ToyCar.glb',
-  vehicle:   'https://modelviewer.dev/shared-assets/models/glTF-Sample-Assets/Models/ToyCar/glTF-Binary/ToyCar.glb',
-  helmet:    'https://modelviewer.dev/shared-assets/models/glTF-Sample-Assets/Models/DamagedHelmet/glTF-Binary/DamagedHelmet.glb',
-  astronaut: 'https://modelviewer.dev/shared-assets/models/Astronaut.glb',
-  robot:     'https://modelviewer.dev/shared-assets/models/RobotExpressive/RobotExpressive.glb',
-  duck:      'https://modelviewer.dev/shared-assets/models/glTF-Sample-Assets/Models/Duck/glTF-Binary/Duck.glb',
-  fox:       'https://modelviewer.dev/shared-assets/models/glTF-Sample-Assets/Models/Fox/glTF-Binary/Fox.glb',
-  horse:     'https://modelviewer.dev/shared-assets/models/glTF-Sample-Assets/Models/Horse/glTF-Binary/Horse.glb',
-  lantern:   'https://modelviewer.dev/shared-assets/models/glTF-Sample-Assets/Models/LanternPole/glTF-Binary/LanternPole.glb',
-  avocado:   'https://modelviewer.dev/shared-assets/models/glTF-Sample-Assets/Models/Avocado/glTF-Binary/Avocado.glb',
-  shoe:      'https://modelviewer.dev/shared-assets/models/glTF-Sample-Assets/Models/MaterialsVariantsShoe/glTF-Binary/MaterialsVariantsShoe.glb',
-  drone:     'https://cdn.jsdelivr.net/gh/mrdoob/three.js@r128/examples/models/gltf/Parrot.glb',
-  bird:      'https://cdn.jsdelivr.net/gh/mrdoob/three.js@r128/examples/models/gltf/Parrot.glb',
-  fish:      'https://cdn.jsdelivr.net/gh/mrdoob/three.js@r128/examples/models/gltf/Fish.glb',
-  horse2:    'https://cdn.jsdelivr.net/gh/mrdoob/three.js@r128/examples/models/gltf/Horse.glb',
-  flamingo:  'https://cdn.jsdelivr.net/gh/mrdoob/three.js@r128/examples/models/gltf/Flamingo.glb',
-  stork:     'https://cdn.jsdelivr.net/gh/mrdoob/three.js@r128/examples/models/gltf/Stork.glb',
+  car:        B+'/ToyCar/glTF-Binary/ToyCar.glb',
+  sportscar:  B+'/ToyCar/glTF-Binary/ToyCar.glb',
+  vehicle:    B+'/ToyCar/glTF-Binary/ToyCar.glb',
+  truck:      B+'/ToyCar/glTF-Binary/ToyCar.glb',
+  helmet:     B+'/DamagedHelmet/glTF-Binary/DamagedHelmet.glb',
+  duck:       B+'/Duck/glTF-Binary/Duck.glb',
+  avocado:    B+'/Avocado/glTF-Binary/Avocado.glb',
+  shoe:       B+'/MaterialsVariantsShoe/glTF-Binary/MaterialsVariantsShoe.glb',
+  sneaker:    B+'/MaterialsVariantsShoe/glTF-Binary/MaterialsVariantsShoe.glb',
+  bottle:     B+'/WaterBottle/glTF-Binary/WaterBottle.glb',
+  waterbottle:B+'/WaterBottle/glTF-Binary/WaterBottle.glb',
+  lantern:    B+'/LanternPole/glTF-Binary/LanternPole.glb',
+  fox:        B+'/Fox/glTF-Binary/Fox.glb',
+  animal:     B+'/Fox/glTF-Binary/Fox.glb',
+  flamingo:   T+'/Flamingo.glb',
+  bird:       T+'/Flamingo.glb',
+  parrot:     T+'/Parrot.glb',
+  stork:      T+'/Stork.glb',
+  horse:      T+'/Horse.glb',
+  robot:      T+'/RobotExpressive/RobotExpressive.glb',
+  android:    T+'/RobotExpressive/RobotExpressive.glb',
+  mech:       T+'/RobotExpressive/RobotExpressive.glb',
 };
 
 function matchModel(query) {
@@ -300,7 +307,7 @@ function matchModel(query) {
   // fuzzy fallbacks
   if(q.match(/car|vehicle|truck|suv|sedan/)) return {key:'car', url:MODEL_LIBRARY.car};
   if(q.match(/robot|mech|android/)) return {key:'robot', url:MODEL_LIBRARY.robot};
-  if(q.match(/person|human|man|woman|figure/)) return {key:'astronaut', url:MODEL_LIBRARY.astronaut};
+  if(q.match(/person|human|man|woman|figure/)) return {key:'robot', url:MODEL_LIBRARY.robot};
   if(q.match(/animal|creature|bird|parrot/)) return {key:'bird', url:MODEL_LIBRARY.bird};
   if(q.match(/helmet|head|armor/)) return {key:'helmet', url:MODEL_LIBRARY.helmet};
   return null;
@@ -413,10 +420,35 @@ function makeGeo(type, size) {
   switch(type) {
     case 'sphere': return new THREE.SphereGeometry(s/2,64,48);
     case 'cylinder': return new THREE.CylinderGeometry(s*0.4,s*0.4,s,64,6);
+    case 'tapered': return new THREE.CylinderGeometry(s*0.22,s*0.42,s,64,6);
     case 'box': return new THREE.BoxGeometry(s,s,s,4,4,4);
+    case 'roundbox': {
+      const r=s*0.12,hw=s/2-r;
+      const sh=new THREE.Shape();
+      sh.moveTo(-hw,s/2);sh.lineTo(hw,s/2);sh.quadraticCurveTo(s/2,s/2,s/2,hw);
+      sh.lineTo(s/2,-hw);sh.quadraticCurveTo(s/2,-s/2,hw,-s/2);
+      sh.lineTo(-hw,-s/2);sh.quadraticCurveTo(-s/2,-s/2,-s/2,-hw);
+      sh.lineTo(-s/2,hw);sh.quadraticCurveTo(-s/2,s/2,-hw,s/2);
+      const g=new THREE.ExtrudeGeometry(sh,{depth:s,bevelEnabled:true,bevelThickness:r,bevelSize:r,bevelSegments:12,steps:2});
+      g.center();return g;
+    }
     case 'torus': return new THREE.TorusGeometry(s/2,s/7,32,100);
+    case 'ring': return new THREE.TorusGeometry(s/2,s*0.09,20,80);
     case 'cone': return new THREE.ConeGeometry(s/2,s*1.3,64,8);
     case 'disc': return new THREE.CylinderGeometry(s/2,s/2,s*0.08,64,2);
+    case 'thindisc': return new THREE.CylinderGeometry(s/2,s/2,s*0.03,64,1);
+    case 'halfball': return new THREE.SphereGeometry(s/2,64,32,0,Math.PI*2,0,Math.PI/2);
+    case 'capsule': {
+      const pts=[];const r2=s*0.22,h2=s*0.6;
+      for(let i=0;i<=20;i++){const a=(i/20)*Math.PI/2;pts.push(new THREE.Vector2(Math.sin(a)*r2,-h2+r2-Math.cos(a)*r2));}
+      for(let i=0;i<=20;i++){const a=(i/20)*Math.PI/2;pts.push(new THREE.Vector2(Math.cos(a)*r2,h2-r2+Math.sin(a)*r2));}
+      return new THREE.LatheGeometry(pts,64);
+    }
+    case 'wedge': {
+      const sh2=new THREE.Shape();
+      sh2.moveTo(-s/2,0);sh2.lineTo(s/2,0);sh2.lineTo(s/2,s*0.55);sh2.quadraticCurveTo(0,s*0.65,-s/2,0);
+      return new THREE.ExtrudeGeometry(sh2,{depth:s*0.65,bevelEnabled:true,bevelThickness:s*0.04,bevelSize:s*0.04,bevelSegments:8});
+    }
     default: return new THREE.SphereGeometry(s/2,48,32);
   }
 }
@@ -671,15 +703,66 @@ async function sendMessage() {
 
   // For other requests, use JARVIS AI
   const token=localStorage.getItem('jarvis_token')||'';
-  const sys=`You are FORGE's 3D AI assistant. Help users with the 3D studio. Available models to import: car, sportscar, robot, astronaut, helmet, duck, fox, horse, flamingo, bird, shoe, avocado, lantern, drone. Tell users to say "import [thing]" to load a real GLB model. Also tell them about: spin/rotate (auto-spin), clear/reset, camera button for webcam, Move button for hand tracking. Keep responses under 3 sentences.`;
+  const sys=`You are FORGE's 3D AI co-pilot. The user wants to build or view 3D objects.
+
+IMPORTANT: If the user asks to build/make/create something, respond with ONLY raw JSON (no markdown, no backticks) in this format:
+{"action":"build","label":"Short label","parts":[{"name":"UniqueName","type":"roundbox","color":14737400,"size":60,"pos":[0,15,0],"rot":[0,0,0],"scale":[3.5,0.5,1.4],"metal":0.9,"rough":0.05,"emissive":0,"opacity":1.0}]}
+
+Available types: sphere box roundbox cylinder tapered cone torus disc thindisc halfball ring capsule wedge
+Colors (integer): chrome=14737400 silver=12632256 black=1118481 white=15921906 red=13369344 blue=3329258 gold=16766720 rubber=2236962 glass=8830975 carbon=2105376
+
+Rules for beautiful models:
+- Use 20-40 parts
+- pos[1] must be >= size/2 (sits on ground)
+- Use roundbox for all body panels (smooth look)
+- High metal (0.9), low rough (0.05) for shiny parts
+- Glass: opacity 0.25, metal 0.05, rough 0.02
+- Cars: wide flat roundbox body (scale:[3.5,0.45,1.3]), smaller roundbox cabin on top, torus wheels with disc hub
+- Chairs: roundbox seat, roundbox back, cylinder legs, cushion details
+- Robots: capsule torso, sphere head, cylinder limbs
+
+For spin/rotate commands: respond with just the word SPIN
+For clear/reset: respond with just the word CLEAR
+For import commands: respond with just IMPORT:[thing]
+For other questions: respond normally in 1-2 sentences.`;
   try {
     const res=await fetch(`${API}/design-command`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({command:text,systemPrompt:sys,history:convHistory.slice(-6)})});
     const raw=await res.json();
     hideThinking();
-    const reply=raw.response||raw.message||"Try saying 'import a car' or 'import a robot'!";
-    addAIMsg(reply);
+    let reply=raw.response||raw.message||'';
+    // Handle special commands
+    if(reply.trim()==='SPIN'){autoSpin=!autoSpin;addAIMsg(autoSpin?'Spinning now. Say "stop" to stop.':'Stopped.');isThinking=false;document.getElementById('top-status').textContent='Ready';return;}
+    if(reply.trim()==='CLEAR'){clearAll();addAIMsg('Cleared!');isThinking=false;document.getElementById('top-status').textContent='Ready';return;}
+    if(reply.trim().startsWith('IMPORT:')){const q=reply.trim().replace('IMPORT:','').trim();addAIMsg('Searching for '+q+'...');await searchAndLoadModel(q);isThinking=false;document.getElementById('top-status').textContent='Ready';return;}
+    // Try parse as build JSON
+    try {
+      const clean=reply.replace(/```json\n?/g,'').replace(/```\n?/g,'').trim();
+      const match=clean.match(/\{[\s\S]*\}/);
+      if(match){
+        const data=JSON.parse(match[0]);
+        if(data.action==='build'&&data.parts){
+          // Clear primitives and build
+          Object.values(primitiveObjects).forEach(m=>{pivot.remove(m);m.geometry.dispose();m.material.dispose();});
+          primitiveObjects={};partCount=0;
+          data.parts.forEach(p=>{
+            const geo=makeGeo(p.type||'sphere',p.size||30);
+            const hex=p.color!==undefined?'#'+p.color.toString(16).padStart(6,'0'):'#4488ff';
+            const mat=makeMat(hex,p.metal??0.85,p.rough??0.12,p.emissive||0,(p.opacity||1)<1,p.opacity||1);
+            addPrim(p.name||('P'+(++objCount)),geo,mat,p.pos||[0,15,0],p.rot||[0,0,0],p.scale||[1,1,1]);
+          });
+          tZoom=220;tRotX=18;tRotY=25;
+          updateInfo(data.label||'Model');
+          addAIMsg('Built <strong>'+(data.label||'model')+'</strong> with '+data.parts.length+' parts. Say "make it spin", "clear", or import something new.');
+          convHistory.push({role:'user',content:text},{role:'assistant',content:'Built '+data.label});
+          isThinking=false;document.getElementById('top-status').textContent='Ready';return;
+        }
+      }
+    } catch(e2){}
+    // Plain text reply
+    if(reply) addAIMsg(reply);
+    else addAIMsg("Try: <strong>import car</strong>, <strong>import robot</strong>, <strong>build a chair</strong>, or <strong>build a spaceship</strong>.");
     convHistory.push({role:'user',content:text},{role:'assistant',content:reply});
-  } catch(e){hideThinking();addAIMsg("Try: import car, import robot, import astronaut.");}
+  } catch(e){hideThinking();addAIMsg("Try: import car, import robot, build a chair.");}
   isThinking=false;document.getElementById('top-status').textContent='Ready';
 }
 
@@ -698,11 +781,9 @@ function animate(){
 }
 animate();
 
-setTimeout(()=>{const el=document.getElementById('loading');el.style.opacity='0';setTimeout(()=>el.style.display='none',600);},900);
+// Always dismiss loading screen after 1.5s no matter what
+setTimeout(()=>{const el=document.getElementById('loading');el.style.opacity='0';setTimeout(()=>el.style.display='none',600);},1500);
 document.getElementById('sidebar-input').addEventListener('input',function(){this.style.height='auto';this.style.height=Math.min(this.scrollHeight,110)+'px';});
-
-// Auto-load a nice model on start
-setTimeout(()=>loadGLBFromUrl(MODEL_LIBRARY.astronaut,'Astronaut','astronaut'),1200);
 </script>
 </body>
 </html>
