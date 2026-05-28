@@ -616,6 +616,7 @@ const toggleLight = () => {
   const [authError, setAuthError] = useState('');
   const [authLoading, setAuthLoading] = useState(false);
   const [showMemory, setShowMemory] = useState(false);
+  const [showFeatures, setShowFeatures] = useState(false);
 const [memoryData, setMemoryData] = useState<any>(null);
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [memoryLoading, setMemoryLoading] = useState(false);
@@ -1434,6 +1435,50 @@ const abortRef = useRef<AbortController | null>(null);
           </div>
         </div>
       )}
+      
+
+      {showFeatures && (
+  <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4" onClick={() => setShowFeatures(false)}>
+    <div className="bg-[#0a0a0f] border border-white/10 rounded-2xl p-6 w-full max-w-sm" onClick={e => e.stopPropagation()}>
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <div className="text-white font-semibold">JARVIS Features</div>
+          <div className="text-white/30 text-xs mt-0.5">What JARVIS can do for you</div>
+        </div>
+        <button onClick={() => setShowFeatures(false)} className="text-white/30 hover:text-white/60">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div className="flex flex-col gap-3">
+        <a
+          href="https://api.heyjarvis.me/design"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-4 p-4 rounded-xl border border-white/8 hover:border-blue-500/30 hover:bg-blue-500/5 transition-all group"
+          style={{ textDecoration: 'none' }}
+        >
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-blue-500/20 flex items-center justify-center flex-shrink-0">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" strokeWidth="1.8"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></svg>
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="text-white/80 text-sm font-medium group-hover:text-white transition-colors">Design</div>
+            <div className="text-white/30 text-xs mt-0.5">Generate UI, images, and visual assets</div>
+          </div>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="2" className="flex-shrink-0 group-hover:stroke-blue-400 transition-colors"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+        <div className="p-4 rounded-xl border border-white/5 bg-white/2 flex items-center gap-4">
+          <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/8 flex items-center justify-center flex-shrink-0">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="1.8"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="text-white/20 text-sm font-medium">More coming soon</div>
+            <div className="text-white/15 text-xs mt-0.5">New features ship regularly</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
 
       {voiceModeOpen && token && (
         <VoiceModeModal token={token} userName={userName} onClose={() => setVoiceModeOpen(false)} onMessageSent={handleVoiceModeMessage} />
@@ -1545,8 +1590,12 @@ style={!spokenUpdates ? { color: 'var(--jarvis-text-sub)', background: 'var(--ja
             </div>
           )}
           <button onClick={() => setVoiceModeOpen(true)} className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-black/5 transition-all flex-shrink-0" title="Voice mode">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--jarvis-text-sub)" strokeWidth="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
-          </button>
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--jarvis-text-sub)" strokeWidth="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+</button>
+<button onClick={() => setShowFeatures(true)} className="h-8 px-3 flex items-center gap-1.5 rounded-xl hover:bg-black/5 transition-all flex-shrink-0 border border-white/10" style={{ color: 'var(--jarvis-text-sub)', fontSize: '12px', fontWeight: 500 }} title="Features">
+  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+  Features
+</button>
           <button onClick={logout} className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-black/5 transition-all flex-shrink-0" style={{ color: 'var(--jarvis-text-sub)' }}>
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
           </button>
