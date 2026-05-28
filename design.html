@@ -364,7 +364,7 @@ textarea#prompt::placeholder { color:var(--muted); font-size:10px; }
 <div id="top">
   <div class="ds-logo">Studio<span class="ds-logo-dot"></span></div>
   <div id="desktop-mode-tabs" style="display:flex;gap:2px;margin-left:8px;">
-    <button class="mode-tab active" onclick="setMode('landing',this)">Landing Pitch</button>
+
     <button class="mode-tab" onclick="setMode('brand',this)">Brand Kit</button>
     <button class="mode-tab" onclick="setMode('poster',this)">Creative</button>
   </div>
@@ -376,8 +376,8 @@ textarea#prompt::placeholder { color:var(--muted); font-size:10px; }
 
 <!-- MOBILE MODE BAR -->
 <div id="mode-bar">
-  <button class="mode-tab active" onclick="setModeMobile('landing',this)">Landing Pitch</button>
-  <button class="mode-tab" onclick="setModeMobile('brand',this)">Brand Kit</button>
+
+  <button class="mode-tab active" onclick="setMode('brand',this)">Brand Kit</button>
   <button class="mode-tab" onclick="setModeMobile('poster',this)">Creative</button>
 </div>
 
@@ -392,7 +392,7 @@ textarea#prompt::placeholder { color:var(--muted); font-size:10px; }
     </div>
     <div id="prompt-area">
       <div class="left-label">Describe</div>
-      <textarea id="prompt" placeholder="An AI meeting assistant that auto-summarizes calls, extracts action items, and syncs to your calendar..."></textarea>
+      <textarea id="prompt" placeholder="A premium fintech startup called Vault — trustworthy, bold, modern with a dark luxury feel..."></textarea>
       <button class="generate-btn" onclick="doGenerate()" id="gen-btn">Generate</button>
     </div>
     <div class="left-sec">
@@ -410,7 +410,7 @@ textarea#prompt::placeholder { color:var(--muted); font-size:10px; }
     <div id="output-wrap">
       <div id="empty-state">
         <div class="empty-title">Describe anything.<br/>Generate instantly.</div>
-        <div class="empty-sub">Landing pitch · Brand kit · Creative</div>
+        <div class="empty-sub">Brand kit · Creative</div>
         <div class="empty-mode-hint"><span class="empty-dot"></span><span id="empty-mode-label">Landing Pitch</span> selected</div>
       </div>
       <div id="output-card">
@@ -490,7 +490,7 @@ textarea#prompt::placeholder { color:var(--muted); font-size:10px; }
   <div id="sheet-handle" onclick="toggleSheet()">
     <div class="sheet-handle-left">
       <span class="sheet-handle-title">Prompt</span>
-      <span class="sheet-handle-mode" id="sheet-mode-label">Landing Pitch</span>
+      <span class="sheet-handle-mode" id="sheet-mode-label">Brand Kit</span>
     </div>
     <span class="sheet-arrow">&#9650;</span>
   </div>
@@ -530,7 +530,7 @@ textarea#prompt::placeholder { color:var(--muted); font-size:10px; }
 <div id="toast"></div>
 
 <script>
-let currentMode = 'landing';
+let currentMode = 'brand';
 let currentOutput = '';
 let deskStyle = '', deskPlatform = '';
 let mobStyle = '', mobPlatform = '';
