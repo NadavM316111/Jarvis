@@ -2899,7 +2899,9 @@ app.post('/transcribe', authMiddleware, async (req, res) => {
   }
 });
 
-
+app.get('/forge3d', (req, res) => {
+  res.sendFile(path.join(__dirname, 'forge3d.html'));
+});
 app.listen(3001, () => {
   console.log('\n╔════════════════════════════════════════╗');
   console.log('║       J.A.R.V.I.S. ONLINE              ║');
