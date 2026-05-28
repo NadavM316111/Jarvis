@@ -14,9 +14,9 @@ body{background:var(--dark);font-family:'Syne',sans-serif;overflow:hidden;height
 #sidebar{position:fixed;top:0;right:0;width:var(--sidebar);height:100vh;height:100dvh;background:var(--panel);border-left:1px solid var(--border);backdrop-filter:blur(24px);display:flex;flex-direction:column;z-index:100;transform:translateX(0);transition:transform .35s cubic-bezier(.4,0,.2,1)}
 #sidebar.closed{transform:translateX(100%)}
 #sidebar-header{padding:16px 18px 13px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-shrink:0}
-.orb{width:26px;height:26px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#60a5fa,#1d4ed8);box-shadow:0 0 14px rgba(96,165,250,.5);flex-shrink:0}
-.orb.thinking{background:radial-gradient(circle at 35% 35%,#a78bfa,#6d28d9);animation:orbPulse 1.2s ease-in-out infinite}
-@keyframes orbPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+.orb{width:26px;height:26px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#60a5fa,#1d4ed8);box-shadow:0 0 14px rgba(96,165,250,.5);flex-shrink:0;transition:all .3s}
+.orb.thinking{background:radial-gradient(circle at 35% 35%,#a78bfa,#6d28d9);box-shadow:0 0 20px rgba(167,139,250,.7);animation:orbPulse 1s ease-in-out infinite}
+@keyframes orbPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
 #sidebar-title{font-size:12px;font-weight:500;letter-spacing:.06em}
 #sidebar-sub{font-size:9px;color:var(--sub);letter-spacing:.1em;font-family:'Space Mono',monospace}
 #sidebar-close{margin-left:auto;width:26px;height:26px;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:7px;cursor:pointer;color:var(--sub);display:flex;align-items:center;justify-content:center;font-size:13px;transition:all .15s}
@@ -26,7 +26,7 @@ body{background:var(--dark);font-family:'Syne',sans-serif;overflow:hidden;height
 #messages::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
 .msg{display:flex;gap:8px}
 .msg.user{flex-direction:row-reverse}
-.msg-bubble{max-width:230px;padding:9px 13px;border-radius:14px;font-size:12.5px;line-height:1.55}
+.msg-bubble{max-width:240px;padding:10px 14px;border-radius:14px;font-size:12.5px;line-height:1.6}
 .msg.ai .msg-bubble{background:rgba(0,245,255,.06);border:1px solid var(--border);border-radius:14px 14px 14px 3px}
 .msg.user .msg-bubble{background:rgba(96,165,250,.15);border:1px solid rgba(96,165,250,.25);border-radius:14px 14px 3px 14px}
 .msg-orb{width:20px;height:20px;border-radius:50%;flex-shrink:0;margin-top:2px}
@@ -92,20 +92,12 @@ body{background:var(--dark);font-family:'Syne',sans-serif;overflow:hidden;height
 #obj-info.visible{opacity:1}
 .info-chip{padding:4px 9px;border-radius:7px;background:rgba(2,4,10,.85);border:1px solid var(--border);font-size:9px;font-family:'Space Mono',monospace;color:var(--sub);letter-spacing:1px;backdrop-filter:blur(8px)}
 .info-chip span{color:var(--cyan)}
-@keyframes spin{to{transform:rotate(360deg)}}
-#grid-overlay{position:fixed;inset:0;pointer-events:none;z-index:5;background-image:linear-gradient(rgba(0,245,255,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(0,245,255,.02) 1px,transparent 1px);background-size:60px 60px;opacity:0;transition:opacity .3s}
-#grid-overlay.show{opacity:1}
+#grid-overlay{position:fixed;inset:0;pointer-events:none;z-index:5;background-image:linear-gradient(rgba(0,245,255,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(0,245,255,.018) 1px,transparent 1px);background-size:60px 60px}
 #gesture-hint{position:fixed;bottom:74px;left:50%;transform:translateX(-50%);font-size:9px;color:rgba(255,255,255,.1);letter-spacing:2px;font-family:'Space Mono',monospace;text-transform:uppercase;pointer-events:none;z-index:10;white-space:nowrap}
-/* Camera feed */
 #cam-feed{position:fixed;bottom:74px;right:calc(var(--sidebar)+14px);width:180px;height:135px;border-radius:12px;border:1px solid rgba(168,85,247,.5);object-fit:cover;z-index:55;display:none;transform:scaleX(-1)}
-#cam-overlay{position:fixed;bottom:74px;right:calc(var(--sidebar)+14px);width:180px;padding:5px 8px;background:rgba(4,8,20,.9);border-radius:0 0 12px 12px;border:1px solid rgba(168,85,247,.4);border-top:none;font-size:8px;font-family:'Space Mono',monospace;color:#a855f7;z-index:56;display:none;text-align:center;letter-spacing:1px}
-/* Hand tracking canvas */
+#cam-overlay{position:fixed;bottom:74px;right:calc(var(--sidebar)+14px);width:180px;padding:4px 8px;background:rgba(4,8,20,.9);border-radius:0 0 12px 12px;border:1px solid rgba(168,85,247,.4);border-top:none;font-size:8px;font-family:'Space Mono',monospace;color:#a855f7;z-index:56;display:none;text-align:center;letter-spacing:1px}
 #hand-canvas{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:60;display:none}
-/* Loading model indicator */
-#model-loading{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(2,4,10,.95);border:1px solid var(--border2);border-radius:14px;padding:20px 30px;z-index:150;display:none;flex-direction:column;align-items:center;gap:12px}
-#model-loading.show{display:flex}
-.ml-ring{width:28px;height:28px;border:1px solid rgba(0,245,255,.2);border-top-color:var(--cyan);border-radius:50%;animation:spin 1s linear infinite}
-.ml-txt{font-size:10px;letter-spacing:2px;color:var(--sub);font-family:'Space Mono',monospace}
+@keyframes spin{to{transform:rotate(360deg)}}
 @media(max-width:700px){:root{--sidebar:100vw}.c-tr{right:14px}.c-br{right:14px}#topbar{right:0}#toolbar{right:0}#cam-feed,#cam-overlay{right:14px}}
 </style>
 </head>
@@ -113,7 +105,6 @@ body{background:var(--dark);font-family:'Syne',sans-serif;overflow:hidden;height
 <canvas id="canvas"></canvas>
 <div id="grid-overlay"></div>
 <div class="corner c-tl"></div><div class="corner c-tr"></div><div class="corner c-bl"></div><div class="corner c-br"></div>
-<div id="model-loading"><div class="ml-ring"></div><div class="ml-txt" id="ml-txt">IMPORTING MODEL</div></div>
 
 <div id="topbar">
   <div id="logo">FORGE</div>
@@ -136,7 +127,6 @@ body{background:var(--dark);font-family:'Syne',sans-serif;overflow:hidden;height
   <button class="tool-btn" id="grid-btn" title="Toggle grid" onclick="toggleGrid()">
     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
   </button>
-  <!-- CAMERA TOGGLE BUTTON -->
   <button class="tool-btn cam-btn" id="cam-btn" title="Toggle camera" onclick="toggleCamera()">
     <div class="tool-live"></div>
     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
@@ -150,7 +140,7 @@ body{background:var(--dark);font-family:'Syne',sans-serif;overflow:hidden;height
   <button class="tool-btn print-btn" id="bt-btn" title="Bluetooth 3D print" onclick="openPrint()">
     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6.5 6.5 17.5 17.5 12 23 12 1 17.5 6.5 6.5 17.5"/></svg>
   </button>
-  <div id="tool-label">0 parts</div>
+  <div id="tool-label">Say anything to build</div>
 </div>
 
 <div id="sidebar">
@@ -162,11 +152,18 @@ body{background:var(--dark);font-family:'Syne',sans-serif;overflow:hidden;height
   <div id="messages">
     <div class="msg ai">
       <div class="msg-orb ai"></div>
-      <div class="msg-bubble">Hey! Say <strong>"import car"</strong>, <strong>"import robot"</strong>, <strong>"import fox"</strong> to load real GLB models. Or say <strong>"build a chair"</strong>, <strong>"build a spaceship"</strong>, <strong>"build a house"</strong> to generate anything with AI. Hit the camera button for your webcam, <strong>Move</strong> for hand tracking.</div>
+      <div class="msg-bubble">Hey! Describe anything and I'll build it in stunning 3D. Try:<br><br>
+        <strong>"a sleek red sports car"</strong><br>
+        <strong>"a modern office chair"</strong><br>
+        <strong>"a sci-fi spaceship"</strong><br>
+        <strong>"a luxury gold watch"</strong><br>
+        <strong>"a humanoid robot"</strong><br><br>
+        I understand materials, colors, proportions and style. The more detail you give, the better it looks.
+      </div>
     </div>
   </div>
   <div id="sidebar-input-wrap">
-    <textarea id="sidebar-input" placeholder="import car · build a spaceship · import robot" rows="1" onkeydown="handleKey(event)"></textarea>
+    <textarea id="sidebar-input" placeholder="Describe anything to build in 3D..." rows="1" onkeydown="handleKey(event)"></textarea>
     <button id="sidebar-send" onclick="sendMessage()">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
     </button>
@@ -174,14 +171,14 @@ body{background:var(--dark);font-family:'Syne',sans-serif;overflow:hidden;height
 </div>
 
 <div id="obj-info">
-  <div class="info-chip">Objects: <span id="info-parts">0</span></div>
-  <div class="info-chip">Mode: <span id="info-mode">GLB</span></div>
+  <div class="info-chip">Parts: <span id="info-parts">0</span></div>
+  <div class="info-chip">H:<span id="info-h">0</span> W:<span id="info-w">0</span></div>
 </div>
 
 <div id="print-modal">
   <div id="print-panel">
     <h3>3D Print via Bluetooth</h3>
-    <p>Uses the Web Bluetooth API (Chrome + HTTPS). "Scan nearby" opens Chrome's real BLE device picker. Demo buttons simulate the flow.</p>
+    <p>Uses Web Bluetooth API (Chrome + HTTPS). "Scan nearby" opens Chrome's real BLE device picker.</p>
     <div id="bt-list">
       <div class="bt-device" onclick="demoConnect(this,'Bambu Lab X1C')"><div class="bt-dot"></div><div><div class="bt-name">Bambu Lab X1C</div><div class="bt-type">FDM · BLE 5.0</div></div><div class="bt-signal">-62 dBm</div></div>
       <div class="bt-device" onclick="demoConnect(this,'Prusa MK4')"><div class="bt-dot"></div><div><div class="bt-name">Prusa MK4</div><div class="bt-type">FDM · BLE 4.2</div></div><div class="bt-signal">-74 dBm</div></div>
@@ -194,590 +191,408 @@ body{background:var(--dark);font-family:'Syne',sans-serif;overflow:hidden;height
   </div>
 </div>
 
-<!-- Camera feed + hand canvas -->
 <video id="cam-feed" autoplay playsinline muted></video>
 <div id="cam-overlay">CAMERA LIVE</div>
 <canvas id="hand-canvas"></canvas>
-
 <div id="toast"></div>
-<div id="gesture-hint">Drag · Pinch zoom · Two-finger rotate</div>
+<div id="gesture-hint">Drag · Scroll zoom · Two-finger rotate</div>
 
 <script>
-// ─── SCENE SETUP ────────────────────────────────────────────
+// ─── SCENE ───────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
 const scene = new THREE.Scene();
-scene.fog = new THREE.FogExp2(0x000510, 0.0018);
-const camera = new THREE.PerspectiveCamera(42, innerWidth/innerHeight, 0.1, 3000);
-camera.position.set(0, 80, 280);
+scene.fog = new THREE.FogExp2(0x000510, 0.0016);
+const cam = new THREE.PerspectiveCamera(42, innerWidth/innerHeight, 0.1, 3000);
+cam.position.set(0, 80, 280);
 const renderer = new THREE.WebGLRenderer({canvas, antialias:true});
 renderer.setPixelRatio(Math.min(devicePixelRatio,2));
 renderer.setSize(innerWidth, innerHeight);
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.3;
+renderer.toneMappingExposure = 1.25;
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.setClearColor(0x020408);
-window.addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);document.getElementById('hand-canvas').width=innerWidth;document.getElementById('hand-canvas').height=innerHeight;});
+window.addEventListener('resize',()=>{cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);const hc=document.getElementById('hand-canvas');hc.width=innerWidth;hc.height=innerHeight;});
 
-// Lights
-scene.add(new THREE.AmbientLight(0x112030, 6));
-const sun = new THREE.DirectionalLight(0xffffff, 4);
-sun.position.set(120,250,180); sun.castShadow=true;
-sun.shadow.mapSize.width=2048; sun.shadow.mapSize.height=2048;
-sun.shadow.camera.near=1; sun.shadow.camera.far=800;
-sun.shadow.camera.left=-200; sun.shadow.camera.right=200;
-sun.shadow.camera.top=200; sun.shadow.camera.bottom=-200;
-sun.shadow.bias=-0.0005; scene.add(sun);
-const holo = new THREE.PointLight(0x00f5ff, 20, 600);
-holo.position.set(0,80,100); scene.add(holo);
-const fill = new THREE.PointLight(0x5500cc, 6, 500);
-fill.position.set(-120,100,-80); scene.add(fill);
-const rim = new THREE.DirectionalLight(0x0060c0, 3);
-rim.position.set(-150,60,-200); scene.add(rim);
-const rim2 = new THREE.PointLight(0x00ffaa, 4, 400);
-rim2.position.set(150,40,-120); scene.add(rim2);
-const top = new THREE.DirectionalLight(0xffffff, 2);
-top.position.set(0,300,0); scene.add(top);
+// Cinematic lighting
+scene.add(new THREE.AmbientLight(0x0d1a2e, 7));
+const key = new THREE.DirectionalLight(0xfff5ee, 4.5);
+key.position.set(100,220,160); key.castShadow=true;
+key.shadow.mapSize.width=2048; key.shadow.mapSize.height=2048;
+key.shadow.camera.near=1; key.shadow.camera.far=800;
+key.shadow.camera.left=-200; key.shadow.camera.right=200;
+key.shadow.camera.top=200; key.shadow.camera.bottom=-200;
+key.shadow.bias=-0.0004; scene.add(key);
+const holo = new THREE.PointLight(0x00f5ff, 22, 600); holo.position.set(0,90,90); scene.add(holo);
+const fill = new THREE.PointLight(0x5500dd, 7, 500); fill.position.set(-130,110,-90); scene.add(fill);
+const back = new THREE.DirectionalLight(0x0055aa, 3.5); back.position.set(-100,50,-200); scene.add(back);
+const warm = new THREE.PointLight(0xff8800, 3, 350); warm.position.set(160,60,-80); scene.add(warm);
+const top2 = new THREE.DirectionalLight(0xffffff, 2.5); top2.position.set(0,400,0); scene.add(top2);
 
 // Ground
-const ground = new THREE.Mesh(
-  new THREE.PlaneGeometry(3000,3000),
-  new THREE.MeshStandardMaterial({color:0x000814,metalness:0.95,roughness:0.85})
-);
-ground.rotation.x=-Math.PI/2; ground.position.y=-1; ground.receiveShadow=true; scene.add(ground);
-const gridHelper = new THREE.GridHelper(600,30,0x002233,0x001122);
-gridHelper.position.y=-0.5; gridHelper.material.transparent=true; gridHelper.material.opacity=0.4; scene.add(gridHelper);
-
+const gnd = new THREE.Mesh(new THREE.PlaneGeometry(3000,3000),new THREE.MeshStandardMaterial({color:0x000814,metalness:0.95,roughness:0.88}));
+gnd.rotation.x=-Math.PI/2; gnd.position.y=-1; gnd.receiveShadow=true; scene.add(gnd);
+const grid = new THREE.GridHelper(600,30,0x002233,0x001122);
+grid.position.y=-0.5; grid.material.transparent=true; grid.material.opacity=0.35; scene.add(grid);
 const pivot = new THREE.Object3D(); scene.add(pivot);
 
-// ─── GLB LOADER ─────────────────────────────────────────────
-// Load the GLTFLoader from CDN
-let GLTFLoader = null;
-function loadGLTFLoader() {
-  return new Promise((resolve) => {
-    if(GLTFLoader){resolve();return;}
-    const s = document.createElement('script');
-    s.src = 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js';
-    s.onload = () => { GLTFLoader = THREE.GLTFLoader || window.GLTFLoader; resolve(); };
-    s.onerror = () => resolve(); // fail silently, fallback to primitives
-    document.head.appendChild(s);
-  });
-}
-loadGLTFLoader();
-
-// ─── MODEL LIBRARY ──────────────────────────────────────────
-// Curated free GLB models from publicly accessible CDNs
-// CORS-verified GLB sources
-const B = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/main/Models';
-const T = 'https://raw.githubusercontent.com/mrdoob/three.js/r128/examples/models/gltf';
-const MODEL_LIBRARY = {
-  car:        B+'/ToyCar/glTF-Binary/ToyCar.glb',
-  sportscar:  B+'/ToyCar/glTF-Binary/ToyCar.glb',
-  vehicle:    B+'/ToyCar/glTF-Binary/ToyCar.glb',
-  truck:      B+'/ToyCar/glTF-Binary/ToyCar.glb',
-  helmet:     B+'/DamagedHelmet/glTF-Binary/DamagedHelmet.glb',
-  duck:       B+'/Duck/glTF-Binary/Duck.glb',
-  avocado:    B+'/Avocado/glTF-Binary/Avocado.glb',
-  shoe:       B+'/MaterialsVariantsShoe/glTF-Binary/MaterialsVariantsShoe.glb',
-  sneaker:    B+'/MaterialsVariantsShoe/glTF-Binary/MaterialsVariantsShoe.glb',
-  bottle:     B+'/WaterBottle/glTF-Binary/WaterBottle.glb',
-  waterbottle:B+'/WaterBottle/glTF-Binary/WaterBottle.glb',
-  lantern:    B+'/LanternPole/glTF-Binary/LanternPole.glb',
-  fox:        B+'/Fox/glTF-Binary/Fox.glb',
-  animal:     B+'/Fox/glTF-Binary/Fox.glb',
-  flamingo:   T+'/Flamingo.glb',
-  bird:       T+'/Flamingo.glb',
-  parrot:     T+'/Parrot.glb',
-  stork:      T+'/Stork.glb',
-  horse:      T+'/Horse.glb',
-  robot:      T+'/RobotExpressive/RobotExpressive.glb',
-  android:    T+'/RobotExpressive/RobotExpressive.glb',
-  mech:       T+'/RobotExpressive/RobotExpressive.glb',
-};
-
-function matchModel(query) {
-  const q = query.toLowerCase();
-  for(const [key, url] of Object.entries(MODEL_LIBRARY)) {
-    if(q.includes(key)) return {key, url};
-  }
-  // fuzzy fallbacks
-  if(q.match(/car|vehicle|truck|suv|sedan/)) return {key:'car', url:MODEL_LIBRARY.car};
-  if(q.match(/robot|mech|android/)) return {key:'robot', url:MODEL_LIBRARY.robot};
-  if(q.match(/person|human|man|woman|figure/)) return {key:'robot', url:MODEL_LIBRARY.robot};
-  if(q.match(/animal|creature|bird|parrot/)) return {key:'bird', url:MODEL_LIBRARY.bird};
-  if(q.match(/helmet|head|armor/)) return {key:'helmet', url:MODEL_LIBRARY.helmet};
-  return null;
-}
-
-// ─── JARVIS PROXY SEARCH ────────────────────────────────────
-const API = 'https://api.heyjarvis.me';
-
-async function searchAndLoadModel(query) {
-  showModelLoading('SEARCHING MODELS');
-  // Try library first
-  const lib = matchModel(query);
-  if(lib) {
-    await loadGLBFromUrl(lib.url, lib.key, query);
-    return;
-  }
-  // Try JARVIS proxy search
-  const token = localStorage.getItem('jarvis_token')||'';
-  try {
-    const res = await fetch(`${API}/search-models`, {
-      method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},
-      body: JSON.stringify({query})
-    });
-    const data = await res.json();
-    if(data.results && data.results.length > 0) {
-      const model = data.results[0];
-      const url = model.downloadUrl ? `${API}${model.downloadUrl}` : model.url;
-      showModelLoading('LOADING: '+model.name.substring(0,20).toUpperCase());
-      await loadGLBFromUrl(url, model.name, query);
-      return;
-    }
-  } catch(e) { console.log('[SEARCH]', e); }
-  // Final fallback — build with primitives
-  hideModelLoading();
-  return null; // signal to use AI primitive builder
-}
-
-let loadedModels = [];
-
-async function loadGLBFromUrl(url, name, originalQuery) {
-  if(!GLTFLoader) await loadGLTFLoader();
-  if(!GLTFLoader) {
-    hideModelLoading();
-    addAIMsg("GLB loader unavailable. Try refreshing.");
-    return;
-  }
-  return new Promise((resolve) => {
-    const loader = new THREE.GLTFLoader();
-    loader.load(
-      url,
-      (gltf) => {
-        hideModelLoading();
-        // Clear previous models
-        loadedModels.forEach(m => { pivot.remove(m); });
-        loadedModels = [];
-
-        const model = gltf.scene;
-        // Auto-scale to fit nicely
-        const box = new THREE.Box3().setFromObject(model);
-        const size = new THREE.Vector3();
-        box.getSize(size);
-        const maxDim = Math.max(size.x, size.y, size.z);
-        const targetSize = 100;
-        const scale = targetSize / maxDim;
-        model.scale.setScalar(scale);
-
-        // Center on ground
-        box.setFromObject(model);
-        const center = new THREE.Vector3();
-        box.getCenter(center);
-        model.position.set(-center.x, -box.min.y * scale, -center.z);
-
-        // Enable shadows on all meshes
-        model.traverse(child => {
-          if(child.isMesh) {
-            child.castShadow = true;
-            child.receiveShadow = true;
-          }
-        });
-
-        pivot.add(model);
-        loadedModels.push(model);
-
-        // Nice camera angle
-        tZoom = 220; tRotX = 18; tRotY = 30;
-        updateInfo(name);
-        addAIMsg(`Loaded <strong>${name}</strong> — real 3D model. Drag to orbit, scroll to zoom. Try "make it spin" or ask me to import something else.`);
-        resolve();
-      },
-      (progress) => {
-        if(progress.total > 0) {
-          const pct = Math.round(progress.loaded / progress.total * 100);
-          showModelLoading('LOADING '+pct+'%');
-        }
-      },
-      (error) => {
-        hideModelLoading();
-        console.log('[GLB ERROR]', error);
-        addAIMsg("Couldn't load that model. Try: car, robot, astronaut, helmet, duck, flamingo, fox, shoe, avocado.");
-        resolve();
-      }
-    );
-  });
-}
-
-// ─── PRIMITIVE FALLBACK ─────────────────────────────────────
-function makeGeo(type, size) {
-  const s=size;
+// ─── GEOMETRY ────────────────────────────────────────────────
+function G(type, s) {
   switch(type) {
-    case 'sphere': return new THREE.SphereGeometry(s/2,64,48);
-    case 'cylinder': return new THREE.CylinderGeometry(s*0.4,s*0.4,s,64,6);
-    case 'tapered': return new THREE.CylinderGeometry(s*0.22,s*0.42,s,64,6);
-    case 'box': return new THREE.BoxGeometry(s,s,s,4,4,4);
+    case 'sphere':    return new THREE.SphereGeometry(s/2,72,56);
+    case 'halfsphere':return new THREE.SphereGeometry(s/2,72,56,0,Math.PI*2,0,Math.PI/2);
+    case 'cylinder':  return new THREE.CylinderGeometry(s*.4,s*.4,s,72,6);
+    case 'tube':      return new THREE.CylinderGeometry(s*.15,s*.15,s,40,4);
+    case 'tapered':   return new THREE.CylinderGeometry(s*.18,s*.42,s,64,6);
+    case 'cone':      return new THREE.ConeGeometry(s/2,s*1.4,64,8);
+    case 'disc':      return new THREE.CylinderGeometry(s/2,s/2,s*.07,72,2);
+    case 'thindisc':  return new THREE.CylinderGeometry(s/2,s/2,s*.025,72,1);
+    case 'ring':      return new THREE.TorusGeometry(s/2,s*.09,22,90);
+    case 'torus':     return new THREE.TorusGeometry(s/2,s/7,36,110);
+    case 'torusknot': return new THREE.TorusKnotGeometry(s/3,s/10,256,24);
+    case 'capsule': {
+      const pts=[],r=s*.22,h=s*.55;
+      for(let i=0;i<=24;i++){const a=i/24*Math.PI/2;pts.push(new THREE.Vector2(Math.sin(a)*r,-h+r-Math.cos(a)*r));}
+      for(let i=0;i<=24;i++){const a=i/24*Math.PI/2;pts.push(new THREE.Vector2(Math.cos(a)*r,h-r+Math.sin(a)*r));}
+      return new THREE.LatheGeometry(pts,72);
+    }
     case 'roundbox': {
-      const r=s*0.12,hw=s/2-r;
+      const r=s*.13,hw=s/2-r;
       const sh=new THREE.Shape();
       sh.moveTo(-hw,s/2);sh.lineTo(hw,s/2);sh.quadraticCurveTo(s/2,s/2,s/2,hw);
       sh.lineTo(s/2,-hw);sh.quadraticCurveTo(s/2,-s/2,hw,-s/2);
       sh.lineTo(-hw,-s/2);sh.quadraticCurveTo(-s/2,-s/2,-s/2,-hw);
       sh.lineTo(-s/2,hw);sh.quadraticCurveTo(-s/2,s/2,-hw,s/2);
-      const g=new THREE.ExtrudeGeometry(sh,{depth:s,bevelEnabled:true,bevelThickness:r,bevelSize:r,bevelSegments:12,steps:2});
+      const g=new THREE.ExtrudeGeometry(sh,{depth:s,bevelEnabled:true,bevelThickness:r,bevelSize:r,bevelSegments:14,steps:2});
       g.center();return g;
     }
-    case 'torus': return new THREE.TorusGeometry(s/2,s/7,32,100);
-    case 'ring': return new THREE.TorusGeometry(s/2,s*0.09,20,80);
-    case 'cone': return new THREE.ConeGeometry(s/2,s*1.3,64,8);
-    case 'disc': return new THREE.CylinderGeometry(s/2,s/2,s*0.08,64,2);
-    case 'thindisc': return new THREE.CylinderGeometry(s/2,s/2,s*0.03,64,1);
-    case 'halfball': return new THREE.SphereGeometry(s/2,64,32,0,Math.PI*2,0,Math.PI/2);
-    case 'capsule': {
-      const pts=[];const r2=s*0.22,h2=s*0.6;
-      for(let i=0;i<=20;i++){const a=(i/20)*Math.PI/2;pts.push(new THREE.Vector2(Math.sin(a)*r2,-h2+r2-Math.cos(a)*r2));}
-      for(let i=0;i<=20;i++){const a=(i/20)*Math.PI/2;pts.push(new THREE.Vector2(Math.cos(a)*r2,h2-r2+Math.sin(a)*r2));}
-      return new THREE.LatheGeometry(pts,64);
+    case 'flatbox': {
+      const r=s*.08,hw=s*.5-r;
+      const sh=new THREE.Shape();
+      sh.moveTo(-hw,s*.5);sh.lineTo(hw,s*.5);sh.quadraticCurveTo(s*.5,s*.5,s*.5,hw);
+      sh.lineTo(s*.5,-hw);sh.quadraticCurveTo(s*.5,-s*.5,hw,-s*.5);
+      sh.lineTo(-hw,-s*.5);sh.quadraticCurveTo(-s*.5,-s*.5,-s*.5,-hw);
+      sh.lineTo(-s*.5,hw);sh.quadraticCurveTo(-s*.5,s*.5,-hw,s*.5);
+      const g=new THREE.ExtrudeGeometry(sh,{depth:s*.25,bevelEnabled:true,bevelThickness:r*.5,bevelSize:r*.5,bevelSegments:8,steps:1});
+      g.center();return g;
     }
     case 'wedge': {
-      const sh2=new THREE.Shape();
-      sh2.moveTo(-s/2,0);sh2.lineTo(s/2,0);sh2.lineTo(s/2,s*0.55);sh2.quadraticCurveTo(0,s*0.65,-s/2,0);
-      return new THREE.ExtrudeGeometry(sh2,{depth:s*0.65,bevelEnabled:true,bevelThickness:s*0.04,bevelSize:s*0.04,bevelSegments:8});
+      const sh=new THREE.Shape();
+      sh.moveTo(-s/2,0);sh.lineTo(s/2,0);sh.lineTo(s/2,s*.5);sh.quadraticCurveTo(0,s*.62,-s/2,0);
+      return new THREE.ExtrudeGeometry(sh,{depth:s*.7,bevelEnabled:true,bevelThickness:s*.04,bevelSize:s*.04,bevelSegments:8});
     }
-    default: return new THREE.SphereGeometry(s/2,48,32);
+    case 'box': return new THREE.BoxGeometry(s,s,s,4,4,4);
+    default:    return new THREE.SphereGeometry(s/2,48,36);
   }
 }
-function makeMat(hex,metal=0.85,rough=0.12,emissive=0,transparent=false,opacity=1) {
-  return new THREE.MeshStandardMaterial({color:new THREE.Color(hex),metalness:metal,roughness:rough,emissive:new THREE.Color(emissive||0),emissiveIntensity:emissive?1.8:0,transparent,opacity});
-}
-let primitiveObjects={}, objCount=0, partCount=0;
-function addPrim(name,geo,mat,pos,rot,scale) {
-  const mesh=new THREE.Mesh(geo,mat);
-  mesh.position.set(...pos);mesh.rotation.set(...rot.map(r=>r*Math.PI/180));mesh.scale.set(...scale);
-  mesh.castShadow=true;mesh.receiveShadow=true;pivot.add(mesh);primitiveObjects[name]=mesh;partCount++;
-  const tgt=new THREE.Vector3(...scale);mesh.scale.multiplyScalar(0.001);let t=0;
-  const a=setInterval(()=>{t=Math.min(t+0.07,1);const e=1-Math.pow(1-t,3);mesh.scale.set(tgt.x*e,tgt.y*e,tgt.z*e);if(t>=1)clearInterval(a);},14);
+
+function M(hex,metal=0.85,rough=0.1,emissive=0,transparent=false,opacity=1){
+  return new THREE.MeshStandardMaterial({
+    color:new THREE.Color(hex),metalness:metal,roughness:rough,
+    emissive:new THREE.Color(emissive||0),emissiveIntensity:emissive?2:0,
+    transparent,opacity,side:transparent?THREE.DoubleSide:THREE.FrontSide
+  });
 }
 
-function clearAll() {
-  loadedModels.forEach(m=>{pivot.remove(m);});loadedModels=[];
-  Object.values(primitiveObjects).forEach(m=>{pivot.remove(m);m.geometry.dispose();m.material.dispose();});
-  primitiveObjects={};partCount=0;updateInfo('Empty');toast('Scene cleared');
+// ─── OBJECTS ─────────────────────────────────────────────────
+let objects={},oCount=0,pCount=0;
+function addObj(name,geo,mat,pos,rot,scale){
+  const m=new THREE.Mesh(geo,mat);
+  m.position.set(...pos);m.rotation.set(...rot.map(r=>r*Math.PI/180));m.scale.set(...scale);
+  m.castShadow=true;m.receiveShadow=true;pivot.add(m);objects[name]=m;pCount++;
+  const ts=new THREE.Vector3(...scale);m.scale.multiplyScalar(0.001);let t=0;
+  const a=setInterval(()=>{t=Math.min(t+.08,1);const e=1-Math.pow(1-t,3);m.scale.set(ts.x*e,ts.y*e,ts.z*e);if(t>=1)clearInterval(a);},14);
+  return m;
+}
+function clearAll(){
+  Object.values(objects).forEach(m=>{pivot.remove(m);m.geometry.dispose();(Array.isArray(m.material)?m.material:[m.material]).forEach(x=>x.dispose());});
+  objects={};pCount=0;updateInfo();toast('Scene cleared');
+}
+function updateInfo(){
+  document.getElementById('info-parts').textContent=pCount;
+  document.getElementById('tool-label').textContent=pCount?pCount+' parts':'Say anything to build';
+  if(!pCount){document.getElementById('obj-info').classList.remove('visible');return;}
+  document.getElementById('obj-info').classList.add('visible');
+  const box=new THREE.Box3();Object.values(objects).forEach(m=>box.expandByObject(m));
+  const sz=new THREE.Vector3();box.getSize(sz);
+  document.getElementById('info-h').textContent=Math.round(sz.y);
+  document.getElementById('info-w').textContent=Math.round(Math.max(sz.x,sz.z));
 }
 
-function updateInfo(label) {
-  const total = loadedModels.length + Object.keys(primitiveObjects).length;
-  document.getElementById('info-parts').textContent = total;
-  document.getElementById('info-mode').textContent = loadedModels.length>0 ? 'GLB' : 'PRIM';
-  document.getElementById('tool-label').textContent = label ? label.substring(0,18) : total+' objects';
-  if(total>0) document.getElementById('obj-info').classList.add('visible');
-  else document.getElementById('obj-info').classList.remove('visible');
-}
+// ─── CAMERA CONTROLS ─────────────────────────────────────────
+let mode='orbit',dragging=false,ox=0,oy=0;
+let rx=12,ry=0,trx=12,try_=0,zoom=280,tzoom=280,tpx=0,tpy=0,px2=0,py2=0;
+const E=0.075,autoSpin={on:false};
 
-// ─── MODEL LOADING UI ────────────────────────────────────────
-function showModelLoading(txt) {
-  document.getElementById('ml-txt').textContent = txt;
-  document.getElementById('model-loading').classList.add('show');
-}
-function hideModelLoading() {
-  document.getElementById('model-loading').classList.remove('show');
-}
+function setMode(m){mode=m;document.querySelectorAll('.mode-btn:not(.move-btn)').forEach(b=>b.classList.toggle('active',b.dataset.mode===m));toast(m.toUpperCase());}
+function resetCamera(){trx=12;try_=0;tzoom=280;tpx=0;tpy=0;autoSpin.on=false;toast('Reset');}
 
-// ─── CAMERA CONTROLS ────────────────────────────────────────
-let currentMode='orbit',drag=false,mpx=0,mpy=0;
-let rotX=12,rotY=0,tRotX=12,tRotY=0,zoom=280,tZoom=280,panX=0,panY=0,tPanX=0,tPanY=0;
-const ease=0.075;
-let autoSpin = false;
-
-function setMode(m){currentMode=m;document.querySelectorAll('.mode-btn:not(.move-btn)').forEach(b=>b.classList.toggle('active',b.dataset.mode===m));toast('Mode: '+m.toUpperCase());}
-function resetCamera(){tRotX=12;tRotY=0;tZoom=280;tPanX=0;tPanY=0;autoSpin=false;toast('Camera reset');}
-
-canvas.addEventListener('mousedown',e=>{if(moveMode)return;drag=true;mpx=e.clientX;mpy=e.clientY;canvas.style.cursor='grabbing';});
-window.addEventListener('mouseup',()=>{drag=false;canvas.style.cursor='default';});
+canvas.addEventListener('mousedown',e=>{if(moveMode)return;dragging=true;ox=e.clientX;oy=e.clientY;canvas.style.cursor='grabbing';});
+window.addEventListener('mouseup',()=>{dragging=false;canvas.style.cursor='default';});
 window.addEventListener('mousemove',e=>{
-  if(!drag||moveMode)return;
-  const dx=e.clientX-mpx,dy=e.clientY-mpy;
-  if(currentMode==='orbit'){tRotY+=dx*0.38;tRotX=Math.max(-80,Math.min(80,tRotX+dy*0.28));}
-  else if(currentMode==='pan'){tPanX+=dx*0.5;tPanY-=dy*0.5;}
-  mpx=e.clientX;mpy=e.clientY;
+  if(!dragging||moveMode)return;
+  const dx=e.clientX-ox,dy=e.clientY-oy;
+  if(mode==='orbit'){try_+=dx*.38;trx=Math.max(-80,Math.min(80,trx+dy*.28));}
+  else if(mode==='pan'){tpx+=dx*.5;tpy-=dy*.5;}
+  ox=e.clientX;oy=e.clientY;
 });
-canvas.addEventListener('wheel',e=>{tZoom=Math.max(50,Math.min(900,tZoom+e.deltaY*0.45));},{passive:true});
-
-let touches2=[],lpd=0,lta=0;
-canvas.addEventListener('touchstart',e=>{e.preventDefault();touches2=Array.from(e.touches);if(touches2.length===1){mpx=touches2[0].clientX;mpy=touches2[0].clientY;}if(touches2.length===2){lpd=gpd2(touches2);lta=gta2(touches2);}},{passive:false});
+canvas.addEventListener('wheel',e=>{tzoom=Math.max(50,Math.min(900,tzoom+e.deltaY*.45));},{passive:true});
+let t3=[],lp3=0,la3=0;
+canvas.addEventListener('touchstart',e=>{e.preventDefault();t3=Array.from(e.touches);if(t3.length===1){ox=t3[0].clientX;oy=t3[0].clientY;}if(t3.length===2){lp3=pd(t3);la3=ta(t3);}},{passive:false});
 canvas.addEventListener('touchmove',e=>{
   e.preventDefault();const t=Array.from(e.touches);
-  if(t.length===1&&!moveMode){const dx=t[0].clientX-mpx,dy=t[0].clientY-mpy;tRotY+=dx*0.5;tRotX=Math.max(-80,Math.min(80,tRotX+dy*0.38));mpx=t[0].clientX;mpy=t[0].clientY;}
-  if(t.length===2){const d=gpd2(t);tZoom=Math.max(50,Math.min(900,tZoom+(lpd-d)*1.2));lpd=d;const a=gta2(t);tRotY+=(a-lta)*25;lta=a;}
-  touches2=t;
+  if(t.length===1&&!moveMode){const dx=t[0].clientX-ox,dy=t[0].clientY-oy;try_+=dx*.5;trx=Math.max(-80,Math.min(80,trx+dy*.38));ox=t[0].clientX;oy=t[0].clientY;}
+  if(t.length===2){const d=pd(t);tzoom=Math.max(50,Math.min(900,tzoom+(lp3-d)*1.2));lp3=d;const a=ta(t);try_+=(a-la3)*25;la3=a;}
+  t3=t;
 },{passive:false});
-function gpd2(t){const dx=t[0].clientX-t[1].clientX,dy=t[0].clientY-t[1].clientY;return Math.sqrt(dx*dx+dy*dy);}
-function gta2(t){return Math.atan2(t[1].clientY-t[0].clientY,t[1].clientX-t[0].clientX);}
+const pd=t=>{const dx=t[0].clientX-t[1].clientX,dy=t[0].clientY-t[1].clientY;return Math.sqrt(dx*dx+dy*dy);};
+const ta=t=>Math.atan2(t[1].clientY-t[0].clientY,t[1].clientX-t[0].clientX);
 
-// ─── CAMERA TOGGLE ──────────────────────────────────────────
-let camStream=null, camOn=false;
-
-async function toggleCamera() {
-  const btn=document.getElementById('cam-btn');
-  const vid=document.getElementById('cam-feed');
-  const ovl=document.getElementById('cam-overlay');
-  if(!camOn) {
-    try {
-      camStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:320,height:240},audio:false});
-      vid.srcObject=camStream;
-      vid.style.display='block';
-      ovl.style.display='block';
-      btn.classList.add('active');
-      camOn=true;
-      toast('Camera on');
-    } catch(e) {
-      toast('Camera denied');
-    }
+// ─── CAMERA TOGGLE ───────────────────────────────────────────
+let camStream=null,camOn=false;
+async function toggleCamera(){
+  const btn=document.getElementById('cam-btn'),vid=document.getElementById('cam-feed'),ovl=document.getElementById('cam-overlay');
+  if(!camOn){
+    try{camStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:320,height:240},audio:false});vid.srcObject=camStream;vid.style.display='block';ovl.style.display='block';btn.classList.add('active');camOn=true;toast('Camera on');}
+    catch(e){toast('Camera denied');}
   } else {
-    if(camStream){camStream.getTracks().forEach(t=>t.stop());camStream=null;}
-    vid.style.display='none';ovl.style.display='none';
-    btn.classList.remove('active');
-    camOn=false;
-    // Also stop move mode if active
-    if(moveMode){moveMode=false;document.querySelector('.move-btn').classList.remove('active');stopHandTracking();}
+    if(camStream)camStream.getTracks().forEach(t=>t.stop());camStream=null;
+    vid.style.display='none';ovl.style.display='none';btn.classList.remove('active');camOn=false;
+    if(moveMode){moveMode=false;document.querySelector('.move-btn').classList.remove('active');stopHands();}
     toast('Camera off');
   }
 }
 
-// ─── HAND TRACKING ──────────────────────────────────────────
-let moveMode=false,handsInst=null,handCamInst=null,lastHandPos=null,lastHandPD2=0;
-
-function toggleMove() {
+// ─── HAND TRACKING ───────────────────────────────────────────
+let moveMode=false,handsI=null,handCI=null,lhp=null,lhpd=0;
+function toggleMove(){
   const btn=document.querySelector('.move-btn');
-  if(!moveMode){
-    moveMode=true;btn.classList.add('active');
-    toast('Hand tracking ON');startHandTracking();
-  } else {
-    moveMode=false;btn.classList.remove('active');
-    toast('Hand tracking OFF');stopHandTracking();
-  }
+  if(!moveMode){moveMode=true;btn.classList.add('active');toast('Hand tracking ON');startHands();}
+  else{moveMode=false;btn.classList.remove('active');toast('Hand tracking OFF');stopHands();}
 }
-
-async function startHandTracking() {
-  const hc=document.getElementById('hand-canvas');
-  hc.width=innerWidth;hc.height=innerHeight;hc.style.display='block';
-
-  // Make sure camera is on
-  if(!camOn) await toggleCamera();
-
-  try {
-    await loadScript('https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js');
-    await loadScript('https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js');
-    await new Promise(r=>setTimeout(r,600));
-
-    handsInst=new Hands({locateFile:f=>`https://cdn.jsdelivr.net/npm/@mediapipe/hands/${f}`});
-    handsInst.setOptions({maxNumHands:2,modelComplexity:1,minDetectionConfidence:0.72,minTrackingConfidence:0.65});
-    handsInst.onResults(onHandResults);
-
+async function startHands(){
+  const hc=document.getElementById('hand-canvas');hc.width=innerWidth;hc.height=innerHeight;hc.style.display='block';
+  if(!camOn)await toggleCamera();
+  try{
+    await ls('https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js');
+    await ls('https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js');
+    await new Promise(r=>setTimeout(r,500));
+    handsI=new Hands({locateFile:f=>`https://cdn.jsdelivr.net/npm/@mediapipe/hands/${f}`});
+    handsI.setOptions({maxNumHands:2,modelComplexity:1,minDetectionConfidence:.72,minTrackingConfidence:.65});
+    handsI.onResults(onHR);
     const vid=document.getElementById('cam-feed');
-    handCamInst=new Camera(vid,{
-      onFrame:async()=>{if(handsInst&&moveMode)await handsInst.send({image:vid});},
-      width:320,height:240
-    });
-    handCamInst.start();
-    document.getElementById('cam-overlay').textContent='HAND TRACKING ACTIVE';
-  } catch(e) {
-    console.error('[HANDS]',e);
-    document.querySelector('.move-btn').classList.remove('active');
-    moveMode=false;
-    toast('Hand tracking failed');
-  }
+    handCI=new Camera(vid,{onFrame:async()=>{if(handsI&&moveMode)await handsI.send({image:vid});},width:320,height:240});
+    handCI.start();document.getElementById('cam-overlay').textContent='HAND TRACKING';
+  }catch(e){document.querySelector('.move-btn').classList.remove('active');moveMode=false;toast('Hand tracking failed');}
 }
-
-function stopHandTracking() {
+function stopHands(){
   document.getElementById('hand-canvas').style.display='none';
-  if(handCamInst){try{handCamInst.stop();}catch(e){}handCamInst=null;}
-  if(handsInst){handsInst.close();handsInst=null;}
-  if(camOn) document.getElementById('cam-overlay').textContent='CAMERA LIVE';
-  lastHandPos=null;
+  if(handCI){try{handCI.stop();}catch(e){}handCI=null;}
+  if(handsI){handsI.close();handsI=null;}
+  if(camOn)document.getElementById('cam-overlay').textContent='CAMERA LIVE';
+  lhp=null;
 }
-
-function onHandResults(results) {
-  const hc=document.getElementById('hand-canvas');
-  const ctx=hc.getContext('2d');
+function onHR(res){
+  const hc=document.getElementById('hand-canvas'),ctx=hc.getContext('2d');
   ctx.clearRect(0,0,hc.width,hc.height);
-  if(!results.multiHandLandmarks||!results.multiHandLandmarks.length){lastHandPos=null;return;}
-  const hands=results.multiHandLandmarks;
-  for(const lm of hands) drawHand(ctx,lm,hc.width,hc.height);
-  if(hands.length===1) {
-    const lm=hands[0],palm=lm[9];
-    const nx=1-palm.x,ny=palm.y;
-    const th=lm[4],ix=lm[8];
-    const pinch=Math.hypot(th.x-ix.x,th.y-ix.y)<0.06;
-    if(lastHandPos&&!pinch){tRotY+=(nx-lastHandPos.x)*innerWidth*0.55;tRotX=Math.max(-80,Math.min(80,tRotX+(ny-lastHandPos.y)*innerHeight*0.45));}
+  if(!res.multiHandLandmarks?.length){lhp=null;return;}
+  const hs=res.multiHandLandmarks;
+  hs.forEach(lm=>drawH(ctx,lm,hc.width,hc.height));
+  if(hs.length===1){
+    const lm=hs[0],palm=lm[9],nx=1-palm.x,ny=palm.y;
+    const th=lm[4],ix=lm[8],pinch=Math.hypot(th.x-ix.x,th.y-ix.y)<.06;
+    if(lhp&&!pinch){try_+=(nx-lhp.x)*innerWidth*.55;trx=Math.max(-80,Math.min(80,trx+(ny-lhp.y)*innerHeight*.45));}
     const tx=(1-th.x)*hc.width,ty=th.y*hc.height,ix2=(1-ix.x)*hc.width,iy=ix.y*hc.height;
     ctx.beginPath();ctx.arc((tx+ix2)/2,(ty+iy)/2,pinch?20:9,0,Math.PI*2);
-    ctx.fillStyle=pinch?'rgba(0,245,255,0.35)':'rgba(0,245,255,0.12)';ctx.fill();
-    ctx.strokeStyle='rgba(0,245,255,0.85)';ctx.lineWidth=2;ctx.stroke();
-    lastHandPos={x:nx,y:ny};
-  } else if(hands.length===2){
-    const c0={x:1-hands[0][9].x,y:hands[0][9].y},c1={x:1-hands[1][9].x,y:hands[1][9].y};
+    ctx.fillStyle=pinch?'rgba(0,245,255,.35)':'rgba(0,245,255,.12)';ctx.fill();
+    ctx.strokeStyle='rgba(0,245,255,.85)';ctx.lineWidth=2;ctx.stroke();
+    lhp={x:nx,y:ny};
+  } else if(hs.length===2){
+    const c0={x:1-hs[0][9].x,y:hs[0][9].y},c1={x:1-hs[1][9].x,y:hs[1][9].y};
     const d=Math.hypot(c0.x-c1.x,c0.y-c1.y);
-    if(lastHandPD2>0)tZoom=Math.max(50,Math.min(900,tZoom+(lastHandPD2-d)*450));
-    lastHandPD2=d;lastHandPos=null;
+    if(lhpd>0)tzoom=Math.max(50,Math.min(900,tzoom+(lhpd-d)*450));
+    lhpd=d;lhp=null;
   }
 }
-
-function drawHand(ctx,lm,w,h){
-  const conn=[[0,1],[1,2],[2,3],[3,4],[0,5],[5,6],[6,7],[7,8],[5,9],[9,10],[10,11],[11,12],[9,13],[13,14],[14,15],[15,16],[13,17],[17,18],[18,19],[19,20],[0,17]];
-  ctx.strokeStyle='rgba(0,245,255,0.45)';ctx.lineWidth=1.5;
-  for(const[a,b]of conn){ctx.beginPath();ctx.moveTo((1-lm[a].x)*w,lm[a].y*h);ctx.lineTo((1-lm[b].x)*w,lm[b].y*h);ctx.stroke();}
-  const tips=[4,8,12,16,20];
-  for(let i=0;i<lm.length;i++){ctx.beginPath();ctx.arc((1-lm[i].x)*w,lm[i].y*h,tips.includes(i)?5:3,0,Math.PI*2);ctx.fillStyle=tips.includes(i)?'rgba(0,245,255,0.9)':'rgba(0,245,255,0.4)';ctx.fill();}
+function drawH(ctx,lm,w,h){
+  [[0,1],[1,2],[2,3],[3,4],[0,5],[5,6],[6,7],[7,8],[5,9],[9,10],[10,11],[11,12],[9,13],[13,14],[14,15],[15,16],[13,17],[17,18],[18,19],[19,20],[0,17]].forEach(([a,b])=>{ctx.beginPath();ctx.strokeStyle='rgba(0,245,255,.4)';ctx.lineWidth=1.5;ctx.moveTo((1-lm[a].x)*w,lm[a].y*h);ctx.lineTo((1-lm[b].x)*w,lm[b].y*h);ctx.stroke();});
+  [4,8,12,16,20].forEach(i=>{ctx.beginPath();ctx.arc((1-lm[i].x)*w,lm[i].y*h,5,0,Math.PI*2);ctx.fillStyle='rgba(0,245,255,.9)';ctx.fill();});
 }
+function ls(src){return new Promise((res,rej)=>{if(document.querySelector(`script[src="${src}"]`)){res();return;}const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=rej;document.head.appendChild(s);});}
 
-function loadScript(src){
-  return new Promise((res,rej)=>{
-    if(document.querySelector(`script[src="${src}"]`)){res();return;}
-    const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=rej;document.head.appendChild(s);
-  });
-}
-
-// ─── UI ─────────────────────────────────────────────────────
+// ─── UI ──────────────────────────────────────────────────────
 let sidebarOpen=true;
 function toggleSidebar(){sidebarOpen=!sidebarOpen;document.getElementById('sidebar').classList.toggle('closed',!sidebarOpen);}
-let gridOn=false;
-function toggleGrid(){gridOn=!gridOn;document.getElementById('grid-overlay').classList.toggle('show',gridOn);document.getElementById('grid-btn').classList.toggle('active',gridOn);}
-function screenshot(){renderer.render(scene,camera);const l=document.createElement('a');l.download='forge-3d.png';l.href=canvas.toDataURL('image/png');l.click();toast('Screenshot saved');}
+let gridOn=true;
+function toggleGrid(){gridOn=!gridOn;document.getElementById('grid-overlay').style.opacity=gridOn?'1':'0';grid.material.opacity=gridOn?.35:0;document.getElementById('grid-btn').classList.toggle('active',!gridOn);}
+function screenshot(){renderer.render(scene,cam);const l=document.createElement('a');l.download='forge.png';l.href=canvas.toDataURL('image/png');l.click();toast('Saved');}
 function openPrint(){document.getElementById('print-modal').classList.add('open');}
 function closePrint(){document.getElementById('print-modal').classList.remove('open');}
 async function scanBT(){
   const btn=document.getElementById('scan-btn');
   if(!navigator.bluetooth){toast('Need Chrome + HTTPS');return;}
   btn.textContent='Scanning...';
-  try{const d=await navigator.bluetooth.requestDevice({filters:[{namePrefix:'Bambu'},{namePrefix:'Prusa'},{namePrefix:'Elegoo'},{namePrefix:'Creality'}],optionalServices:['generic_access']});btn.textContent='Scan nearby';closePrint();document.getElementById('bt-btn').classList.add('connected');toast('BT: '+d.name);addAIMsg('Connected to <strong>'+d.name+'</strong> via Bluetooth.');}
-  catch(e){btn.textContent='Scan nearby';if(e.name!=='NotFoundError')toast('BT: '+e.message.substring(0,28));else toast('No printers found');}
+  try{const d=await navigator.bluetooth.requestDevice({filters:[{namePrefix:'Bambu'},{namePrefix:'Prusa'},{namePrefix:'Elegoo'},{namePrefix:'Creality'}],optionalServices:['generic_access']});btn.textContent='Scan nearby';closePrint();document.getElementById('bt-btn').classList.add('connected');toast('BT: '+d.name);addAI('Connected to <strong>'+d.name+'</strong>.');}
+  catch(e){btn.textContent='Scan nearby';toast(e.name==='NotFoundError'?'No printers found':'BT error');}
 }
-function demoConnect(el,name){document.querySelectorAll('.bt-device').forEach(d=>{d.style.borderColor='';d.style.background='';});el.style.borderColor='#a855f7';el.style.background='rgba(168,85,247,0.1)';setTimeout(()=>{closePrint();document.getElementById('bt-btn').classList.add('connected');toast('Demo: '+name);addAIMsg('Demo: <strong>'+name+'</strong> paired. Use "Scan nearby" for a real printer.');},700);}
-let toastTimer;
-function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2500);}
+function demoConnect(el,name){document.querySelectorAll('.bt-device').forEach(d=>{d.style.borderColor='';d.style.background='';});el.style.borderColor='#a855f7';el.style.background='rgba(168,85,247,.1)';setTimeout(()=>{closePrint();document.getElementById('bt-btn').classList.add('connected');toast('Demo: '+name);addAI('Demo: <strong>'+name+'</strong> connected.');},700);}
+let toastT;
+function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('show'),2500);}
 
-// ─── JARVIS CHAT ─────────────────────────────────────────────
-let convHistory=[], isThinking=false;
-function addUserMsg(t){const m=document.getElementById('messages');m.innerHTML+=`<div class="msg user"><div class="msg-orb user"></div><div class="msg-bubble">${esc(t)}</div></div>`;m.scrollTop=m.scrollHeight;}
-function addAIMsg(t){const m=document.getElementById('messages');m.innerHTML+=`<div class="msg ai"><div class="msg-orb ai"></div><div class="msg-bubble">${t}</div></div>`;m.scrollTop=m.scrollHeight;}
-function showThinking(){const m=document.getElementById('messages');m.innerHTML+=`<div class="msg ai" id="thinking-msg"><div class="msg-orb ai"></div><div class="msg-bubble"><div class="thinking-dots"><span></span><span></span><span></span></div></div></div>`;m.scrollTop=m.scrollHeight;document.getElementById('ai-orb').classList.add('thinking');}
-function hideThinking(){const el=document.getElementById('thinking-msg');if(el)el.remove();document.getElementById('ai-orb').classList.remove('thinking');}
-function esc(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+// ─── CHAT ────────────────────────────────────────────────────
+const API='https://api.heyjarvis.me';
+let hist=[],busy=false;
+function addUser(t){const m=document.getElementById('messages');m.innerHTML+=`<div class="msg user"><div class="msg-orb user"></div><div class="msg-bubble">${esc(t)}</div></div>`;m.scrollTop=m.scrollHeight;}
+function addAI(t){const m=document.getElementById('messages');m.innerHTML+=`<div class="msg ai"><div class="msg-orb ai"></div><div class="msg-bubble">${t}</div></div>`;m.scrollTop=m.scrollHeight;}
+function showDots(){const m=document.getElementById('messages');m.innerHTML+=`<div class="msg ai" id="dots"><div class="msg-orb ai"></div><div class="msg-bubble"><div class="thinking-dots"><span></span><span></span><span></span></div></div></div>`;m.scrollTop=m.scrollHeight;document.getElementById('ai-orb').classList.add('thinking');}
+function hideDots(){const el=document.getElementById('dots');if(el)el.remove();document.getElementById('ai-orb').classList.remove('thinking');}
+const esc=t=>t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 function handleKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();}}
 
-async function sendMessage() {
+const SYS=`You are FORGE, an elite 3D AI artist. You build stunning, hyper-detailed 3D scenes using Three.js primitive shapes combined creatively.
+
+RESPOND ONLY WITH RAW JSON. No markdown. No backticks. No explanation. Pure JSON only.
+
+FORMAT:
+{"label":"Name","parts":[{"name":"UniqueName","type":"roundbox","color":14737400,"size":60,"pos":[0,30,0],"rot":[0,0,0],"scale":[1,1,1],"metal":0.9,"rough":0.05,"emissive":0,"opacity":1.0}]}
+
+GEOMETRY TYPES: sphere halfsphere cylinder tube tapered cone disc thindisc ring torus torusknot capsule roundbox flatbox wedge box
+
+COLORS (integers): chrome=14737400 silver=12632256 black=1118481 glossblack=526344 white=15921906 cream=15987699 red=13369344 darkred=8388608 blue=3329258 navy=1315890 cyan=52479 gold=16766720 bronze=8430592 copper=11748609 carbon=2105376 darkgray=4473924 titanium=9803152 rubber=2236962 glass=8830975 tintedglass=4456448 orange=16746240 yellow=16776960 green=3407872 purple=8388736 maroon=8388608 ivory=16119285
+
+MATERIALS:
+- Polished chrome: metal=0.95 rough=0.03
+- Brushed metal: metal=0.85 rough=0.2
+- Matte plastic: metal=0.0 rough=0.85
+- Rubber: metal=0.0 rough=0.95
+- Glass: metal=0.05 rough=0.02 opacity=0.18 (use transparent parts sparingly)
+- Carbon fiber: metal=0.3 rough=0.4
+- Painted car: metal=0.7 rough=0.08
+- Glowing LED: emissive=16776800
+- Glowing red: emissive=16711680
+- Glowing cyan: emissive=52479
+- Glowing blue: emissive=255
+
+GROUND RULE: pos[1] >= (size * scaleY) / 2. Ground is Y=0.
+
+DETAIL: Use 25-50 parts. Stack and overlap shapes. Think like a sculptor.
+
+KEY TECHNIQUES:
+- roundbox for all body panels (NEVER flat box for visible surfaces)
+- disc+ring+cylinder = realistic wheel (ring=rim, cylinder=tire, disc=hubcap)
+- capsule for ergonomic/organic shapes
+- tube for pipes, cables, antenna
+- sphere for rivets, sensors, headlights, eyes
+- halfsphere for domes, bumpers, pods
+- flatbox for windows, panels, screens
+- thindisc for buttons, decals, details
+- wedge for fins, aero elements
+
+SPORTS CAR RECIPE (proportions that work):
+Body: roundbox size=80 scale=[2.8,0.35,1.15] pos=[0,14,0] color=red metal=0.7 rough=0.08
+Cabin: roundbox size=60 scale=[1.35,0.4,0.92] pos=[-2,29,0] same color
+Front bumper: roundbox size=25 scale=[2.2,0.28,0.4] pos=[0,8,49] color=glossblack
+Rear bumper: roundbox size=25 scale=[2.2,0.28,0.4] pos=[0,8,-49] color=glossblack
+Side skirts x2: roundbox size=20 scale=[2.5,0.12,0.15] pos=[±55,4,0] color=carbon
+Hood: roundbox size=45 scale=[1.5,0.12,0.8] pos=[25,20,4] slight forward tilt
+Windshield: flatbox size=48 scale=[1.15,0.9,0.08] pos=[10,33,18] rot=[22,0,0] glass
+Rear window: flatbox size=38 scale=[1.1,0.75,0.08] pos=[-12,31,-16] rot=[-28,0,0] glass
+4 wheels at [±56,7,±34]: ring size=28 (rim chrome) + cylinder size=26 scale=[1,0.45,1] (tire rubber) + disc size=18 (hubcap chrome)
+Headlights x2: sphere size=8 pos=[±22,15,50] emissive=16776800
+Taillights x2: disc size=7 pos=[±20,14,-50] rot=[90,0,0] emissive=16711680
+Side mirrors x2: roundbox size=10 scale=[0.4,0.5,0.8] pos=[±58,26,12]
+Exhaust x2: cylinder size=8 scale=[1,0.6,1] pos=[±12,5,-51] rot=[90,0,0] chrome
+
+CHAIR RECIPE:
+Seat: roundbox size=55 scale=[1.1,0.16,1.05] pos=[0,42,0] color=cream metal=0 rough=0.7
+Seat cushion: halfsphere size=50 scale=[1.05,0.18,1.0] pos=[0,44,0] slightly lighter
+Backrest: roundbox size=52 scale=[0.85,1.15,0.12] pos=[0,72,-20] same color
+Back padding: halfsphere size=38 scale=[0.8,0.25,0.3] pos=[0,68,-14] lighter
+Armrests x2: capsule size=32 scale=[0.35,1,0.35] pos=[±32,50,2] rot=[0,0,90] dark
+5 legs: tapered size=28 scale=[0.5,1.2,0.5] at 72deg intervals, chrome
+Column: cylinder size=10 scale=[1,2.5,1] pos=[0,20,0] chrome
+5 casters: sphere size=7 at leg ends
+
+SPECIAL: If user says spin/rotate respond: SPIN
+If user says stop: STOP
+If user says clear/reset: CLEAR
+If user asks a question: answer in 1-2 sentences (not JSON).
+Be creative and add details the user didn't mention — that's what makes it beautiful.`;
+
+async function sendMessage(){
   const inp=document.getElementById('sidebar-input');
   const text=inp.value.trim();
-  if(!text||isThinking)return;
+  if(!text||busy)return;
   inp.value='';inp.style.height='auto';
-  addUserMsg(text);
-  isThinking=true;showThinking();
-  document.getElementById('top-status').textContent='Thinking...';
+  addUser(text);busy=true;showDots();
+  document.getElementById('top-status').textContent='Building...';
 
-  // Check for spin/animation commands
-  if(text.match(/spin|rotate|turn|animate/i)){
-    hideThinking();autoSpin=!autoSpin;
-    addAIMsg(autoSpin?'Auto-spinning now. Say "stop" to stop.':'Stopped spinning.');
-    isThinking=false;document.getElementById('top-status').textContent='Ready';return;
-  }
-  if(text.match(/stop|freeze/i)&&autoSpin){hideThinking();autoSpin=false;addAIMsg('Stopped.');isThinking=false;return;}
-  if(text.match(/clear|reset|empty/i)){hideThinking();clearAll();addAIMsg('Scene cleared. What should I import?');isThinking=false;return;}
+  if(text.match(/^spin$/i)){hideDots();autoSpin.on=!autoSpin.on;addAI(autoSpin.on?'Spinning! Say "stop" to pause.':'Stopped.');busy=false;document.getElementById('top-status').textContent='Ready';return;}
+  if(text.match(/^stop$/i)){hideDots();autoSpin.on=false;addAI('Stopped.');busy=false;return;}
+  if(text.match(/^(clear|reset)$/i)){hideDots();clearAll();addAI('Cleared. What shall I build?');busy=false;document.getElementById('top-status').textContent='Ready';return;}
 
-  // Import/search request
-  const isImport = text.match(/import|load|show|get|find|search|bring|fetch|add/i) || text.match(/a |an /i);
-  if(isImport || text.length < 60) {
-    hideThinking();
-    const result = await searchAndLoadModel(text);
-    if(result === null) {
-      // Fallback: tell user what's available
-      addAIMsg("I couldn't find that model. Try: <strong>car, robot, astronaut, helmet, duck, flamingo, fox, shoe, avocado, bird, horse</strong> — or describe something else and I'll search our proxy.");
-    }
-    isThinking=false;document.getElementById('top-status').textContent='Ready';return;
-  }
-
-  // For other requests, use JARVIS AI
   const token=localStorage.getItem('jarvis_token')||'';
-  const sys=`You are FORGE's 3D AI co-pilot. The user wants to build or view 3D objects.
-
-IMPORTANT: If the user asks to build/make/create something, respond with ONLY raw JSON (no markdown, no backticks) in this format:
-{"action":"build","label":"Short label","parts":[{"name":"UniqueName","type":"roundbox","color":14737400,"size":60,"pos":[0,15,0],"rot":[0,0,0],"scale":[3.5,0.5,1.4],"metal":0.9,"rough":0.05,"emissive":0,"opacity":1.0}]}
-
-Available types: sphere box roundbox cylinder tapered cone torus disc thindisc halfball ring capsule wedge
-Colors (integer): chrome=14737400 silver=12632256 black=1118481 white=15921906 red=13369344 blue=3329258 gold=16766720 rubber=2236962 glass=8830975 carbon=2105376
-
-Rules for beautiful models:
-- Use 20-40 parts
-- pos[1] must be >= size/2 (sits on ground)
-- Use roundbox for all body panels (smooth look)
-- High metal (0.9), low rough (0.05) for shiny parts
-- Glass: opacity 0.25, metal 0.05, rough 0.02
-- Cars: wide flat roundbox body (scale:[3.5,0.45,1.3]), smaller roundbox cabin on top, torus wheels with disc hub
-- Chairs: roundbox seat, roundbox back, cylinder legs, cushion details
-- Robots: capsule torso, sphere head, cylinder limbs
-
-For spin/rotate commands: respond with just the word SPIN
-For clear/reset: respond with just the word CLEAR
-For import commands: respond with just IMPORT:[thing]
-For other questions: respond normally in 1-2 sentences.`;
-  try {
-    const res=await fetch(`${API}/design-command`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({command:text,systemPrompt:sys,history:convHistory.slice(-6)})});
+  try{
+    const res=await fetch(`${API}/design-command`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({command:text,systemPrompt:SYS,history:hist.slice(-8)})});
     const raw=await res.json();
-    hideThinking();
+    hideDots();
     let reply=raw.response||raw.message||'';
-    // Handle special commands
-    if(reply.trim()==='SPIN'){autoSpin=!autoSpin;addAIMsg(autoSpin?'Spinning now. Say "stop" to stop.':'Stopped.');isThinking=false;document.getElementById('top-status').textContent='Ready';return;}
-    if(reply.trim()==='CLEAR'){clearAll();addAIMsg('Cleared!');isThinking=false;document.getElementById('top-status').textContent='Ready';return;}
-    if(reply.trim().startsWith('IMPORT:')){const q=reply.trim().replace('IMPORT:','').trim();addAIMsg('Searching for '+q+'...');await searchAndLoadModel(q);isThinking=false;document.getElementById('top-status').textContent='Ready';return;}
-    // Try parse as build JSON
-    try {
-      const clean=reply.replace(/```json\n?/g,'').replace(/```\n?/g,'').trim();
-      const match=clean.match(/\{[\s\S]*\}/);
-      if(match){
+    const trimmed=reply.trim();
+    if(trimmed==='SPIN'){autoSpin.on=!autoSpin.on;addAI(autoSpin.on?'Spinning!':'Stopped.');busy=false;document.getElementById('top-status').textContent='Ready';return;}
+    if(trimmed==='STOP'){autoSpin.on=false;addAI('Stopped.');busy=false;return;}
+    if(trimmed==='CLEAR'){clearAll();addAI('Cleared!');busy=false;return;}
+
+    // Parse JSON
+    const clean=reply.replace(/```json\n?/g,'').replace(/```\n?/g,'').trim();
+    const match=clean.match(/\{[\s\S]*\}/);
+    if(match){
+      try{
         const data=JSON.parse(match[0]);
-        if(data.action==='build'&&data.parts){
-          // Clear primitives and build
-          Object.values(primitiveObjects).forEach(m=>{pivot.remove(m);m.geometry.dispose();m.material.dispose();});
-          primitiveObjects={};partCount=0;
+        if(data.parts?.length){
+          clearAll();
+          let maxY=0;
+          data.parts.forEach(p=>{const y=(p.pos?.[1]||0)+(p.size||30)*(p.scale?.[1]||1)/2;if(y>maxY)maxY=y;});
           data.parts.forEach(p=>{
-            const geo=makeGeo(p.type||'sphere',p.size||30);
-            const hex=p.color!==undefined?'#'+p.color.toString(16).padStart(6,'0'):'#4488ff';
-            const mat=makeMat(hex,p.metal??0.85,p.rough??0.12,p.emissive||0,(p.opacity||1)<1,p.opacity||1);
-            addPrim(p.name||('P'+(++objCount)),geo,mat,p.pos||[0,15,0],p.rot||[0,0,0],p.scale||[1,1,1]);
+            const geo=G(p.type||'sphere',p.size||30);
+            const hex=p.color!=null?'#'+Math.max(0,p.color).toString(16).padStart(6,'0'):'#4488ff';
+            const mat=M(hex,p.metal??0.85,p.rough??0.1,p.emissive||0,(p.opacity||1)<1,p.opacity||1);
+            addObj(p.name||('P'+(++oCount)),geo,mat,p.pos||[0,15,0],p.rot||[0,0,0],p.scale||[1,1,1]);
           });
-          tZoom=220;tRotX=18;tRotY=25;
-          updateInfo(data.label||'Model');
-          addAIMsg('Built <strong>'+(data.label||'model')+'</strong> with '+data.parts.length+' parts. Say "make it spin", "clear", or import something new.');
-          convHistory.push({role:'user',content:text},{role:'assistant',content:'Built '+data.label});
-          isThinking=false;document.getElementById('top-status').textContent='Ready';return;
+          tzoom=Math.max(140,maxY*3.5);trx=16;try_=22;
+          updateInfo();
+          hist.push({role:'user',content:text},{role:'assistant',content:'Built: '+data.label});
+          addAI(`Built <strong>${data.label||'model'}</strong> — ${data.parts.length} parts. Say "spin", "clear", or describe changes like "make it blue" or "add more detail".`);
+          busy=false;document.getElementById('top-status').textContent=data.parts.length+' parts';
+          return;
         }
-      }
-    } catch(e2){}
-    // Plain text reply
-    if(reply) addAIMsg(reply);
-    else addAIMsg("Try: <strong>import car</strong>, <strong>import robot</strong>, <strong>build a chair</strong>, or <strong>build a spaceship</strong>.");
-    convHistory.push({role:'user',content:text},{role:'assistant',content:reply});
-  } catch(e){hideThinking();addAIMsg("Try: import car, import robot, build a chair.");}
-  isThinking=false;document.getElementById('top-status').textContent='Ready';
+      }catch(e2){console.log('[PARSE]',e2);}
+    }
+    if(reply)addAI(reply);
+    else addAI("Describe anything — a car, robot, chair, spaceship, building, watch, helmet...");
+    hist.push({role:'user',content:text},{role:'assistant',content:reply});
+  }catch(e){
+    hideDots();addAI("Something went wrong. Try again.");
+    console.error(e);
+  }
+  busy=false;document.getElementById('top-status').textContent='Ready';
 }
 
-// ─── RENDER LOOP ─────────────────────────────────────────────
-let t=0;
+// ─── RENDER ──────────────────────────────────────────────────
+let tick=0;
 function animate(){
-  requestAnimationFrame(animate);t+=0.008;
-  rotX+=(tRotX-rotX)*ease;rotY+=(tRotY-rotY)*ease;
-  zoom+=(tZoom-zoom)*ease;panX+=(tPanX-panX)*ease;panY+=(tPanY-panY)*ease;
-  if(autoSpin) tRotY += 0.4;
-  pivot.rotation.x=rotX*Math.PI/180;pivot.rotation.y=rotY*Math.PI/180;
-  camera.position.z=zoom;camera.position.x=-panX*0.5;camera.position.y=80+panY*0.3;
-  camera.lookAt(0,panY*0.3+20,0);
-  holo.intensity=14+Math.sin(t*1.6)*4;fill.intensity=4+Math.sin(t*1.1)*1.5;rim2.intensity=3+Math.sin(t*.8)*1.2;
-  renderer.render(scene,camera);
+  requestAnimationFrame(animate);tick+=0.007;
+  rx+=(trx-rx)*E;ry+=(try_-ry)*E;
+  zoom+=(tzoom-zoom)*E;px2+=(tpx-px2)*E;py2+=(tpy-py2)*E;
+  if(autoSpin.on)try_+=0.35;
+  pivot.rotation.x=rx*Math.PI/180;pivot.rotation.y=ry*Math.PI/180;
+  cam.position.z=zoom;cam.position.x=-px2*.5;cam.position.y=80+py2*.3;
+  cam.lookAt(0,py2*.3+20,0);
+  holo.intensity=16+Math.sin(tick*1.7)*5;
+  fill.intensity=6+Math.sin(tick*1.1)*2;
+  warm.intensity=2.5+Math.sin(tick*.7)*1;
+  renderer.render(scene,cam);
 }
 animate();
-
-
 document.getElementById('sidebar-input').addEventListener('input',function(){this.style.height='auto';this.style.height=Math.min(this.scrollHeight,110)+'px';});
 </script>
 </body>
