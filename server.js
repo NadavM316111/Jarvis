@@ -2477,24 +2477,28 @@ app.get('/proxy-model', async (req, res) => {
   try {
     const url = req.query.url;
     if (!url || !/^https?:\/\//.test(url)) return res.status(400).send('bad url');
-    console.log('[PROXY] fetching:', url);
     const r = await axios.get(url, {
       responseType: 'arraybuffer',
-      timeout: 15000,
-      headers: { 'x-auth-token': POLY_PIZZA_KEY }
+      timeout: 20000,
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept': '*/*',
+        'Referer': 'https://poly.pizza/',
+        'Origin': 'https://poly.pizza',
+        'sec-fetch-dest': 'empty',
+        'sec-fetch-mode': 'cors',
+        'sec-fetch-site': 'same-site',
+        'x-auth-token': POLY_PIZZA_KEY
+      }
     });
     const buf = Buffer.from(r.data);
-    // Check we got binary, not HTML
     if (buf.slice(0,15).toString().includes('<!DOCTYPE')) {
-      console.error('[PROXY] got HTML, not GLB');
-      return res.status(502).send('not a model');
+      return res.status(502).send('blocked');
     }
-    console.log('[PROXY] success, bytes:', buf.length);
     res.set('Content-Type', 'model/gltf-binary');
     res.set('Access-Control-Allow-Origin', '*');
     res.send(buf);
   } catch (e) {
-    console.error('[PROXY] error:', e.message);
     res.status(500).send('proxy failed: ' + e.message);
   }
 });
