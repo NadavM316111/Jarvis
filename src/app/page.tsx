@@ -1236,7 +1236,7 @@ const abortRef = useRef<AbortController | null>(null);
       {/* Settings modal */}
       {showSettings && (
         <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
-          <div className="bg-[#0a0a0f] border border-white/10 rounded-2xl p-6 w-full max-w-sm">
+          <div className="bg-[#0a0a0f] border border-white/10 rounded-2xl p-6 w-full max-w-sm max-h-[90dvh] overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
               <div className="text-white font-semibold">Settings</div>
               <button onClick={() => setShowSettings(false)} className="text-white/30 hover:text-white/60">
