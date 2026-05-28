@@ -2457,14 +2457,15 @@ app.post('/search-models', async (req, res) => {
       headers: { 'x-auth-token': POLY_PIZZA_KEY }
     });
     const data = await r.json();
-    // Poly Pizza returns { results: [...] }; field casing can vary, so normalize defensively.
+    console.log('[POLY] raw first result:', JSON.stringify((data.results||data.Results||[])[0] || data).slice(0,500));
     const list = data.results || data.Results || [];
     const results = list.map(m => ({
       title:     m.Title || m.title || 'Model',
       url:       m.Download || m.download || m.GLB || m.glb || m.url,
       thumbnail: m.Thumbnail || m.thumbnail || '',
       creator:   (m.Creator && (m.Creator.Username || m.Creator.username)) || m.creator || 'Unknown'
-    })).filter(m => m.url && /\.glb($|\?)/i.test(m.url));
+    })).filter(m => m.url);
+    console.log('[POLY] returning', results.length, 'models for', query);
     res.json({ results });
   } catch (e) {
     console.error('Model search error:', e.message);
@@ -2472,13 +2473,18 @@ app.post('/search-models', async (req, res) => {
   }
 });
 
-// Proxy GLB downloads to dodge CORS
 app.get('/proxy-model', async (req, res) => {
   try {
     const url = req.query.url;
     if (!url || !/^https?:\/\//.test(url)) return res.status(400).send('bad url');
-    const r = await fetch(url);
+    const r = await fetch(url, { headers: { 'x-auth-token': POLY_PIZZA_KEY } });
+    const ctype = r.headers.get('content-type') || '';
     const buf = Buffer.from(await r.arrayBuffer());
+    // If we got HTML back, the download failed — log the first bytes so we can see why
+    if (ctype.includes('text/html') || buf.slice(0,15).toString().includes('<!DOCTYPE')) {
+      console.error('[PROXY] got HTML not GLB. url=', url, 'body:', buf.slice(0,300).toString());
+      return res.status(502).send('not a model');
+    }
     res.set('Content-Type', 'model/gltf-binary');
     res.set('Access-Control-Allow-Origin', '*');
     res.send(buf);
