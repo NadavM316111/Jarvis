@@ -595,8 +595,8 @@ RULES for "html":
 - Use CSS animations: fade-in on load, hover effects on cards/buttons, subtle gradient animations
 - Make it look like a $100k agency built it. Sharp padding, perfect spacing, glassmorphism cards, micro-details
 - Width: full viewport width, content max-width 1100px centered
+- CRITICAL: Use single quotes for ALL HTML attributes — style='color:red' not style="color:red". Double quotes inside JSON strings break parsing.
 - "meta": one sentence describing the design choices made`,
-
   brand: `You are a brand identity designer. Generate a complete brand kit based on the description.
 Output ONLY JSON — no markdown, no backticks:
 {"title":"...","brandName":"...","tagline":"...","colors":[{"hex":"#...","name":"...","role":"..."}],"fonts":{"heading":"font-name","body":"font-name"},"logoSVG":"...SVG string...","voice":"...","meta":"..."}

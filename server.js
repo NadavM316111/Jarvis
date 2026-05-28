@@ -2507,10 +2507,14 @@ app.post('/design-command', async (req, res) => {
   const { command, systemPrompt, history } = req.body;
   try {
     const messages = [...(history || []), { role: 'user', content: command }];
-    const response = await anthropic.messages.create({ model: 'claude-opus-4-5', max_tokens: 4000, system: systemPrompt, messages });
+    const response = await anthropic.messages.create({ model: 'claude-opus-4-5', max_tokens: 8000, system: systemPrompt, messages });
     const text = response.content[0].text.replace(/```json|```/g, '').trim();
-    res.json(JSON.parse(text));
-  } catch (e) { console.error('Design error:', e.message); res.json({ response: 'Processing...', actions: [] }); }
+    try {
+      res.json(JSON.parse(text));
+    } catch(parseErr) {
+      res.json({ response: text });
+    }
+  } catch (e) { console.error('Design error:', e.message); res.json({ response: 'Error: ' + e.message }); }
 });
 
 
