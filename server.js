@@ -2477,20 +2477,25 @@ app.get('/proxy-model', async (req, res) => {
   try {
     const url = req.query.url;
     if (!url || !/^https?:\/\//.test(url)) return res.status(400).send('bad url');
-    const r = await fetch(url, { headers: { 'x-auth-token': POLY_PIZZA_KEY } });
-    const ctype = r.headers.get('content-type') || '';
-    const buf = Buffer.from(await r.arrayBuffer());
-    // If we got HTML back, the download failed — log the first bytes so we can see why
-    if (ctype.includes('text/html') || buf.slice(0,15).toString().includes('<!DOCTYPE')) {
-      console.error('[PROXY] got HTML not GLB. url=', url, 'body:', buf.slice(0,300).toString());
+    console.log('[PROXY] fetching:', url);
+    const r = await axios.get(url, {
+      responseType: 'arraybuffer',
+      timeout: 15000,
+      headers: { 'x-auth-token': POLY_PIZZA_KEY }
+    });
+    const buf = Buffer.from(r.data);
+    // Check we got binary, not HTML
+    if (buf.slice(0,15).toString().includes('<!DOCTYPE')) {
+      console.error('[PROXY] got HTML, not GLB');
       return res.status(502).send('not a model');
     }
+    console.log('[PROXY] success, bytes:', buf.length);
     res.set('Content-Type', 'model/gltf-binary');
     res.set('Access-Control-Allow-Origin', '*');
     res.send(buf);
   } catch (e) {
-    console.error('Proxy error:', e.message);
-    res.status(500).send('proxy failed');
+    console.error('[PROXY] error:', e.message);
+    res.status(500).send('proxy failed: ' + e.message);
   }
 });
 // cinevault static moved to apps/cinevault.js
