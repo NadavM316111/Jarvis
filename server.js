@@ -2,6 +2,7 @@ require('dotenv').config({ path: '.env.local' });
 const express = require('express');
 const cors = require('cors');
 const Anthropic = require('@anthropic-ai/sdk');
+const cloudscraper = require('cloudscraper');
 let screenshot;
 try { screenshot = require('screenshot-desktop'); } catch(e) { screenshot = null; }
 const { execSync, exec, spawn } = require('child_process');
@@ -2474,32 +2475,25 @@ app.post('/search-models', async (req, res) => {
 });
 
 app.get('/proxy-model', async (req, res) => {
+  const url = req.query.url;
+  if (!url) return res.status(400).json({ error: 'No URL' });
   try {
-    const url = req.query.url;
-    if (!url || !/^https?:\/\//.test(url)) return res.status(400).send('bad url');
-    const r = await axios.get(url, {
-      responseType: 'arraybuffer',
-      timeout: 20000,
+    const data = await cloudscraper({
+      method: 'GET',
+      url: url,
+      encoding: null,
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Accept': '*/*',
         'Referer': 'https://poly.pizza/',
         'Origin': 'https://poly.pizza',
-        'sec-fetch-dest': 'empty',
-        'sec-fetch-mode': 'cors',
-        'sec-fetch-site': 'same-site',
-        'x-auth-token': POLY_PIZZA_KEY
+        'x-auth-token': 'ec866ed43a284b54b287037c7102a5d1'
       }
     });
-    const buf = Buffer.from(r.data);
-    if (buf.slice(0,15).toString().includes('<!DOCTYPE')) {
-      return res.status(502).send('blocked');
-    }
     res.set('Content-Type', 'model/gltf-binary');
     res.set('Access-Control-Allow-Origin', '*');
-    res.send(buf);
+    res.send(data);
   } catch (e) {
-    res.status(500).send('proxy failed: ' + e.message);
+    console.error('[proxy-model cloudscraper]', e.message);
+    res.status(500).json({ error: e.message });
   }
 });
 // cinevault static moved to apps/cinevault.js
