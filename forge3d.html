@@ -100,6 +100,48 @@ body{background:var(--dark);font-family:'Syne',sans-serif;overflow:hidden;height
 #hand-canvas{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:60;display:none}
 @keyframes spin{to{transform:rotate(360deg)}}
 @media(max-width:700px){:root{--sidebar:100vw}.c-tr{right:14px}.c-br{right:14px}#topbar{right:0}#toolbar{right:0}#cam-feed,#cam-overlay{right:14px}}
+
+/* ── BUILD PANEL ── */
+#build-panel{position:fixed;left:14px;top:50%;transform:translateY(-50%);background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:14px;z-index:60;display:none;flex-direction:column;gap:9px;width:152px;backdrop-filter:blur(20px)}
+#build-panel.visible{display:flex}
+.bp-title{font-size:8px;letter-spacing:3px;color:var(--sub);text-transform:uppercase;font-family:'Space Mono',monospace}
+.bp-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.bp-shape{padding:7px 4px;font-size:8px;letter-spacing:1px;text-transform:uppercase;background:rgba(0,245,255,.04);border:1px solid var(--border);color:var(--sub);cursor:pointer;border-radius:8px;transition:all .15s;font-family:'Space Mono',monospace}
+.bp-shape:hover{border-color:var(--cyan);color:var(--cyan);background:rgba(0,245,255,.1)}
+.bp-colors{display:flex;gap:4px;flex-wrap:wrap}
+.bp-swatch{width:18px;height:18px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:all .15s;flex-shrink:0}
+.bp-swatch.sel{border-color:var(--cyan);transform:scale(1.2)}
+.bp-size{display:flex;align-items:center;gap:6px}
+.bp-size-lbl{font-size:7.5px;color:var(--sub);letter-spacing:1px;font-family:'Space Mono',monospace;flex-shrink:0}
+#shape-size{flex:1;-webkit-appearance:none;height:2px;background:var(--border);border:none;outline:none;cursor:pointer}
+#shape-size::-webkit-slider-thumb{-webkit-appearance:none;width:11px;height:11px;border-radius:50%;background:var(--cyan);cursor:pointer}
+.bp-acts{display:flex;gap:4px}
+.bp-act{flex:1;padding:5px 3px;font-size:7.5px;letter-spacing:.5px;text-transform:uppercase;background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--sub);cursor:pointer;border-radius:7px;transition:all .15s;font-family:'Space Mono',monospace}
+.bp-act:hover{border-color:rgba(255,80,80,.4);color:rgba(255,100,100,.7)}
+.bp-act.safe:hover{border-color:var(--border2);color:var(--text)}
+/* ── CUSTOMIZE MODAL ── */
+#customize-modal{display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.85);backdrop-filter:blur(12px);align-items:center;justify-content:center}
+#customize-modal.open{display:flex}
+#customize-panel{background:rgba(4,8,20,.98);border:1px solid var(--border2);border-radius:20px;padding:26px;width:480px;max-width:92vw;max-height:92dvh;overflow-y:auto;display:flex;flex-direction:column;gap:14px}
+.cust-hdr{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.cust-hdr-text h3{font-size:15px;font-weight:500;color:var(--text);margin-bottom:4px}
+.cust-hdr-text p{font-size:10px;color:var(--sub);line-height:1.5}
+.cust-close{width:28px;height:28px;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;cursor:pointer;color:var(--sub);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;transition:all .15s}
+.cust-close:hover{background:rgba(255,50,50,.1);color:rgba(255,100,100,.8)}
+.cust-examples{display:flex;gap:6px;flex-wrap:wrap}
+.cust-ex{padding:4px 11px;font-size:9px;letter-spacing:.5px;background:rgba(0,245,255,.05);border:1px solid var(--border);color:var(--sub);cursor:pointer;border-radius:20px;transition:all .15s;font-family:'Space Mono',monospace}
+.cust-ex:hover{border-color:var(--cyan);color:var(--cyan)}
+#customize-input{width:100%;min-height:86px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:11px;resize:none;outline:none;padding:12px;color:var(--text);font-family:'Syne',sans-serif;font-size:13px;line-height:1.6;caret-color:var(--cyan);transition:border-color .2s}
+#customize-input:focus{border-color:var(--border2)}
+#customize-input::placeholder{color:var(--sub)}
+#cust-gen-btn{padding:13px;font-size:10px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;border:1px solid var(--cyan);color:#000;background:var(--cyan);border-radius:11px;font-family:'Space Mono',monospace;font-weight:700;transition:all .2s}
+#cust-gen-btn:hover{background:#00e0ea}
+#cust-gen-btn:disabled{opacity:.35;cursor:default;color:var(--cyan);background:transparent}
+#cust-status{font-size:9px;color:var(--sub);letter-spacing:1.5px;text-align:center;min-height:14px;font-family:'Space Mono',monospace}
+/* ── SELECT BAR ── */
+#select-bar{position:fixed;bottom:76px;left:50%;transform:translateX(-50%);background:rgba(0,245,255,.1);border:1px solid var(--cyan);padding:5px 16px;border-radius:20px;font-size:8.5px;letter-spacing:2px;color:var(--cyan);text-transform:uppercase;pointer-events:none;z-index:50;opacity:0;transition:opacity .2s;font-family:'Space Mono',monospace;white-space:nowrap}
+#select-bar.visible{opacity:1}
+
 </style>
 </head>
 <body>
@@ -141,7 +183,13 @@ body{background:var(--dark);font-family:'Syne',sans-serif;overflow:hidden;height
   <button class="tool-btn print-btn" id="bt-btn" title="Bluetooth 3D print" onclick="openPrint()">
     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6.5 6.5 17.5 17.5 12 23 12 1 17.5 6.5 6.5 17.5"/></svg>
   </button>
-  <div id="tool-label">Say anything to build</div>
+  <button class="tool-btn" id="customize-btn" title="AI Customize" onclick="openCustomize()">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+  </button>
+  <button class="tool-btn" id="build-btn" title="Build it yourself" onclick="toggleBuildPanel()">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/><line x1="12" y1="12" x2="12" y2="17"/><line x1="9.5" y1="14.5" x2="14.5" y2="14.5"/></svg>
+  </button>
+  <div id="tool-label">Find a model</div>
 </div>
 
 <div id="sidebar">
@@ -190,11 +238,52 @@ body{background:var(--dark);font-family:'Syne',sans-serif;overflow:hidden;height
   </div>
 </div>
 
+
+<!-- BUILD PANEL -->
+<div id="build-panel">
+  <div class="bp-title">Build Mode</div>
+  <div class="bp-grid">
+    <button class="bp-shape" onclick="addBuildShape('box')">Box</button>
+    <button class="bp-shape" onclick="addBuildShape('cylinder')">Cylinder</button>
+    <button class="bp-shape" onclick="addBuildShape('sphere')">Sphere</button>
+    <button class="bp-shape" onclick="addBuildShape('cone')">Cone</button>
+    <button class="bp-shape" onclick="addBuildShape('torus')">Ring</button>
+    <button class="bp-shape" onclick="addBuildShape('tube')">Tube</button>
+  </div>
+  <div class="bp-size"><span class="bp-size-lbl">Size</span><input type="range" id="shape-size" min="10" max="120" value="40" oninput="buildSize=+this.value"></div>
+  <div class="bp-colors" id="bp-colors"></div>
+  <div class="bp-acts">
+    <button class="bp-act" onclick="deleteSelected()">Del</button>
+    <button class="bp-act safe" onclick="duplicateSel()">Dup</button>
+    <button class="bp-act" onclick="clearBuild()">All</button>
+  </div>
+</div>
+<!-- CUSTOMIZE MODAL -->
+<div id="customize-modal">
+  <div id="customize-panel">
+    <div class="cust-hdr">
+      <div class="cust-hdr-text"><h3>AI Customize</h3><p>Describe any product — JARVIS builds it as a printable 3D model with real dimensions and your branding.</p></div>
+      <button class="cust-close" onclick="closeCustomize()">&#x2715;</button>
+    </div>
+    <div class="cust-examples">
+      <div class="cust-ex" onclick="setCustPrompt(this.textContent)">Water filter box &quot;Echo Pure&quot;</div>
+      <div class="cust-ex" onclick="setCustPrompt(this.textContent)">Phone stand with cable slot</div>
+      <div class="cust-ex" onclick="setCustPrompt(this.textContent)">Gear, 12 teeth, 40mm</div>
+      <div class="cust-ex" onclick="setCustPrompt(this.textContent)">Vase with hex pattern</div>
+    </div>
+    <textarea id="customize-input" placeholder="Describe what you want to 3D print...&#10;&#10;Example: A water filter box called Echo Pure. Open-top rectangular container 80x60x50mm with a cylindrical filter cartridge inside. Brand name embossed on front face."></textarea>
+    <button id="cust-gen-btn" onclick="generateCustom()">Build It &#x2192;</button>
+    <div id="cust-status"></div>
+  </div>
+</div>
+<!-- SELECT BAR -->
+<div id="select-bar">Selected &#xB7; Drag to move</div>
+
 <video id="cam-feed" autoplay playsinline muted></video>
 <div id="cam-overlay">CAMERA LIVE</div>
 <canvas id="hand-canvas"></canvas>
 <div id="toast"></div>
-<div id="gesture-hint">Drag · Scroll zoom · Two-finger rotate</div>
+<div id="gesture-hint">Tap object to select · Drag to move · Scroll to zoom</div>
 
 <script>
 // ─── SCENE ───────────────────────────────────────────────────
@@ -304,14 +393,21 @@ function addObj(name,geo,mat,pos,rot,scale){
   return m;
 }
 function clearAll(){
-  disposeModel();updateInfo();toast('Scene cleared');
+  disposeModel();
+  if(typeof clearBuild==='function')clearBuild();
+  if(typeof selectObj==='function')selectObj(null);
+  updateInfo();toast('Scene cleared');
 }
 function updateInfo(){
+  const total=pivot.children.length+(typeof buildGroup!=='undefined'?buildGroup.children.length:0);
+  pCount=total;
   document.getElementById('info-parts').textContent=pCount;
   document.getElementById('tool-label').textContent=pCount?'Model loaded':'Find a model';
   if(!pCount){document.getElementById('obj-info').classList.remove('visible');return;}
   document.getElementById('obj-info').classList.add('visible');
-  const box=new THREE.Box3();pivot.children.forEach(m=>box.expandByObject(m));
+  const box=new THREE.Box3();
+  pivot.children.forEach(m=>box.expandByObject(m));
+  if(typeof buildGroup!=='undefined')buildGroup.children.forEach(m=>box.expandByObject(m));
   const sz=new THREE.Vector3();box.getSize(sz);
   document.getElementById('info-h').textContent=Math.round(sz.y);
   document.getElementById('info-w').textContent=Math.round(Math.max(sz.x,sz.z));
@@ -325,9 +421,70 @@ const E=0.075,autoSpin={on:false};
 function setMode(m){mode=m;document.querySelectorAll('.mode-btn:not(.move-btn)').forEach(b=>b.classList.toggle('active',b.dataset.mode===m));toast(m.toUpperCase());}
 function resetCamera(){trx=12;try_=0;tzoom=280;tpx=0;tpy=0;autoSpin.on=false;toast('Reset');}
 
-canvas.addEventListener('mousedown',e=>{if(moveMode)return;dragging=true;ox=e.clientX;oy=e.clientY;canvas.style.cursor='grabbing';});
-window.addEventListener('mouseup',()=>{dragging=false;canvas.style.cursor='default';});
+
+// ─── BUILD GROUP (world-space, no pivot rotation) ─────────────
+const buildGroup = new THREE.Group(); scene.add(buildGroup);
+
+// ─── RAYCASTING & OBJECT DRAG ────────────────────────────────
+const raycaster = new THREE.Raycaster();
+const mouse2d   = new THREE.Vector2();
+const dragPlane = new THREE.Plane(new THREE.Vector3(0,1,0), 0);
+const dragStart = new THREE.Vector3();
+const objStart  = new THREE.Vector3();
+let selectedObj=null, isDraggingObj=false;
+
+function setRC(cx,cy){mouse2d.x=(cx/innerWidth)*2-1;mouse2d.y=-(cy/innerHeight)*2+1;raycaster.setFromCamera(mouse2d,cam);}
+function planeHit(){const p=new THREE.Vector3();raycaster.ray.intersectPlane(dragPlane,p);return p;}
+function getRootIn(mesh,group){let o=mesh;while(o.parent&&o.parent!==group)o=o.parent;return o.parent===group?o:null;}
+
+function hlObj(obj,on){
+  if(!obj)return;
+  obj.traverse(o=>{
+    if(!o.isMesh||!o.material)return;
+    const ms=Array.isArray(o.material)?o.material:[o.material];
+    ms.forEach(m=>{if(!m.emissive)return;
+      if(on){if(o._oe===undefined){o._oe=m.emissive.getHex();o._oi=m.emissiveIntensity||0;}m.emissive.setHex(0x00f5ff);m.emissiveIntensity=0.5;}
+      else{if(o._oe!==undefined){m.emissive.setHex(o._oe);m.emissiveIntensity=o._oi;delete o._oe;delete o._oi;}}
+    });
+  });
+}
+function selectObj(obj){
+  if(selectedObj)hlObj(selectedObj,false);
+  selectedObj=obj;
+  if(selectedObj)hlObj(selectedObj,true);
+  document.getElementById('select-bar').classList.toggle('visible',!!obj);
+}
+function trySelect(cx,cy){
+  setRC(cx,cy);
+  // build parts first
+  const bm=[];buildGroup.traverse(o=>{if(o.isMesh)bm.push(o);});
+  if(bm.length){const h=raycaster.intersectObjects(bm,true);if(h.length){const r=getRootIn(h[0].object,buildGroup)||h[0].object;r._isBuild=true;selectObj(r);return r;}}
+  // pivot model
+  const pm=[];pivot.traverse(o=>{if(o.isMesh)pm.push(o);});
+  if(pm.length){const h=raycaster.intersectObjects(pm,true);if(h.length){pivot._isProxy=true;selectObj(pivot);return pivot;}}
+  return null;
+}
+
+canvas.addEventListener('mousedown',e=>{
+  if(moveMode)return;
+  const hit=trySelect(e.clientX,e.clientY);
+  if(hit){
+    isDraggingObj=true;setRC(e.clientX,e.clientY);
+    const pt=planeHit();if(pt){dragStart.copy(pt);objStart.copy(hit._isProxy?pivot.position:hit.position);}
+    canvas.style.cursor='grab';
+  }else{
+    selectObj(null);isDraggingObj=false;dragging=true;ox=e.clientX;oy=e.clientY;canvas.style.cursor='grabbing';
+  }
+});
+window.addEventListener('mouseup',()=>{dragging=false;isDraggingObj=false;canvas.style.cursor='default';});
 window.addEventListener('mousemove',e=>{
+  if(isDraggingObj&&selectedObj){
+    setRC(e.clientX,e.clientY);const pt=planeHit();
+    if(pt){const dx=pt.x-dragStart.x,dz=pt.z-dragStart.z;
+      if(selectedObj._isProxy){pivot.position.x=objStart.x+dx;pivot.position.z=objStart.z+dz;}
+      else{selectedObj.position.x=objStart.x+dx;selectedObj.position.z=objStart.z+dz;}}
+    return;
+  }
   if(!dragging||moveMode)return;
   const dx=e.clientX-ox,dy=e.clientY-oy;
   if(mode==='orbit'){try_+=dx*.38;trx=Math.max(-80,Math.min(80,trx+dy*.28));}
@@ -336,10 +493,25 @@ window.addEventListener('mousemove',e=>{
 });
 canvas.addEventListener('wheel',e=>{tzoom=Math.max(50,Math.min(900,tzoom+e.deltaY*.45));},{passive:true});
 let t3=[],lp3=0,la3=0;
-canvas.addEventListener('touchstart',e=>{e.preventDefault();t3=Array.from(e.touches);if(t3.length===1){ox=t3[0].clientX;oy=t3[0].clientY;}if(t3.length===2){lp3=pd(t3);la3=ta(t3);}},{passive:false});
+canvas.addEventListener('touchstart',e=>{
+  e.preventDefault();t3=Array.from(e.touches);
+  if(t3.length===1){
+    const tc=t3[0],hit=trySelect(tc.clientX,tc.clientY);
+    if(hit){isDraggingObj=true;setRC(tc.clientX,tc.clientY);const pt=planeHit();if(pt){dragStart.copy(pt);objStart.copy(hit._isProxy?pivot.position:hit.position);}}
+    else{selectObj(null);isDraggingObj=false;ox=tc.clientX;oy=tc.clientY;}
+  }
+  if(t3.length===2){isDraggingObj=false;lp3=pd(t3);la3=ta(t3);}
+},{passive:false});
 canvas.addEventListener('touchmove',e=>{
   e.preventDefault();const t=Array.from(e.touches);
-  if(t.length===1&&!moveMode){const dx=t[0].clientX-ox,dy=t[0].clientY-oy;try_+=dx*.5;trx=Math.max(-80,Math.min(80,trx+dy*.38));ox=t[0].clientX;oy=t[0].clientY;}
+  if(t.length===1&&isDraggingObj&&selectedObj){
+    setRC(t[0].clientX,t[0].clientY);const pt=planeHit();
+    if(pt){const dx=pt.x-dragStart.x,dz=pt.z-dragStart.z;
+      if(selectedObj._isProxy){pivot.position.x=objStart.x+dx;pivot.position.z=objStart.z+dz;}
+      else{selectedObj.position.x=objStart.x+dx;selectedObj.position.z=objStart.z+dz;}}
+    t3=t;return;
+  }
+  if(t.length===1&&!moveMode&&!isDraggingObj){const dx=t[0].clientX-ox,dy=t[0].clientY-oy;try_+=dx*.5;trx=Math.max(-80,Math.min(80,trx+dy*.38));ox=t[0].clientX;oy=t[0].clientY;}
   if(t.length===2){const d=pd(t);tzoom=Math.max(50,Math.min(900,tzoom+(lp3-d)*1.2));lp3=d;const a=ta(t);try_+=(a-la3)*25;la3=a;}
   t3=t;
 },{passive:false});
@@ -471,6 +643,7 @@ let lastResults=[], lastIdx=0, lastLabel='';
 function disposeModel(){
   for(let i=pivot.children.length-1;i>=0;i--){const ch=pivot.children[i];pivot.remove(ch);ch.traverse?.(o=>{if(o.geometry)o.geometry.dispose();if(o.material){(Array.isArray(o.material)?o.material:[o.material]).forEach(m=>m.dispose());}});}
   objects={};pCount=0;
+  pivot.position.set(0,0,0);
 }
 
 function frameModel(root){
@@ -592,6 +765,151 @@ async function sendMessage(){
   }
 }
 
+
+
+// ─── BUILD MODE ───────────────────────────────────────────────
+let buildParts=[],buildSize=40,buildColor='#60a5fa';
+const BUILD_COLORS=['#60a5fa','#a78bfa','#34d399','#f59e0b','#ef4444','#ffffff','#94a3b8','#00f5ff'];
+(function(){
+  const row=document.getElementById('bp-colors');
+  BUILD_COLORS.forEach(c=>{
+    const s=document.createElement('div');
+    s.className='bp-swatch'+(c===buildColor?' sel':'');
+    s.style.background=c;
+    s.onclick=()=>{buildColor=c;row.querySelectorAll('.bp-swatch').forEach(x=>x.classList.remove('sel'));s.classList.add('sel');};
+    row.appendChild(s);
+  });
+})();
+
+function toggleBuildPanel(){
+  const p=document.getElementById('build-panel'),b=document.getElementById('build-btn');
+  const on=!p.classList.contains('visible');
+  p.classList.toggle('visible',on);b.classList.toggle('active',on);
+  toast(on?'Build mode ON':'Build mode OFF');
+}
+
+function addBuildShape(type){
+  const s=buildSize;let geo;
+  switch(type){
+    case 'box':      geo=new THREE.BoxGeometry(s,s,s);break;
+    case 'cylinder': geo=new THREE.CylinderGeometry(s/2,s/2,s,32);break;
+    case 'sphere':   geo=new THREE.SphereGeometry(s/2,32,24);break;
+    case 'cone':     geo=new THREE.ConeGeometry(s/2,s,32);break;
+    case 'torus':    geo=new THREE.TorusGeometry(s/2,s/8,16,64);break;
+    case 'tube':     geo=new THREE.CylinderGeometry(s/7,s/7,s,16);break;
+    default:         geo=new THREE.BoxGeometry(s,s,s);
+  }
+  const mat=new THREE.MeshStandardMaterial({color:new THREE.Color(buildColor),metalness:0.25,roughness:0.55});
+  const mesh=new THREE.Mesh(geo,mat);
+  mesh.position.set((Math.random()-.5)*50,s/2,(Math.random()-.5)*50);
+  mesh.castShadow=true;mesh.receiveShadow=true;mesh._isBuild=true;
+  buildGroup.add(mesh);buildParts.push(mesh);
+  selectObj(mesh);pCount++;updateInfo();
+  toast(type+' added — drag to position');
+}
+function deleteSelected(){
+  if(!selectedObj||!selectedObj._isBuild)return;
+  buildGroup.remove(selectedObj);buildParts=buildParts.filter(p=>p!==selectedObj);
+  selectedObj.geometry.dispose();
+  (Array.isArray(selectedObj.material)?selectedObj.material:[selectedObj.material]).forEach(m=>m.dispose());
+  selectObj(null);pCount=Math.max(0,pCount-1);updateInfo();
+}
+function duplicateSel(){
+  if(!selectedObj||!selectedObj._isBuild)return;
+  const mesh=new THREE.Mesh(selectedObj.geometry.clone(),selectedObj.material.clone());
+  mesh.position.copy(selectedObj.position).addScaledVector(new THREE.Vector3(20,0,20),1);
+  mesh.castShadow=true;mesh._isBuild=true;
+  buildGroup.add(mesh);buildParts.push(mesh);selectObj(mesh);pCount++;updateInfo();toast('Duplicated');
+}
+function clearBuild(){
+  buildParts.forEach(p=>{buildGroup.remove(p);p.geometry.dispose();(Array.isArray(p.material)?p.material:[p.material]).forEach(m=>m.dispose());});
+  buildParts=[];if(selectedObj&&selectedObj._isBuild)selectObj(null);updateInfo();
+}
+
+// ─── CUSTOMIZE MODE ───────────────────────────────────────────
+const CUST_SYS=`You are a 3D product designer. User describes a physical product to 3D print. Generate a JSON parts list.
+RESPOND ONLY WITH RAW JSON. No markdown, no backticks.
+FORMAT: {"name":"Echo Pure","parts":[{"type":"box","w":80,"h":100,"d":60,"x":0,"y":50,"z":0,"hollow":true,"wall":3,"color":"#e0e0e0"},{"type":"cylinder","r":18,"h":60,"x":0,"y":30,"z":0,"color":"#4488cc"},{"type":"text","text":"ECHO PURE","x":0,"y":80,"z":31,"size":8,"color":"#222222"}]}
+TYPES: box(w,h,d), cylinder(r,h), sphere(r), cone(r,h), torus(r,tube), text(text,size).
+hollow:true on box = open-top container, wall = wall thickness mm.
+RULES: All mm. y=0=ground, y=h/2 for object sitting on ground. x,y,z=center. Max 10 parts. Always include text label for product name. Make physically accurate and printable.`;
+
+function openCustomize(){document.getElementById('customize-modal').classList.add('open');}
+function closeCustomize(){document.getElementById('customize-modal').classList.remove('open');}
+function setCustPrompt(t){document.getElementById('customize-input').value=t;}
+
+async function generateCustom(){
+  const prompt=document.getElementById('customize-input').value.trim();if(!prompt)return;
+  const btn=document.getElementById('cust-gen-btn'),status=document.getElementById('cust-status');
+  btn.disabled=true;status.textContent='Building your model...';
+  const token=localStorage.getItem('jarvis_token')||'';
+  try{
+    const res=await fetch(API+'/design-command',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({command:prompt,systemPrompt:CUST_SYS,history:[]})});
+    const raw=await res.json();
+    let data=raw;
+    if(raw.response||raw.message){const txt=(raw.response||raw.message||'').replace(/```json|```/g,'').trim();try{data=JSON.parse(txt);}catch(_){data=null;}}
+    if(!data||!data.parts){status.textContent='Parse error — try again.';btn.disabled=false;return;}
+    closeCustomize();disposeModel();buildCustomModel(data);status.textContent='';
+    addAI('Built <strong>'+esc(data.name||'model')+'</strong> ('+data.parts.length+' parts). Tap to select, drag to move. Say "spin" to rotate!');
+  }catch(e){status.textContent='Failed — check connection.';console.error(e);}
+  btn.disabled=false;
+}
+
+function buildCustomModel(data){
+  (data.parts||[]).forEach(p=>{
+    const color=new THREE.Color(p.color||'#e0e0e0');
+    if(p.type==='text'){
+      const lbl=makeTextLabel(p.text||'',p.size||8,p.color||'#fff');
+      lbl.position.set(p.x||0,p.y||0,p.z||0);pivot.add(lbl);pCount++;return;
+    }
+    if(p.type==='box'&&p.hollow){
+      makeHollowBox(p.w||40,p.h||40,p.d||40,p.wall||3,color).forEach(m=>{
+        m.position.set(p.x||0,p.y||0,p.z||0);m.castShadow=true;pivot.add(m);pCount++;
+      });return;
+    }
+    let geo;
+    switch(p.type){
+      case 'box':      geo=new THREE.BoxGeometry(p.w||40,p.h||40,p.d||40);break;
+      case 'cylinder': geo=new THREE.CylinderGeometry(p.r||20,p.r||20,p.h||40,32);break;
+      case 'sphere':   geo=new THREE.SphereGeometry(p.r||20,32,24);break;
+      case 'cone':     geo=new THREE.ConeGeometry(p.r||20,p.h||40,32);break;
+      case 'torus':    geo=new THREE.TorusGeometry(p.r||20,(p.tube||(p.r/5))||4,16,64);break;
+      default:         geo=new THREE.BoxGeometry(40,40,40);
+    }
+    const mat=new THREE.MeshStandardMaterial({color,metalness:0.15,roughness:0.6,side:THREE.DoubleSide});
+    const mesh=new THREE.Mesh(geo,mat);
+    mesh.position.set(p.x||0,p.y||0,p.z||0);mesh.castShadow=true;mesh.receiveShadow=true;
+    pivot.add(mesh);pCount++;
+  });
+  const box=new THREE.Box3().setFromObject(pivot);
+  const sz=new THREE.Vector3();box.getSize(sz);
+  const mx=Math.max(sz.x,sz.y,sz.z)||100;
+  tzoom=Math.max(160,mx*3.2);trx=22;try_=15;
+  updateInfo();document.getElementById('top-status').textContent='Loaded';
+}
+
+function makeHollowBox(w,h,d,wall,color){
+  const mk=()=>new THREE.MeshStandardMaterial({color,metalness:0.1,roughness:0.65,side:THREE.DoubleSide});
+  const bot=new THREE.Mesh(new THREE.BoxGeometry(w,wall,d),mk()); bot.position.set(0,-h/2+wall/2,0);
+  const fr =new THREE.Mesh(new THREE.BoxGeometry(w,h,wall),mk());  fr.position.set(0,0,d/2-wall/2);
+  const bk =new THREE.Mesh(new THREE.BoxGeometry(w,h,wall),mk());  bk.position.set(0,0,-d/2+wall/2);
+  const lft=new THREE.Mesh(new THREE.BoxGeometry(wall,h,d),mk()); lft.position.set(-w/2+wall/2,0,0);
+  const rgt=new THREE.Mesh(new THREE.BoxGeometry(wall,h,d),mk()); rgt.position.set( w/2-wall/2,0,0);
+  return[bot,fr,bk,lft,rgt];
+}
+
+function makeTextLabel(text,size,color){
+  const sc=4,pad=size*sc;
+  const cw=Math.max(64,text.length*size*sc*0.62+pad*2),ch=size*sc*2.2;
+  const cv=document.createElement('canvas');cv.width=cw;cv.height=ch;
+  const ctx=cv.getContext('2d');ctx.clearRect(0,0,cw,ch);
+  ctx.fillStyle=color||'#fff';ctx.font='bold '+(size*sc*0.85)+'px sans-serif';
+  ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(text,cw/2,ch/2);
+  const tex=new THREE.CanvasTexture(cv);
+  const geo=new THREE.PlaneGeometry(size*text.length*0.6,size*1.3);
+  const mat=new THREE.MeshBasicMaterial({map:tex,transparent:true,depthWrite:false,side:THREE.DoubleSide});
+  return new THREE.Mesh(geo,mat);
+}
 
 // ─── RENDER ──────────────────────────────────────────────────
 let tick=0;
