@@ -536,6 +536,25 @@ async function sendMessage(){
     const res=await fetch(`${API}/design-command`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({command:text,systemPrompt:SYS,history:hist.slice(-8)})});
     const raw=await res.json();
     hideDots();
+    // Direct parts on raw (server pre-parsed the JSON)
+    if(raw.parts?.length){
+      clearAll();
+      let maxY=0;
+      raw.parts.forEach(p=>{const y=(p.pos?.[1]||0)+(p.size||30)*(p.scale?.[1]||1)/2;if(y>maxY)maxY=y;});
+      raw.parts.forEach(p=>{
+        const geo=G(p.type||'sphere',p.size||30);
+        const hex=p.color!=null?'#'+Math.max(0,p.color).toString(16).padStart(6,'0'):'#4488ff';
+        const mat=M(hex,p.metal??0.85,p.rough??0.1,p.emissive||0,(p.opacity||1)<1,p.opacity||1);
+        addObj(p.name||('P'+(++oCount)),geo,mat,p.pos||[0,15,0],p.rot||[0,0,0],p.scale||[1,1,1]);
+      });
+      tzoom=Math.max(140,maxY*3.5);trx=16;try_=22;
+      updateInfo();
+      hist.push({role:'user',content:text},{role:'assistant',content:'Built: '+raw.label});
+      addAI(`Built <strong>${raw.label||'model'}</strong> — ${raw.parts.length} parts. Say "spin", "clear", or describe changes.`);
+      busy=false;document.getElementById('top-status').textContent=raw.parts.length+' parts';
+      return;
+    }
+
     let reply=raw.response||raw.message||'';
     const trimmed=reply.trim();
     if(trimmed==='SPIN'){autoSpin.on=!autoSpin.on;addAI(autoSpin.on?'Spinning!':'Stopped.');busy=false;document.getElementById('top-status').textContent='Ready';return;}
