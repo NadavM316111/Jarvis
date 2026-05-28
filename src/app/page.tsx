@@ -1450,7 +1450,7 @@ const abortRef = useRef<AbortController | null>(null);
         </button>
       </div>
       <div className="flex flex-col gap-3">
-        <a
+      <a
           href="https://api.heyjarvis.me/design"
           target="_blank"
           rel="noopener noreferrer"
@@ -1465,6 +1465,22 @@ const abortRef = useRef<AbortController | null>(null);
             <div className="text-white/30 text-xs mt-0.5">Generate UI, images, and visual assets</div>
           </div>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="2" className="flex-shrink-0 group-hover:stroke-blue-400 transition-colors"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+       <a
+          href="https://api.heyjarvis.me/forge3d"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-4 p-4 rounded-xl border border-white/8 hover:border-purple-500/30 hover:bg-purple-500/5 transition-all group"
+          style={{ textDecoration: 'none' }}
+        >
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500/20 to-cyan-500/20 border border-purple-500/20 flex items-center justify-center flex-shrink-0">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a855f7" strokeWidth="1.8"><path d="M12 2l3 7h7l-5.5 4 2 7L12 16l-6.5 4 2-7L2 9h7z"/></svg>
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="text-white/80 text-sm font-medium group-hover:text-white transition-colors">Forge 3D</div>
+            <div className="text-white/30 text-xs mt-0.5">AI-powered 3D studio with Bluetooth print</div>
+          </div>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="2" className="flex-shrink-0 group-hover:stroke-purple-400 transition-colors"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </a>
         <div className="p-4 rounded-xl border border-white/5 bg-white/2 flex items-center gap-4">
           <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/8 flex items-center justify-center flex-shrink-0">
