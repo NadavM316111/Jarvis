@@ -4,378 +4,353 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Design Studio — JARVIS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;1,9..144,300;1,9..144,700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Fraunces:ital,wght@0,300;0,700;1,300;1,700&display=swap');
-
 :root {
-  --bg: #06060a;
-  --bg2: #0c0c14;
+  --bg:    #06060a;
+  --bg2:   #0b0b12;
+  --bg3:   #111119;
   --border: rgba(255,255,255,0.07);
-  --text: rgba(255,255,255,0.88);
-  --dim: rgba(255,255,255,0.35);
+  --border2: rgba(255,255,255,0.13);
+  --text:  rgba(255,255,255,0.88);
+  --dim:   rgba(255,255,255,0.35);
   --muted: rgba(255,255,255,0.12);
   --accent: #e8ff00;
   --accent2: #ff6b35;
   --accent3: #a78bfa;
-  --panel: rgba(12,12,20,0.95);
+  --blue:   #3b82f6;
 }
-
 *,*::before,*::after { margin:0; padding:0; box-sizing:border-box; }
-html,body { height:100%; background:var(--bg); color:var(--text); font-family:'DM Mono',monospace; }
+html,body { height:100%; background:var(--bg); color:var(--text); font-family:'DM Mono',monospace; overflow:hidden; }
 
 /* ── LAYOUT ── */
 #shell { display:flex; flex-direction:column; height:100dvh; }
 
-/* ── TOP ── */
+/* ── TOP BAR ── */
 #top {
-  height:52px; border-bottom:1px solid var(--border);
-  display:flex; align-items:center; padding:0 16px; gap:12px;
-  background:rgba(6,6,10,0.98); flex-shrink:0; position:relative; z-index:100;
+  height:50px; border-bottom:1px solid var(--border);
+  display:flex; align-items:center; padding:0 16px; gap:10px;
+  background:rgba(6,6,10,0.99); flex-shrink:0; position:relative; z-index:100;
 }
 .ds-logo {
-  font-family:'Fraunces',serif; font-weight:700; font-size:17px;
-  color:var(--accent); letter-spacing:1px; flex-shrink:0;
+  font-family:'Fraunces',serif; font-weight:700; font-size:15px;
+  color:var(--accent); letter-spacing:2px; flex-shrink:0; text-transform:uppercase;
 }
+.ds-logo-dot { display:inline-block; width:5px; height:5px; background:var(--accent); border-radius:50%; margin-left:4px; margin-bottom:2px; vertical-align:middle; }
 .top-spacer { flex:1; }
 .top-btn {
-  padding:6px 12px; font-size:9px; letter-spacing:2px;
-  text-transform:uppercase; cursor:pointer;
-  border:1px solid var(--border); color:var(--dim);
-  background:transparent; font-family:'DM Mono',monospace;
-  transition:all 0.2s; white-space:nowrap;
-  -webkit-tap-highlight-color: transparent;
+  padding:5px 12px; font-size:8px; letter-spacing:2px; text-transform:uppercase;
+  cursor:pointer; border:1px solid var(--border); color:var(--dim);
+  background:transparent; font-family:'DM Mono',monospace; transition:all 0.2s;
+  white-space:nowrap; -webkit-tap-highlight-color:transparent;
 }
 .top-btn:hover { border-color:var(--accent); color:var(--accent); }
-.top-btn.go { border-color:var(--accent); color:var(--accent); background:rgba(232,255,0,0.08); }
-.top-btn.go:hover { background:rgba(232,255,0,0.15); }
-
-/* ── MODE BAR (mobile only) ── */
-#mode-bar {
-  display:none;
-  gap:2px; padding:8px 12px; overflow-x:auto; flex-shrink:0;
-  border-bottom:1px solid var(--border); background:var(--bg2);
-  scrollbar-width:none;
+.top-btn.go {
+  border-color:var(--accent); color:#000; background:var(--accent);
+  font-weight:500; letter-spacing:2px;
 }
-#mode-bar::-webkit-scrollbar { display:none; }
+.top-btn.go:hover { background:#d4ea00; }
 
+/* Mode tabs in topbar (desktop) */
+#desktop-mode-tabs { display:flex; gap:1px; }
 .mode-tab {
-  padding:6px 16px; font-size:10px; letter-spacing:2px;
-  text-transform:uppercase; cursor:pointer; white-space:nowrap;
-  border:1px solid transparent; color:var(--dim);
-  background:transparent; font-family:'DM Mono',monospace;
-  transition:all 0.2s; flex-shrink:0;
-  -webkit-tap-highlight-color: transparent;
+  padding:5px 14px; font-size:8px; letter-spacing:2px; text-transform:uppercase;
+  cursor:pointer; white-space:nowrap; border:1px solid transparent; color:var(--dim);
+  background:transparent; font-family:'DM Mono',monospace; transition:all 0.2s;
+  flex-shrink:0; -webkit-tap-highlight-color:transparent;
 }
 .mode-tab:hover { color:var(--text); border-color:var(--border); }
-.mode-tab.active { color:var(--accent); border-color:var(--accent); background:rgba(232,255,0,0.06); }
+.mode-tab.active { color:var(--accent); border-color:var(--accent); background:rgba(232,255,0,0.07); }
+
+/* ── MOBILE MODE BAR ── */
+#mode-bar {
+  display:none; gap:2px; padding:8px 12px; overflow-x:auto; flex-shrink:0;
+  border-bottom:1px solid var(--border); background:var(--bg2); scrollbar-width:none;
+}
+#mode-bar::-webkit-scrollbar { display:none; }
 
 /* ── BODY ── */
 #body { display:flex; flex:1; min-height:0; overflow:hidden; }
 
-/* ── LEFT ── */
+/* ── LEFT PANEL ── */
 #left {
-  width:240px; flex-shrink:0; border-right:1px solid var(--border);
-  display:flex; flex-direction:column; overflow:hidden;
-  background:var(--bg2);
+  width:236px; flex-shrink:0; border-right:1px solid var(--border);
+  display:flex; flex-direction:column; overflow:hidden; background:var(--bg2);
 }
 .left-sec { padding:14px; border-bottom:1px solid var(--border); }
-.left-sec-title {
-  font-size:8px; letter-spacing:3px; color:var(--dim);
-  text-transform:uppercase; margin-bottom:10px;
+.left-label {
+  font-size:7px; letter-spacing:3.5px; color:var(--dim);
+  text-transform:uppercase; margin-bottom:9px;
 }
-
 #prompt-area {
   flex:1; display:flex; flex-direction:column; padding:14px; gap:10px; overflow-y:auto;
 }
 #prompt-area::-webkit-scrollbar { width:2px; }
-#prompt-area::-webkit-scrollbar-thumb { background:var(--border); }
+#prompt-area::-webkit-scrollbar-thumb { background:var(--border2); }
 
 textarea#prompt {
-  flex:1; min-height:120px;
-  background:rgba(255,255,255,0.03); border:1px solid var(--border);
-  border-radius:0; resize:none; outline:none;
-  padding:12px; color:var(--text);
-  font-family:'DM Mono',monospace; font-size:11px; line-height:1.6;
-  caret-color:var(--accent);
+  flex:1; min-height:130px;
+  background:rgba(255,255,255,0.02); border:1px solid var(--border);
+  border-radius:0; resize:none; outline:none; padding:11px; color:var(--text);
+  font-family:'DM Mono',monospace; font-size:11px; line-height:1.65;
+  caret-color:var(--accent); transition:border-color 0.2s;
 }
-textarea#prompt:focus { border-color:rgba(232,255,0,0.3); }
-textarea#prompt::placeholder { color:var(--muted); }
+textarea#prompt:focus { border-color:rgba(232,255,0,0.25); }
+textarea#prompt::placeholder { color:var(--muted); font-size:10px; }
 
 .generate-btn {
-  padding:12px; font-size:10px; letter-spacing:3px;
-  text-transform:uppercase; cursor:pointer;
-  border:1px solid var(--accent); color:var(--accent);
-  background:rgba(232,255,0,0.06); font-family:'DM Mono',monospace;
-  transition:all 0.2s; position:relative; overflow:hidden;
-  -webkit-tap-highlight-color: transparent;
+  padding:11px; font-size:9px; letter-spacing:3px; text-transform:uppercase;
+  cursor:pointer; border:1px solid var(--accent); color:#000; background:var(--accent);
+  font-family:'DM Mono',monospace; font-weight:500; transition:all 0.2s;
+  position:relative; overflow:hidden; -webkit-tap-highlight-color:transparent;
 }
-.generate-btn:hover { background:rgba(232,255,0,0.15); }
-.generate-btn:disabled { opacity:0.4; cursor:default; }
+.generate-btn:hover { background:#d4ea00; }
+.generate-btn:disabled { opacity:0.35; cursor:default; color:var(--accent); background:transparent; }
 .generate-btn::after {
   content:''; position:absolute; inset:0;
-  background:linear-gradient(90deg,transparent,rgba(232,255,0,0.1),transparent);
-  transform:translateX(-100%); animation:shimmer 2s infinite;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.15),transparent);
+  transform:translateX(-100%); animation:shimmer 2.2s infinite;
 }
-@keyframes shimmer { to{transform:translateX(200%)} }
+@keyframes shimmer { to { transform:translateX(200%); } }
 
-.hist-chips { display:flex; flex-direction:column; gap:4px; }
+.opt-row { display:flex; gap:5px; flex-wrap:wrap; margin-bottom:6px; }
+.opt-chip {
+  padding:4px 9px; font-size:7.5px; letter-spacing:1px; border:1px solid var(--border);
+  color:var(--dim); cursor:pointer; transition:all 0.15s; text-transform:uppercase;
+  -webkit-tap-highlight-color:transparent;
+}
+.opt-chip:hover { border-color:var(--border2); color:rgba(255,255,255,0.6); }
+.opt-chip.sel { border-color:var(--accent); color:var(--accent); background:rgba(232,255,0,0.06); }
+
+.hist-chips { display:flex; flex-direction:column; gap:3px; }
 .hist-chip {
-  padding:6px 8px; font-size:9px; color:var(--dim);
-  border:1px solid var(--border); cursor:pointer;
-  transition:all 0.15s; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-  -webkit-tap-highlight-color: transparent;
+  padding:5px 8px; font-size:8.5px; color:var(--dim); border:1px solid var(--border);
+  cursor:pointer; transition:all 0.15s; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  -webkit-tap-highlight-color:transparent;
 }
 .hist-chip:hover { border-color:var(--accent); color:var(--accent); }
 
-.opt-row { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:8px; }
-.opt-chip {
-  padding:4px 10px; font-size:8px; letter-spacing:1px;
-  border:1px solid var(--border); color:var(--dim);
-  cursor:pointer; transition:all 0.15s; text-transform:uppercase;
-  -webkit-tap-highlight-color: transparent;
-}
-.opt-chip:hover, .opt-chip.sel {
-  border-color:var(--accent); color:var(--accent); background:rgba(232,255,0,0.06);
-}
-
-/* ── CANVAS AREA ── */
+/* ── CANVAS ── */
 #canvas-area {
   flex:1; position:relative; overflow:hidden;
   background:
-    radial-gradient(ellipse at 30% 30%, rgba(167,139,250,0.04) 0%, transparent 60%),
-    radial-gradient(ellipse at 70% 70%, rgba(232,255,0,0.03) 0%, transparent 60%),
+    radial-gradient(ellipse at 20% 20%, rgba(59,130,246,0.04) 0%, transparent 55%),
+    radial-gradient(ellipse at 80% 80%, rgba(232,255,0,0.025) 0%, transparent 55%),
+    radial-gradient(ellipse at 60% 30%, rgba(167,139,250,0.03) 0%, transparent 50%),
     var(--bg);
 }
 #canvas-area::before {
   content:''; position:absolute; inset:0; pointer-events:none;
-  background-image: radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1px);
-  background-size:28px 28px;
+  background-image: radial-gradient(rgba(255,255,255,0.04) 1px, transparent 1px);
+  background-size:32px 32px;
 }
-
 #output-wrap {
-  position:absolute; inset:0;
-  display:flex; align-items:center; justify-content:center;
+  position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
   padding:40px; overflow:auto;
 }
-
-#empty-state { text-align:center; pointer-events:none; }
+#empty-state { text-align:center; pointer-events:none; user-select:none; }
 .empty-title {
-  font-family:'Fraunces',serif; font-style:italic;
-  font-size:28px; color:rgba(255,255,255,0.08); letter-spacing:1px; margin-bottom:10px;
+  font-family:'Instrument Serif',serif; font-style:italic;
+  font-size:30px; color:rgba(255,255,255,0.06); letter-spacing:1px; margin-bottom:12px;
+  line-height:1.2;
 }
-.empty-sub { font-size:10px; color:var(--muted); letter-spacing:3px; text-transform:uppercase; }
+.empty-sub { font-size:9px; color:rgba(255,255,255,0.1); letter-spacing:3px; text-transform:uppercase; }
+.empty-mode-hint {
+  margin-top:20px; display:inline-flex; gap:8px; align-items:center;
+  padding:6px 14px; border:1px solid var(--border); font-size:8px;
+  letter-spacing:2px; color:var(--muted); text-transform:uppercase;
+}
+.empty-dot { width:4px; height:4px; background:var(--accent); border-radius:50%; }
 
 #output-card {
-  width:100%; max-width:860px;
-  background:var(--bg2); border:1px solid var(--border);
-  position:relative; display:none;
+  width:100%; max-width:900px; background:var(--bg2); border:1px solid var(--border);
+  position:relative; display:none; box-shadow:0 0 0 1px rgba(255,255,255,0.03), 0 40px 80px rgba(0,0,0,0.6);
 }
 #output-card.show { display:block; }
-
 .card-toolbar {
   display:flex; align-items:center; gap:8px;
-  padding:10px 14px; border-bottom:1px solid var(--border);
+  padding:9px 14px; border-bottom:1px solid var(--border);
+  background:rgba(255,255,255,0.015);
 }
-.card-title { font-size:9px; color:var(--dim); letter-spacing:2px; flex:1; }
+.card-title { font-size:8px; color:var(--dim); letter-spacing:2px; flex:1; text-transform:uppercase; }
+.card-tag {
+  padding:2px 8px; font-size:7px; letter-spacing:1.5px; border:1px solid var(--border);
+  color:var(--muted); text-transform:uppercase; flex-shrink:0;
+}
 .card-btn {
-  padding:4px 10px; font-size:8px; letter-spacing:1px;
-  text-transform:uppercase; cursor:pointer;
-  border:1px solid var(--border); color:var(--dim);
-  background:transparent; font-family:'DM Mono',monospace;
-  transition:all 0.15s; -webkit-tap-highlight-color: transparent;
+  padding:4px 10px; font-size:7.5px; letter-spacing:1px; text-transform:uppercase;
+  cursor:pointer; border:1px solid var(--border); color:var(--dim);
+  background:transparent; font-family:'DM Mono',monospace; transition:all 0.15s;
+  -webkit-tap-highlight-color:transparent;
 }
 .card-btn:hover { border-color:var(--accent); color:var(--accent); }
-#output-content { padding:24px; min-height:300px; }
+#output-content { padding:0; min-height:300px; overflow:hidden; }
 
 /* ── LOADING ── */
 #loading-overlay {
-  position:absolute; inset:0;
-  background:rgba(6,6,10,0.92);
+  position:absolute; inset:0; background:rgba(6,6,10,0.93);
   display:none; flex-direction:column;
-  align-items:center; justify-content:center; gap:20px;
-  backdrop-filter:blur(4px); z-index:50;
+  align-items:center; justify-content:center; gap:16px;
+  backdrop-filter:blur(6px); z-index:50;
 }
 #loading-overlay.show { display:flex; }
 .ld-ring {
-  width:48px; height:48px;
-  border:1px solid rgba(232,255,0,0.2); border-top-color:var(--accent);
-  border-radius:50%; animation:spin 0.9s linear infinite;
+  width:40px; height:40px;
+  border:1px solid rgba(232,255,0,0.15); border-top-color:var(--accent);
+  border-radius:50%; animation:spin 0.8s linear infinite;
 }
-@keyframes spin { to{transform:rotate(360deg)} }
-.ld-text { font-size:10px; letter-spacing:4px; color:var(--accent); text-transform:uppercase; }
-.ld-sub { font-size:9px; color:var(--dim); letter-spacing:2px; text-transform:uppercase; }
+@keyframes spin { to { transform:rotate(360deg); } }
+.ld-text { font-size:9px; letter-spacing:5px; color:var(--accent); text-transform:uppercase; }
+.ld-sub { font-size:8px; color:var(--dim); letter-spacing:2px; text-transform:uppercase; }
 
-/* ── BRAND / MOCKUP / POSTER STYLES ── */
-.mockup-frame { background:#fff; border-radius:8px; overflow:hidden; box-shadow:0 40px 100px rgba(0,0,0,0.6); width:100%; }
-.mockup-frame.dark { background:#0f0f17; }
-.mockup-frame.mobile { max-width:375px; margin:0 auto; }
-
-.brand-kit { display:flex; flex-direction:column; gap:28px; }
-.bk-section-title { font-size:8px; letter-spacing:3px; color:var(--dim); text-transform:uppercase; margin-bottom:12px; }
-.bk-colors { display:flex; gap:10px; flex-wrap:wrap; }
-.bk-color-card { display:flex; flex-direction:column; align-items:center; gap:6px; }
-.bk-swatch { width:72px; height:72px; border-radius:4px; }
-.bk-hex { font-size:9px; color:var(--dim); letter-spacing:1px; }
-.bk-name { font-size:8px; color:var(--muted); text-transform:uppercase; letter-spacing:1px; }
-.bk-fonts { display:flex; flex-direction:column; gap:16px; }
-.bk-font-label { font-size:8px; color:var(--dim); letter-spacing:2px; text-transform:uppercase; margin-bottom:4px; }
-.bk-logo-area { display:flex; gap:20px; align-items:flex-start; flex-wrap:wrap; }
-.bk-logo-card { padding:24px 32px; display:flex; align-items:center; justify-content:center; min-width:160px; }
-.bk-logo-light { background:#f5f5f0; }
-.bk-logo-dark { background:#0f0f17; }
-
-.poster-wrap { display:flex; justify-content:center; }
-.poster { width:500px; height:700px; position:relative; overflow:hidden; box-shadow:0 40px 100px rgba(0,0,0,0.7); }
-
-/* ── RIGHT ── */
+/* ── RIGHT PANEL ── */
 #right {
-  width:220px; flex-shrink:0; border-left:1px solid var(--border);
+  width:214px; flex-shrink:0; border-left:1px solid var(--border);
   display:flex; flex-direction:column; background:var(--bg2); overflow-y:auto;
 }
 #right::-webkit-scrollbar { width:2px; }
-#right::-webkit-scrollbar-thumb { background:var(--border); }
-.rsec { padding:14px; border-bottom:1px solid var(--border); }
-.rsec-title { font-size:8px; letter-spacing:3px; color:var(--dim); text-transform:uppercase; margin-bottom:10px; }
+#right::-webkit-scrollbar-thumb { background:var(--border2); }
+.rsec { padding:13px; border-bottom:1px solid var(--border); }
+.rsec-title { font-size:7px; letter-spacing:3.5px; color:var(--dim); text-transform:uppercase; margin-bottom:9px; }
 .rsec-row { display:flex; gap:4px; flex-wrap:wrap; }
 .rsec-chip {
-  padding:4px 8px; font-size:8px; letter-spacing:1px;
-  border:1px solid var(--border); color:var(--dim);
-  cursor:pointer; transition:all 0.15s; text-transform:uppercase;
-  -webkit-tap-highlight-color: transparent;
+  padding:3px 8px; font-size:7.5px; letter-spacing:1px; border:1px solid var(--border);
+  color:var(--dim); cursor:pointer; transition:all 0.15s; text-transform:uppercase;
+  -webkit-tap-highlight-color:transparent;
 }
 .rsec-chip:hover { border-color:var(--accent2); color:var(--accent2); }
 
+/* ── BRAND KIT ── */
+.brand-kit { display:flex; flex-direction:column; gap:28px; padding:28px; }
+.bk-section-title { font-size:7px; letter-spacing:3px; color:var(--dim); text-transform:uppercase; margin-bottom:12px; }
+.bk-colors { display:flex; gap:10px; flex-wrap:wrap; }
+.bk-color-card { display:flex; flex-direction:column; align-items:center; gap:5px; }
+.bk-swatch { width:68px; height:68px; border-radius:3px; }
+.bk-hex { font-size:9px; color:var(--dim); letter-spacing:1px; }
+.bk-name { font-size:7.5px; color:var(--muted); text-transform:uppercase; letter-spacing:1px; }
+.bk-fonts { display:flex; flex-direction:column; gap:16px; }
+.bk-font-label { font-size:7px; color:var(--dim); letter-spacing:2px; text-transform:uppercase; margin-bottom:4px; }
+.bk-logo-area { display:flex; gap:16px; align-items:flex-start; flex-wrap:wrap; }
+.bk-logo-card { padding:22px 28px; display:flex; align-items:center; justify-content:center; min-width:150px; }
+.bk-logo-light { background:#f4f4ef; }
+.bk-logo-dark { background:#0d0d16; }
+
+/* ── POSTER ── */
+.poster-wrap { display:flex; justify-content:center; padding:28px; }
+.poster { width:480px; height:680px; position:relative; overflow:hidden; box-shadow:0 40px 100px rgba(0,0,0,0.8); }
+
+/* ── LANDING OUTPUT ── */
+.landing-wrap { width:100%; }
+.landing-preview-bar {
+  display:flex; align-items:center; gap:8px; padding:10px 14px;
+  border-bottom:1px solid var(--border); background:rgba(255,255,255,0.02);
+}
+.browser-dots { display:flex; gap:5px; }
+.browser-dot { width:10px; height:10px; border-radius:50%; }
+.browser-url {
+  flex:1; padding:4px 10px; background:rgba(255,255,255,0.04);
+  border:1px solid var(--border); font-size:9px; color:var(--muted); letter-spacing:0.5px;
+  border-radius:2px;
+}
+.landing-iframe-wrap { width:100%; height:600px; overflow:hidden; position:relative; }
+.landing-iframe-wrap iframe { width:100%; height:100%; border:none; display:block; }
+
 /* ── TOAST ── */
 #toast {
-  position:fixed; bottom:30px; left:50%; transform:translateX(-50%);
+  position:fixed; bottom:28px; left:50%; transform:translateX(-50%);
   z-index:999; background:var(--bg2); border:1px solid var(--accent);
-  padding:8px 22px; font-size:10px; letter-spacing:2px; color:var(--accent);
+  padding:7px 20px; font-size:9px; letter-spacing:2px; color:var(--accent);
   text-transform:uppercase; pointer-events:none; white-space:nowrap;
-  transition:opacity 0.3s; opacity:0;
+  transition:opacity 0.25s; opacity:0;
 }
 #toast.show { opacity:1; }
 
-/* ══════════════════════════════════════
-   MOBILE  ≤ 768px
-══════════════════════════════════════ */
+/* ══ MOBILE ≤ 768px ══ */
 @media (max-width: 768px) {
-  /* Hide desktop sidebars */
   #left, #right { display:none; }
   #desktop-mode-tabs { display:none !important; }
-
-  /* Show mobile mode bar */
   #mode-bar { display:flex; }
-
   #body { flex-direction:column; overflow:hidden; }
   #canvas-area { flex:1; min-height:0; }
-
-  #output-wrap { padding:16px; align-items:flex-start; padding-top:24px; }
+  #output-wrap { padding:14px; align-items:flex-start; padding-top:20px; }
   #output-card { max-width:100%; }
-  #output-content { padding:14px; min-height:180px; }
-
+  #output-content { min-height:180px; }
   .card-toolbar { flex-wrap:wrap; padding:8px 12px; gap:6px; }
-  .card-title { font-size:8px; width:100%; }
+  .card-title { font-size:7.5px; width:100%; }
+  .empty-title { font-size:24px; }
+  .brand-kit { padding:16px; gap:20px; }
+  .poster-wrap { padding:16px; }
+  .poster { width:100%; max-width:380px; height:auto; aspect-ratio:5/7; }
+  .landing-iframe-wrap { height:420px; }
 
-  .empty-title { font-size:22px; }
-
-  /* ── BOTTOM SHEET ── */
   #mobile-sheet {
-    flex-shrink:0; background:var(--bg2);
-    border-top:1px solid var(--border);
+    flex-shrink:0; background:var(--bg2); border-top:1px solid var(--border);
     display:flex; flex-direction:column;
     transition:max-height 0.35s cubic-bezier(0.4,0,0.2,1);
     max-height:60vh; overflow:hidden;
   }
   #mobile-sheet.collapsed { max-height:48px; }
-
   #sheet-handle {
     display:flex; align-items:center; justify-content:space-between;
     padding:13px 16px; cursor:pointer; flex-shrink:0; user-select:none;
-    -webkit-tap-highlight-color: transparent;
+    -webkit-tap-highlight-color:transparent;
   }
   .sheet-handle-left { display:flex; align-items:center; gap:10px; }
-  .sheet-handle-title { font-size:9px; letter-spacing:3px; color:var(--dim); text-transform:uppercase; }
+  .sheet-handle-title { font-size:8px; letter-spacing:3px; color:var(--dim); text-transform:uppercase; }
   .sheet-handle-mode {
-    font-size:9px; letter-spacing:1px; color:var(--accent);
-    text-transform:uppercase; border:1px solid rgba(232,255,0,0.3);
-    padding:2px 8px;
+    font-size:8px; letter-spacing:1px; color:var(--accent);
+    text-transform:uppercase; border:1px solid rgba(232,255,0,0.3); padding:2px 7px;
   }
-  .sheet-arrow {
-    font-size:9px; color:var(--dim);
-    transition:transform 0.35s; display:inline-block;
-  }
+  .sheet-arrow { font-size:8px; color:var(--dim); transition:transform 0.35s; display:inline-block; }
   #mobile-sheet:not(.collapsed) .sheet-arrow { transform:rotate(180deg); }
-
-  #sheet-inner { flex:1; overflow-y:auto; overflow-x:hidden; }
+  #sheet-inner { flex:1; overflow-y:auto; overflow-x:hidden; scrollbar-width:none; }
   #sheet-inner::-webkit-scrollbar { display:none; }
-
-  .mob-section-label {
-    font-size:8px; letter-spacing:3px; color:var(--dim);
-    text-transform:uppercase; padding:10px 14px 6px;
-  }
-
-  /* Horizontal scroll rows */
+  .mob-label { font-size:7.5px; letter-spacing:3px; color:var(--dim); text-transform:uppercase; padding:10px 14px 6px; }
   .mob-hscroll {
-    display:flex; gap:6px; padding:0 14px 12px;
-    overflow-x:auto; scrollbar-width:none;
+    display:flex; gap:6px; padding:0 14px 12px; overflow-x:auto; scrollbar-width:none;
   }
   .mob-hscroll::-webkit-scrollbar { display:none; }
   .mob-hscroll .opt-chip { flex-shrink:0; padding:5px 12px; font-size:9px; }
-
   .mob-quick-chip {
     flex-shrink:0; padding:5px 10px; font-size:8px; letter-spacing:1px;
     border:1px solid var(--border); color:var(--dim); cursor:pointer;
     transition:all 0.15s; text-transform:uppercase; white-space:nowrap;
-    -webkit-tap-highlight-color: transparent;
+    -webkit-tap-highlight-color:transparent;
   }
   .mob-quick-chip:active { border-color:var(--accent2); color:var(--accent2); }
-
-  /* Prompt + button */
-  .mob-prompt-row {
-    display:flex; gap:8px; padding:6px 14px 12px; align-items:flex-end;
-  }
+  .mob-prompt-row { display:flex; gap:8px; padding:6px 14px 12px; align-items:flex-end; }
   textarea#prompt-mobile {
     flex:1; min-height:68px; max-height:110px;
     background:rgba(255,255,255,0.03); border:1px solid var(--border);
-    border-radius:0; resize:none; outline:none;
-    padding:10px; color:var(--text);
+    border-radius:0; resize:none; outline:none; padding:10px; color:var(--text);
     font-family:'DM Mono',monospace; font-size:13px; line-height:1.6;
     caret-color:var(--accent);
   }
   textarea#prompt-mobile:focus { border-color:rgba(232,255,0,0.3); }
   textarea#prompt-mobile::placeholder { color:var(--muted); font-size:11px; }
-
   .mob-gen-btn {
     padding:0 16px; font-size:9px; letter-spacing:2px; text-transform:uppercase;
     cursor:pointer; white-space:nowrap; border:1px solid var(--accent);
-    color:var(--accent); background:rgba(232,255,0,0.08);
-    font-family:'DM Mono',monospace; transition:all 0.2s;
-    align-self:stretch; display:flex; align-items:center; justify-content:center;
-    min-width:64px; -webkit-tap-highlight-color: transparent;
+    color:#000; background:var(--accent); font-family:'DM Mono',monospace; font-weight:500;
+    transition:all 0.2s; align-self:stretch; display:flex; align-items:center;
+    justify-content:center; min-width:60px; -webkit-tap-highlight-color:transparent;
   }
-  .mob-gen-btn:active { background:rgba(232,255,0,0.2); }
+  .mob-gen-btn:active { background:#d4ea00; }
   .mob-gen-btn:disabled { opacity:0.4; }
-
-  /* Recent chips horizontal */
   .mob-recent-chip {
     flex-shrink:0; max-width:200px; overflow:hidden; text-overflow:ellipsis;
     white-space:nowrap; padding:5px 10px; font-size:8px; letter-spacing:0.5px;
-    border:1px solid var(--border); color:var(--dim); cursor:pointer;
-    transition:all 0.15s; -webkit-tap-highlight-color: transparent;
+    border:1px solid var(--border); color:var(--dim); cursor:pointer; transition:all 0.15s;
+    -webkit-tap-highlight-color:transparent;
   }
   .mob-recent-chip:active { border-color:var(--accent); color:var(--accent); }
-
-  /* Top bar on mobile: hide copy/save, keep generate */
   .top-btn:not(.go) { display:none; }
   #top { padding:0 12px; gap:10px; }
-  .top-btn.go { padding:6px 14px; font-size:9px; }
-
-  /* Safe area bottom */
+  .top-btn.go { padding:5px 14px; font-size:8px; }
   #mobile-sheet { padding-bottom:env(safe-area-inset-bottom); }
-  #toast { bottom:calc(env(safe-area-inset-bottom) + 16px); }
+  #toast { bottom:calc(env(safe-area-inset-bottom) + 14px); }
 }
-
-/* ── Desktop: hide mobile stuff ── */
 @media (min-width: 769px) {
   #mobile-sheet { display:none; }
   #mode-bar { display:none; }
@@ -387,9 +362,9 @@ textarea#prompt::placeholder { color:var(--muted); }
 
 <!-- TOP BAR -->
 <div id="top">
-  <div class="ds-logo">Studio</div>
-  <div id="desktop-mode-tabs" style="display:flex;gap:2px;">
-    <button class="mode-tab active" onclick="setMode('mockup',this)">UI Mockup</button>
+  <div class="ds-logo">Studio<span class="ds-logo-dot"></span></div>
+  <div id="desktop-mode-tabs" style="display:flex;gap:2px;margin-left:8px;">
+    <button class="mode-tab active" onclick="setMode('landing',this)">Landing Pitch</button>
     <button class="mode-tab" onclick="setMode('brand',this)">Brand Kit</button>
     <button class="mode-tab" onclick="setMode('poster',this)">Creative</button>
   </div>
@@ -401,32 +376,31 @@ textarea#prompt::placeholder { color:var(--muted); }
 
 <!-- MOBILE MODE BAR -->
 <div id="mode-bar">
-  <button class="mode-tab active" onclick="setModeMobile('mockup',this)">UI Mockup</button>
+  <button class="mode-tab active" onclick="setModeMobile('landing',this)">Landing Pitch</button>
   <button class="mode-tab" onclick="setModeMobile('brand',this)">Brand Kit</button>
   <button class="mode-tab" onclick="setModeMobile('poster',this)">Creative</button>
 </div>
 
 <div id="body">
-
-  <!-- DESKTOP LEFT -->
+  <!-- LEFT PANEL -->
   <div id="left">
     <div class="left-sec" id="mode-options">
-      <div class="left-sec-title">Style</div>
+      <div class="left-label">Style</div>
       <div class="opt-row" id="style-chips"></div>
-      <div class="left-sec-title" style="margin-top:8px">Platform</div>
+      <div class="left-label" style="margin-top:8px">Format</div>
       <div class="opt-row" id="platform-chips"></div>
     </div>
     <div id="prompt-area">
-      <div class="left-sec-title">Describe</div>
-      <textarea id="prompt" placeholder="A minimal task manager app with a sidebar, dark theme, and kanban board..."></textarea>
+      <div class="left-label">Describe</div>
+      <textarea id="prompt" placeholder="An AI meeting assistant that auto-summarizes calls, extracts action items, and syncs to your calendar..."></textarea>
       <button class="generate-btn" onclick="doGenerate()" id="gen-btn">Generate</button>
     </div>
     <div class="left-sec">
-      <div class="left-sec-title">Recents</div>
+      <div class="left-label">Recents</div>
       <div class="hist-chips" id="hist-chips">
-        <div class="hist-chip" onclick="setPrompt(this.textContent)">Landing page for a crypto startup</div>
-        <div class="hist-chip" onclick="setPrompt(this.textContent)">Fitness app brand kit, energetic</div>
-        <div class="hist-chip" onclick="setPrompt(this.textContent)">Dark mode dashboard with charts</div>
+        <div class="hist-chip" onclick="setPrompt(this.textContent)">AI writing assistant for legal teams</div>
+        <div class="hist-chip" onclick="setPrompt(this.textContent)">Fitness brand — premium, performance</div>
+        <div class="hist-chip" onclick="setPrompt(this.textContent)">Concert poster, Tokyo, neon city</div>
       </div>
     </div>
   </div>
@@ -435,12 +409,14 @@ textarea#prompt::placeholder { color:var(--muted); }
   <div id="canvas-area">
     <div id="output-wrap">
       <div id="empty-state">
-        <div class="empty-title">Nothing yet.</div>
-        <div class="empty-sub">Describe what you want &amp; generate</div>
+        <div class="empty-title">Describe anything.<br/>Generate instantly.</div>
+        <div class="empty-sub">Landing pitch · Brand kit · Creative</div>
+        <div class="empty-mode-hint"><span class="empty-dot"></span><span id="empty-mode-label">Landing Pitch</span> selected</div>
       </div>
       <div id="output-card">
         <div class="card-toolbar">
           <div class="card-title" id="card-title">Output</div>
+          <div class="card-tag" id="card-tag">Landing</div>
           <button class="card-btn" onclick="doGenerate()">Regen</button>
           <button class="card-btn" onclick="copyOutput()">Copy</button>
           <button class="card-btn" onclick="downloadOutput()">Save</button>
@@ -451,14 +427,14 @@ textarea#prompt::placeholder { color:var(--muted); }
     <div id="loading-overlay">
       <div class="ld-ring"></div>
       <div class="ld-text">Generating</div>
-      <div class="ld-sub" id="ld-sub">Designing your output...</div>
+      <div class="ld-sub" id="ld-sub">Building your design...</div>
     </div>
   </div>
 
-  <!-- DESKTOP RIGHT -->
+  <!-- RIGHT PANEL -->
   <div id="right">
     <div class="rsec">
-      <div class="rsec-title">Quick Prompts</div>
+      <div class="rsec-title">Quick Add</div>
       <div class="rsec-row">
         <div class="rsec-chip" onclick="addToPrompt('dark theme')">dark</div>
         <div class="rsec-chip" onclick="addToPrompt('minimal')">minimal</div>
@@ -470,101 +446,91 @@ textarea#prompt::placeholder { color:var(--muted); }
         <div class="rsec-chip" onclick="addToPrompt('playful, rounded')">playful</div>
         <div class="rsec-chip" onclick="addToPrompt('editorial layout')">editorial</div>
         <div class="rsec-chip" onclick="addToPrompt('neon, cyberpunk')">neon</div>
-        <div class="rsec-chip" onclick="addToPrompt('serif, classic')">classic</div>
+        <div class="rsec-chip" onclick="addToPrompt('clean, white space')">clean</div>
         <div class="rsec-chip" onclick="addToPrompt('monochrome')">mono</div>
       </div>
     </div>
     <div class="rsec">
-      <div class="rsec-title">Components</div>
+      <div class="rsec-title">Sections</div>
       <div class="rsec-row">
-        <div class="rsec-chip" onclick="addToPrompt('with a sidebar navigation')">sidebar</div>
-        <div class="rsec-chip" onclick="addToPrompt('with a hero section')">hero</div>
-        <div class="rsec-chip" onclick="addToPrompt('with data charts')">charts</div>
         <div class="rsec-chip" onclick="addToPrompt('with a pricing table')">pricing</div>
-        <div class="rsec-chip" onclick="addToPrompt('with a login form')">auth</div>
-        <div class="rsec-chip" onclick="addToPrompt('with cards and grid layout')">cards</div>
-        <div class="rsec-chip" onclick="addToPrompt('with a top navigation bar')">navbar</div>
-        <div class="rsec-chip" onclick="addToPrompt('with a modal dialog')">modal</div>
-        <div class="rsec-chip" onclick="addToPrompt('with a timeline')">timeline</div>
-        <div class="rsec-chip" onclick="addToPrompt('with a stats overview section')">stats</div>
+        <div class="rsec-chip" onclick="addToPrompt('with testimonials')">testimonials</div>
+        <div class="rsec-chip" onclick="addToPrompt('with a video hero')">video hero</div>
+        <div class="rsec-chip" onclick="addToPrompt('with feature cards')">features</div>
+        <div class="rsec-chip" onclick="addToPrompt('with an FAQ section')">FAQ</div>
+        <div class="rsec-chip" onclick="addToPrompt('with a demo CTA')">demo CTA</div>
+        <div class="rsec-chip" onclick="addToPrompt('with logo bar')">logos</div>
+        <div class="rsec-chip" onclick="addToPrompt('with stats section')">stats</div>
+        <div class="rsec-chip" onclick="addToPrompt('with timeline')">timeline</div>
+        <div class="rsec-chip" onclick="addToPrompt('with comparison table')">compare</div>
       </div>
     </div>
     <div class="rsec">
       <div class="rsec-title">Industries</div>
       <div class="rsec-row">
+        <div class="rsec-chip" onclick="addToPrompt('for a B2B SaaS startup')">SaaS</div>
         <div class="rsec-chip" onclick="addToPrompt('for a fintech startup')">fintech</div>
-        <div class="rsec-chip" onclick="addToPrompt('for a health/wellness brand')">health</div>
         <div class="rsec-chip" onclick="addToPrompt('for an AI product')">AI</div>
+        <div class="rsec-chip" onclick="addToPrompt('for a dev tool')">devtool</div>
+        <div class="rsec-chip" onclick="addToPrompt('for a consumer app')">consumer</div>
         <div class="rsec-chip" onclick="addToPrompt('for a creative agency')">agency</div>
-        <div class="rsec-chip" onclick="addToPrompt('for a SaaS tool')">SaaS</div>
-        <div class="rsec-chip" onclick="addToPrompt('for a fashion brand')">fashion</div>
-        <div class="rsec-chip" onclick="addToPrompt('for a gaming platform')">gaming</div>
-        <div class="rsec-chip" onclick="addToPrompt('for a music app')">music</div>
+        <div class="rsec-chip" onclick="addToPrompt('for a health brand')">health</div>
+        <div class="rsec-chip" onclick="addToPrompt('for e-commerce')">ecommerce</div>
       </div>
     </div>
     <div class="rsec" id="output-meta" style="display:none">
-      <div class="rsec-title">Output Info</div>
-      <div id="meta-content" style="font-size:9px;color:var(--dim);line-height:1.8;letter-spacing:0.5px"></div>
+      <div class="rsec-title">Notes</div>
+      <div id="meta-content" style="font-size:8.5px;color:var(--dim);line-height:1.8;letter-spacing:0.5px"></div>
     </div>
   </div>
-
 </div><!-- /#body -->
 
-<!-- MOBILE BOTTOM SHEET -->
+<!-- MOBILE SHEET -->
 <div id="mobile-sheet" class="collapsed">
   <div id="sheet-handle" onclick="toggleSheet()">
     <div class="sheet-handle-left">
       <span class="sheet-handle-title">Prompt</span>
-      <span class="sheet-handle-mode" id="sheet-mode-label">UI Mockup</span>
+      <span class="sheet-handle-mode" id="sheet-mode-label">Landing Pitch</span>
     </div>
     <span class="sheet-arrow">&#9650;</span>
   </div>
   <div id="sheet-inner">
-    <div class="mob-section-label">Style</div>
+    <div class="mob-label">Style</div>
     <div class="mob-hscroll" id="mob-style-chips"></div>
-
-    <div class="mob-section-label">Format</div>
+    <div class="mob-label">Format</div>
     <div class="mob-hscroll" id="mob-platform-chips"></div>
-
-    <div class="mob-section-label">Quick Add</div>
+    <div class="mob-label">Quick Add</div>
     <div class="mob-hscroll">
       <div class="mob-quick-chip" onclick="mobAddPrompt('dark theme')">dark</div>
       <div class="mob-quick-chip" onclick="mobAddPrompt('minimal')">minimal</div>
+      <div class="mob-quick-chip" onclick="mobAddPrompt('bold')">bold</div>
       <div class="mob-quick-chip" onclick="mobAddPrompt('glassmorphism')">glass</div>
-      <div class="mob-quick-chip" onclick="mobAddPrompt('bold typography')">bold</div>
-      <div class="mob-quick-chip" onclick="mobAddPrompt('colorful gradients')">gradient</div>
-      <div class="mob-quick-chip" onclick="mobAddPrompt('brutalist')">brutal</div>
-      <div class="mob-quick-chip" onclick="mobAddPrompt('luxury, premium feel')">luxury</div>
-      <div class="mob-quick-chip" onclick="mobAddPrompt('playful, rounded')">playful</div>
+      <div class="mob-quick-chip" onclick="mobAddPrompt('luxury, premium')">luxury</div>
       <div class="mob-quick-chip" onclick="mobAddPrompt('neon, cyberpunk')">neon</div>
-      <div class="mob-quick-chip" onclick="mobAddPrompt('with sidebar navigation')">sidebar</div>
-      <div class="mob-quick-chip" onclick="mobAddPrompt('with data charts')">charts</div>
-      <div class="mob-quick-chip" onclick="mobAddPrompt('with a hero section')">hero</div>
       <div class="mob-quick-chip" onclick="mobAddPrompt('with a pricing table')">pricing</div>
-      <div class="mob-quick-chip" onclick="mobAddPrompt('for a fintech startup')">fintech</div>
+      <div class="mob-quick-chip" onclick="mobAddPrompt('with testimonials')">testimonials</div>
+      <div class="mob-quick-chip" onclick="mobAddPrompt('with feature cards')">features</div>
+      <div class="mob-quick-chip" onclick="mobAddPrompt('for a SaaS product')">SaaS</div>
       <div class="mob-quick-chip" onclick="mobAddPrompt('for an AI product')">AI</div>
-      <div class="mob-quick-chip" onclick="mobAddPrompt('for a SaaS tool')">SaaS</div>
+      <div class="mob-quick-chip" onclick="mobAddPrompt('for fintech')">fintech</div>
     </div>
-
     <div class="mob-prompt-row">
-      <textarea id="prompt-mobile" placeholder="Describe what you want to generate..."></textarea>
+      <textarea id="prompt-mobile" placeholder="Describe your product or design..."></textarea>
       <button class="mob-gen-btn" id="mob-gen-btn" onclick="doGenerate()">Gen</button>
     </div>
-
-    <div class="mob-section-label">Recents</div>
+    <div class="mob-label">Recents</div>
     <div class="mob-hscroll" id="mob-recents">
-      <div class="mob-recent-chip" onclick="setMobPrompt(this.textContent)">Landing page for a crypto startup</div>
-      <div class="mob-recent-chip" onclick="setMobPrompt(this.textContent)">Fitness app brand kit, energetic</div>
-      <div class="mob-recent-chip" onclick="setMobPrompt(this.textContent)">Dark mode dashboard with charts</div>
+      <div class="mob-recent-chip" onclick="setMobPrompt(this.textContent)">AI writing assistant for legal</div>
+      <div class="mob-recent-chip" onclick="setMobPrompt(this.textContent)">Fitness brand, premium</div>
+      <div class="mob-recent-chip" onclick="setMobPrompt(this.textContent)">Concert poster, Tokyo neon</div>
     </div>
   </div>
 </div>
-
 </div><!-- /#shell -->
 <div id="toast"></div>
 
 <script>
-let currentMode = 'mockup';
+let currentMode = 'landing';
 let currentOutput = '';
 let deskStyle = '', deskPlatform = '';
 let mobStyle = '', mobPlatform = '';
@@ -584,95 +550,137 @@ function extractJSON(text) {
 }
 
 const MODES = {
-  mockup: {
-    label:'UI Mockup',
-    placeholder:'A dark-themed dashboard with a sidebar, user stats, recent activity feed, and a chart section...',
-    mobPlaceholder:'Dark dashboard with sidebar, stats and charts...',
-    styles:['Dark','Light','Glass','Minimal','Bold','Retro'],
-    platforms:['Desktop','Mobile','Tablet','Full Page'],
-    ldSub:'Designing your UI...',
+  landing: {
+    label: 'Landing Pitch',
+    tag: 'Landing',
+    placeholder: 'An AI meeting assistant that auto-summarizes calls, extracts action items, and integrates with Slack and Notion...',
+    mobPlaceholder: 'Describe your product for the landing page...',
+    styles: ['Dark', 'Light', 'Bold', 'Minimal', 'Editorial', 'Luxury'],
+    platforms: ['Full Page', 'Above Fold', 'Pricing-Led', 'Story-Led'],
+    ldSub: 'Building your landing page...',
   },
   brand: {
-    label:'Brand Kit',
-    placeholder:'A modern fintech startup called "Vault" — trustworthy, bold, with a dark premium feel...',
-    mobPlaceholder:'Fintech startup "Vault" — bold, dark, premium...',
-    styles:['Modern','Luxury','Playful','Minimal','Bold','Classic'],
-    platforms:['Full Kit','Colors Only','Typography','Logo'],
-    ldSub:'Building your brand...',
+    label: 'Brand Kit',
+    tag: 'Brand',
+    placeholder: 'A premium fintech startup called "Vault" — trustworthy, bold, modern with a dark luxury feel...',
+    mobPlaceholder: 'Describe your brand — name, tone, industry...',
+    styles: ['Modern', 'Luxury', 'Playful', 'Minimal', 'Bold', 'Classic'],
+    platforms: ['Full Kit', 'Colors Only', 'Typography', 'Logo'],
+    ldSub: 'Crafting your brand identity...',
   },
   poster: {
-    label:'Creative',
-    placeholder:'A concert poster for an electronic music festival in Tokyo, neon colors, cyberpunk aesthetic...',
-    mobPlaceholder:'Electronic music festival in Tokyo, neon cyberpunk...',
-    styles:['Cyberpunk','Editorial','Retro','Luxury','Minimal','Brutalist'],
-    platforms:['Poster','Social','Banner','Card'],
-    ldSub:'Creating your design...',
+    label: 'Creative',
+    tag: 'Creative',
+    placeholder: 'A concert poster for an underground electronic music festival in Tokyo — neon, dark, cyberpunk...',
+    mobPlaceholder: 'Describe the visual: event, product, art...',
+    styles: ['Cyberpunk', 'Editorial', 'Retro', 'Luxury', 'Minimal', 'Brutalist'],
+    platforms: ['Poster', 'Social', 'Banner', 'Card'],
+    ldSub: 'Creating your visual...',
   },
 };
 
-function buildDeskChips() {
-  const cfg = MODES[currentMode];
-  const sc = document.getElementById('style-chips');
-  sc.innerHTML = '';
-  cfg.styles.forEach(s => {
-    const el = document.createElement('div');
-    el.className = 'opt-chip';
-    el.textContent = s;
-    el.onclick = () => { deskStyle=s; sc.querySelectorAll('.opt-chip').forEach(c=>c.classList.remove('sel')); el.classList.add('sel'); };
-    sc.appendChild(el);
-  });
-  const pc = document.getElementById('platform-chips');
-  pc.innerHTML = '';
-  cfg.platforms.forEach(p => {
-    const el = document.createElement('div');
-    el.className = 'opt-chip';
-    el.textContent = p;
-    el.onclick = () => { deskPlatform=p; pc.querySelectorAll('.opt-chip').forEach(c=>c.classList.remove('sel')); el.classList.add('sel'); };
-    pc.appendChild(el);
+const SYSTEMS = {
+  landing: `You are a world-class startup landing page designer and copywriter. Generate a complete, stunning HTML/CSS landing page pitch based on the user's product description.
+
+Output ONLY a JSON object with NO markdown, NO backticks, NO preamble:
+{"title":"...", "html":"...", "meta":"..."}
+
+RULES for "html":
+- Complete self-contained HTML/CSS (no doctype/html/body tags). All CSS must be inline or in a <style> block at the top.
+- Structure: Nav → Hero → Social proof strip → Features (3-4 cards) → (optional: Testimonial or Stats) → Pricing (2-3 tiers if relevant) → CTA → Footer
+- Dark theme by default unless specified. High contrast, intentional color palette.
+- HERO: Huge headline (48-64px), punchy subhead, email capture or CTA button, optional product screenshot placeholder
+- Typography: use Google Fonts @import — choose distinctive fonts that fit the brand. NOT Inter. NOT Roboto.
+- Include realistic copy: real-sounding product name, features, taglines, prices, testimonials with names
+- Use CSS animations: fade-in on load, hover effects on cards/buttons, subtle gradient animations
+- Make it look like a $100k agency built it. Sharp padding, perfect spacing, glassmorphism cards, micro-details
+- Width: full viewport width, content max-width 1100px centered
+- "meta": one sentence describing the design choices made`,
+
+  brand: `You are a brand identity designer. Generate a complete brand kit based on the description.
+Output ONLY JSON — no markdown, no backticks:
+{"title":"...","brandName":"...","tagline":"...","colors":[{"hex":"#...","name":"...","role":"..."}],"fonts":{"heading":"font-name","body":"font-name"},"logoSVG":"...SVG string...","voice":"...","meta":"..."}
+
+RULES:
+- 4-6 colors with semantic roles (primary, background, accent, text, etc.)
+- Real Google Font names (NO Inter, NO Roboto — choose distinctive fonts)
+- logoSVG: clean SVG wordmark or icon mark, viewBox="0 0 200 60", fully self-contained inline SVG string
+- voice: 1-2 sentences describing the brand voice/personality
+- meta: brief design rationale
+- No markdown or backticks in your response. Pure JSON only.`,
+
+  poster: `You are a graphic designer. Generate a stunning creative HTML/CSS visual.
+Output ONLY JSON — no markdown, no backticks:
+{"title":"...","html":"...","meta":"..."}
+
+RULES for "html":
+- Self-contained div: 500px wide × 700px tall (poster) or adjust for format specified
+- Use absolute/relative positioning for dramatic layouts
+- Bold typography, strong visual hierarchy, creative color choices
+- Google Fonts @import for distinctive typefaces
+- Include realistic copy: event names, dates, taglines, locations
+- CSS animations for subtle motion effects (floating, glowing, pulsing)
+- Make it visually unforgettable — layered backgrounds, overlapping type, grain/texture via CSS
+- meta: brief design note
+- No markdown or backticks. Pure JSON only.`,
+};
+
+function buildChips(containerIds, items, onSelect, getVal, setVal) {
+  containerIds.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.innerHTML = '';
+    items.forEach(item => {
+      const chip = document.createElement('div');
+      chip.className = 'opt-chip';
+      chip.textContent = item;
+      chip.onclick = () => {
+        setVal(item);
+        el.querySelectorAll('.opt-chip').forEach(c => c.classList.remove('sel'));
+        chip.classList.add('sel');
+      };
+      el.appendChild(chip);
+    });
   });
 }
 
+function buildDeskChips() {
+  const cfg = MODES[currentMode];
+  buildChips(['style-chips'], cfg.styles, null, null, v => deskStyle = v);
+  buildChips(['platform-chips'], cfg.platforms, null, null, v => deskPlatform = v);
+}
 function buildMobChips() {
   const cfg = MODES[currentMode];
-  const sc = document.getElementById('mob-style-chips');
-  sc.innerHTML = '';
-  cfg.styles.forEach(s => {
-    const el = document.createElement('div');
-    el.className = 'opt-chip';
-    el.textContent = s;
-    el.onclick = () => { mobStyle=s; sc.querySelectorAll('.opt-chip').forEach(c=>c.classList.remove('sel')); el.classList.add('sel'); };
-    sc.appendChild(el);
-  });
-  const pc = document.getElementById('mob-platform-chips');
-  pc.innerHTML = '';
-  cfg.platforms.forEach(p => {
-    const el = document.createElement('div');
-    el.className = 'opt-chip';
-    el.textContent = p;
-    el.onclick = () => { mobPlatform=p; pc.querySelectorAll('.opt-chip').forEach(c=>c.classList.remove('sel')); el.classList.add('sel'); };
-    pc.appendChild(el);
-  });
+  buildChips(['mob-style-chips'], cfg.styles, null, null, v => mobStyle = v);
+  buildChips(['mob-platform-chips'], cfg.platforms, null, null, v => mobPlatform = v);
+}
+
+function updateEmptyHint() {
+  const lbl = document.getElementById('empty-mode-label');
+  if (lbl) lbl.textContent = MODES[currentMode].label;
 }
 
 function setMode(mode, btn) {
   currentMode = mode;
-  document.querySelectorAll('#desktop-mode-tabs .mode-tab').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('#desktop-mode-tabs .mode-tab').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   const cfg = MODES[mode];
   document.getElementById('prompt').placeholder = cfg.placeholder;
-  deskStyle=''; deskPlatform='';
+  deskStyle = ''; deskPlatform = '';
   buildDeskChips();
+  updateEmptyHint();
 }
 
 function setModeMobile(mode, btn) {
   currentMode = mode;
-  document.querySelectorAll('#mode-bar .mode-tab').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('#mode-bar .mode-tab').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   const cfg = MODES[mode];
   document.getElementById('prompt-mobile').placeholder = cfg.mobPlaceholder;
   document.getElementById('sheet-mode-label').textContent = cfg.label;
-  mobStyle=''; mobPlatform='';
+  mobStyle = ''; mobPlatform = '';
   buildMobChips();
+  updateEmptyHint();
 }
 
 buildDeskChips(); buildMobChips();
@@ -691,29 +699,25 @@ function mobAddPrompt(t) {
   const el = document.getElementById('prompt-mobile');
   el.value = el.value.trim() + (el.value.trim() ? ', ' : '') + t;
 }
-
 function toggleSheet(force) {
   const s = document.getElementById('mobile-sheet');
   if (force === true) s.classList.remove('collapsed');
   else if (force === false) s.classList.add('collapsed');
   else s.classList.toggle('collapsed');
 }
-
 function isMobile() { return window.innerWidth <= 768; }
 
 function getActivePromptAndOptions() {
   if (isMobile()) {
     return {
       prompt: document.getElementById('prompt-mobile').value.trim(),
-      style: mobStyle,
-      platform: mobPlatform,
+      style: mobStyle, platform: mobPlatform,
       btn: document.getElementById('mob-gen-btn'),
     };
   }
   return {
     prompt: document.getElementById('prompt').value.trim(),
-    style: deskStyle,
-    platform: deskPlatform,
+    style: deskStyle, platform: deskPlatform,
     btn: document.getElementById('gen-btn'),
   };
 }
@@ -728,61 +732,34 @@ function showOutput(html, title) {
   const card = document.getElementById('output-card');
   card.classList.add('show');
   document.getElementById('card-title').textContent = title || 'Output';
+  document.getElementById('card-tag').textContent = MODES[currentMode].tag;
   document.getElementById('output-content').innerHTML = html;
   currentOutput = html;
 }
-
-const SYSTEMS = {
-  mockup:`You are a world-class UI designer. Generate a complete, beautiful HTML/CSS UI mockup based on the user's description.
-Rules:
-- Output ONLY a JSON object: {"title":"...", "html":"...", "meta":"..."}
-- "html" must be a complete self-contained HTML snippet (no doctype/html/body tags) with inline styles
-- Use CSS custom properties, modern layouts, beautiful typography
-- Make it visually stunning — dark themes, good contrast, realistic placeholder data
-- Include actual content (realistic names, numbers, text) not just [placeholder]
-- Use Google Fonts via @import if needed
-- "meta" is a short summary: colors used, fonts, components
-- No backticks, no markdown. Pure JSON.`,
-  brand:`You are a brand identity designer. Generate a complete brand kit based on the description.
-Output ONLY JSON: {"title":"...","brandName":"...","tagline":"...","colors":[{"hex":"#...","name":"...","role":"..."}],"fonts":{"heading":"font-name","body":"font-name","mono":"font-name (optional)"},"logoSVG":"...SVG string...","logoText":"...","voice":"...","meta":"..."}
-Rules:
-- 4-6 colors with semantic roles
-- Real Google Font names
-- logoSVG: clean SVG wordmark or mark (200x60 viewBox), inline SVG string
-- voice: brand voice description (1-2 sentences)
-- No backticks, no markdown. Pure JSON.`,
-  poster:`You are a graphic designer. Generate a creative HTML/CSS poster/graphic.
-Output ONLY JSON: {"title":"...","html":"...","meta":"..."}
-Rules:
-- "html" is a self-contained div (500px wide, 700px tall for poster; adjust for other formats)
-- Use absolute/relative positioning for dramatic layouts
-- Bold typography, strong visual hierarchy, creative use of color
-- Include realistic copy (event names, dates, taglines)
-- Can use CSS animations for subtle motion
-- No backticks, no markdown. Pure JSON.`,
-};
 
 async function doGenerate() {
   const { prompt, style, platform, btn } = getActivePromptAndOptions();
   if (!prompt) { showToast('Enter a description first'); return; }
 
   if (btn) btn.disabled = true;
-  // Also disable top-bar button to prevent double-tap
   document.getElementById('top').querySelector('.go').disabled = true;
-
   if (isMobile()) toggleSheet(false);
 
   const cfg = MODES[currentMode];
   setLoading(true, cfg.ldSub);
 
-  const fullPrompt = [prompt, style?`Style: ${style}`:'', platform?`Format: ${platform}`:''].filter(Boolean).join('. ');
+  const fullPrompt = [
+    prompt,
+    style ? `Style: ${style}` : '',
+    platform ? `Format: ${platform}` : '',
+  ].filter(Boolean).join('. ');
 
   try {
     const token = localStorage.getItem('jarvis_token') || '';
     const res = await fetch('https://api.heyjarvis.me/design-command', {
-      method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},
-      body:JSON.stringify({ command:fullPrompt, systemPrompt:SYSTEMS[currentMode], history:[] })
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify({ command: fullPrompt, systemPrompt: SYSTEMS[currentMode], history: [] }),
     });
 
     let data;
@@ -802,14 +779,15 @@ async function doGenerate() {
     setLoading(false);
     if (!data) { showToast('Parse error — try again'); reEnableBtns(btn); return; }
 
-    if (currentMode==='mockup') renderMockup(data);
-    else if (currentMode==='brand') renderBrandKit(data);
+    if (currentMode === 'landing') renderLanding(data);
+    else if (currentMode === 'brand') renderBrandKit(data);
     else renderPoster(data);
 
     addToRecents(prompt);
   } catch(e) {
     setLoading(false);
     showToast('Generation failed — check connection');
+    console.error(e);
   }
 
   reEnableBtns(btn);
@@ -821,105 +799,167 @@ function reEnableBtns(btn) {
 }
 
 function addToRecents(prompt) {
-  const short = prompt.length > 48 ? prompt.slice(0,48)+'...' : prompt;
-
-  const hc = document.getElementById('hist-chips');
-  const chip = document.createElement('div');
-  chip.className = 'hist-chip';
-  chip.textContent = short;
-  chip.onclick = () => setPrompt(prompt);
-  hc.prepend(chip);
-  if (hc.children.length > 6) hc.removeChild(hc.lastChild);
-
-  const mc = document.getElementById('mob-recents');
-  const mchip = document.createElement('div');
-  mchip.className = 'mob-recent-chip';
-  mchip.textContent = short;
-  mchip.onclick = () => setMobPrompt(prompt);
-  mc.prepend(mchip);
-  if (mc.children.length > 6) mc.removeChild(mc.lastChild);
+  const short = prompt.length > 50 ? prompt.slice(0, 50) + '...' : prompt;
+  ['hist-chips', 'mob-recents'].forEach(id => {
+    const container = document.getElementById(id);
+    if (!container) return;
+    const isHist = id === 'hist-chips';
+    const chip = document.createElement('div');
+    chip.className = isHist ? 'hist-chip' : 'mob-recent-chip';
+    chip.textContent = short;
+    chip.onclick = isHist ? () => setPrompt(prompt) : () => setMobPrompt(prompt);
+    container.prepend(chip);
+    if (container.children.length > 6) container.removeChild(container.lastChild);
+  });
 }
 
-function renderMockup(data) {
-  showOutput(`<style>.mockup-shell{font-family:system-ui,sans-serif}</style><div class="mockup-shell">${data.html||''}</div>`, data.title||'UI Mockup');
-  if (data.meta) { document.getElementById('output-meta').style.display='block'; document.getElementById('meta-content').textContent=data.meta; }
+// ── Landing page render (uses iframe sandbox for CSS isolation) ──
+function renderLanding(data) {
+  const html = data.html || '';
+  // Render in an iframe so landing page CSS doesn't bleed into the studio
+  const iframeHtml = `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">${html}</head><body></body></html>`;
+  // Actually html already has full content in body style, inject directly
+  const fullDoc = `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body style="margin:0">${html}</body></html>`;
+  const blob = new Blob([fullDoc], { type: 'text/html' });
+  const url = URL.createObjectURL(blob);
+
+  const output = `
+    <div class="landing-wrap">
+      <div class="landing-preview-bar">
+        <div class="browser-dots">
+          <div class="browser-dot" style="background:#ff5f57"></div>
+          <div class="browser-dot" style="background:#febc2e"></div>
+          <div class="browser-dot" style="background:#28c840"></div>
+        </div>
+        <div class="browser-url">jarvis://preview · ${data.title || 'Landing Page'}</div>
+      </div>
+      <div class="landing-iframe-wrap">
+        <iframe src="${url}" sandbox="allow-scripts allow-same-origin" title="Landing Preview"></iframe>
+      </div>
+    </div>`;
+  showOutput(output, data.title || 'Landing Page');
+  if (data.meta) {
+    document.getElementById('output-meta').style.display = 'block';
+    document.getElementById('meta-content').textContent = data.meta;
+  }
 }
 
 function renderBrandKit(data) {
-  const swatches = (data.colors||[]).map(c=>`
+  const swatches = (data.colors || []).map(c => `
     <div class="bk-color-card">
       <div class="bk-swatch" style="background:${c.hex}"></div>
       <div class="bk-hex">${c.hex}</div>
       <div class="bk-name">${c.name}</div>
       <div class="bk-name" style="color:rgba(255,255,255,0.2)">${c.role}</div>
     </div>`).join('');
-  const primaryHex = data.colors?.[0]?.hex||'#ffffff';
-  const darkHex = data.colors?.find(c=>c.role?.includes('dark'))?.hex||'#0f0f17';
-  const hf = data.fonts?.heading||'Georgia';
-  const bf = data.fonts?.body||'system-ui';
+  const primaryHex = data.colors?.[0]?.hex || '#ffffff';
+  const darkHex = data.colors?.find(c => c.role?.toLowerCase().includes('dark') || c.role?.toLowerCase().includes('bg'))?.hex || '#0f0f17';
+  const hf = data.fonts?.heading || 'Playfair Display';
+  const bf = data.fonts?.body || 'DM Sans';
   const html = `
     <link href="https://fonts.googleapis.com/css2?family=${encodeURIComponent(hf)}:wght@400;700&family=${encodeURIComponent(bf)}:wght@400;500&display=swap" rel="stylesheet">
     <div class="brand-kit">
       <div>
         <div class="bk-section-title">Logo</div>
         <div class="bk-logo-area">
-          <div class="bk-logo-card bk-logo-light">${data.logoSVG||`<span style="font-family:'${hf}',sans-serif;font-size:24px;font-weight:700;color:${darkHex}">${data.brandName||'Brand'}</span>`}</div>
-          <div class="bk-logo-card bk-logo-dark">${data.logoSVG||`<span style="font-family:'${hf}',sans-serif;font-size:24px;font-weight:700;color:#fff">${data.brandName||'Brand'}</span>`}</div>
-          <div class="bk-logo-card" style="background:${primaryHex};padding:24px 32px;display:flex;align-items:center;justify-content:center;min-width:160px">${data.logoSVG||`<span style="font-family:'${hf}',sans-serif;font-size:24px;font-weight:700;color:${darkHex}">${data.brandName||'Brand'}</span>`}</div>
+          <div class="bk-logo-card bk-logo-light">${data.logoSVG || `<span style="font-family:'${hf}',serif;font-size:22px;font-weight:700;color:${darkHex}">${data.brandName || 'Brand'}</span>`}</div>
+          <div class="bk-logo-card bk-logo-dark">${data.logoSVG || `<span style="font-family:'${hf}',serif;font-size:22px;font-weight:700;color:#fff">${data.brandName || 'Brand'}</span>`}</div>
+          <div class="bk-logo-card" style="background:${primaryHex};min-width:150px">${data.logoSVG || `<span style="font-family:'${hf}',serif;font-size:22px;font-weight:700;color:${darkHex}">${data.brandName || 'Brand'}</span>`}</div>
         </div>
       </div>
       <div>
         <div class="bk-section-title">Name &amp; Tagline</div>
-        <div style="font-family:'${hf}',sans-serif;font-size:32px;font-weight:700;color:var(--text);margin-bottom:6px">${data.brandName||''}</div>
-        <div style="font-family:'${bf}',sans-serif;font-size:14px;color:var(--dim)">${data.tagline||''}</div>
+        <div style="font-family:'${hf}',sans-serif;font-size:30px;font-weight:700;color:var(--text);margin-bottom:6px">${data.brandName || ''}</div>
+        <div style="font-family:'${bf}',sans-serif;font-size:14px;color:var(--dim);letter-spacing:0.3px">${data.tagline || ''}</div>
       </div>
-      <div><div class="bk-section-title">Colors</div><div class="bk-colors">${swatches}</div></div>
+      <div>
+        <div class="bk-section-title">Colors</div>
+        <div class="bk-colors">${swatches}</div>
+      </div>
       <div>
         <div class="bk-section-title">Typography</div>
         <div class="bk-fonts">
-          <div><div class="bk-font-label">${hf} — Heading</div><div style="font-family:'${hf}',sans-serif;font-size:28px;font-weight:700;color:var(--text)">The quick brown fox</div></div>
-          <div><div class="bk-font-label">${bf} — Body</div><div style="font-family:'${bf}',sans-serif;font-size:15px;color:var(--dim);line-height:1.7">Consistent visual identity builds trust and recognition across every touchpoint.</div></div>
+          <div>
+            <div class="bk-font-label">${hf} — Display / Heading</div>
+            <div style="font-family:'${hf}',sans-serif;font-size:28px;font-weight:700;color:var(--text);line-height:1.2">The quick brown fox</div>
+          </div>
+          <div>
+            <div class="bk-font-label">${bf} — Body</div>
+            <div style="font-family:'${bf}',sans-serif;font-size:15px;color:var(--dim);line-height:1.7">A strong brand identity creates instant recognition and builds lasting trust at every touchpoint.</div>
+          </div>
         </div>
       </div>
-      ${data.voice?`<div><div class="bk-section-title">Brand Voice</div><div style="font-size:13px;color:var(--dim);line-height:1.7;font-style:italic">"${data.voice}"</div></div>`:''}
+      ${data.voice ? `<div><div class="bk-section-title">Brand Voice</div><div style="font-size:13px;color:var(--dim);line-height:1.7;font-style:italic;border-left:2px solid var(--accent);padding-left:12px">"${data.voice}"</div></div>` : ''}
     </div>`;
-  showOutput(html, data.brandName?`${data.brandName} — Brand Kit`:'Brand Kit');
-  if (data.meta) { document.getElementById('output-meta').style.display='block'; document.getElementById('meta-content').textContent=data.meta; }
+  showOutput(html, data.brandName ? `${data.brandName} — Brand Kit` : 'Brand Kit');
+  if (data.meta) {
+    document.getElementById('output-meta').style.display = 'block';
+    document.getElementById('meta-content').textContent = data.meta;
+  }
 }
 
 function renderPoster(data) {
-  showOutput(`<div class="poster-wrap">${data.html||''}</div>`, data.title||'Creative');
-  if (data.meta) { document.getElementById('output-meta').style.display='block'; document.getElementById('meta-content').textContent=data.meta; }
+  showOutput(`<div class="poster-wrap">${data.html || ''}</div>`, data.title || 'Creative');
+  if (data.meta) {
+    document.getElementById('output-meta').style.display = 'block';
+    document.getElementById('meta-content').textContent = data.meta;
+  }
 }
 
 function copyOutput() {
-  navigator.clipboard.writeText(document.getElementById('output-content').innerHTML)
-    .then(()=>showToast('Copied'));
+  const el = document.getElementById('output-content');
+  const text = el.querySelector('iframe')
+    ? 'iframe preview — use Save to download the full HTML file'
+    : el.innerHTML;
+  navigator.clipboard.writeText(text).then(() => showToast('Copied'));
 }
 
 function downloadOutput() {
   const el = document.getElementById('output-content');
   if (!el.innerHTML.trim()) { showToast('Nothing to download'); return; }
-  const full = `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>body{margin:0;background:#06060a;color:#fff;font-family:system-ui,sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:40px}</style></head><body>${el.innerHTML}</body></html>`;
+
+  let fullHtml = '';
+  const iframe = el.querySelector('iframe');
+  if (iframe && iframe.src) {
+    // Re-fetch from blob URL
+    fetch(iframe.src).then(r => r.text()).then(html => {
+      triggerDownload(html, 'jarvis-landing.html');
+    });
+    return;
+  } else {
+    fullHtml = `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>body{margin:0;background:#06060a;color:#fff;font-family:system-ui,sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:40px}</style>
+</head><body>${el.innerHTML}</body></html>`;
+  }
+  triggerDownload(fullHtml, `jarvis-${currentMode}-output.html`);
+}
+
+function triggerDownload(content, filename) {
   const a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([full],{type:'text/html'}));
-  a.download = 'design-studio-output.html'; a.click();
+  a.href = URL.createObjectURL(new Blob([content], { type: 'text/html' }));
+  a.download = filename;
+  a.click();
   showToast('Saved');
 }
 
 let toastTimer;
 function showToast(msg) {
   const el = document.getElementById('toast');
-  el.textContent = msg; el.classList.add('show');
+  el.textContent = msg;
+  el.classList.add('show');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(()=>el.classList.remove('show'), 2500);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2500);
 }
 
 // Keyboard shortcuts
-document.getElementById('prompt').addEventListener('keydown', e => { if (e.key==='Enter'&&e.metaKey) doGenerate(); });
-document.getElementById('prompt-mobile').addEventListener('keydown', e => { if (e.key==='Enter'&&e.metaKey) doGenerate(); });
+document.getElementById('prompt').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && e.metaKey) doGenerate();
+});
+document.getElementById('prompt-mobile').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && e.metaKey) doGenerate();
+});
 
-// Open sheet on canvas tap when empty (mobile UX)
+// Tap canvas on mobile to open sheet
 document.getElementById('canvas-area').addEventListener('click', () => {
   if (isMobile()) toggleSheet(true);
 });

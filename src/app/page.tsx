@@ -1462,7 +1462,7 @@ const abortRef = useRef<AbortController | null>(null);
           </div>
           <div className="flex-1 min-w-0">
             <div className="text-white/80 text-sm font-medium group-hover:text-white transition-colors">Design</div>
-            <div className="text-white/30 text-xs mt-0.5">Generate UI, images, and visual assets</div>
+            <div className="text-white/30 text-xs mt-0.5">Design your brand</div>
           </div>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="2" className="flex-shrink-0 group-hover:stroke-blue-400 transition-colors"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </a>
