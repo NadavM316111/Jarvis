@@ -2496,6 +2496,45 @@ app.get('/proxy-model', async (req, res) => {
     res.status(500).json({ error: e.message });
   }
 });
+
+app.post('/d2i-analyze', async (req, res) => {
+  const { image, event } = req.body;
+  const SYS = `You are a sharp personal stylist AI with strong visual analysis. The user shows you their wardrobe. Identify every visible clothing item and recommend the best outfit for their event.
+
+RESPOND ONLY WITH RAW JSON. No markdown, no backticks.
+
+FORMAT:
+{"items":[{"label":"White Oxford shirt","x":0.35,"y":0.28,"recommended":true},{"label":"Dark navy chinos","x":0.55,"y":0.65,"recommended":true},{"label":"Red hoodie","x":0.75,"y":0.32,"recommended":false}],"outfit":"White Oxford + Navy Chinos","voiceline":"For your job interview, I'd go with the white Oxford and the dark navy chinos. Clean, confident, and professional without being overdressed.","tip":"Tuck in the shirt and add a belt if you have one."}
+
+RULES:
+- x,y = normalized 0-1 position of item center in image (x=0 left, y=0 top)
+- recommended: true for items in the suggested outfit only
+- voiceline: 1-3 natural spoken sentences, conversational
+- outfit: short label like "White shirt + dark jeans"
+- tip: one practical styling tip (or omit if nothing useful to add)
+- Identify as many individual pieces as visible`;
+
+  try {
+    const response = await anthropic.messages.create({
+      model: 'claude-opus-4-5',
+      max_tokens: 1000,
+      system: SYS,
+      messages: [{
+        role: 'user',
+        content: [
+          { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: image } },
+          { type: 'text', text: `Event: ${event || 'casual day'}` }
+        ]
+      }]
+    });
+    const text = response.content[0].text.replace(/```json|```/g, '').trim();
+    res.json(JSON.parse(text));
+  } catch(e) {
+    console.error('[D2I]', e);
+    res.status(500).json({ error: e.message });
+  }
+});
+
 // cinevault static moved to apps/cinevault.js
 app.post('/design-command', async (req, res) => {
   const { command, systemPrompt, history } = req.body;
@@ -2905,6 +2944,7 @@ app.post('/transcribe', authMiddleware, async (req, res) => {
 app.get('/forge3d', (req, res) => {
   res.sendFile(path.join(__dirname, 'forge3d.html'));
 });
+app.get('/d2i', (req, res) => res.sendFile(path.join(__dirname, 'd2i.html')));
 app.listen(3001, () => {
   console.log('\n╔════════════════════════════════════════╗');
   console.log('║       J.A.R.V.I.S. ONLINE              ║');

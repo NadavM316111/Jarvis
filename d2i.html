@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>D2I — Dress to Impress · JARVIS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cyan: #00f5ff;
+  --purple: #a855f7;
+  --dark: #02040a;
+  --panel: rgba(4,8,18,0.92);
+  --border: rgba(0,245,255,0.12);
+  --border2: rgba(0,245,255,0.28);
+  --text: rgba(255,255,255,0.88);
+  --sub: rgba(255,255,255,0.38);
+  --green: #00ff88;
+  --gold: #f59e0b;
+}
+*,*::before,*::after { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html,body { height:100%; height:100dvh; background:var(--dark); font-family:'Syne',sans-serif; overflow:hidden; color:var(--text); }
+
+/* ── CAMERA ── */
+#cam-wrap {
+  position:fixed; inset:0; z-index:1;
+  background:#000;
+  transition:filter 0.6s ease;
+}
+#cam-wrap.dimmed { filter:brightness(0.35) saturate(0.5); }
+#cam {
+  width:100%; height:100%;
+  object-fit:cover; display:block;
+  transform:scaleX(-1);
+}
+#cam-placeholder {
+  position:absolute; inset:0;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:14px; background:radial-gradient(ellipse at 50% 40%,rgba(0,245,255,0.04),transparent 70%),var(--dark);
+}
+.placeholder-icon { font-size:48px; opacity:0.15; }
+.placeholder-text { font-size:11px; letter-spacing:4px; color:var(--sub); text-transform:uppercase; font-family:'Space Mono',monospace; }
+
+/* ── CANVAS OVERLAY ── */
+#overlay {
+  position:fixed; inset:0; z-index:10;
+  pointer-events:none;
+}
+
+/* ── SCAN LINE ── */
+#scan-line {
+  position:fixed; left:0; right:0; height:2px; z-index:20;
+  background:linear-gradient(90deg,transparent 0%,rgba(0,245,255,0.3) 20%,var(--cyan) 50%,rgba(0,245,255,0.3) 80%,transparent 100%);
+  box-shadow:0 0 12px var(--cyan), 0 0 30px rgba(0,245,255,0.4);
+  display:none; top:0;
+}
+#scan-line.active { display:block; animation:scanDown 2.2s ease-in-out forwards; }
+@keyframes scanDown { 0%{top:0;opacity:1} 85%{opacity:1} 100%{top:100%;opacity:0} }
+
+/* ── CORNER MARKS ── */
+.corner { position:fixed; width:18px; height:18px; z-index:15; pointer-events:none; }
+.corner::before,.corner::after { content:''; position:absolute; background:rgba(0,245,255,0.35); }
+.corner::before { width:100%; height:1px; top:0; left:0; }
+.corner::after { width:1px; height:100%; top:0; left:0; }
+.c-tl { top:52px; left:14px; }
+.c-tr { top:52px; right:14px; transform:scaleX(-1); }
+.c-bl { bottom:180px; left:14px; transform:scaleY(-1); }
+.c-br { bottom:180px; right:14px; transform:scale(-1,-1); }
+
+/* ── TOP BAR ── */
+#topbar {
+  position:fixed; top:0; left:0; right:0; z-index:50;
+  height:52px; display:flex; align-items:center; padding:0 18px; gap:14px;
+  background:linear-gradient(180deg,rgba(2,4,10,0.96) 0%,transparent 100%);
+}
+#logo {
+  font-family:'Space Mono',monospace; font-size:13px;
+  letter-spacing:5px; color:var(--cyan); font-weight:700;
+}
+#logo-sub { font-size:8px; letter-spacing:3px; color:var(--sub); text-transform:uppercase; font-family:'Space Mono',monospace; }
+.top-spacer { flex:1; }
+#status-pill {
+  padding:4px 12px; border-radius:20px; font-size:8px; letter-spacing:2px;
+  text-transform:uppercase; font-family:'Space Mono',monospace;
+  border:1px solid var(--border); color:var(--sub); background:transparent;
+  transition:all 0.3s;
+}
+#status-pill.scanning { border-color:var(--cyan); color:var(--cyan); background:rgba(0,245,255,0.07); }
+#status-pill.done { border-color:var(--green); color:var(--green); background:rgba(0,255,136,0.07); }
+#cam-toggle {
+  width:32px; height:32px; border-radius:9px; background:rgba(0,245,255,0.08);
+  border:1px solid var(--border); color:var(--cyan); cursor:pointer;
+  display:flex; align-items:center; justify-content:center; transition:all 0.2s;
+}
+#cam-toggle:hover { background:rgba(0,245,255,0.18); }
+
+/* ── BOTTOM PANEL ── */
+#bottom {
+  position:fixed; bottom:0; left:0; right:0; z-index:50;
+  padding:14px 16px calc(14px + env(safe-area-inset-bottom)) 16px;
+  background:linear-gradient(0deg,rgba(2,4,10,0.98) 0%,rgba(2,4,10,0.7) 70%,transparent 100%);
+  display:flex; flex-direction:column; gap:10px;
+  transition:transform 0.45s cubic-bezier(0.4,0,0.2,1);
+}
+#bottom.hidden { transform:translateY(120%); }
+
+/* Event chips */
+#chips { display:flex; gap:6px; overflow-x:auto; padding-bottom:2px; scrollbar-width:none; }
+#chips::-webkit-scrollbar { display:none; }
+.chip {
+  flex-shrink:0; padding:5px 13px; border-radius:20px; font-size:9px;
+  letter-spacing:1.5px; text-transform:uppercase; cursor:pointer;
+  border:1px solid var(--border); color:var(--sub); background:transparent;
+  font-family:'Space Mono',monospace; transition:all 0.15s; white-space:nowrap;
+}
+.chip:hover,.chip.active { border-color:var(--cyan); color:var(--cyan); background:rgba(0,245,255,0.07); }
+
+/* Input row */
+#input-row { display:flex; gap:8px; align-items:center; }
+#event-input {
+  flex:1; background:rgba(255,255,255,0.05); border:1px solid var(--border);
+  border-radius:12px; padding:11px 14px; font-family:'Syne',sans-serif;
+  font-size:13px; color:var(--text); outline:none; caret-color:var(--cyan);
+  transition:border-color 0.2s;
+}
+#event-input:focus { border-color:var(--border2); }
+#event-input::placeholder { color:var(--sub); font-size:12px; }
+#scan-btn {
+  padding:11px 20px; border-radius:12px; font-size:9px; letter-spacing:2.5px;
+  text-transform:uppercase; cursor:pointer; border:1px solid var(--cyan);
+  color:#000; background:var(--cyan); font-family:'Space Mono',monospace;
+  font-weight:700; transition:all 0.2s; white-space:nowrap; flex-shrink:0;
+}
+#scan-btn:hover { background:#00e0ea; }
+#scan-btn:disabled { opacity:0.35; cursor:default; color:var(--cyan); background:transparent; }
+
+/* ── RESULT CARD ── */
+#result-card {
+  position:fixed; bottom:0; left:0; right:0; z-index:60;
+  background:var(--panel); border-top:1px solid var(--border2);
+  backdrop-filter:blur(24px); padding:20px 20px calc(20px + env(safe-area-inset-bottom)) 20px;
+  transform:translateY(100%); transition:transform 0.5s cubic-bezier(0.4,0,0.2,1);
+  max-height:60dvh; overflow-y:auto;
+}
+#result-card.show { transform:translateY(0); }
+#result-card::-webkit-scrollbar { width:2px; }
+#result-card::-webkit-scrollbar-thumb { background:var(--border2); }
+
+.card-top { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:14px; gap:12px; }
+#outfit-badge {
+  display:inline-flex; align-items:center; gap:7px;
+  padding:4px 12px 4px 8px; border-radius:20px;
+  background:rgba(0,245,255,0.1); border:1px solid rgba(0,245,255,0.3);
+}
+.badge-dot { width:6px; height:6px; border-radius:50%; background:var(--cyan); box-shadow:0 0 8px var(--cyan); }
+#outfit-name { font-size:10px; letter-spacing:2px; color:var(--cyan); text-transform:uppercase; font-family:'Space Mono',monospace; }
+#close-btn {
+  width:28px; height:28px; border-radius:8px; background:rgba(255,255,255,0.05);
+  border:1px solid var(--border); color:var(--sub); cursor:pointer;
+  display:flex; align-items:center; justify-content:center; font-size:14px;
+  flex-shrink:0; transition:all 0.15s;
+}
+#close-btn:hover { background:rgba(255,50,50,0.1); color:rgba(255,100,100,0.8); }
+
+#rec-text {
+  font-size:14px; line-height:1.7; color:var(--text); margin-bottom:12px;
+  font-weight:300; letter-spacing:0.2px;
+}
+#tip-row {
+  display:flex; align-items:flex-start; gap:8px; padding:10px 13px;
+  background:rgba(245,158,11,0.06); border:1px solid rgba(245,158,11,0.2);
+  border-radius:10px; margin-bottom:16px;
+}
+.tip-icon { font-size:13px; flex-shrink:0; margin-top:1px; }
+#tip-text { font-size:11px; color:rgba(245,158,11,0.85); line-height:1.6; letter-spacing:0.3px; }
+
+.card-actions { display:flex; gap:8px; }
+.card-action {
+  flex:1; padding:10px; border-radius:10px; font-size:9px; letter-spacing:1.5px;
+  text-transform:uppercase; cursor:pointer; transition:all 0.2s; text-align:center;
+  font-family:'Space Mono',monospace;
+}
+.ca-secondary { background:rgba(255,255,255,0.05); border:1px solid var(--border); color:var(--sub); }
+.ca-secondary:hover { border-color:var(--border2); color:var(--text); }
+.ca-primary { background:rgba(0,245,255,0.15); border:1px solid rgba(0,245,255,0.35); color:var(--cyan); }
+.ca-primary:hover { background:rgba(0,245,255,0.25); }
+
+/* ── TOAST ── */
+#toast {
+  position:fixed; top:62px; left:50%; transform:translateX(-50%);
+  background:var(--panel); border:1px solid var(--border2);
+  padding:7px 18px; border-radius:9px; font-size:10px; letter-spacing:1.5px;
+  font-family:'Space Mono',monospace; color:var(--cyan); text-transform:uppercase;
+  opacity:0; transition:opacity 0.25s; pointer-events:none; z-index:200; white-space:nowrap;
+}
+#toast.show { opacity:1; }
+
+/* ── ITEM COUNT BADGE ── */
+#item-count {
+  position:fixed; top:62px; right:14px; z-index:40;
+  padding:4px 10px; border-radius:8px; font-size:8px; letter-spacing:1.5px;
+  font-family:'Space Mono',monospace; color:var(--sub);
+  background:rgba(2,4,10,0.85); border:1px solid var(--border);
+  opacity:0; transition:opacity 0.3s; backdrop-filter:blur(8px);
+}
+#item-count.visible { opacity:1; }
+
+/* ── SPEAKING INDICATOR ── */
+#speaking {
+  position:fixed; bottom:200px; left:50%; transform:translateX(-50%);
+  display:flex; align-items:center; gap:8px; padding:7px 16px;
+  background:rgba(0,245,255,0.1); border:1px solid var(--border2);
+  border-radius:20px; font-size:9px; letter-spacing:2px; color:var(--cyan);
+  text-transform:uppercase; font-family:'Space Mono',monospace;
+  opacity:0; transition:opacity 0.3s; pointer-events:none; z-index:55; white-space:nowrap;
+}
+#speaking.visible { opacity:1; }
+.speak-bars { display:flex; gap:2px; align-items:center; }
+.speak-bar { width:2px; border-radius:2px; background:var(--cyan); animation:speakBar 0.6s ease-in-out infinite; }
+.speak-bar:nth-child(1) { height:8px; animation-delay:0s; }
+.speak-bar:nth-child(2) { height:14px; animation-delay:0.1s; }
+.speak-bar:nth-child(3) { height:10px; animation-delay:0.2s; }
+.speak-bar:nth-child(4) { height:16px; animation-delay:0.05s; }
+.speak-bar:nth-child(5) { height:8px; animation-delay:0.15s; }
+@keyframes speakBar { 0%,100%{transform:scaleY(0.4)} 50%{transform:scaleY(1)} }
+</style>
+</head>
+<body>
+
+<!-- Camera -->
+<div id="cam-wrap">
+  <video id="cam" autoplay playsinline muted></video>
+  <div id="cam-placeholder">
+    <div class="placeholder-icon">👔</div>
+    <div class="placeholder-text">Tap camera to open closet</div>
+  </div>
+</div>
+
+<!-- Canvas overlay -->
+<canvas id="overlay"></canvas>
+
+<!-- Scan line -->
+<div id="scan-line"></div>
+
+<!-- Corner marks -->
+<div class="corner c-tl"></div>
+<div class="corner c-tr"></div>
+<div class="corner c-bl"></div>
+<div class="corner c-br"></div>
+
+<!-- Top bar -->
+<div id="topbar">
+  <div>
+    <div id="logo">D2I</div>
+    <div id="logo-sub">Dress to Impress</div>
+  </div>
+  <div class="top-spacer"></div>
+  <div id="status-pill">Ready</div>
+  <button id="cam-toggle" onclick="startCam()" title="Open camera">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/>
+      <circle cx="12" cy="13" r="4"/>
+    </svg>
+  </button>
+</div>
+
+<!-- Item count -->
+<div id="item-count">0 items</div>
+
+<!-- Bottom panel -->
+<div id="bottom">
+  <div id="chips">
+    <div class="chip" onclick="setEvent(this,'School')">School</div>
+    <div class="chip" onclick="setEvent(this,'Job interview')">Interview</div>
+    <div class="chip" onclick="setEvent(this,'Date night')">Date</div>
+    <div class="chip" onclick="setEvent(this,'Casual hangout')">Casual</div>
+    <div class="chip" onclick="setEvent(this,'Gym / workout')">Gym</div>
+    <div class="chip" onclick="setEvent(this,'Formal event')">Formal</div>
+    <div class="chip" onclick="setEvent(this,'Beach / outdoors')">Outdoors</div>
+    <div class="chip" onclick="setEvent(this,'Work from home')">WFH</div>
+  </div>
+  <div id="input-row">
+    <input id="event-input" placeholder="What's the occasion?" autocomplete="off" spellcheck="false">
+    <button id="scan-btn" onclick="doScan()">Scan →</button>
+  </div>
+</div>
+
+<!-- Result card -->
+<div id="result-card">
+  <div class="card-top">
+    <div id="outfit-badge">
+      <div class="badge-dot"></div>
+      <div id="outfit-name">Recommended outfit</div>
+    </div>
+    <button id="close-btn" onclick="resetScan()">✕</button>
+  </div>
+  <div id="rec-text"></div>
+  <div id="tip-row" style="display:none">
+    <div class="tip-icon">💡</div>
+    <div id="tip-text"></div>
+  </div>
+  <div class="card-actions">
+    <div class="card-action ca-secondary" onclick="resetScan()">Scan again</div>
+    <div class="card-action ca-primary" onclick="speakResult()">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:4px"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg>
+      Play again
+    </div>
+  </div>
+</div>
+
+<!-- Speaking indicator -->
+<div id="speaking">
+  <div class="speak-bars">
+    <div class="speak-bar"></div>
+    <div class="speak-bar"></div>
+    <div class="speak-bar"></div>
+    <div class="speak-bar"></div>
+    <div class="speak-bar"></div>
+  </div>
+  JARVIS speaking
+</div>
+
+<div id="toast"></div>
+
+<script>
+const API = 'https://api.heyjarvis.me';
+let camStream = null, camOn = false;
+let lastResult = null;
+let toastT;
+
+// ── TOAST ──
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastT);
+  toastT = setTimeout(() => el.classList.remove('show'), 2800);
+}
+
+// ── CAMERA ──
+async function startCam() {
+  if (camOn) return;
+  try {
+    camStream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } },
+      audio: false
+    });
+    const vid = document.getElementById('cam');
+    vid.srcObject = camStream;
+    document.getElementById('cam-placeholder').style.display = 'none';
+    document.getElementById('cam-toggle').style.borderColor = 'rgba(0,245,255,0.5)';
+    document.getElementById('cam-toggle').innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>`;
+    camOn = true;
+    resizeOverlay();
+    toast('Camera ready — point at your closet');
+  } catch (e) {
+    toast('Camera access denied');
+  }
+}
+
+// Start camera immediately on load
+window.addEventListener('load', () => startCam());
+
+// ── OVERLAY SIZING ──
+const overlay = document.getElementById('overlay');
+function resizeOverlay() {
+  overlay.width = window.innerWidth;
+  overlay.height = window.innerHeight;
+}
+window.addEventListener('resize', resizeOverlay);
+resizeOverlay();
+
+// ── EVENT CHIP ──
+function setEvent(el, text) {
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('event-input').value = text;
+}
+
+// ── CAPTURE FRAME ──
+function captureFrame() {
+  const vid = document.getElementById('cam');
+  const cvs = document.createElement('canvas');
+  cvs.width = vid.videoWidth || 1280;
+  cvs.height = vid.videoHeight || 720;
+  const ctx = cvs.getContext('2d');
+  // Mirror flip to match actual view
+  ctx.scale(-1, 1);
+  ctx.drawImage(vid, -cvs.width, 0, cvs.width, cvs.height);
+  return cvs.toDataURL('image/jpeg', 0.82).split(',')[1];
+}
+
+// ── SCAN ──
+async function doScan() {
+  if (!camOn) { await startCam(); await new Promise(r => setTimeout(r, 800)); }
+  const event = document.getElementById('event-input').value.trim() || 'casual day';
+  const btn = document.getElementById('scan-btn');
+  btn.disabled = true;
+
+  // Scan line animation
+  setStatus('Scanning...', 'scanning');
+  const line = document.getElementById('scan-line');
+  line.classList.remove('active');
+  void line.offsetWidth;
+  line.classList.add('active');
+
+  let imageData;
+  try { imageData = captureFrame(); }
+  catch(e) { toast('Could not capture frame'); btn.disabled = false; return; }
+
+  // Wait for scan line to finish
+  await new Promise(r => setTimeout(r, 2200));
+  setStatus('Analyzing...', 'scanning');
+
+  try {
+    const token = localStorage.getItem('jarvis_token') || '';
+    const res = await fetch(`${API}/d2i-analyze`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify({ image: imageData, event })
+    });
+    if (!res.ok) throw new Error(`Server ${res.status}`);
+    const data = await res.json();
+    lastResult = data;
+    showResult(data);
+  } catch(e) {
+    toast('Analysis failed — check connection');
+    console.error('[D2I]', e);
+    setStatus('Ready', '');
+  }
+  btn.disabled = false;
+}
+
+// ── STATUS ──
+function setStatus(text, cls) {
+  const el = document.getElementById('status-pill');
+  el.textContent = text;
+  el.className = 'status-pill ' + (cls || '');
+  // preserve id
+  el.id = 'status-pill';
+  if (cls) el.classList.add(cls);
+}
+
+// ── SHOW RESULT ──
+function showResult(data) {
+  const items = data.items || [];
+  drawAnnotations(items);
+  document.getElementById('cam-wrap').classList.add('dimmed');
+  document.getElementById('bottom').classList.add('hidden');
+
+  document.getElementById('outfit-name').textContent = data.outfit || 'Recommended outfit';
+  document.getElementById('rec-text').textContent = data.voiceline || '';
+  const tipEl = document.getElementById('tip-row');
+  if (data.tip) {
+    document.getElementById('tip-text').textContent = data.tip;
+    tipEl.style.display = 'flex';
+  } else {
+    tipEl.style.display = 'none';
+  }
+
+  const countEl = document.getElementById('item-count');
+  countEl.textContent = items.length + ' item' + (items.length !== 1 ? 's' : '') + ' identified';
+  countEl.classList.add('visible');
+
+  document.getElementById('result-card').classList.add('show');
+  setStatus('Done', 'done');
+  speakResult();
+}
+
+// ── ANNOTATIONS ──
+function drawAnnotations(items) {
+  const ctx = overlay.getContext('2d');
+  ctx.clearRect(0, 0, overlay.width, overlay.height);
+  const W = overlay.width, H = overlay.height;
+
+  items.forEach((item, i) => {
+    const x = item.x * W;
+    const y = item.y * H;
+    const r = Math.min(W, H) * 0.075;
+    const rec = item.recommended;
+
+    // Outer glow ring
+    if (rec) {
+      ctx.shadowBlur = 24;
+      ctx.shadowColor = 'rgba(0,245,255,0.7)';
+      ctx.strokeStyle = '#00f5ff';
+      ctx.lineWidth = 2.5;
+    } else {
+      ctx.shadowBlur = 0;
+      ctx.strokeStyle = 'rgba(255,255,255,0.22)';
+      ctx.lineWidth = 1.2;
+    }
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+
+    // Inner dot
+    ctx.beginPath();
+    ctx.arc(x, y, 4, 0, Math.PI * 2);
+    ctx.fillStyle = rec ? '#00f5ff' : 'rgba(255,255,255,0.3)';
+    ctx.fill();
+
+    // Label
+    const labelText = item.label || '';
+    const fontSize = Math.min(12, Math.max(9, W * 0.018));
+    ctx.font = `${fontSize}px "Space Mono", monospace`;
+    const textW = ctx.measureText(labelText).width;
+    const lx = Math.min(Math.max(x - textW / 2, 8), W - textW - 8);
+    const ly = y + r + fontSize * 1.8;
+
+    // Label background
+    ctx.fillStyle = rec ? 'rgba(0,10,14,0.82)' : 'rgba(0,0,0,0.6)';
+    ctx.fillRect(lx - 6, ly - fontSize - 2, textW + 12, fontSize + 8);
+
+    // Label text
+    ctx.fillStyle = rec ? '#00f5ff' : 'rgba(255,255,255,0.38)';
+    ctx.fillText(labelText, lx, ly);
+
+    // Recommended star
+    if (rec) {
+      ctx.font = `${fontSize * 0.8}px sans-serif`;
+      ctx.fillStyle = '#f59e0b';
+      ctx.fillText('★', lx + textW + 4, ly);
+    }
+  });
+}
+
+// ── SPEAK ──
+let utterance = null;
+function speakResult() {
+  if (!lastResult) return;
+  window.speechSynthesis.cancel();
+  const text = lastResult.voiceline || '';
+  utterance = new SpeechSynthesisUtterance(text);
+  utterance.rate = 0.92;
+  utterance.pitch = 1.0;
+  utterance.volume = 1;
+  const voices = window.speechSynthesis.getVoices();
+  const preferred = voices.find(v => v.name.includes('Samantha') || v.name.includes('Daniel') || v.name.includes('Karen') || (v.lang === 'en-US' && v.localService));
+  if (preferred) utterance.voice = preferred;
+  const speakEl = document.getElementById('speaking');
+  speakEl.classList.add('visible');
+  utterance.onend = () => speakEl.classList.remove('visible');
+  utterance.onerror = () => speakEl.classList.remove('visible');
+  window.speechSynthesis.speak(utterance);
+}
+
+// ── RESET ──
+function resetScan() {
+  window.speechSynthesis.cancel();
+  document.getElementById('speaking').classList.remove('visible');
+  document.getElementById('result-card').classList.remove('show');
+  document.getElementById('cam-wrap').classList.remove('dimmed');
+  document.getElementById('bottom').classList.remove('hidden');
+  document.getElementById('item-count').classList.remove('visible');
+  const ctx = overlay.getContext('2d');
+  ctx.clearRect(0, 0, overlay.width, overlay.height);
+  setStatus('Ready', '');
+  lastResult = null;
+}
+
+// Load voices on iOS (needs interaction first)
+window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+
+// Keyboard shortcut
+document.getElementById('event-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doScan();
+});
+</script>
+</body>
+</html>
