@@ -2560,6 +2560,33 @@ app.post('/d2i-tryon', async (req, res) => {
   const text = response.content[0].text.replace(/```json|```/g,'').trim();
   res.json(JSON.parse(text));
 });
+
+app.post('/d2i-fetch-product', async (req, res) => {
+  const { url } = req.body;
+  if (!url) return res.status(400).json({ error: 'No URL' });
+  try {
+    const pageRes = await axios.get(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml',
+        'Accept-Language': 'en-US,en;q=0.9',
+      },
+      timeout: 12000
+    });
+    const html = pageRes.data;
+    const imageUrl =
+      (html.match(/data-old-hires="([^"]+)"/) || [])[1] ||
+      (html.match(/"(https:\/\/m\.media-amazon\.com\/images\/I\/[A-Za-z0-9%+._-]+\._AC_SL1500_\.jpg)"/) || [])[1] ||
+      (html.match(/"(https:\/\/m\.media-amazon\.com\/images\/I\/[A-Za-z0-9%+._-]+\.jpg)"/) || [])[1] ||
+      (html.match(/og:image[^>]*content="([^"]+)"/) || [])[1];
+    if (!imageUrl) return res.status(422).json({ error: 'No image found on page' });
+    const imgRes = await axios.get(imageUrl, { responseType: 'arraybuffer', timeout: 8000 });
+    res.json({ imageBase64: Buffer.from(imgRes.data).toString('base64') });
+  } catch(e) {
+    console.error('[d2i-fetch-product]', e.message);
+    res.status(500).json({ error: e.message });
+  }
+});
 // cinevault static moved to apps/cinevault.js
 app.post('/design-command', async (req, res) => {
   const { command, systemPrompt, history } = req.body;

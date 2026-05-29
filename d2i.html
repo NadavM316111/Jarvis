@@ -236,6 +236,19 @@ html,body{height:100%;height:100dvh;background:var(--dark);font-family:'Syne',sa
       <div class="upload-zone-label" style="margin-top:6px">Tap to upload clothing from Amazon</div>
     </div>
   </div>
+  <div style="display:flex;align-items:center;gap:8px;padding:0 2px">
+    <div style="flex:1;height:1px;background:var(--border)"></div>
+    <span style="font-size:7px;color:var(--sub);letter-spacing:2px;font-family:'Space Mono',monospace">or paste a link</span>
+    <div style="flex:1;height:1px;background:var(--border)"></div>
+  </div>
+  <div style="display:flex;gap:7px">
+    <input id="product-url" placeholder="Amazon, ASOS, any product URL..." autocomplete="off"
+      style="flex:1;background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:10px;padding:9px 12px;font-family:'Syne',sans-serif;font-size:14px;color:var(--text);outline:none;caret-color:var(--cyan);">
+    <button id="load-url-btn" onclick="loadFromUrl()"
+      style="padding:9px 14px;border-radius:10px;font-size:8px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;border:1px solid var(--border);color:var(--sub);background:transparent;font-family:'Space Mono',monospace;white-space:nowrap;flex-shrink:0;transition:all 0.2s">
+      Load →
+    </button>
+  </div>
   <div id="tryon-actions">
     <button id="tryon-scan-btn" onclick="doTryOn()" disabled>Scan me →</button>
     <button id="tryon-cancel" onclick="setMode('scan')">Cancel</button>
@@ -753,7 +766,35 @@ function resetScan() {
   setStatus('Ready', '');
   lastResult = null; stillFrameData = null;
 }
-
+async function loadFromUrl() {
+  const url = document.getElementById('product-url').value.trim();
+  if (!url) return;
+  const btn = document.getElementById('load-url-btn');
+  btn.textContent = '...'; btn.disabled = true;
+  toast('Fetching product image...');
+  try {
+    const token = localStorage.getItem('jarvis_token') || '';
+    const res = await fetch(`${API}/d2i-fetch-product`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify({ url })
+    });
+    const data = await res.json();
+    if (!data.imageBase64) throw new Error(data.error || 'No image found');
+    clothingImageData = data.imageBase64;
+    const preview = document.getElementById('clothing-preview');
+    preview.src = `data:image/jpeg;base64,${data.imageBase64}`;
+    preview.classList.add('show');
+    document.getElementById('upload-placeholder').style.display = 'none';
+    document.getElementById('upload-zone').classList.add('loaded');
+    document.getElementById('tryon-scan-btn').disabled = false;
+    document.getElementById('product-url').value = '';
+    toast('Product loaded — hit Scan Me');
+  } catch(e) {
+    toast('Could not extract image — try uploading directly');
+  }
+  btn.textContent = 'Load →'; btn.disabled = false;
+}
 // ── KEYBOARD SHORTCUTS ─────────────────────────────────────────
 document.getElementById('event-input').addEventListener('keydown', e => { if (e.key === 'Enter') doScan(); });
 document.getElementById('chat-input').addEventListener('keydown', e => { if (e.key === 'Enter') sendChat(); });
