@@ -2548,39 +2548,70 @@ app.post('/d2i-chat', async (req, res) => {
 });
 app.post('/d2i-tryon', async (req, res) => {
   const { clothingImage, bodyImage } = req.body;
-  const response = await anthropic.messages.create({
-    model: 'claude-opus-4-5', max_tokens: 600,
-    system: `You are a fashion stylist doing a virtual try-on. You see a clothing item and a person. Analyze how the item would look on them — fit, color match, vibe. Return ONLY raw JSON: {"voiceline":"...","tagline":"...","fit":"..."}. voiceline = 2 sentences spoken to the person. tagline = clever one-liner (play on "is it the model, or is it the clothes?"). fit = one word: perfect/good/risky/avoid.`,
-    messages: [{ role: 'user', content: [
-      { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: clothingImage } },
-      { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: bodyImage } },
-      { type: 'text', text: 'How does this clothing item look on this person?' }
-    ]}]
-  });
-  const text = response.content[0].text.replace(/```json|```/g,'').trim();
-  res.json(JSON.parse(text));
+  try {
+    const response = await anthropic.messages.create({
+      model: 'claude-opus-4-5',
+      max_tokens: 800,
+      system: `You are a fashion AI doing a virtual try-on. You see two images: first is clothing, second is a person. Analyze compatibility in detail.
+
+RESPOND ONLY WITH RAW JSON. No markdown, no backticks.
+
+{"matchPercent":82,"voiceline":"That navy jacket would look sharp on you — it contrasts beautifully with your auburn hair.","tagline":"The jacket called. It wants to live in your closet.","reasoning":"Navy creates strong contrast with warm auburn tones and flatters medium-warm skin.","hairColor":{"name":"Auburn","hex":"#8B4513"},"skinTone":{"name":"Medium warm","hex":"#C68642"},"productColor":{"name":"Navy blue","hex":"#003087"},"fit":"great"}
+
+RULES:
+- matchPercent 0-100: color harmony with hair+skin (40%), style (30%), occasion fit (30%). Be honest, not always high.
+- hairColor.name: specific — "Auburn", "Dirty blonde", "Dark brown", not just "brown"
+- skinTone.name: specific — "Light warm", "Medium olive", "Deep cool", etc.
+- productColor: primary color of the clothing item
+- All hex values: realistic approximations of what you see
+- voiceline: 1-2 sentences spoken to the person, mention their specific hair or features
+- tagline: clever fashion one-liner, play on model/clothes phrases
+- reasoning: 1 sentence color and style logic
+- fit: one of: perfect / great / good / risky / pass`,
+      messages: [{
+        role: 'user',
+        content: [
+          { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: clothingImage } },
+          { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: bodyImage } },
+          { type: 'text', text: 'Analyze this clothing item on this person.' }
+        ]
+      }]
+    });
+    const text = response.content[0].text.replace(/```json|```/g, '').trim();
+    res.json(JSON.parse(text));
+  } catch(e) {
+    console.error('[D2I tryon]', e);
+    res.status(500).json({ error: e.message });
+  }
 });
 
 app.post('/d2i-fetch-product', async (req, res) => {
   const { url } = req.body;
   if (!url) return res.status(400).json({ error: 'No URL' });
   try {
-    const pageRes = await axios.get(url, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36',
-        'Accept': 'text/html,application/xhtml+xml',
-        'Accept-Language': 'en-US,en;q=0.9',
-      },
-      timeout: 12000
-    });
-    const html = pageRes.data;
+    const isAmazon = /amazon\.(com|co\.|ca|de|fr|es|it|nl)/.test(url);
+    const headers = {
+      'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+      'Accept': 'text/html,application/xhtml+xml,*/*;q=0.9',
+      'Accept-Language': 'en-US,en;q=0.9',
+    };
+    let html;
+    if (isAmazon) {
+      const cloudscraper = require('cloudscraper');
+      html = await cloudscraper({ method: 'GET', url, headers });
+    } else {
+      const r = await axios.get(url, { headers, timeout: 12000 });
+      html = r.data;
+    }
     const imageUrl =
-      (html.match(/data-old-hires="([^"]+)"/) || [])[1] ||
+      (html.match(/data-old-hires="(https?:[^"]+)"/) || [])[1] ||
+      (html.match(/"hiRes":"(https?:[^"]+)"/) || [])[1] ||
       (html.match(/"(https:\/\/m\.media-amazon\.com\/images\/I\/[A-Za-z0-9%+._-]+\._AC_SL1500_\.jpg)"/) || [])[1] ||
-      (html.match(/"(https:\/\/m\.media-amazon\.com\/images\/I\/[A-Za-z0-9%+._-]+\.jpg)"/) || [])[1] ||
-      (html.match(/og:image[^>]*content="([^"]+)"/) || [])[1];
-    if (!imageUrl) return res.status(422).json({ error: 'No image found on page' });
-    const imgRes = await axios.get(imageUrl, { responseType: 'arraybuffer', timeout: 8000 });
+      (html.match(/"(https:\/\/m\.media-amazon\.com\/images\/I\/[A-Za-z0-9%+._-]+\._AC_[A-Z0-9_]+\.jpg)"/) || [])[1] ||
+      (html.match(/<meta[^>]+property="og:image"[^>]+content="([^"]+)"/) || [])[1] ||
+      (html.match(/<meta[^>]+content="([^"]+)"[^>]+property="og:image"/) || [])[1];
+    if (!imageUrl) return res.status(422).json({ error: 'No image found' });
+    const imgRes = await axios.get(imageUrl.replace(/&amp;/g,'&'), { responseType: 'arraybuffer', timeout: 10000 });
     res.json({ imageBase64: Buffer.from(imgRes.data).toString('base64') });
   } catch(e) {
     console.error('[d2i-fetch-product]', e.message);
