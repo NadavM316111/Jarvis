@@ -1342,22 +1342,7 @@ const abortRef = useRef<AbortController | null>(null);
   <div className="text-white/25 text-xs mt-2">Resets at midnight ET</div>
 </div>
 
-                <a
-                href="https://api.heyjarvis.me/d2i"
-  target="_blank"
-  rel="noopener noreferrer"
-  className="flex items-center gap-4 p-4 rounded-xl border border-white/8 hover:border-emerald-500/30 hover:bg-emerald-500/5 transition-all group"
-  style={{ textDecoration: 'none' }}
->
-  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500/20 to-cyan-500/20 border border-emerald-500/20 flex items-center justify-center flex-shrink-0">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#34d399" strokeWidth="1.8"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
-  </div>
-  <div className="flex-1 min-w-0">
-    <div className="text-white/80 text-sm font-medium group-hover:text-white transition-colors">Dress to Impress</div>
-    <div className="text-white/30 text-xs mt-0.5">AI stylist — scan your closet, get an outfit</div>
-  </div>
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="2" className="flex-shrink-0 group-hover:stroke-emerald-400 transition-colors"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-</a>
+                
                 <div className="p-4 rounded-xl border border-blue-500/20 bg-blue-500/5">
                   <div className="text-white font-medium mb-1">Upgrade to Pro</div>
                   <div className="text-white/40 text-xs mb-3">$25/month — unlimited messages, all features, priority access</div>
@@ -1498,6 +1483,22 @@ const abortRef = useRef<AbortController | null>(null);
           </div>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="2" className="flex-shrink-0 group-hover:stroke-purple-400 transition-colors"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </a>
+        <a
+        href="https://api.heyjarvis.me/d2i"
+  target="_blank"
+  rel="noopener noreferrer"
+  className="flex items-center gap-4 p-4 rounded-xl border border-white/8 hover:border-emerald-500/30 hover:bg-emerald-500/5 transition-all group"
+  style={{ textDecoration: 'none' }}
+>
+  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500/20 to-cyan-500/20 border border-emerald-500/20 flex items-center justify-center flex-shrink-0">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#34d399" strokeWidth="1.8"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+  </div>
+  <div className="flex-1 min-w-0">
+    <div className="text-white/80 text-sm font-medium group-hover:text-white transition-colors">Dress to Impress</div>
+    <div className="text-white/30 text-xs mt-0.5">AI stylist — scan your closet, get an outfit</div>
+  </div>
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="2" className="flex-shrink-0 group-hover:stroke-emerald-400 transition-colors"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+</a>
         <div className="p-4 rounded-xl border border-white/5 bg-white/2 flex items-center gap-4">
           <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/8 flex items-center justify-center flex-shrink-0">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="1.8"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
