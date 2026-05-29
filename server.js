@@ -2534,7 +2534,32 @@ RULES:
     res.status(500).json({ error: e.message });
   }
 });
-
+app.post('/d2i-chat', async (req, res) => {
+  const { image, event, context } = req.body;
+  const response = await anthropic.messages.create({
+    model: 'claude-opus-4-5', max_tokens: 400,
+    system: `You are a sharp personal stylist. The user is asking about their outfit. Context: ${context || ''}. Answer in 1-2 natural sentences. Be direct and helpful.`,
+    messages: [{ role: 'user', content: [
+      { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: image } },
+      { type: 'text', text: event }
+    ]}]
+  });
+  res.json({ reply: response.content[0].text });
+});
+app.post('/d2i-tryon', async (req, res) => {
+  const { clothingImage, bodyImage } = req.body;
+  const response = await anthropic.messages.create({
+    model: 'claude-opus-4-5', max_tokens: 600,
+    system: `You are a fashion stylist doing a virtual try-on. You see a clothing item and a person. Analyze how the item would look on them — fit, color match, vibe. Return ONLY raw JSON: {"voiceline":"...","tagline":"...","fit":"..."}. voiceline = 2 sentences spoken to the person. tagline = clever one-liner (play on "is it the model, or is it the clothes?"). fit = one word: perfect/good/risky/avoid.`,
+    messages: [{ role: 'user', content: [
+      { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: clothingImage } },
+      { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: bodyImage } },
+      { type: 'text', text: 'How does this clothing item look on this person?' }
+    ]}]
+  });
+  const text = response.content[0].text.replace(/```json|```/g,'').trim();
+  res.json(JSON.parse(text));
+});
 // cinevault static moved to apps/cinevault.js
 app.post('/design-command', async (req, res) => {
   const { command, systemPrompt, history } = req.body;
