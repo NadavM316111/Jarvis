@@ -189,6 +189,11 @@ html,body{height:100%;height:100dvh;background:var(--dark);font-family:'Syne',sa
   <button id="cam-btn" onclick="startCam()">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
   </button>
+  <button id="flip-btn" onclick="flipCamera()" title="Flip camera" style="width:30px;height:30px;border-radius:8px;background:rgba(0,245,255,0.08);border:1px solid var(--border);color:var(--cyan);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 4v6h6"/><path d="M23 20v-6h-6"/><path d="M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 013.51 15"/></svg>
+  </button>
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+  </button>
 </div>
 
 <div id="item-count">0 items</div>
@@ -498,6 +503,34 @@ async function sendChat(text){
     const reply=data.reply||data.message||"Ask JARVIS in the main chat for more advice!";
     addChatBubble(reply,'ai');speakText(reply);
   }catch(e){addChatBubble("Try asking JARVIS in the main chat!",'ai');}
+}
+let facingMode = 'environment'; // starts on back camera
+
+async function flipCamera() {
+  facingMode = facingMode === 'environment' ? 'user' : 'environment';
+  if (camStream) {
+    camStream.getTracks().forEach(t => t.stop());
+    camStream = null; camOn = false;
+  }
+  const btn = document.getElementById('flip-btn');
+  btn.style.opacity = '0.4';
+  try {
+    camStream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode, width: { ideal: 1280 }, height: { ideal: 720 } },
+      audio: false
+    });
+    const vid = document.getElementById('cam');
+    vid.srcObject = camStream;
+    // Mirror front camera, un-mirror rear
+    vid.style.transform = facingMode === 'user' ? 'scaleX(-1)' : 'scaleX(1)';
+    document.getElementById('still-img').style.transform = facingMode === 'user' ? 'scaleX(-1)' : 'scaleX(1)';
+    camOn = true;
+    toast(facingMode === 'user' ? 'Front camera' : 'Back camera');
+  } catch(e) {
+    toast('Could not switch camera');
+    facingMode = facingMode === 'environment' ? 'user' : 'environment'; // revert
+  }
+  btn.style.opacity = '1';
 }
 function toggleChatMic(){
   const btn=document.getElementById('chat-mic');
