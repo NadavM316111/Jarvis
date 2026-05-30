@@ -83,34 +83,43 @@ const sharp   = require('sharp');
 const React   = require('react');
 const ReactDOMServer = require('react-dom/server');
 
-// ── Theme definitions ────────────────────────────────────────
+// ── Theme definitions ─────────────────────────────────────────────────────────
 const THEMES = {
   dark: {
     bg: '0F1117', bgAlt: '1A1D2E', accent: '6366F1', accent2: '8B5CF6',
     text: 'F8FAFC', subtext: '94A3B8', card: '1E2235', border: '2D3151',
-    titleBg: '0F1117', chartColors: ['6366F1','8B5CF6','EC4899','F59E0B','10B981'],
+    titleBg: '0F1117', chartColors: ['6366F1','8B5CF6','EC4899','F59E0B','10B981','06B6D4'],
+    gradStart: '0F1117', gradEnd: '1A1D2E',
   },
   light: {
-    bg: 'FFFFFF', bgAlt: 'F8FAFC', accent: '4F46E5', accent2: '7C3AED',
-    text: '0F172A', subtext: '64748B', card: 'FFFFFF', border: 'E2E8F0',
-    titleBg: '4F46E5', chartColors: ['4F46E5','7C3AED','DB2777','D97706','059669'],
+    bg: 'FFFFFF', bgAlt: 'F1F5F9', accent: '4F46E5', accent2: '7C3AED',
+    text: '0F172A', subtext: '64748B', card: 'FFFFFF', border: 'CBD5E1',
+    titleBg: '4F46E5', chartColors: ['4F46E5','7C3AED','DB2777','D97706','059669','0891B2'],
+    gradStart: '4F46E5', gradEnd: '7C3AED',
   },
   navy: {
     bg: '0A1628', bgAlt: '0F2040', accent: '3B82F6', accent2: '60A5FA',
     text: 'F0F9FF', subtext: '93C5FD', card: '162036', border: '1E3A5F',
-    titleBg: '0A1628', chartColors: ['3B82F6','60A5FA','34D399','FBBF24','F87171'],
+    titleBg: '0A1628', chartColors: ['3B82F6','60A5FA','34D399','FBBF24','F87171','A78BFA'],
+    gradStart: '0A1628', gradEnd: '162036',
   },
   minimal: {
-    bg: 'FAFAFA', bgAlt: 'FFFFFF', accent: '18181B', accent2: '3F3F46',
+    bg: 'FAFAFA', bgAlt: 'FFFFFF', accent: '18181B', accent2: '52525B',
     text: '18181B', subtext: '71717A', card: 'FFFFFF', border: 'E4E4E7',
-    titleBg: '18181B', chartColors: ['18181B','3F3F46','71717A','A1A1AA','D4D4D8'],
+    titleBg: '18181B', chartColors: ['18181B','52525B','3B82F6','10B981','F59E0B','EF4444'],
+    gradStart: '18181B', gradEnd: '3F3F46',
+  },
+  corporate: {
+    bg: 'FFFFFF', bgAlt: 'EFF6FF', accent: '1D4ED8', accent2: '2563EB',
+    text: '1E293B', subtext: '475569', card: 'F8FAFC', border: 'BFDBFE',
+    titleBg: '1D4ED8', chartColors: ['1D4ED8','2563EB','7C3AED','DC2626','16A34A','D97706'],
+    gradStart: '1D4ED8', gradEnd: '7C3AED',
   },
 };
 
-// ── Fetch image from Unsplash (free, no auth required) ───────
+// ── Image fetcher ──────────────────────────────────────────────────────────────
 async function fetchSlideImage(query) {
   try {
-    // Search for image URL using Brave
     const searchRes = await axios.get('https://api.search.brave.com/res/v1/images/search', {
       headers: { 'Accept': 'application/json', 'Accept-Encoding': 'gzip', 'X-Subscription-Token': process.env.BRAVE_SEARCH_API_KEY },
       params: { q: query, count: 3, safesearch: 'strict' }
@@ -124,472 +133,1139 @@ async function fetchSlideImage(query) {
         const ct = resp.headers['content-type'] || 'image/jpeg';
         if (!ct.startsWith('image/')) continue;
         const b64 = Buffer.from(resp.data).toString('base64');
-        console.log('[PPTX] Image fetched:', query);
         return `${ct};base64,${b64}`;
       } catch {}
     }
     return null;
-  } catch (e) {
-    console.log('[PPTX] Image search failed:', query, e.message);
-    return null;
-  }
+  } catch (e) { return null; }
 }
 
-// ── Transition XML helper ─────────────────────────────────────
-function makeTransition(type = 'fade', dur = 500) {
-  // pptxgenjs exposes slide.transition for a handful of built-ins
-  // We pass the object and let pptxgenjs handle the XML
-  const map = {
-    fade:    { type: 'fade',    dur },
-    push:    { type: 'push',    dir: 'l', dur },
-    wipe:    { type: 'wipe',    dir: 'l', dur },
-    reveal:  { type: 'reveal',  dir: 'l', dur },
-    zoom:    { type: 'zoom',    dir: 'in', dur },
-    split:   { type: 'split',   dir: 'h', dur },
-  };
-  return map[type] || map.fade;
+// ── Transition cycle ───────────────────────────────────────────────────────────
+const TRANSITION_SEQUENCE = ['fade','push','wipe','reveal','zoom','split'];
+function makeTransition(i) {
+  const t = TRANSITION_SEQUENCE[i % TRANSITION_SEQUENCE.length];
+  const map = { fade:{type:'fade',dur:500}, push:{type:'push',dir:'l',dur:500},
+    wipe:{type:'wipe',dir:'l',dur:500}, reveal:{type:'reveal',dir:'l',dur:500},
+    zoom:{type:'zoom',dir:'in',dur:500}, split:{type:'split',dir:'h',dur:500} };
+  return map[t];
 }
 
-const TRANSITION_SEQUENCE = ['fade', 'push', 'wipe', 'reveal', 'zoom', 'split'];
-
-// ── Main generator ────────────────────────────────────────────
+// ── Main PowerPoint generator ──────────────────────────────────────────────────
 async function generatePresentation({ title, theme = 'dark', slides, filename }) {
   const T = THEMES[theme] || THEMES.dark;
   const pres = new pptxgen();
-  pres.layout  = 'LAYOUT_16x9';  // 10" × 5.625"
-  pres.author  = 'JARVIS';
-  pres.title   = title;
-  pres.subject = title;
+  pres.layout = 'LAYOUT_16x9';
+  pres.author = 'JARVIS'; pres.title = title; pres.subject = title;
 
-  // ── Slide master ─────────────────────────────────────────
-  pres.defineSlideMaster({
-    title: 'JARVIS_MASTER',
-    background: { color: T.bg },
-  });
+  pres.defineSlideMaster({ title: 'JARVIS_MASTER', background: { color: T.bg } });
 
-  // ── Helper: add footer logo mark ─────────────────────────
-  function addFooter(slide, label = '') {
-    // thin accent bar at bottom
-    slide.addShape(pres.shapes.RECTANGLE, {
-      x: 0, y: 5.42, w: 10, h: 0.08,
-      fill: { color: T.accent, transparency: 40 }, line: { color: T.accent, transparency: 40 },
-    });
-    if (label) {
-      slide.addText(label, {
-        x: 0.3, y: 5.3, w: 9.4, h: 0.25,
-        fontSize: 8, color: T.subtext, align: 'right', valign: 'bottom', margin: 0,
-      });
-    }
+  // ── helpers ────────────────────────────────────────────────────────────────
+  function hdr(slide, slideTitle, accentColor = T.accent) {
+    slide.addShape(pres.shapes.RECTANGLE, { x:0, y:0, w:10, h:0.82, fill:{color:T.bgAlt}, line:{color:T.bgAlt} });
+    slide.addShape(pres.shapes.RECTANGLE, { x:0, y:0, w:0.09, h:0.82, fill:{color:accentColor}, line:{color:accentColor} });
+    if (slideTitle) slide.addText(slideTitle, { x:0.22, y:0, w:9.5, h:0.82, fontSize:21, bold:true, color:T.text, fontFace:'Calibri', valign:'middle', margin:0 });
+  }
+  function footer(slide) {
+    slide.addShape(pres.shapes.RECTANGLE, { x:0, y:5.43, w:10, h:0.07, fill:{color:T.accent,transparency:50}, line:{color:T.accent,transparency:50} });
+    slide.addText('JARVIS · ' + title, { x:0.3, y:5.3, w:9.4, h:0.25, fontSize:7, color:T.subtext, align:'right', valign:'bottom' });
+  }
+  function card(slide, x, y, w, h, col = T.bgAlt) {
+    slide.addShape(pres.shapes.RECTANGLE, { x, y, w, h, fill:{color:col}, line:{color:T.border,pt:0.5},
+      shadow:{type:'outer',color:'000000',blur:8,offset:2,angle:135,opacity:0.15} });
   }
 
-  // ── Helper: accent card ───────────────────────────────────
-  function accentCard(slide, x, y, w, h, color = T.card) {
-    slide.addShape(pres.shapes.RECTANGLE, {
-      x, y, w, h,
-      fill: { color },
-      line: { color: T.border, pt: 0.5 },
-      shadow: { type: 'outer', color: '000000', blur: 10, offset: 3, angle: 135, opacity: 0.18 },
-    });
-  }
-
-  // ── Render each slide ─────────────────────────────────────
+  // ── slide renderers ────────────────────────────────────────────────────────
   for (let i = 0; i < slides.length; i++) {
-    const sd   = slides[i];
+    const sd = slides[i];
     const slide = pres.addSlide({ masterName: 'JARVIS_MASTER' });
-
-    // Transition (cycle through types, vary per slide)
-    const tType = TRANSITION_SEQUENCE[i % TRANSITION_SEQUENCE.length];
-    slide.transition = makeTransition(tType, i === 0 ? 600 : 500);
-
-    // Speaker notes
+    slide.transition = makeTransition(i);
     if (sd.speakerNotes) slide.addNotes(sd.speakerNotes);
-
-    // ── Fetch background image if requested ──────────────
-    let bgImageData = null;
-    if (sd.imageSearch) {
-      bgImageData = await fetchSlideImage(sd.imageSearch);
-    }
+    let bgImg = sd.imageSearch ? await fetchSlideImage(sd.imageSearch) : null;
 
     switch (sd.type) {
 
-      // ── TITLE SLIDE ──────────────────────────────────────
+      // ── TITLE (dark gradient) ──────────────────────────────────────────────
       case 'title': {
-        // Dark gradient overlay bg
-        slide.background = { color: T.titleBg };
-
-        // Big decorative circle (top-right)
-        slide.addShape(pres.shapes.OVAL, {
-          x: 7.2, y: -1.5, w: 5, h: 5,
-          fill: { color: T.accent, transparency: 80 }, line: { color: T.accent, transparency: 80 },
-        });
-        slide.addShape(pres.shapes.OVAL, {
-          x: 8, y: -0.8, w: 3.5, h: 3.5,
-          fill: { color: T.accent2, transparency: 70 }, line: { color: T.accent2, transparency: 70 },
-        });
-
-        // Accent left bar
-        slide.addShape(pres.shapes.RECTANGLE, {
-          x: 0.5, y: 1.5, w: 0.1, h: 2.4,
-          fill: { color: T.accent }, line: { color: T.accent },
-        });
-
-        // Title
-        slide.addText(sd.title || title, {
-          x: 0.75, y: 1.5, w: 8, h: 1.6,
-          fontSize: 40, bold: true, color: T.text,
-          fontFace: 'Calibri', valign: 'middle', margin: 0,
-        });
-
-        // Subtitle
-        if (sd.subtitle) {
-          slide.addText(sd.subtitle, {
-            x: 0.75, y: 3.2, w: 7.5, h: 0.8,
-            fontSize: 18, color: T.subtext, fontFace: 'Calibri Light', valign: 'top', margin: 0,
-          });
+        // gradient via two overlapping rects
+        slide.addShape(pres.shapes.RECTANGLE, { x:0, y:0, w:10, h:5.625, fill:{color:T.gradStart}, line:{color:T.gradStart} });
+        slide.addShape(pres.shapes.RECTANGLE, { x:5, y:0, w:5, h:5.625, fill:{color:T.gradEnd,transparency:50}, line:{color:T.gradEnd,transparency:50} });
+        // decorative circles
+        slide.addShape(pres.shapes.OVAL, { x:7.5, y:-1.8, w:5.5, h:5.5, fill:{color:T.accent,transparency:78}, line:{color:T.accent,transparency:78} });
+        slide.addShape(pres.shapes.OVAL, { x:8.2, y:-0.9, w:3.8, h:3.8, fill:{color:T.accent2,transparency:70}, line:{color:T.accent2,transparency:70} });
+        // vertical accent bar
+        slide.addShape(pres.shapes.RECTANGLE, { x:0.55, y:1.35, w:0.11, h:2.6, fill:{color:T.accent2}, line:{color:T.accent2} });
+        // title
+        slide.addText(sd.title || title, { x:0.85, y:1.3, w:7.8, h:1.8, fontSize:42, bold:true, color:'FFFFFF', fontFace:'Calibri', valign:'middle', glow:{size:8,color:T.accent,opacity:0.3} });
+        if (sd.subtitle) slide.addText(sd.subtitle, { x:0.85, y:3.15, w:7.5, h:0.9, fontSize:19, color:'FFFFFFCC', fontFace:'Calibri Light', valign:'top' });
+        // bottom strip
+        slide.addShape(pres.shapes.RECTANGLE, { x:0, y:5.05, w:10, h:0.575, fill:{color:T.accent,transparency:20}, line:{color:T.accent,transparency:20} });
+        slide.addText('JARVIS  ·  ' + new Date().getFullYear(), { x:0.4, y:5.07, w:9.2, h:0.5, fontSize:9, color:'FFFFFF99', align:'right', valign:'middle' });
+        if (bgImg) {
+          slide.addImage({ data: bgImg, x:6.5, y:0.8, w:3.3, h:3.8, sizing:{type:'cover',w:3.3,h:3.8}, transparency:20 });
         }
-
-        // Bottom accent strip with title text
-        slide.addShape(pres.shapes.RECTANGLE, {
-          x: 0, y: 5.0, w: 10, h: 0.625,
-          fill: { color: T.accent, transparency: 15 }, line: { color: T.accent, transparency: 15 },
-        });
-        slide.addText('JARVIS  ·  ' + new Date().getFullYear(), {
-          x: 0.3, y: 5.05, w: 9.4, h: 0.5,
-          fontSize: 9, color: T.text, align: 'right', valign: 'middle', margin: 0,
-        });
         break;
       }
 
-      // ── CONTENT (bullet) SLIDE ───────────────────────────
+      // ── COVER-DARK (full bleed image + text overlay) ──────────────────────
+      case 'cover-dark': {
+        slide.background = { color: '000000' };
+        if (bgImg) slide.addImage({ data:bgImg, x:0, y:0, w:10, h:5.625, sizing:{type:'cover',w:10,h:5.625}, transparency:0 });
+        slide.addShape(pres.shapes.RECTANGLE, { x:0, y:0, w:10, h:5.625, fill:{color:'000000',transparency:45}, line:{color:'000000',transparency:45} });
+        slide.addShape(pres.shapes.RECTANGLE, { x:0, y:3.8, w:10, h:1.825, fill:{color:'000000',transparency:20}, line:{color:'000000',transparency:20} });
+        slide.addShape(pres.shapes.RECTANGLE, { x:0, y:3.8, w:0.13, h:1.825, fill:{color:T.accent}, line:{color:T.accent} });
+        slide.addText(sd.title||'', { x:0.3, y:3.85, w:9.4, h:0.9, fontSize:30, bold:true, color:'FFFFFF', fontFace:'Calibri', valign:'middle' });
+        if (sd.subtitle) slide.addText(sd.subtitle, { x:0.3, y:4.8, w:9.4, h:0.55, fontSize:15, color:'FFFFFFCC', fontFace:'Calibri Light', valign:'top' });
+        break;
+      }
+
+      // ── CONTENT (bullets + optional image) ────────────────────────────────
       case 'content': {
         slide.background = { color: T.bg };
-
-        if (bgImageData) {
-          slide.addImage({ data: bgImageData, x: 5.5, y: 0.6, w: 4.3, h: 4.5,
-            sizing: { type: 'cover', w: 4.3, h: 4.5 }, transparency: 5 });
-          // dark overlay on image side
-          slide.addShape(pres.shapes.RECTANGLE, {
-            x: 5.5, y: 0.6, w: 4.3, h: 4.5,
-            fill: { color: T.bg, transparency: 30 }, line: { color: T.bg, transparency: 30 },
-          });
+        hdr(slide, sd.title);
+        const cw = bgImg ? 5.0 : 9.2;
+        if (bgImg) {
+          slide.addImage({ data:bgImg, x:5.35, y:0.9, w:4.45, h:4.45, sizing:{type:'cover',w:4.45,h:4.45} });
+          slide.addShape(pres.shapes.RECTANGLE, { x:5.35, y:0.9, w:4.45, h:4.45, fill:{color:T.bg,transparency:15}, line:{color:T.bg,transparency:15} });
         }
-
-        // Title band
-        slide.addShape(pres.shapes.RECTANGLE, {
-          x: 0, y: 0, w: 10, h: 0.9,
-          fill: { color: T.bgAlt }, line: { color: T.bgAlt },
+        const items = (sd.body||[]).map((b,j) => {
+          const isEmoji = /^[\u{1F300}-\u{1FAFF}✓✗→◆•★]/u.test(b);
+          return { text: isEmoji ? b : '◆  ' + b, options: { breakLine: j < (sd.body||[]).length-1, fontSize:14.5, color:T.text, fontFace:'Calibri', paraSpaceAfter:10 }};
         });
-        slide.addShape(pres.shapes.RECTANGLE, {
-          x: 0, y: 0, w: 0.08, h: 0.9,
-          fill: { color: T.accent }, line: { color: T.accent },
-        });
-        slide.addText(sd.title || '', {
-          x: 0.25, y: 0, w: 9.5, h: 0.9,
-          fontSize: 22, bold: true, color: T.text, fontFace: 'Calibri',
-          valign: 'middle', margin: 0,
-        });
-
-        // Bullet content
-        const contentW = bgImageData ? 4.8 : 9.2;
-        const bullets = (sd.body || []);
-        if (bullets.length) {
-          const items = bullets.map((b, idx) => ({
-            text: b,
-            options: {
-              bullet: true, breakLine: idx < bullets.length - 1,
-              fontSize: 15, color: T.text, fontFace: 'Calibri',
-              paraSpaceAfter: 8,
-            },
-          }));
-          slide.addText(items, { x: 0.5, y: 1.1, w: contentW, h: 4.2, valign: 'top' });
-        }
-
-        addFooter(slide, title);
+        if (items.length) slide.addText(items, { x:0.45, y:1.0, w:cw, h:4.35, valign:'top' });
+        footer(slide);
         break;
       }
 
-      // ── TWO-COLUMN SLIDE ─────────────────────────────────
+      // ── TWO-COLUMN ─────────────────────────────────────────────────────────
       case 'two-column': {
         slide.background = { color: T.bg };
-
-        // Title
-        slide.addShape(pres.shapes.RECTANGLE, {
-          x: 0, y: 0, w: 10, h: 0.85,
-          fill: { color: T.bgAlt }, line: { color: T.bgAlt },
+        hdr(slide, sd.title, T.accent2);
+        slide.addShape(pres.shapes.LINE, { x:5.05, y:0.95, w:0, h:4.3, line:{color:T.border,pt:1} });
+        [[sd.left||[], 0.3, 4.5],[sd.right||[], 5.25, 4.45]].forEach(([arr, x, w]) => {
+          card(slide, x, 0.9, w, 4.38);
+          const items = arr.map((b,j) => ({ text:'◆  '+b, options:{bullet:false, breakLine:j<arr.length-1, fontSize:13.5, color:T.text, fontFace:'Calibri', paraSpaceAfter:8} }));
+          if (items.length) slide.addText(items, { x:x+0.15, y:1.05, w:w-0.25, h:4.1, valign:'top' });
         });
-        slide.addShape(pres.shapes.RECTANGLE, {
-          x: 0, y: 0, w: 0.08, h: 0.85,
-          fill: { color: T.accent2 }, line: { color: T.accent2 },
-        });
-        slide.addText(sd.title || '', {
-          x: 0.25, y: 0, w: 9.5, h: 0.85,
-          fontSize: 22, bold: true, color: T.text, fontFace: 'Calibri',
-          valign: 'middle', margin: 0,
-        });
-
-        // Divider
-        slide.addShape(pres.shapes.LINE, {
-          x: 5.0, y: 1.0, w: 0, h: 4.2,
-          line: { color: T.border, pt: 1 },
-        });
-
-        // Left col
-        accentCard(slide, 0.3, 0.95, 4.5, 4.35, T.bgAlt);
-        const leftItems = (sd.left || []).map((b, i) => ({
-          text: b, options: { bullet: true, breakLine: i < (sd.left||[]).length-1, fontSize: 14, color: T.text, paraSpaceAfter: 7 },
-        }));
-        if (leftItems.length) slide.addText(leftItems, { x: 0.5, y: 1.1, w: 4.2, h: 4.1, valign: 'top' });
-
-        // Right col
-        accentCard(slide, 5.2, 0.95, 4.5, 4.35, T.bgAlt);
-        const rightItems = (sd.right || []).map((b, i) => ({
-          text: b, options: { bullet: true, breakLine: i < (sd.right||[]).length-1, fontSize: 14, color: T.text, paraSpaceAfter: 7 },
-        }));
-        if (rightItems.length) slide.addText(rightItems, { x: 5.4, y: 1.1, w: 4.2, h: 4.1, valign: 'top' });
-
-        addFooter(slide, title);
+        footer(slide);
         break;
       }
 
-      // ── FULL IMAGE SLIDE ─────────────────────────────────
-      case 'image-full': {
-        slide.background = { color: T.bg };
-        if (bgImageData) {
-          slide.addImage({ data: bgImageData, x: 0, y: 0, w: 10, h: 5.625,
-            sizing: { type: 'cover', w: 10, h: 5.625 } });
-        }
-        // Dark overlay
-        slide.addShape(pres.shapes.RECTANGLE, {
-          x: 0, y: 0, w: 10, h: 5.625,
-          fill: { color: '000000', transparency: 40 }, line: { color: '000000', transparency: 40 },
-        });
-        // Bottom text band
-        slide.addShape(pres.shapes.RECTANGLE, {
-          x: 0, y: 4.1, w: 10, h: 1.525,
-          fill: { color: '000000', transparency: 30 }, line: { color: '000000', transparency: 30 },
-        });
-        slide.addShape(pres.shapes.RECTANGLE, {
-          x: 0, y: 4.1, w: 0.12, h: 1.525,
-          fill: { color: T.accent }, line: { color: T.accent },
-        });
-        slide.addText(sd.title || '', {
-          x: 0.3, y: 4.15, w: 9.4, h: 0.75,
-          fontSize: 28, bold: true, color: 'FFFFFF', fontFace: 'Calibri', valign: 'middle', margin: 0,
-        });
-        if (sd.subtitle) {
-          slide.addText(sd.subtitle, {
-            x: 0.3, y: 4.95, w: 9.4, h: 0.45,
-            fontSize: 14, color: 'DDDDDD', fontFace: 'Calibri Light', valign: 'top', margin: 0,
-          });
-        }
-        break;
-      }
-
-      // ── STATS SLIDE ──────────────────────────────────────
+      // ── STATS ──────────────────────────────────────────────────────────────
       case 'stats': {
         slide.background = { color: T.bg };
-        // Title
-        slide.addShape(pres.shapes.RECTANGLE, {
-          x: 0, y: 0, w: 10, h: 0.85,
-          fill: { color: T.bgAlt }, line: { color: T.bgAlt },
-        });
-        slide.addShape(pres.shapes.RECTANGLE, {
-          x: 0, y: 0, w: 0.08, h: 0.85,
-          fill: { color: T.accent }, line: { color: T.accent },
-        });
-        slide.addText(sd.title || '', {
-          x: 0.25, y: 0, w: 9.5, h: 0.85,
-          fontSize: 22, bold: true, color: T.text, fontFace: 'Calibri', valign: 'middle', margin: 0,
-        });
-
+        hdr(slide, sd.title);
         const stats = sd.stats || [];
-        const cols  = Math.min(stats.length, 4);
-        const cardW = (9.2 / cols) - 0.15;
+        const n = Math.min(stats.length, 4);
+        const cw2 = (9.2 / n) - 0.14;
         stats.slice(0, 4).forEach((s, idx) => {
-          const cx = 0.4 + idx * (cardW + 0.15);
-          accentCard(slide, cx, 1.1, cardW, 3.7, T.bgAlt);
-          // Accent top strip
-          slide.addShape(pres.shapes.RECTANGLE, {
-            x: cx, y: 1.1, w: cardW, h: 0.07,
-            fill: { color: T.accent }, line: { color: T.accent },
-          });
-          // Big number
-          slide.addText(s.value || '', {
-            x: cx + 0.1, y: 1.5, w: cardW - 0.2, h: 2.0,
-            fontSize: cols <= 2 ? 56 : 44, bold: true, color: T.accent,
-            fontFace: 'Calibri', align: 'center', valign: 'middle', margin: 0,
-          });
-          // Label
-          slide.addText(s.label || '', {
-            x: cx + 0.1, y: 3.6, w: cardW - 0.2, h: 0.9,
-            fontSize: 13, color: T.subtext, fontFace: 'Calibri',
-            align: 'center', valign: 'top', margin: 0,
-          });
+          const cx = 0.4 + idx * (cw2 + 0.14);
+          const col = T.chartColors[idx % T.chartColors.length];
+          card(slide, cx, 1.0, cw2, 3.85);
+          slide.addShape(pres.shapes.RECTANGLE, { x:cx, y:1.0, w:cw2, h:0.07, fill:{color:col}, line:{color:col} });
+          slide.addText(s.value||'', { x:cx+0.1, y:1.35, w:cw2-0.2, h:2.1, fontSize:n<=2?58:46, bold:true, color:col, fontFace:'Calibri', align:'center', valign:'middle' });
+          slide.addShape(pres.shapes.LINE, { x:cx+cw2*0.2, y:3.5, w:cw2*0.6, h:0, line:{color:col,pt:1} });
+          slide.addText(s.label||'', { x:cx+0.1, y:3.6, w:cw2-0.2, h:0.8, fontSize:12.5, color:T.subtext, fontFace:'Calibri', align:'center', valign:'top' });
         });
-
-        addFooter(slide, title);
+        footer(slide);
         break;
       }
 
-      // ── QUOTE SLIDE ──────────────────────────────────────
+      // ── QUOTE ──────────────────────────────────────────────────────────────
       case 'quote': {
         slide.background = { color: T.titleBg };
-        // Large decorative quote mark
-        slide.addText('\u201C', {
-          x: 0.3, y: 0.1, w: 2, h: 2,
-          fontSize: 120, color: T.accent, fontFace: 'Georgia',
-          align: 'left', valign: 'top', margin: 0, transparency: 60,
-        });
-        // Quote text
-        slide.addText(sd.quote || '', {
-          x: 0.9, y: 1.2, w: 8.2, h: 3.0,
-          fontSize: 24, italic: true, color: T.text, fontFace: 'Georgia',
-          align: 'center', valign: 'middle',
-          lineSpacingMultiple: 1.4,
-        });
-        // Attribution
+        slide.addText('\u201C', { x:0.3, y:0.05, w:2.5, h:2.2, fontSize:130, color:T.accent, fontFace:'Georgia', align:'left', valign:'top', transparency:55 });
+        slide.addText(sd.quote||'', { x:0.9, y:1.3, w:8.2, h:2.85, fontSize:23, italic:true, color:T.text, fontFace:'Georgia', align:'center', valign:'middle', lineSpacingMultiple:1.45 });
         if (sd.attribution) {
-          slide.addShape(pres.shapes.RECTANGLE, {
-            x: 3.5, y: 4.35, w: 3, h: 0.04,
-            fill: { color: T.accent }, line: { color: T.accent },
-          });
-          slide.addText('\u2014 ' + sd.attribution, {
-            x: 0.5, y: 4.5, w: 9, h: 0.5,
-            fontSize: 14, color: T.subtext, fontFace: 'Calibri Light',
-            align: 'center', valign: 'top', margin: 0,
-          });
+          slide.addShape(pres.shapes.RECTANGLE, { x:3.6, y:4.4, w:2.8, h:0.04, fill:{color:T.accent}, line:{color:T.accent} });
+          slide.addText('\u2014 ' + sd.attribution, { x:0.5, y:4.55, w:9, h:0.5, fontSize:14, color:T.subtext, fontFace:'Calibri Light', align:'center' });
         }
-        addFooter(slide, title);
+        footer(slide);
         break;
       }
 
-      // ── TIMELINE / STEPS SLIDE ───────────────────────────
+      // ── TIMELINE ───────────────────────────────────────────────────────────
       case 'timeline': {
         slide.background = { color: T.bg };
-        slide.addShape(pres.shapes.RECTANGLE, {
-          x: 0, y: 0, w: 10, h: 0.85,
-          fill: { color: T.bgAlt }, line: { color: T.bgAlt },
+        hdr(slide, sd.title, T.accent2);
+        const steps = sd.steps||[];
+        const n2 = Math.min(steps.length, 6);
+        const sw = 9.2 / n2;
+        // spine
+        slide.addShape(pres.shapes.RECTANGLE, { x:0.4+sw/2, y:2.47, w:sw*(n2-1), h:0.05, fill:{color:T.accent,transparency:30}, line:{color:T.accent,transparency:30} });
+        steps.slice(0,6).forEach((step, idx) => {
+          const cx = 0.4 + idx*sw + sw/2;
+          const col = T.chartColors[idx % T.chartColors.length];
+          slide.addShape(pres.shapes.OVAL, { x:cx-0.3, y:2.2, w:0.6, h:0.6, fill:{color:col}, line:{color:col} });
+          slide.addText(String(idx+1), { x:cx-0.3, y:2.2, w:0.6, h:0.6, fontSize:13, bold:true, color:'FFFFFF', align:'center', valign:'middle' });
+          slide.addText(step, { x:cx-sw/2+0.05, y:2.9, w:sw-0.1, h:2.4, fontSize:12, color:T.text, fontFace:'Calibri', align:'center', valign:'top' });
+          if (idx%2===0) slide.addShape(pres.shapes.OVAL, { x:cx-0.07, y:1.7, w:0.14, h:0.14, fill:{color:col,transparency:30}, line:{color:col,transparency:30} });
         });
-        slide.addShape(pres.shapes.RECTANGLE, {
-          x: 0, y: 0, w: 0.08, h: 0.85,
-          fill: { color: T.accent2 }, line: { color: T.accent2 },
-        });
-        slide.addText(sd.title || '', {
-          x: 0.25, y: 0, w: 9.5, h: 0.85,
-          fontSize: 22, bold: true, color: T.text, fontFace: 'Calibri', valign: 'middle', margin: 0,
-        });
-
-        const steps = sd.steps || [];
-        const n     = Math.min(steps.length, 6);
-        const stepW = 9.2 / n;
-        // Horizontal timeline spine
-        slide.addShape(pres.shapes.LINE, {
-          x: 0.4 + stepW / 2, y: 2.3,
-          w: stepW * (n - 1), h: 0,
-          line: { color: T.accent, pt: 2 },
-        });
-        steps.slice(0, 6).forEach((step, idx) => {
-          const cx = 0.4 + idx * stepW + stepW / 2;
-          // Circle node
-          slide.addShape(pres.shapes.OVAL, {
-            x: cx - 0.28, y: 2.02, w: 0.56, h: 0.56,
-            fill: { color: idx === 0 ? T.accent : T.bgAlt },
-            line: { color: T.accent, pt: 2 },
-          });
-          // Step number
-          slide.addText(String(idx + 1), {
-            x: cx - 0.28, y: 2.02, w: 0.56, h: 0.56,
-            fontSize: 13, bold: true,
-            color: idx === 0 ? 'FFFFFF' : T.accent,
-            align: 'center', valign: 'middle', margin: 0,
-          });
-          // Step text
-          slide.addText(step, {
-            x: cx - stepW / 2 + 0.05, y: 2.7, w: stepW - 0.1, h: 2.5,
-            fontSize: 12, color: T.text, fontFace: 'Calibri',
-            align: 'center', valign: 'top', margin: 0,
-          });
-          // Alternating dots above
-          if (idx % 2 === 0) {
-            slide.addShape(pres.shapes.OVAL, {
-              x: cx - 0.05, y: 1.6, w: 0.1, h: 0.1,
-              fill: { color: T.accent2 }, line: { color: T.accent2 },
-            });
-          }
-        });
-
-        addFooter(slide, title);
+        footer(slide);
         break;
       }
 
-      // ── AGENDA SLIDE ─────────────────────────────────────
+      // ── AGENDA ─────────────────────────────────────────────────────────────
       case 'agenda': {
         slide.background = { color: T.bg };
-        // Title
-        slide.addShape(pres.shapes.RECTANGLE, {
-          x: 0, y: 0, w: 10, h: 0.85,
-          fill: { color: T.bgAlt }, line: { color: T.bgAlt },
+        hdr(slide, sd.title||'Agenda');
+        const items2 = sd.body||[];
+        const ch = Math.min(0.68, 4.3/items2.length);
+        items2.slice(0,7).forEach((item, idx) => {
+          const oy = 0.98 + idx*(ch+0.09);
+          const col = T.chartColors[idx % T.chartColors.length];
+          card(slide, 0.4, oy, 9.2, ch);
+          slide.addShape(pres.shapes.RECTANGLE, { x:0.4, y:oy, w:0.06, h:ch, fill:{color:col}, line:{color:col} });
+          slide.addShape(pres.shapes.OVAL, { x:0.6, y:oy+ch/2-0.22, w:0.44, h:0.44, fill:{color:col}, line:{color:col} });
+          slide.addText(String(idx+1), { x:0.6, y:oy+ch/2-0.22, w:0.44, h:0.44, fontSize:12, bold:true, color:'FFFFFF', align:'center', valign:'middle' });
+          slide.addText(item, { x:1.2, y:oy, w:8.1, h:ch, fontSize:13.5, color:T.text, fontFace:'Calibri', valign:'middle' });
         });
-        slide.addShape(pres.shapes.RECTANGLE, {
-          x: 0, y: 0, w: 0.08, h: 0.85,
-          fill: { color: T.accent }, line: { color: T.accent },
-        });
-        slide.addText(sd.title || 'Agenda', {
-          x: 0.25, y: 0, w: 9.5, h: 0.85,
-          fontSize: 22, bold: true, color: T.text, fontFace: 'Calibri', valign: 'middle', margin: 0,
-        });
-
-        const items = sd.body || [];
-        const cardH = Math.min(0.7, 4.3 / items.length);
-        items.slice(0, 7).forEach((item, idx) => {
-          const oy = 1.0 + idx * (cardH + 0.1);
-          accentCard(slide, 0.4, oy, 9.2, cardH, T.bgAlt);
-          // Number circle
-          slide.addShape(pres.shapes.OVAL, {
-            x: 0.55, y: oy + cardH / 2 - 0.22, w: 0.44, h: 0.44,
-            fill: { color: T.accent }, line: { color: T.accent },
-          });
-          slide.addText(String(idx + 1), {
-            x: 0.55, y: oy + cardH / 2 - 0.22, w: 0.44, h: 0.44,
-            fontSize: 12, bold: true, color: 'FFFFFF',
-            align: 'center', valign: 'middle', margin: 0,
-          });
-          // Item text
-          slide.addText(item, {
-            x: 1.15, y: oy, w: 8.2, h: cardH,
-            fontSize: 14, color: T.text, fontFace: 'Calibri',
-            valign: 'middle', margin: 0,
-          });
-        });
-
-        addFooter(slide, title);
+        footer(slide);
         break;
       }
 
-      // ── DEFAULT fallback ─────────────────────────────────
+      // ── IMAGE-FULL ─────────────────────────────────────────────────────────
+      case 'image-full': {
+        slide.background = { color: T.bg };
+        if (bgImg) slide.addImage({ data:bgImg, x:0, y:0, w:10, h:5.625, sizing:{type:'cover',w:10,h:5.625} });
+        slide.addShape(pres.shapes.RECTANGLE, { x:0, y:0, w:10, h:5.625, fill:{color:'000000',transparency:40}, line:{color:'000000',transparency:40} });
+        slide.addShape(pres.shapes.RECTANGLE, { x:0, y:3.95, w:10, h:1.675, fill:{color:'000000',transparency:25}, line:{color:'000000',transparency:25} });
+        slide.addShape(pres.shapes.RECTANGLE, { x:0, y:3.95, w:0.13, h:1.675, fill:{color:T.accent}, line:{color:T.accent} });
+        slide.addText(sd.title||'', { x:0.25, y:4.0, w:9.5, h:0.8, fontSize:30, bold:true, color:'FFFFFF', fontFace:'Calibri', valign:'middle' });
+        if (sd.subtitle) slide.addText(sd.subtitle, { x:0.25, y:4.85, w:9.5, h:0.5, fontSize:14, color:'FFFFFFCC', fontFace:'Calibri Light', valign:'top' });
+        break;
+      }
+
+      // ── CHART ──────────────────────────────────────────────────────────────
+      case 'chart': {
+        slide.background = { color: T.bg };
+        hdr(slide, sd.title);
+        const chartType = sd.chartType || 'bar'; // bar | line | pie | donut | area
+        const chartData = sd.chartData || { labels:['A','B','C'], datasets:[{ name:'Series 1', values:[30,50,70] }] };
+
+        const pptChartType = {
+          bar:   pres.ChartType.bar,
+          line:  pres.ChartType.line,
+          pie:   pres.ChartType.pie,
+          donut: pres.ChartType.doughnut,
+          area:  pres.ChartType.area,
+          bar3d: pres.ChartType.bar3D,
+        }[chartType] || pres.ChartType.bar;
+
+        const seriesColors = chartData.datasets.map((_, di) => T.chartColors[di % T.chartColors.length]);
+
+        const chartDataFormatted = chartData.datasets.map((ds, di) => ({
+          name: ds.name,
+          labels: chartData.labels,
+          values: ds.values,
+        }));
+
+        const chartOptions = {
+          x: 0.4, y: 0.95, w: 9.2, h: 4.45,
+          chartColors: seriesColors,
+          showLegend: chartData.datasets.length > 1,
+          legendPos: 'b',
+          showTitle: false,
+          dataLabelColor: T.text,
+          valAxisLineColor: T.border,
+          catAxisLineColor: T.border,
+          valGridLine: { color: T.border, style: 'dash', size: 0.5 },
+          catGridLine: { color: T.border, style: 'dash', size: 0.5 },
+          plotAreaBkgndColor: T.bg,
+          chartAreaBkgndColor: T.bg,
+          dataLabelFontSize: 10,
+          dataLabelFontBold: false,
+          showValue: sd.showValues !== false,
+          bar3DShape: 'cylinder',
+        };
+
+        if (['pie','donut'].includes(chartType)) {
+          chartOptions.showLabel = true;
+          chartOptions.showPercent = true;
+          chartOptions.showValue = false;
+          chartOptions.holeSize = chartType === 'donut' ? 60 : 0;
+        }
+
+        slide.addChart(pptChartType, chartDataFormatted, chartOptions);
+
+        // subtitle under header
+        if (sd.subtitle) slide.addText(sd.subtitle, { x:0.45, y:0.83, w:9.1, h:0.25, fontSize:10, color:T.subtext, fontFace:'Calibri' });
+        footer(slide);
+        break;
+      }
+
+      // ── COMPARISON (side-by-side cards) ────────────────────────────────────
+      case 'comparison': {
+        slide.background = { color: T.bg };
+        hdr(slide, sd.title);
+        const cols = sd.columns || [];
+        const nCols = Math.min(cols.length, 3);
+        const colW = nCols > 0 ? (9.2 / nCols) - 0.12 : 9.08;
+        cols.slice(0, 3).forEach((col, idx) => {
+          const cx = 0.4 + idx * (colW + 0.12);
+          const accentCol = T.chartColors[idx % T.chartColors.length];
+          card(slide, cx, 0.9, colW, 4.42);
+          slide.addShape(pres.shapes.RECTANGLE, { x:cx, y:0.9, w:colW, h:0.1, fill:{color:accentCol}, line:{color:accentCol} });
+          slide.addText(col.header||'', { x:cx+0.1, y:1.05, w:colW-0.2, h:0.5, fontSize:15, bold:true, color:accentCol, fontFace:'Calibri', align:'center' });
+          if (col.value) slide.addText(col.value, { x:cx+0.1, y:1.6, w:colW-0.2, h:0.55, fontSize:22, bold:true, color:T.text, fontFace:'Calibri', align:'center' });
+          const points = col.points || [];
+          const pitems = points.map((p,pi) => ({ text:'✓  '+p, options:{breakLine:pi<points.length-1, fontSize:12.5, color:T.text, paraSpaceAfter:8} }));
+          if (pitems.length) slide.addText(pitems, { x:cx+0.15, y:col.value?2.2:1.65, w:colW-0.28, h:col.value?2.95:3.5, valign:'top' });
+        });
+        footer(slide);
+        break;
+      }
+
+      // ── PROCESS (numbered steps with arrows) ───────────────────────────────
+      case 'process': {
+        slide.background = { color: T.bg };
+        hdr(slide, sd.title);
+        const steps2 = sd.steps||[];
+        const n3 = Math.min(steps2.length, 5);
+        const bw = 9.2 / n3 - 0.1;
+        steps2.slice(0,5).forEach((step, idx) => {
+          const cx = 0.4 + idx * (bw + 0.1);
+          const col = T.chartColors[idx % T.chartColors.length];
+          card(slide, cx, 1.0, bw, 3.9);
+          slide.addShape(pres.shapes.RECTANGLE, { x:cx, y:1.0, w:bw, h:0.08, fill:{color:col}, line:{color:col} });
+          // circle number
+          slide.addShape(pres.shapes.OVAL, { x:cx+bw/2-0.38, y:1.2, w:0.76, h:0.76, fill:{color:col,transparency:20}, line:{color:col,pt:2} });
+          slide.addText(String(idx+1), { x:cx+bw/2-0.38, y:1.2, w:0.76, h:0.76, fontSize:18, bold:true, color:col, align:'center', valign:'middle' });
+          // step label
+          const parts = step.split('|');
+          slide.addText(parts[0]||step, { x:cx+0.08, y:2.1, w:bw-0.16, h:0.6, fontSize:13, bold:true, color:T.text, fontFace:'Calibri', align:'center', valign:'middle' });
+          if (parts[1]) slide.addText(parts[1], { x:cx+0.08, y:2.75, w:bw-0.16, h:1.8, fontSize:11.5, color:T.subtext, fontFace:'Calibri', align:'center', valign:'top' });
+          // arrow
+          if (idx < n3-1) slide.addShape(pres.shapes.RIGHT_ARROW, { x:cx+bw+0.01, y:2.3, w:0.1, h:0.3, fill:{color:T.border}, line:{color:T.border} });
+        });
+        footer(slide);
+        break;
+      }
+
+      // ── DATA-TABLE ─────────────────────────────────────────────────────────
+      case 'data-table': {
+        slide.background = { color: T.bg };
+        hdr(slide, sd.title);
+        const rows = sd.tableData||[];
+        if (rows.length) {
+          slide.addTable(rows, {
+            x:0.4, y:0.95, w:9.2,
+            colW: Array(rows[0].length).fill(9.2/rows[0].length),
+            border: { color:T.border, pt:0.5 },
+            fill: T.bgAlt,
+            fontFace: 'Calibri',
+            fontSize: 12,
+            color: T.text,
+            align: 'center',
+            valign: 'middle',
+            rowH: 0.45,
+          });
+        }
+        footer(slide);
+        break;
+      }
+
+      // ── DEFAULT ────────────────────────────────────────────────────────────
       default: {
         slide.background = { color: T.bg };
-        slide.addText(sd.title || '', {
-          x: 0.5, y: 0.5, w: 9, h: 1,
-          fontSize: 28, bold: true, color: T.text, fontFace: 'Calibri',
-        });
-        const bodyItems = (sd.body || []).map((b, i) => ({
-          text: b, options: { bullet: true, breakLine: i < (sd.body||[]).length-1, fontSize: 15, color: T.text, paraSpaceAfter: 8 },
-        }));
-        if (bodyItems.length) slide.addText(bodyItems, { x: 0.5, y: 1.7, w: 9, h: 3.5, valign: 'top' });
-        addFooter(slide, title);
+        hdr(slide, sd.title);
+        const items3 = (sd.body||[]).map((b,j) => ({ text:'◆  '+b, options:{breakLine:j<(sd.body||[]).length-1, fontSize:14.5, color:T.text, fontFace:'Calibri', paraSpaceAfter:10} }));
+        if (items3.length) slide.addText(items3, { x:0.45, y:1.05, w:9.1, h:4.3, valign:'top' });
+        footer(slide);
       }
     }
   }
 
-  // ── Save & return URL ─────────────────────────────────────
   const safeFilename = filename.replace(/[^a-zA-Z0-9_-]/g, '_');
   const outPath = path.join(PUBLIC_DIR, `${safeFilename}.pptx`);
   await pres.writeFile({ fileName: outPath });
+  return `Presentation ready! Download: https://api.heyjarvis.me/view/${safeFilename}.pptx`;
+}
 
-  const url = `https://api.heyjarvis.me/view/${safeFilename}.pptx`;
-  console.log(`[PPTX] Saved: ${outPath}`);
-  return `Presentation created! Download it here: ${url}`;
+// ── Excel / Financial Statement Generator ─────────────────────────────────────
+async function generateExcel({ title, type, filename, data, assumptions, periods, currency = 'USD', units = 'thousands' }) {
+  const openpyxl_code = buildExcelCode({ title, type, filename, data, assumptions, periods, currency, units });
+  const result = await executeCode(openpyxl_code, 'python', `Generate Excel: ${title}`);
+  if (result.includes('Error') || result.includes('Traceback')) {
+    console.log('[EXCEL] Error:', result);
+    return `Excel generation failed: ${result.substring(0, 300)}`;
+  }
+  return `Excel file ready! Download: https://api.heyjarvis.me/view/${filename.replace(/[^a-zA-Z0-9_-]/g,'_')}.xlsx`;
+}
+
+function buildExcelCode({ title, type, filename, data, assumptions, periods, currency, units }) {
+  const safe = filename.replace(/[^a-zA-Z0-9_-]/g,'_');
+  const PUBLIC_DIR_ESC = PUBLIC_DIR.replace(/\\/g,'\\\\');
+  const periodsJson = JSON.stringify(periods || ['2022','2023','2024E','2025E','2026E']);
+  const dataJson = JSON.stringify(data || {});
+  const assumptionsJson = JSON.stringify(assumptions || {});
+
+  return `
+import sys, os, json
+sys.stdout.reconfigure(encoding='utf-8')
+from openpyxl import Workbook
+from openpyxl.styles import (Font, PatternFill, Alignment, Border, Side, GradientFill)
+from openpyxl.utils import get_column_letter
+from openpyxl.chart import BarChart, LineChart, PieChart, Reference
+from openpyxl.chart.series import DataPoint
+from openpyxl.formatting.rule import CellIsRule, ColorScaleRule, DataBarRule
+from openpyxl.styles.numbers import FORMAT_PERCENTAGE_00
+
+PUBLIC_DIR = r"${PUBLIC_DIR_ESC}"
+TITLE = ${JSON.stringify(title)}
+TYPE = ${JSON.stringify(type || 'income_statement')}
+PERIODS = json.loads(${JSON.stringify(periodsJson)})
+DATA = json.loads(${JSON.stringify(dataJson)})
+ASSUMPTIONS = json.loads(${JSON.stringify(assumptionsJson)})
+CURRENCY = ${JSON.stringify(currency)}
+UNITS = ${JSON.stringify(units)}
+FILENAME = "${safe}.xlsx"
+
+wb = Workbook()
+
+# ── Color palette (industry standard) ─────────────────────────────
+C_HEADER_BG  = "1D4ED8"   # deep blue header
+C_HEADER_FG  = "FFFFFF"
+C_SECTION_BG = "EFF6FF"   # light blue section
+C_INPUT_FG   = "0000FF"   # blue = hardcoded input
+C_FORMULA_FG = "000000"   # black = formula
+C_LINK_FG    = "008000"   # green = cross-sheet link
+C_TOTAL_BG   = "DBEAFE"   # totals row
+C_SUBTOTAL_BG= "F0F9FF"
+C_NEG_FG     = "DC2626"   # red = negative / warning
+C_ASSUMPTION_BG = "FFFBEB"  # yellow = key assumptions
+C_BORDER     = "CBD5E1"
+
+THIN = Side(style='thin', color=C_BORDER)
+THICK = Side(style='medium', color='1D4ED8')
+NO = Side(style=None)
+
+def hdr_fill(): return PatternFill("solid", fgColor=C_HEADER_BG)
+def sec_fill(): return PatternFill("solid", fgColor=C_SECTION_BG)
+def total_fill(): return PatternFill("solid", fgColor=C_TOTAL_BG)
+def sub_fill(): return PatternFill("solid", fgColor=C_SUBTOTAL_BG)
+def assump_fill(): return PatternFill("solid", fgColor=C_ASSUMPTION_BG)
+
+def hdr_font(sz=11): return Font(bold=True, color=C_HEADER_FG, name='Calibri', size=sz)
+def sec_font(): return Font(bold=True, color="1D4ED8", name='Calibri', size=10)
+def input_font(): return Font(color=C_INPUT_FG, name='Calibri', size=10)
+def formula_font(): return Font(color=C_FORMULA_FG, name='Calibri', size=10)
+def total_font(): return Font(bold=True, color=C_FORMULA_FG, name='Calibri', size=10)
+def label_font(): return Font(name='Calibri', size=10)
+
+def border_all(): return Border(left=THIN, right=THIN, top=THIN, bottom=THIN)
+def border_bottom(): return Border(bottom=THIN)
+def border_thick_bottom(): return Border(bottom=THICK)
+
+FMT_USD  = '#,##0_);(#,##0);"-"'
+FMT_PCT  = '0.0%;(0.0%);"-"'
+FMT_MULT = '0.0x'
+FMT_INT  = '#,##0'
+
+def num_fmt(ws, row, col_start, col_end, fmt):
+    for c in range(col_start, col_end+1):
+        ws.cell(row, c).number_format = fmt
+
+def set_col_width(ws, col, w):
+    ws.column_dimensions[get_column_letter(col)].width = w
+
+def apply_row_style(ws, row, col_start, col_end, fill=None, font=None, border=None, align=None, fmt=None):
+    for c in range(col_start, col_end+1):
+        cell = ws.cell(row, c)
+        if fill: cell.fill = fill
+        if font: cell.font = font
+        if border: cell.border = border
+        if align: cell.alignment = align
+        if fmt: cell.number_format = fmt
+
+def write_header_row(ws, row, labels, col_start=1, fill=True):
+    for i, lbl in enumerate(labels):
+        cell = ws.cell(row, col_start+i, lbl)
+        if fill:
+            cell.fill = hdr_fill()
+            cell.font = hdr_font()
+        cell.alignment = Alignment(horizontal='center', vertical='center', wrap_text=True)
+        cell.border = border_all()
+
+def write_section_header(ws, row, label, col_start, col_end):
+    ws.cell(row, col_start, label)
+    ws.cell(row, col_start).font = sec_font()
+    ws.cell(row, col_start).fill = sec_fill()
+    for c in range(col_start, col_end+1):
+        ws.cell(row, c).fill = sec_fill()
+        ws.cell(row, c).border = border_bottom()
+    ws.row_dimensions[row].height = 16
+
+n_periods = len(PERIODS)
+DATA_COL_START = 3  # col C
+DATA_COL_END   = DATA_COL_START + n_periods - 1
+
+# ══════════════════════════════════════════════════════════════════
+# ASSUMPTIONS SHEET
+# ══════════════════════════════════════════════════════════════════
+ws_a = wb.active
+ws_a.title = "Assumptions"
+ws_a.sheet_view.showGridLines = False
+
+# Title
+ws_a.merge_cells("A1:H1")
+ws_a["A1"] = TITLE + " — Key Assumptions"
+ws_a["A1"].font = Font(bold=True, size=14, color="FFFFFF", name="Calibri")
+ws_a["A1"].fill = hdr_fill()
+ws_a["A1"].alignment = Alignment(horizontal="center", vertical="center")
+ws_a.row_dimensions[1].height = 28
+
+ws_a["A2"] = f"Currency: {CURRENCY} | Units: {UNITS} | Generated by JARVIS"
+ws_a["A2"].font = Font(size=9, color="94A3B8", italic=True, name="Calibri")
+
+ws_a.row_dimensions[2].height = 14
+
+r = 4
+ws_a.cell(r, 1, "Assumption").font = hdr_font()
+ws_a.cell(r, 1).fill = hdr_fill()
+ws_a.cell(r, 1).alignment = Alignment(horizontal="center")
+
+for pi, p in enumerate(PERIODS):
+    ws_a.cell(r, 2+pi, p).fill = hdr_fill()
+    ws_a.cell(r, 2+pi).font = hdr_font()
+    ws_a.cell(r, 2+pi).alignment = Alignment(horizontal="center")
+
+ws_a.column_dimensions["A"].width = 32
+for pi in range(n_periods):
+    ws_a.column_dimensions[get_column_letter(2+pi)].width = 14
+
+# Default assumptions
+default_assumptions = {
+    "Revenue Growth Rate": [0.20, 0.18, 0.22, 0.20, 0.18],
+    "Gross Margin": [0.65, 0.66, 0.67, 0.68, 0.69],
+    "EBITDA Margin": [0.25, 0.27, 0.28, 0.30, 0.31],
+    "Tax Rate": [0.21, 0.21, 0.21, 0.21, 0.21],
+    "CapEx % Revenue": [0.05, 0.05, 0.04, 0.04, 0.04],
+    "D&A % Revenue": [0.03, 0.03, 0.03, 0.03, 0.03],
+    "Working Capital % Revenue": [0.08, 0.08, 0.07, 0.07, 0.07],
+    "Discount Rate (WACC)": [0.10, 0.10, 0.10, 0.10, 0.10],
+    "Terminal Growth Rate": [0.025, 0.025, 0.025, 0.025, 0.025],
+    "EV/EBITDA Exit Multiple": [12.0, 12.0, 14.0, 14.0, 15.0],
+}
+if ASSUMPTIONS:
+    default_assumptions.update(ASSUMPTIONS)
+
+assump_rows = {}
+for key, vals in default_assumptions.items():
+    r += 1
+    ws_a.cell(r, 1, key)
+    ws_a.cell(r, 1).font = label_font()
+    ws_a.cell(r, 1).fill = assump_fill()
+    ws_a.cell(r, 1).border = border_all()
+    assump_rows[key] = r
+    for pi in range(n_periods):
+        val = vals[pi] if pi < len(vals) else vals[-1]
+        cell = ws_a.cell(r, 2+pi, val)
+        cell.font = input_font()
+        cell.fill = assump_fill()
+        cell.border = border_all()
+        cell.alignment = Alignment(horizontal="right")
+        if isinstance(val, float) and val < 1:
+            cell.number_format = FMT_PCT
+        else:
+            cell.number_format = FMT_MULT
+
+
+# ══════════════════════════════════════════════════════════════════
+# INCOME STATEMENT
+# ══════════════════════════════════════════════════════════════════
+ws_i = wb.create_sheet("Income Statement")
+ws_i.sheet_view.showGridLines = False
+
+# Title
+ws_i.merge_cells(f"A1:{get_column_letter(DATA_COL_END+1)}1")
+ws_i["A1"] = TITLE + " — Income Statement"
+ws_i["A1"].font = Font(bold=True, size=14, color="FFFFFF", name="Calibri")
+ws_i["A1"].fill = hdr_fill()
+ws_i["A1"].alignment = Alignment(horizontal="center", vertical="center")
+ws_i.row_dimensions[1].height = 28
+
+ws_i.merge_cells(f"A2:{get_column_letter(DATA_COL_END+1)}2")
+ws_i["A2"] = f"({CURRENCY} in {UNITS})"
+ws_i["A2"].font = Font(size=9, color="94A3B8", italic=True, name="Calibri")
+
+# Column headers
+r = 4
+ws_i.cell(r, 1, "Line Item").fill = hdr_fill(); ws_i.cell(r, 1).font = hdr_font()
+ws_i.cell(r, 2, "Notes").fill = hdr_fill(); ws_i.cell(r, 2).font = hdr_font()
+for pi, p in enumerate(PERIODS):
+    c = ws_i.cell(r, DATA_COL_START+pi, p)
+    c.fill = hdr_fill(); c.font = hdr_font()
+    c.alignment = Alignment(horizontal="center")
+
+ws_i.column_dimensions["A"].width = 34
+ws_i.column_dimensions["B"].width = 18
+for pi in range(n_periods):
+    ws_i.column_dimensions[get_column_letter(DATA_COL_START+pi)].width = 14
+
+# ── Revenue section ────────────────────────────────────────────────
+r += 1; write_section_header(ws_i, r, "REVENUE", 1, DATA_COL_END)
+
+r += 1; rev_base_r = r
+ws_i.cell(r, 1, "  Total Revenue")
+ws_i.cell(r, 1).font = label_font()
+rev_base_val = (DATA.get("revenue_base") or [100000, 118000, 139000, 167000, 197000])
+for pi in range(n_periods):
+    cell = ws_i.cell(r, DATA_COL_START+pi)
+    cell.value = rev_base_val[pi] if pi < len(rev_base_val) else None
+    cell.font = input_font()
+    cell.number_format = FMT_USD
+    cell.alignment = Alignment(horizontal="right")
+
+r += 1; rev_growth_r = r
+ws_i.cell(r, 1, "  YoY Growth")
+ws_i.cell(r, 1).font = Font(italic=True, color="94A3B8", name="Calibri", size=10)
+ws_i.cell(r, DATA_COL_START).value = "—"
+for pi in range(1, n_periods):
+    col = get_column_letter(DATA_COL_START+pi)
+    prev_col = get_column_letter(DATA_COL_START+pi-1)
+    ws_i.cell(r, DATA_COL_START+pi, f"=({col}{rev_base_r}-{prev_col}{rev_base_r})/{prev_col}{rev_base_r}")
+    ws_i.cell(r, DATA_COL_START+pi).font = formula_font()
+    ws_i.cell(r, DATA_COL_START+pi).number_format = FMT_PCT
+
+# ── COGS / Gross Profit ────────────────────────────────────────────
+r += 1; write_section_header(ws_i, r, "COST OF GOODS SOLD", 1, DATA_COL_END)
+
+r += 1; cogs_r = r
+ws_i.cell(r, 1, "  Cost of Revenue")
+for pi in range(n_periods):
+    rev_col = get_column_letter(DATA_COL_START+pi)
+    margin_col = get_column_letter(2 + assump_rows.get("Gross Margin", 5) - 4)
+    # simple: COGS = Revenue * (1 - Gross Margin)
+    ws_i.cell(r, DATA_COL_START+pi, f"={rev_col}{rev_base_r}*(1-Assumptions!{get_column_letter(2+pi)}{assump_rows.get('Gross Margin', 5)})")
+    ws_i.cell(r, DATA_COL_START+pi).font = formula_font()
+    ws_i.cell(r, DATA_COL_START+pi).number_format = FMT_USD
+
+r += 1; gp_r = r
+ws_i.cell(r, 1, "Gross Profit")
+ws_i.cell(r, 1).font = total_font()
+for pi in range(n_periods):
+    rev_col = get_column_letter(DATA_COL_START+pi)
+    ws_i.cell(r, DATA_COL_START+pi, f"={rev_col}{rev_base_r}-{rev_col}{cogs_r}")
+    ws_i.cell(r, DATA_COL_START+pi).font = total_font()
+    ws_i.cell(r, DATA_COL_START+pi).number_format = FMT_USD
+apply_row_style(ws_i, r, 1, DATA_COL_END, fill=total_fill(), border=border_all())
+
+r += 1; gp_margin_r = r
+ws_i.cell(r, 1, "  Gross Margin %")
+ws_i.cell(r, 1).font = Font(italic=True, color="94A3B8", name="Calibri", size=10)
+for pi in range(n_periods):
+    rev_col = get_column_letter(DATA_COL_START+pi)
+    ws_i.cell(r, DATA_COL_START+pi, f"={rev_col}{gp_r}/{rev_col}{rev_base_r}")
+    ws_i.cell(r, DATA_COL_START+pi).number_format = FMT_PCT
+    ws_i.cell(r, DATA_COL_START+pi).font = formula_font()
+
+# ── OpEx ───────────────────────────────────────────────────────────
+r += 1; write_section_header(ws_i, r, "OPERATING EXPENSES", 1, DATA_COL_END)
+opex_items = DATA.get("opex_items") or [
+    {"name": "Sales & Marketing", "pct_rev": [0.15,0.14,0.13,0.12,0.11]},
+    {"name": "Research & Development", "pct_rev": [0.12,0.12,0.11,0.10,0.10]},
+    {"name": "General & Administrative", "pct_rev": [0.08,0.07,0.07,0.06,0.06]},
+]
+opex_rows = []
+for item in opex_items:
+    r += 1
+    opex_rows.append(r)
+    ws_i.cell(r, 1, f"  {item['name']}")
+    ws_i.cell(r, 1).font = label_font()
+    ws_i.cell(r, 2, f"% of revenue")
+    ws_i.cell(r, 2).font = Font(italic=True, color="94A3B8", name="Calibri", size=9)
+    pcts = item.get("pct_rev", [0.10]*n_periods)
+    for pi in range(n_periods):
+        rev_col = get_column_letter(DATA_COL_START+pi)
+        pct = pcts[pi] if pi < len(pcts) else pcts[-1]
+        ws_i.cell(r, DATA_COL_START+pi, f"={rev_col}{rev_base_r}*{pct}")
+        ws_i.cell(r, DATA_COL_START+pi).font = formula_font()
+        ws_i.cell(r, DATA_COL_START+pi).number_format = FMT_USD
+
+r += 1; total_opex_r = r
+ws_i.cell(r, 1, "Total OpEx")
+ws_i.cell(r, 1).font = total_font()
+for pi in range(n_periods):
+    col = get_column_letter(DATA_COL_START+pi)
+    rng = "+".join([f"{col}{or_}" for or_ in opex_rows])
+    ws_i.cell(r, DATA_COL_START+pi, f"={rng}")
+    ws_i.cell(r, DATA_COL_START+pi).font = total_font()
+    ws_i.cell(r, DATA_COL_START+pi).number_format = FMT_USD
+apply_row_style(ws_i, r, 1, DATA_COL_END, fill=sub_fill(), border=border_all())
+
+# ── EBITDA / EBIT / Net Income ─────────────────────────────────────
+r += 1; write_section_header(ws_i, r, "PROFITABILITY", 1, DATA_COL_END)
+
+r += 1; ebitda_r = r
+ws_i.cell(r, 1, "EBITDA")
+ws_i.cell(r, 1).font = total_font()
+for pi in range(n_periods):
+    col = get_column_letter(DATA_COL_START+pi)
+    ws_i.cell(r, DATA_COL_START+pi, f"={col}{gp_r}-{col}{total_opex_r}")
+    ws_i.cell(r, DATA_COL_START+pi).font = total_font()
+    ws_i.cell(r, DATA_COL_START+pi).number_format = FMT_USD
+apply_row_style(ws_i, r, 1, DATA_COL_END, fill=total_fill(), border=border_all())
+
+r += 1; ebitda_margin_r = r
+ws_i.cell(r, 1, "  EBITDA Margin %")
+ws_i.cell(r, 1).font = Font(italic=True, color="94A3B8", name="Calibri", size=10)
+for pi in range(n_periods):
+    col = get_column_letter(DATA_COL_START+pi)
+    ws_i.cell(r, DATA_COL_START+pi, f"={col}{ebitda_r}/{col}{rev_base_r}")
+    ws_i.cell(r, DATA_COL_START+pi).number_format = FMT_PCT
+    ws_i.cell(r, DATA_COL_START+pi).font = formula_font()
+
+r += 1; da_r = r
+ws_i.cell(r, 1, "  D&A")
+ws_i.cell(r, 1).font = label_font()
+for pi in range(n_periods):
+    col = get_column_letter(DATA_COL_START+pi)
+    ws_i.cell(r, DATA_COL_START+pi, f"=-{col}{rev_base_r}*Assumptions!{get_column_letter(2+pi)}{assump_rows.get('D&A % Revenue', 9)}")
+    ws_i.cell(r, DATA_COL_START+pi).font = formula_font()
+    ws_i.cell(r, DATA_COL_START+pi).number_format = FMT_USD
+
+r += 1; ebit_r = r
+ws_i.cell(r, 1, "EBIT (Operating Income)")
+ws_i.cell(r, 1).font = total_font()
+for pi in range(n_periods):
+    col = get_column_letter(DATA_COL_START+pi)
+    ws_i.cell(r, DATA_COL_START+pi, f"={col}{ebitda_r}+{col}{da_r}")
+    ws_i.cell(r, DATA_COL_START+pi).font = total_font()
+    ws_i.cell(r, DATA_COL_START+pi).number_format = FMT_USD
+apply_row_style(ws_i, r, 1, DATA_COL_END, fill=total_fill(), border=border_all())
+
+r += 1; interest_r = r
+ws_i.cell(r, 1, "  Interest Expense")
+interest_vals = DATA.get("interest", [0]*n_periods)
+for pi in range(n_periods):
+    v = interest_vals[pi] if pi < len(interest_vals) else 0
+    ws_i.cell(r, DATA_COL_START+pi, -abs(v))
+    ws_i.cell(r, DATA_COL_START+pi).font = input_font()
+    ws_i.cell(r, DATA_COL_START+pi).number_format = FMT_USD
+
+r += 1; pretax_r = r
+ws_i.cell(r, 1, "Pre-Tax Income")
+ws_i.cell(r, 1).font = total_font()
+for pi in range(n_periods):
+    col = get_column_letter(DATA_COL_START+pi)
+    ws_i.cell(r, DATA_COL_START+pi, f"={col}{ebit_r}+{col}{interest_r}")
+    ws_i.cell(r, DATA_COL_START+pi).font = total_font()
+    ws_i.cell(r, DATA_COL_START+pi).number_format = FMT_USD
+apply_row_style(ws_i, r, 1, DATA_COL_END, fill=sub_fill(), border=border_all())
+
+r += 1; tax_r = r
+ws_i.cell(r, 1, "  Income Tax")
+for pi in range(n_periods):
+    col = get_column_letter(DATA_COL_START+pi)
+    ws_i.cell(r, DATA_COL_START+pi, f"=-MAX({col}{pretax_r}*Assumptions!{get_column_letter(2+pi)}{assump_rows.get('Tax Rate', 7)},0)")
+    ws_i.cell(r, DATA_COL_START+pi).font = formula_font()
+    ws_i.cell(r, DATA_COL_START+pi).number_format = FMT_USD
+
+r += 1; ni_r = r
+ws_i.cell(r, 1, "NET INCOME")
+ws_i.cell(r, 1).font = Font(bold=True, size=11, color="FFFFFF", name="Calibri")
+ws_i.cell(r, 1).fill = hdr_fill()
+for pi in range(n_periods):
+    col = get_column_letter(DATA_COL_START+pi)
+    ws_i.cell(r, DATA_COL_START+pi, f"={col}{pretax_r}+{col}{tax_r}")
+    ws_i.cell(r, DATA_COL_START+pi).font = Font(bold=True, color="FFFFFF", name="Calibri", size=11)
+    ws_i.cell(r, DATA_COL_START+pi).fill = hdr_fill()
+    ws_i.cell(r, DATA_COL_START+pi).number_format = FMT_USD
+    ws_i.cell(r, DATA_COL_START+pi).border = border_all()
+
+ws_i.row_dimensions[ni_r].height = 18
+
+# ── Revenue + EBITDA chart ─────────────────────────────────────────
+chart_ws = wb.create_sheet("Charts")
+chart_ws.sheet_view.showGridLines = False
+chart_ws["A1"] = TITLE + " — Financial Charts"
+chart_ws["A1"].font = Font(bold=True, size=14, color="FFFFFF", name="Calibri")
+chart_ws["A1"].fill = hdr_fill()
+
+# Write chart data
+for pi, p in enumerate(PERIODS):
+    chart_ws.cell(3, 2+pi, p).font = hdr_font()
+chart_ws.cell(4, 1, "Revenue")
+chart_ws.cell(5, 1, "EBITDA")
+chart_ws.cell(6, 1, "Net Income")
+
+for pi in range(n_periods):
+    col_i = get_column_letter(DATA_COL_START+pi)
+    chart_ws.cell(4, 2+pi, f"='Income Statement'!{col_i}{rev_base_r}").font = formula_font()
+    chart_ws.cell(5, 2+pi, f"='Income Statement'!{col_i}{ebitda_r}").font = formula_font()
+    chart_ws.cell(6, 2+pi, f"='Income Statement'!{col_i}{ni_r}").font = formula_font()
+
+# Bar chart
+bar = BarChart()
+bar.type = "col"; bar.grouping = "clustered"
+bar.title = "Revenue & Profitability"; bar.y_axis.title = f"{CURRENCY} ({UNITS})"
+bar.x_axis.title = "Period"; bar.style = 10
+bar.width = 18; bar.height = 12
+cats = Reference(chart_ws, min_col=2, min_row=3, max_col=1+n_periods)
+for row_n in [4,5,6]:
+    data_ref = Reference(chart_ws, min_col=2, min_row=row_n, max_col=1+n_periods)
+    bar.add_data(data_ref)
+bar.set_categories(cats)
+bar.series[0].title.v = "Revenue"
+bar.series[1].title.v = "EBITDA"
+if len(bar.series) > 2: bar.series[2].title.v = "Net Income"
+chart_ws.add_chart(bar, "A8")
+
+# Line chart (margins)
+chart_ws.cell(25, 1, "EBITDA Margin %")
+for pi in range(n_periods):
+    col_i = get_column_letter(DATA_COL_START+pi)
+    chart_ws.cell(25, 2+pi, f"='Income Statement'!{col_i}{ebitda_margin_r}")
+    chart_ws.cell(25, 2+pi).number_format = FMT_PCT
+
+line = LineChart()
+line.title = "EBITDA Margin Trend"; line.y_axis.title = "Margin %"
+line.x_axis.title = "Period"; line.style = 10
+line.width = 18; line.height = 10
+line_data = Reference(chart_ws, min_col=2, min_row=25, max_col=1+n_periods)
+line_cats = Reference(chart_ws, min_col=2, min_row=3, max_col=1+n_periods)
+line.add_data(line_data); line.set_categories(line_cats)
+line.series[0].title.v = "EBITDA Margin"
+chart_ws.add_chart(line, "A37")
+
+# ══════════════════════════════════════════════════════════════════
+# BALANCE SHEET
+# ══════════════════════════════════════════════════════════════════
+ws_b = wb.create_sheet("Balance Sheet")
+ws_b.sheet_view.showGridLines = False
+ws_b.column_dimensions["A"].width = 34; ws_b.column_dimensions["B"].width = 16
+for pi in range(n_periods): ws_b.column_dimensions[get_column_letter(DATA_COL_START+pi)].width = 14
+
+ws_b.merge_cells(f"A1:{get_column_letter(DATA_COL_END+1)}1")
+ws_b["A1"] = TITLE + " — Balance Sheet"
+ws_b["A1"].font = Font(bold=True, size=14, color="FFFFFF", name="Calibri")
+ws_b["A1"].fill = hdr_fill()
+ws_b["A1"].alignment = Alignment(horizontal="center", vertical="center")
+ws_b.row_dimensions[1].height = 28
+
+r = 4
+write_header_row(ws_b, r, ["Line Item","Notes"]+PERIODS)
+
+# Assets
+r+=1; write_section_header(ws_b, r, "CURRENT ASSETS", 1, DATA_COL_END)
+asset_items = DATA.get("assets") or [
+    ("Cash & Equivalents", [45000,52000,68000,84000,101000]),
+    ("Accounts Receivable", [28000,33000,40000,48000,56000]),
+    ("Inventory", [15000,17000,20000,23000,27000]),
+    ("Other Current Assets", [8000,9000,10000,11000,12000]),
+]
+ca_rows = []
+for name, vals in asset_items:
+    r += 1; ca_rows.append(r)
+    ws_b.cell(r, 1, f"  {name}").font = label_font()
+    for pi, v in enumerate(vals[:n_periods]):
+        ws_b.cell(r, DATA_COL_START+pi, v).font = input_font()
+        ws_b.cell(r, DATA_COL_START+pi).number_format = FMT_USD
+
+r += 1; total_ca_r = r
+ws_b.cell(r, 1, "Total Current Assets").font = total_font()
+for pi in range(n_periods):
+    col = get_column_letter(DATA_COL_START+pi)
+    ws_b.cell(r, DATA_COL_START+pi, f"=SUM({col}{ca_rows[0]}:{col}{ca_rows[-1]})").font = total_font()
+    ws_b.cell(r, DATA_COL_START+pi).number_format = FMT_USD
+apply_row_style(ws_b, r, 1, DATA_COL_END, fill=total_fill(), border=border_all())
+
+r+=1; write_section_header(ws_b, r, "NON-CURRENT ASSETS", 1, DATA_COL_END)
+nca_items = DATA.get("nca") or [
+    ("Property, Plant & Equipment (net)", [85000,90000,96000,102000,108000]),
+    ("Intangible Assets", [22000,20000,18000,16000,14000]),
+    ("Goodwill", [35000,35000,35000,35000,35000]),
+    ("Other Long-Term Assets", [12000,13000,14000,15000,16000]),
+]
+nca_rows = []
+for name, vals in nca_items:
+    r += 1; nca_rows.append(r)
+    ws_b.cell(r, 1, f"  {name}").font = label_font()
+    for pi, v in enumerate(vals[:n_periods]):
+        ws_b.cell(r, DATA_COL_START+pi, v).font = input_font()
+        ws_b.cell(r, DATA_COL_START+pi).number_format = FMT_USD
+
+r += 1; total_nca_r = r
+ws_b.cell(r, 1, "Total Non-Current Assets").font = total_font()
+for pi in range(n_periods):
+    col = get_column_letter(DATA_COL_START+pi)
+    ws_b.cell(r, DATA_COL_START+pi, f"=SUM({col}{nca_rows[0]}:{col}{nca_rows[-1]})").font = total_font()
+    ws_b.cell(r, DATA_COL_START+pi).number_format = FMT_USD
+apply_row_style(ws_b, r, 1, DATA_COL_END, fill=sub_fill(), border=border_all())
+
+r += 1; total_assets_r = r
+ws_b.cell(r, 1, "TOTAL ASSETS").font = Font(bold=True, size=11, color="FFFFFF", name="Calibri")
+ws_b.cell(r, 1).fill = hdr_fill()
+for pi in range(n_periods):
+    col = get_column_letter(DATA_COL_START+pi)
+    ws_b.cell(r, DATA_COL_START+pi, f"={col}{total_ca_r}+{col}{total_nca_r}")
+    ws_b.cell(r, DATA_COL_START+pi).font = Font(bold=True, color="FFFFFF", name="Calibri")
+    ws_b.cell(r, DATA_COL_START+pi).fill = hdr_fill()
+    ws_b.cell(r, DATA_COL_START+pi).number_format = FMT_USD
+    ws_b.cell(r, DATA_COL_START+pi).border = border_all()
+ws_b.row_dimensions[total_assets_r].height = 18
+
+# Liabilities
+r+=1; r+=1; write_section_header(ws_b, r, "CURRENT LIABILITIES", 1, DATA_COL_END)
+cl_items = DATA.get("liabilities") or [
+    ("Accounts Payable", [18000,21000,25000,29000,34000]),
+    ("Short-Term Debt", [10000,10000,8000,8000,6000]),
+    ("Accrued Expenses", [14000,16000,19000,22000,26000]),
+    ("Deferred Revenue", [8000,9000,11000,13000,15000]),
+]
+cl_rows = []
+for name, vals in cl_items:
+    r += 1; cl_rows.append(r)
+    ws_b.cell(r, 1, f"  {name}").font = label_font()
+    for pi, v in enumerate(vals[:n_periods]):
+        ws_b.cell(r, DATA_COL_START+pi, v).font = input_font()
+        ws_b.cell(r, DATA_COL_START+pi).number_format = FMT_USD
+
+r += 1; total_cl_r = r
+ws_b.cell(r, 1, "Total Current Liabilities").font = total_font()
+for pi in range(n_periods):
+    col = get_column_letter(DATA_COL_START+pi)
+    ws_b.cell(r, DATA_COL_START+pi, f"=SUM({col}{cl_rows[0]}:{col}{cl_rows[-1]})").font = total_font()
+    ws_b.cell(r, DATA_COL_START+pi).number_format = FMT_USD
+apply_row_style(ws_b, r, 1, DATA_COL_END, fill=total_fill(), border=border_all())
+
+r+=1; write_section_header(ws_b, r, "NON-CURRENT LIABILITIES", 1, DATA_COL_END)
+ncl_items = [
+    ("Long-Term Debt", DATA.get("ltd") or [80000,75000,70000,60000,50000]),
+    ("Deferred Tax Liabilities", [12000,13000,14000,15000,16000]),
+]
+ncl_rows = []
+for name, vals in ncl_items:
+    r += 1; ncl_rows.append(r)
+    ws_b.cell(r, 1, f"  {name}").font = label_font()
+    for pi, v in enumerate(vals[:n_periods]):
+        ws_b.cell(r, DATA_COL_START+pi, v).font = input_font()
+        ws_b.cell(r, DATA_COL_START+pi).number_format = FMT_USD
+
+r += 1; total_ncl_r = r
+ws_b.cell(r, 1, "Total Non-Current Liabilities").font = total_font()
+for pi in range(n_periods):
+    col = get_column_letter(DATA_COL_START+pi)
+    ws_b.cell(r, DATA_COL_START+pi, f"=SUM({col}{ncl_rows[0]}:{col}{ncl_rows[-1]})").font = total_font()
+    ws_b.cell(r, DATA_COL_START+pi).number_format = FMT_USD
+apply_row_style(ws_b, r, 1, DATA_COL_END, fill=sub_fill(), border=border_all())
+
+r+=1; write_section_header(ws_b, r, "EQUITY", 1, DATA_COL_END)
+eq_items = [
+    ("Common Stock & APIC", [120000,125000,130000,133000,136000]),
+    ("Retained Earnings", [22000,33000,48000,67000,91000]),
+    ("Other Comprehensive Income", [-3000,-2000,-1000,0,1000]),
+]
+eq_rows = []
+for name, vals in eq_items:
+    r += 1; eq_rows.append(r)
+    ws_b.cell(r, 1, f"  {name}").font = label_font()
+    for pi, v in enumerate(vals[:n_periods]):
+        ws_b.cell(r, DATA_COL_START+pi, v).font = input_font()
+        ws_b.cell(r, DATA_COL_START+pi).number_format = FMT_USD
+
+r += 1; total_eq_r = r
+ws_b.cell(r, 1, "Total Equity").font = total_font()
+for pi in range(n_periods):
+    col = get_column_letter(DATA_COL_START+pi)
+    ws_b.cell(r, DATA_COL_START+pi, f"=SUM({col}{eq_rows[0]}:{col}{eq_rows[-1]})").font = total_font()
+    ws_b.cell(r, DATA_COL_START+pi).number_format = FMT_USD
+apply_row_style(ws_b, r, 1, DATA_COL_END, fill=total_fill(), border=border_all())
+
+r += 1; total_le_r = r
+ws_b.cell(r, 1, "TOTAL LIABILITIES & EQUITY").font = Font(bold=True, size=11, color="FFFFFF", name="Calibri")
+ws_b.cell(r, 1).fill = hdr_fill()
+for pi in range(n_periods):
+    col = get_column_letter(DATA_COL_START+pi)
+    ws_b.cell(r, DATA_COL_START+pi, f"={col}{total_cl_r}+{col}{total_ncl_r}+{col}{total_eq_r}")
+    ws_b.cell(r, DATA_COL_START+pi).font = Font(bold=True, color="FFFFFF", name="Calibri")
+    ws_b.cell(r, DATA_COL_START+pi).fill = hdr_fill()
+    ws_b.cell(r, DATA_COL_START+pi).number_format = FMT_USD
+    ws_b.cell(r, DATA_COL_START+pi).border = border_all()
+ws_b.row_dimensions[total_le_r].height = 18
+
+# Balance check row
+r += 1
+ws_b.cell(r, 1, "Balance Check (Assets - L&E)").font = Font(italic=True, color="94A3B8", name="Calibri", size=9)
+for pi in range(n_periods):
+    col = get_column_letter(DATA_COL_START+pi)
+    ws_b.cell(r, DATA_COL_START+pi, f"={col}{total_assets_r}-{col}{total_le_r}")
+    ws_b.cell(r, DATA_COL_START+pi).number_format = FMT_USD
+    ws_b.cell(r, DATA_COL_START+pi).font = Font(italic=True, color="94A3B8", name="Calibri", size=9)
+
+# ══════════════════════════════════════════════════════════════════
+# CASH FLOW STATEMENT
+# ══════════════════════════════════════════════════════════════════
+ws_c = wb.create_sheet("Cash Flow")
+ws_c.sheet_view.showGridLines = False
+ws_c.column_dimensions["A"].width = 34; ws_c.column_dimensions["B"].width = 16
+for pi in range(n_periods): ws_c.column_dimensions[get_column_letter(DATA_COL_START+pi)].width = 14
+
+ws_c.merge_cells(f"A1:{get_column_letter(DATA_COL_END+1)}1")
+ws_c["A1"] = TITLE + " — Cash Flow Statement"
+ws_c["A1"].font = Font(bold=True, size=14, color="FFFFFF", name="Calibri")
+ws_c["A1"].fill = hdr_fill()
+ws_c["A1"].alignment = Alignment(horizontal="center", vertical="center")
+ws_c.row_dimensions[1].height = 28
+
+r = 4
+write_header_row(ws_c, r, ["Line Item","Notes"]+PERIODS)
+
+r+=1; write_section_header(ws_c, r, "OPERATING ACTIVITIES", 1, DATA_COL_END)
+r+=1; cf_ni_r = r
+ws_c.cell(r, 1, "  Net Income").font = label_font()
+for pi in range(n_periods):
+    col_i = get_column_letter(DATA_COL_START+pi)
+    ws_c.cell(r, DATA_COL_START+pi, f"='Income Statement'!{col_i}{ni_r}")
+    ws_c.cell(r, DATA_COL_START+pi).font = Font(color="008000", name="Calibri", size=10)
+    ws_c.cell(r, DATA_COL_START+pi).number_format = FMT_USD
+
+r+=1; cf_da_r = r
+ws_c.cell(r, 1, "  Add: D&A").font = label_font()
+for pi in range(n_periods):
+    col_i = get_column_letter(DATA_COL_START+pi)
+    ws_c.cell(r, DATA_COL_START+pi, f"=-'Income Statement'!{col_i}{da_r}")
+    ws_c.cell(r, DATA_COL_START+pi).font = Font(color="008000", name="Calibri", size=10)
+    ws_c.cell(r, DATA_COL_START+pi).number_format = FMT_USD
+
+r+=1; cf_wc_r = r
+ws_c.cell(r, 1, "  Change in Working Capital").font = label_font()
+for pi in range(n_periods):
+    col_i = get_column_letter(DATA_COL_START+pi)
+    ws_c.cell(r, DATA_COL_START+pi, f"=-'Income Statement'!{col_i}{rev_base_r}*Assumptions!{get_column_letter(2+pi)}{assump_rows.get('Working Capital % Revenue', 11)}")
+    ws_c.cell(r, DATA_COL_START+pi).font = formula_font()
+    ws_c.cell(r, DATA_COL_START+pi).number_format = FMT_USD
+
+r+=1; cf_cfo_r = r
+ws_c.cell(r, 1, "Cash from Operations").font = total_font()
+for pi in range(n_periods):
+    col = get_column_letter(DATA_COL_START+pi)
+    ws_c.cell(r, DATA_COL_START+pi, f"={col}{cf_ni_r}+{col}{cf_da_r}+{col}{cf_wc_r}")
+    ws_c.cell(r, DATA_COL_START+pi).font = total_font()
+    ws_c.cell(r, DATA_COL_START+pi).number_format = FMT_USD
+apply_row_style(ws_c, r, 1, DATA_COL_END, fill=total_fill(), border=border_all())
+
+r+=1; r+=1; write_section_header(ws_c, r, "INVESTING ACTIVITIES", 1, DATA_COL_END)
+r+=1; cf_capex_r = r
+ws_c.cell(r, 1, "  Capital Expenditures").font = label_font()
+for pi in range(n_periods):
+    col_i = get_column_letter(DATA_COL_START+pi)
+    ws_c.cell(r, DATA_COL_START+pi, f"=-'Income Statement'!{col_i}{rev_base_r}*Assumptions!{get_column_letter(2+pi)}{assump_rows.get('CapEx % Revenue', 8)}")
+    ws_c.cell(r, DATA_COL_START+pi).font = formula_font()
+    ws_c.cell(r, DATA_COL_START+pi).number_format = FMT_USD
+
+r+=1; cf_cfi_r = r
+ws_c.cell(r, 1, "Cash from Investing").font = total_font()
+for pi in range(n_periods):
+    col = get_column_letter(DATA_COL_START+pi)
+    ws_c.cell(r, DATA_COL_START+pi, f"={col}{cf_capex_r}")
+    ws_c.cell(r, DATA_COL_START+pi).font = total_font()
+    ws_c.cell(r, DATA_COL_START+pi).number_format = FMT_USD
+apply_row_style(ws_c, r, 1, DATA_COL_END, fill=sub_fill(), border=border_all())
+
+r+=1; r+=1; write_section_header(ws_c, r, "FINANCING ACTIVITIES", 1, DATA_COL_END)
+r+=1; cf_debt_r = r
+ws_c.cell(r, 1, "  Net Debt Repayment").font = label_font()
+debt_vals = DATA.get("debt_change") or [0,-5000,-5000,-10000,-10000]
+for pi in range(n_periods):
+    ws_c.cell(r, DATA_COL_START+pi, debt_vals[pi] if pi<len(debt_vals) else 0)
+    ws_c.cell(r, DATA_COL_START+pi).font = input_font()
+    ws_c.cell(r, DATA_COL_START+pi).number_format = FMT_USD
+
+r+=1; cf_div_r = r
+ws_c.cell(r, 1, "  Dividends Paid").font = label_font()
+div_vals = DATA.get("dividends") or [0,0,0,0,0]
+for pi in range(n_periods):
+    ws_c.cell(r, DATA_COL_START+pi, div_vals[pi] if pi<len(div_vals) else 0)
+    ws_c.cell(r, DATA_COL_START+pi).font = input_font()
+    ws_c.cell(r, DATA_COL_START+pi).number_format = FMT_USD
+
+r+=1; cf_cff_r = r
+ws_c.cell(r, 1, "Cash from Financing").font = total_font()
+for pi in range(n_periods):
+    col = get_column_letter(DATA_COL_START+pi)
+    ws_c.cell(r, DATA_COL_START+pi, f"={col}{cf_debt_r}+{col}{cf_div_r}")
+    ws_c.cell(r, DATA_COL_START+pi).font = total_font()
+    ws_c.cell(r, DATA_COL_START+pi).number_format = FMT_USD
+apply_row_style(ws_c, r, 1, DATA_COL_END, fill=sub_fill(), border=border_all())
+
+r+=1; r+=1
+ws_c.cell(r, 1, "NET CHANGE IN CASH").font = Font(bold=True, size=11, color="FFFFFF", name="Calibri")
+ws_c.cell(r, 1).fill = hdr_fill()
+for pi in range(n_periods):
+    col = get_column_letter(DATA_COL_START+pi)
+    ws_c.cell(r, DATA_COL_START+pi, f"={col}{cf_cfo_r}+{col}{cf_cfi_r}+{col}{cf_cff_r}")
+    ws_c.cell(r, DATA_COL_START+pi).font = Font(bold=True, color="FFFFFF", name="Calibri")
+    ws_c.cell(r, DATA_COL_START+pi).fill = hdr_fill()
+    ws_c.cell(r, DATA_COL_START+pi).number_format = FMT_USD
+    ws_c.cell(r, DATA_COL_START+pi).border = border_all()
+ws_c.row_dimensions[r].height = 18
+
+# ══════════════════════════════════════════════════════════════════
+# KPI DASHBOARD SHEET
+# ══════════════════════════════════════════════════════════════════
+ws_k = wb.create_sheet("KPI Dashboard")
+ws_k.sheet_view.showGridLines = False
+ws_k.column_dimensions["A"].width = 30; ws_k.column_dimensions["B"].width = 5
+for pi in range(n_periods): ws_k.column_dimensions[get_column_letter(3+pi)].width = 14
+
+ws_k.merge_cells(f"A1:{get_column_letter(3+n_periods)}1")
+ws_k["A1"] = TITLE + " — KPI Dashboard"
+ws_k["A1"].font = Font(bold=True, size=16, color="FFFFFF", name="Calibri")
+ws_k["A1"].fill = hdr_fill()
+ws_k["A1"].alignment = Alignment(horizontal="center", vertical="center")
+ws_k.row_dimensions[1].height = 32
+
+r = 3
+for pi, p in enumerate(PERIODS):
+    ws_k.cell(r, 3+pi, p).fill = hdr_fill()
+    ws_k.cell(r, 3+pi).font = hdr_font()
+    ws_k.cell(r, 3+pi).alignment = Alignment(horizontal="center")
+
+kpis = [
+    ("REVENUE", f"='Income Statement'!{{col}}{rev_base_r}", FMT_USD, True),
+    ("Revenue Growth %", f"='Income Statement'!{{col}}{rev_growth_r}", FMT_PCT, False),
+    ("EBITDA", f"='Income Statement'!{{col}}{ebitda_r}", FMT_USD, True),
+    ("EBITDA Margin %", f"='Income Statement'!{{col}}{ebitda_margin_r}", FMT_PCT, False),
+    ("Net Income", f"='Income Statement'!{{col}}{ni_r}", FMT_USD, True),
+    ("Cash from Operations", f"='Cash Flow'!{{col}}{cf_cfo_r}", FMT_USD, False),
+    ("Free Cash Flow", f"='Cash Flow'!{{col}}{cf_cfo_r}+'Cash Flow'!{{col}}{cf_capex_r}", FMT_USD, True),
+    ("Total Assets", f"='Balance Sheet'!{{col}}{total_assets_r}", FMT_USD, False),
+    ("Total Equity", f"='Balance Sheet'!{{col}}{total_eq_r}", FMT_USD, False),
+]
+
+for ki, (kpi_name, formula_tmpl, fmt, is_key) in enumerate(kpis):
+    r += 1
+    ws_k.cell(r, 1, kpi_name)
+    if is_key:
+        ws_k.cell(r, 1).font = Font(bold=True, name="Calibri", size=10.5)
+        apply_row_style(ws_k, r, 1, 2+n_periods, fill=sub_fill())
+    else:
+        ws_k.cell(r, 1).font = label_font()
+    for pi in range(n_periods):
+        col_i = get_column_letter(DATA_COL_START+pi)
+        formula = formula_tmpl.replace("{col}", col_i)
+        ws_k.cell(r, 3+pi, formula)
+        ws_k.cell(r, 3+pi).number_format = fmt
+        if is_key:
+            ws_k.cell(r, 3+pi).font = total_font()
+        else:
+            ws_k.cell(r, 3+pi).font = formula_font()
+        ws_k.cell(r, 3+pi).alignment = Alignment(horizontal="right")
+        ws_k.cell(r, 3+pi).fill = sub_fill() if is_key else PatternFill()
+    ws_k.row_dimensions[r].height = 15
+
+# Set sheet order
+wb.move_sheet("Assumptions", offset=0)
+
+# Freeze panes on all sheets
+for ws in wb.worksheets:
+    ws.freeze_panes = "C5"
+
+out_path = os.path.join(PUBLIC_DIR, FILENAME)
+wb.save(out_path)
+print(f"Saved: {out_path}")
+`;
 }
 
 const { signup, login, verifyToken, loadUserMemory, saveUserMemory, saveConversation, loadConversations, deleteConversation } = require('./auth');
@@ -1380,38 +2056,61 @@ async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame
     { name: 'capture_screen', description: 'Capture a fresh screenshot.', input_schema: { type: 'object', properties: {} } },
   ] : []),
   {
-    name: 'generate_presentation',
-    description: 'Generate a beautiful PowerPoint presentation (.pptx) with images, icons, charts, and nice transitions. Always use this instead of run_code when asked to create a presentation, slides, or slideshow.',
-    input_schema: {
-      type: 'object',
-      properties: {
-        title: { type: 'string' },
-        theme: { type: 'string', enum: ['dark', 'light', 'navy', 'minimal'] },
-        slides: {
-          type: 'array',
-          items: {
-            type: 'object',
-            properties: {
-              type: { type: 'string', enum: ['title', 'content', 'two-column', 'image-full', 'stats', 'quote', 'timeline', 'agenda'] },
-              title: { type: 'string' },
-              subtitle: { type: 'string' },
-              body: { type: 'array', items: { type: 'string' } },
-              left: { type: 'array', items: { type: 'string' } },
-              right: { type: 'array', items: { type: 'string' } },
-              stats: { type: 'array', items: { type: 'object', properties: { value: { type: 'string' }, label: { type: 'string' } } } },
-              quote: { type: 'string' },
-              attribution: { type: 'string' },
-              steps: { type: 'array', items: { type: 'string' } },
-              imageSearch: { type: 'string' },
-              speakerNotes: { type: 'string' }
-            }
+  name: 'generate_presentation',
+  description: 'Generate a beautiful PowerPoint (.pptx). Slide types: title, cover-dark, content, two-column, stats, quote, timeline, agenda, image-full, chart (chartType: bar/line/pie/donut/area), comparison, process, data-table. Themes: dark, light, navy, minimal, corporate.',
+  input_schema: {
+    type: 'object',
+    properties: {
+      title: { type: 'string' },
+      theme: { type: 'string', enum: ['dark', 'light', 'navy', 'minimal', 'corporate'] },
+      slides: {
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            type: { type: 'string', enum: ['title', 'cover-dark', 'content', 'two-column', 'image-full', 'stats', 'quote', 'timeline', 'agenda', 'chart', 'comparison', 'process', 'data-table'] },
+            title: { type: 'string' },
+            subtitle: { type: 'string' },
+            body: { type: 'array', items: { type: 'string' } },
+            left: { type: 'array', items: { type: 'string' } },
+            right: { type: 'array', items: { type: 'string' } },
+            stats: { type: 'array', items: { type: 'object', properties: { value: { type: 'string' }, label: { type: 'string' } } } },
+            quote: { type: 'string' },
+            attribution: { type: 'string' },
+            steps: { type: 'array', items: { type: 'string' } },
+            imageSearch: { type: 'string' },
+            speakerNotes: { type: 'string' },
+            chartType: { type: 'string', enum: ['bar', 'line', 'pie', 'donut', 'area'], description: 'For chart slides' },
+            chartData: { type: 'object', description: 'For chart slides: { labels: [...], datasets: [{ name, values: [...] }] }' },
+            showValues: { type: 'boolean', description: 'Show data labels on chart slides' },
+            columns: { type: 'array', description: 'For comparison slides: [{ header, value, points: [...] }]' },
+            tableData: { type: 'array', description: 'For data-table slides: 2D array of rows' }
           }
-        },
-        filename: { type: 'string' }
+        }
       },
-      required: ['title', 'slides', 'filename']
-    }
-  },
+      filename: { type: 'string' }
+    },
+    required: ['title', 'slides', 'filename']
+  }
+},
+  {
+  name: 'generate_excel',
+  description: 'Generate a professional financial Excel workbook with Income Statement, Balance Sheet, Cash Flow Statement, KPI Dashboard, and embedded charts. Industry-standard color coding (blue=inputs, black=formulas, green=cross-sheet). Use for any financial model, forecast, P&L, or spreadsheet request.',
+  input_schema: {
+    type: 'object',
+    properties: {
+      title: { type: 'string', description: 'Company or model name' },
+      type: { type: 'string', enum: ['income_statement','balance_sheet','cash_flow','full_model'], description: 'Type of financial model (full_model = all sheets)' },
+      filename: { type: 'string', description: 'Output filename without extension' },
+      periods: { type: 'array', items: { type: 'string' }, description: 'Period labels e.g. ["2022","2023","2024E","2025E","2026E"]' },
+      currency: { type: 'string', description: 'Currency code e.g. USD, EUR' },
+      units: { type: 'string', description: 'Units e.g. thousands, millions' },
+      assumptions: { type: 'object', description: 'Override default assumptions: { "Revenue Growth Rate": [0.20,...], "Gross Margin": [0.65,...] }' },
+      data: { type: 'object', description: 'Override line item data: { "revenue_base": [100000,...], "opex_items": [...] }' }
+    },
+    required: ['title', 'filename']
+  }
+},
   { 
   name: 'generate_image', 
   description: 'Generate an image from a text prompt using Flux Schnell. Use for any image generation request.', 
@@ -1876,6 +2575,9 @@ for (const f of otherFiles) {
         else if (block.name === 'generate_presentation') {
           result = await generatePresentation(block.input);
         }
+        else if (block.name === 'generate_excel') {
+  result = await generateExcel(block.input);
+}
         else if (block.name === 'read_file' && isNadav) {
           result = await readFile(block.input.path, block.input.action, block.input.query);
         }
