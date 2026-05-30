@@ -49,6 +49,18 @@ function formatMessage(text: string) {
     .replace(/\*(.*?)\*/g, '<em>$1</em>')
     .replace(/#{1,3} (.*?)(\n|$)/g, '<strong>$1</strong><br/>')
     .replace(/^- (.*?)$/gm, '• $1')
+    .replace(/(https?:\/\/api\.heyjarvis\.me\/view\/vid_[^\s)"]+\.mp4)/g, (_, url) => {
+      const filename = url.split('/').pop();
+      return `
+        <div style="margin-top:10px;border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,0.1);max-width:400px">
+          <video controls style="width:100%;display:block;max-height:280px;background:#000" src="${url}"></video>
+          <div style="display:flex;gap:8px;padding:10px;background:rgba(255,255,255,0.03)">
+            <a href="${url}" download="${filename}" style="flex:1;padding:8px;border-radius:10px;background:rgba(59,130,246,0.2);border:1px solid rgba(59,130,246,0.3);color:#60a5fa;font-size:12px;font-weight:500;text-align:center;text-decoration:none">⬇ Download</a>
+            <button onclick="navigator.share ? navigator.share({title:'JARVIS Video',url:'${url}'}) : navigator.clipboard.writeText('${url}')" style="flex:1;padding:8px;border-radius:10px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.6);font-size:12px;font-weight:500;cursor:pointer">↗ Share</button>
+          </div>
+        </div>
+      `;
+    })
     .replace(/(https?:\/\/[^\s<"]+\.(webp|png|jpg|jpeg))/g, (_, url) => {
   const idx = images.length;
   const downloadFn = `(async function(){try{const r=await fetch('${url}');const b=await r.blob();const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='jarvis-image.webp';a.click();}catch(e){window.open('${url}','_blank');}})()`;
