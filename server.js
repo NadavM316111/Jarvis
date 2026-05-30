@@ -664,6 +664,10 @@ const FAMILY_USERS = new Set([
   'shimonredd09_gmail_com',
   'admin_prufli_com',
   'arielomer1013_gmail_com',
+  'will_philipstein_com',
+  'rina_philipstein_com',
+  'llevym1980_gmail_com',
+  'lmink80_gmail_com',
 ]);
 const FAMILY_DAILY_MSG_LIMIT = 25;
 const FREE_DAILY_COST_CAP = 0.75;
