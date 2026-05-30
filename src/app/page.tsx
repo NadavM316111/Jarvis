@@ -1798,7 +1798,7 @@ style={!spokenUpdates ? { color: 'var(--jarvis-text-sub)', background: 'var(--ja
   <div key={i} className={`flex gap-2 group/msg ${msg.role === "user" ? "flex-row-reverse" : ""}`}>
     {msg.role === "assistant" && (<div className="w-6 h-6 rounded-full flex-shrink-0 mt-1" style={{ background: orbBg, boxShadow: orbGlow }} />)}
     <div className="max-w-[85%]">
-      <div style={msg.role === "assistant" ? { background: 'var(--jarvis-msg-ai)', border: '1px solid var(--jarvis-border)', color: 'var(--jarvis-text)' } : { background: 'var(--jarvis-msg-user)' }}
+      <div style={msg.role === "assistant" ? { background: 'var(--jarvis-msg-ai)', border: '1px solid var(--jarvis-border)', color: 'var(--jarvis-text)', userSelect: 'text', WebkitUserSelect: 'text' } : { background: 'var(--jarvis-msg-user)', userSelect: 'text', WebkitUserSelect: 'text' }}
 className={`px-4 py-3 rounded-2xl text-sm leading-relaxed ${msg.role === "assistant" ? "rounded-tl-sm" : "text-white rounded-tr-sm"}`}>
         {msg.source === "voice" && <div className="text-xs opacity-40 mb-1">{msg.role === "user" ? "voice" : "spoken"}</div>}
         {msg.fileName && !msg.imageUrl && (<div className="flex items-center gap-1.5 mb-2 opacity-70"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg><span className="text-xs">{msg.fileName}</span></div>)}
