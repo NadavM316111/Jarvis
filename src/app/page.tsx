@@ -49,14 +49,6 @@ function formatMessage(text: string) {
     .replace(/\*(.*?)\*/g, '<em>$1</em>')
     .replace(/#{1,3} (.*?)(\n|$)/g, '<strong>$1</strong><br/>')
     .replace(/^- (.*?)$/gm, '• $1')
-    .replace(/(https?:\/\/api\.heyjarvis\.me\/view\/vid_[^\s)"]+\.mp4)/g, (_, url) => {
-  const filename = url.split('/').pop();
-  const downloadUrl = url.replace('/view/', '/download/');
-  return `<div style="display:flex;gap:8px;margin-top:8px">
-  <a href="${downloadUrl}" download="${filename}" style="padding:8px 16px;border-radius:10px;background:rgba(59,130,246,0.2);border:1px solid rgba(59,130,246,0.3);color:#60a5fa;font-size:13px;font-weight:500;text-decoration:none">⬇ Download</a>
-  <button onclick="navigator.share ? navigator.share({title:'JARVIS Video',url:'${url}'}) : navigator.clipboard.writeText('${url}').then(()=>alert('Link copied!'))" style="padding:8px 16px;border-radius:10px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.6);font-size:13px;font-weight:500;cursor:pointer">↗ Share</button>
-</div>`;
-})
     .replace(/(https?:\/\/[^\s<"]+\.(webp|png|jpg|jpeg))/g, (_, url) => {
   const idx = images.length;
   const downloadFn = `(async function(){try{const r=await fetch('${url}');const b=await r.blob();const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='jarvis-image.webp';a.click();}catch(e){window.open('${url}','_blank');}})()`;
@@ -70,6 +62,31 @@ function formatMessage(text: string) {
 
 function renderMessageExtras(content: string, onContinue: (prompt: string) => void) {
   const extras: React.ReactNode[] = [];
+
+  // ── Video download + share buttons ──
+  const videoMatch = content.match(/https?:\/\/api\.heyjarvis\.me\/view\/vid_[^\s)"]+\.mp4/);
+  if (videoMatch) {
+    const url = videoMatch[0];
+    const filename = url.split('/').pop() || 'video.mp4';
+    const downloadUrl = url.replace('/view/', '/download/');
+    extras.push(
+      <div key="video-actions" style={{ display: 'flex', gap: '8px', marginTop: '10px' }}>
+        <a href={downloadUrl} download={filename}
+          style={{ padding: '8px 16px', borderRadius: '10px', background: 'rgba(59,130,246,0.2)', border: '1px solid rgba(59,130,246,0.3)', color: '#60a5fa', fontSize: '13px', fontWeight: 500, textDecoration: 'none' }}>
+          ⬇ Download video
+        </a>
+        <button
+          onClick={() => {
+            if (navigator.share) navigator.share({ title: 'JARVIS Video', url });
+            else navigator.clipboard.writeText(url).then(() => alert('Link copied!'));
+          }}
+          style={{ padding: '8px 16px', borderRadius: '10px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.6)', fontSize: '13px', fontWeight: 500, cursor: 'pointer' }}>
+          ↗ Share
+        </button>
+      </div>
+    );
+  }
+
   const progressMatch = content.match(/\[PROGRESS:(\d+)%\](.*?)\[\/PROGRESS\]/);
   if (progressMatch) {
     const pct = parseInt(progressMatch[1]);
