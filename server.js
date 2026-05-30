@@ -2647,6 +2647,13 @@ app.use('/view', (req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   next();
 }, express.static(PUBLIC_DIR));
+app.get('/download/:filename', (req, res) => {
+  const file = path.join(PUBLIC_DIR, req.params.filename);
+  if (!fs.existsSync(file)) return res.status(404).send('Not found');
+  res.setHeader('Content-Disposition', `attachment; filename="${req.params.filename}"`);
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.sendFile(file);
+});
 
 // ============ SPOKEN UPDATES TOGGLE (per-user) ============
 const userSpokenUpdatesEnabled = {};
