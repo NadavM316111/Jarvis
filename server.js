@@ -252,29 +252,52 @@ async function generatePresentation({ title, theme = 'dark', slides, filename })
 
       // ── STATS ──────────────────────────────────────────────────────────────
       case 'stats': {
-        slide.background = { color: T.bg };
-        hdr(slide, sd.title);
-        const stats = sd.stats || [];
-        const n = Math.min(stats.length, 4);
-        const cw2 = (9.2 / n) - 0.14;
-        stats.slice(0, 4).forEach((s, idx) => {
-          const cx = 0.4 + idx * (cw2 + 0.14);
-          const col = T.chartColors[idx % T.chartColors.length];
-          card(slide, cx, 1.0, cw2, 3.85);
-          slide.addShape(pres.shapes.RECTANGLE, { x:cx, y:1.0, w:cw2, h:0.07, fill:{color:col}, line:{color:col} });
-          slide.addText(s.value||'', { x:cx+0.1, y:1.35, w:cw2-0.2, h:2.1, fontSize:n<=2?58:46, bold:true, color:col, fontFace:'Calibri', align:'center', valign:'middle' });
-          slide.addShape(pres.shapes.LINE, { x:cx+cw2*0.2, y:3.5, w:cw2*0.6, h:0, line:{color:col,pt:1} });
-          slide.addText(s.label||'', { x:cx+0.1, y:3.6, w:cw2-0.2, h:0.8, fontSize:12.5, color:T.subtext, fontFace:'Calibri', align:'center', valign:'top' });
-        });
-        footer(slide);
-        break;
-      }
+  slide.background = { color: T.bg };
+  hdr(slide, sd.title);
+  const stats = sd.stats || [];
+  const n = Math.min(stats.length, 4);
+  const totalW = 9.2;
+  const gap = 0.15;
+  const cw2 = (totalW - gap * (n - 1)) / n;
+  stats.slice(0, 4).forEach((s, idx) => {
+    const cx = 0.4 + idx * (cw2 + gap);
+    const col = T.chartColors[idx % T.chartColors.length];
+    // Card background
+    slide.addShape(pres.shapes.RECTANGLE, { x:cx, y:1.0, w:cw2, h:3.9,
+      fill:{color:col, transparency:88}, line:{color:col, pt:1.5},
+      shadow:{type:'outer',color:'000000',blur:10,offset:3,angle:135,opacity:0.2} });
+    // Top accent bar
+    slide.addShape(pres.shapes.RECTANGLE, { x:cx, y:1.0, w:cw2, h:0.09, fill:{color:col}, line:{color:col} });
+    // Big value — sized to fit
+    const valFontSize = n <= 2 ? 56 : n === 3 ? 46 : 38;
+    slide.addText(s.value||'', {
+      x:cx+0.08, y:1.55, w:cw2-0.16, h:1.8,
+      fontSize:valFontSize, bold:true, color:col,
+      fontFace:'Calibri', align:'center', valign:'middle',
+      fit:'shrink'
+    });
+    // Divider line
+    slide.addShape(pres.shapes.LINE, {
+      x:cx+cw2*0.25, y:3.45, w:cw2*0.5, h:0,
+      line:{color:col, pt:1.2}
+    });
+    // Label — always fits, no overlap
+    slide.addText(s.label||'', {
+      x:cx+0.08, y:3.55, w:cw2-0.16, h:0.95,
+      fontSize:11, color:T.subtext, fontFace:'Calibri',
+      align:'center', valign:'top', wrap:true
+    });
+  });
+  footer(slide);
+  break;
+}
 
       // ── QUOTE ──────────────────────────────────────────────────────────────
       case 'quote': {
         slide.background = { color: T.titleBg };
         slide.addText('\u201C', { x:0.3, y:0.05, w:2.5, h:2.2, fontSize:130, color:T.accent, fontFace:'Georgia', align:'left', valign:'top', transparency:55 });
-        slide.addText(sd.quote||'', { x:0.9, y:1.3, w:8.2, h:2.85, fontSize:23, italic:true, color:T.text, fontFace:'Georgia', align:'center', valign:'middle', lineSpacingMultiple:1.45 });
+        const quoteColor = T.bg === '0F1117' || T.bg === '0A1628' ? 'F1F5F9' : T.text;
+slide.addText(sd.quote||'', { x:0.9, y:1.3, w:8.2, h:2.85, fontSize:22, italic:true, color:quoteColor, fontFace:'Georgia', align:'center', valign:'middle', lineSpacingMultiple:1.5 });
         if (sd.attribution) {
           slide.addShape(pres.shapes.RECTANGLE, { x:3.6, y:4.4, w:2.8, h:0.04, fill:{color:T.accent}, line:{color:T.accent} });
           slide.addText('\u2014 ' + sd.attribution, { x:0.5, y:4.55, w:9, h:0.5, fontSize:14, color:T.subtext, fontFace:'Calibri Light', align:'center' });
@@ -297,7 +320,7 @@ async function generatePresentation({ title, theme = 'dark', slides, filename })
           const col = T.chartColors[idx % T.chartColors.length];
           slide.addShape(pres.shapes.OVAL, { x:cx-0.3, y:2.2, w:0.6, h:0.6, fill:{color:col}, line:{color:col} });
           slide.addText(String(idx+1), { x:cx-0.3, y:2.2, w:0.6, h:0.6, fontSize:13, bold:true, color:'FFFFFF', align:'center', valign:'middle' });
-          slide.addText(step, { x:cx-sw/2+0.05, y:2.9, w:sw-0.1, h:2.4, fontSize:12, color:T.text, fontFace:'Calibri', align:'center', valign:'top' });
+          slide.addText(step, { x:cx-sw/2+0.08, y:2.88, w:sw-0.16, h:2.4, fontSize:Math.max(9, 13-n2), color:T.text, fontFace:'Calibri', align:'center', valign:'top', wrap:true });
           if (idx%2===0) slide.addShape(pres.shapes.OVAL, { x:cx-0.07, y:1.7, w:0.14, h:0.14, fill:{color:col,transparency:30}, line:{color:col,transparency:30} });
         });
         footer(slide);
@@ -351,39 +374,51 @@ async function generatePresentation({ title, theme = 'dark', slides, filename })
           bar3d: pres.ChartType.bar3D,
         }[chartType] || pres.ChartType.bar;
 
-        const seriesColors = chartData.datasets.map((_, di) => T.chartColors[di % T.chartColors.length]);
-
+        const seriesColors = ['pie','donut'].includes(chartType)
+  ? chartData.labels.map((_, li) => T.chartColors[li % T.chartColors.length])
+  : chartData.datasets.map((_, di) => T.chartColors[di % T.chartColors.length]);
         const chartDataFormatted = chartData.datasets.map((ds, di) => ({
           name: ds.name,
           labels: chartData.labels,
           values: ds.values,
         }));
 
-        const chartOptions = {
-          x: 0.4, y: 0.95, w: 9.2, h: 4.45,
-          chartColors: seriesColors,
-          showLegend: chartData.datasets.length > 1,
-          legendPos: 'b',
-          showTitle: false,
-          dataLabelColor: T.text,
-          valAxisLineColor: T.border,
-          catAxisLineColor: T.border,
-          valGridLine: { color: T.border, style: 'dash', size: 0.5 },
-          catGridLine: { color: T.border, style: 'dash', size: 0.5 },
-          plotAreaBkgndColor: T.bg,
-          chartAreaBkgndColor: T.bg,
-          dataLabelFontSize: 10,
-          dataLabelFontBold: false,
-          showValue: sd.showValues !== false,
-          bar3DShape: 'cylinder',
-        };
+        const isDark = ['dark','navy'].includes(theme);
+const chartOptions = {
+  x: 0.4, y: 0.95, w: 9.2, h: 4.45,
+  chartColors: seriesColors,
+  showLegend: chartData.datasets.length > 1 || ['pie','donut'].includes(chartType),
+  legendPos: 'b',
+  legendFontSize: 11,
+  legendColor: isDark ? 'FFFFFF' : '1E293B',
+  showTitle: false,
+  dataLabelColor: isDark ? 'FFFFFF' : '1E293B',
+  dataLabelFontSize: 11,
+  dataLabelFontBold: true,
+  valAxisLineColor: T.border,
+  catAxisLineColor: T.border,
+  catAxisLabelColor: isDark ? 'FFFFFF' : '1E293B',
+  valAxisLabelColor: isDark ? 'FFFFFF' : '1E293B',
+  catAxisLabelFontSize: 10,
+  valAxisLabelFontSize: 10,
+  valGridLine: { color: T.border, style: 'dash', size: 0.5 },
+  catGridLine: { color: T.border, style: 'dash', size: 0.5 },
+  plotAreaBkgndColor: T.bg,
+  chartAreaBkgndColor: T.bg,
+  showValue: sd.showValues !== false,
+};
 
         if (['pie','donut'].includes(chartType)) {
-          chartOptions.showLabel = true;
-          chartOptions.showPercent = true;
-          chartOptions.showValue = false;
-          chartOptions.holeSize = chartType === 'donut' ? 60 : 0;
-        }
+  chartOptions.showLabel = true;
+  chartOptions.showPercent = true;
+  chartOptions.showValue = false;
+  chartOptions.showLegend = true;
+  chartOptions.legendPos = 'r';
+  chartOptions.dataLabelColor = 'FFFFFF';
+  chartOptions.dataLabelFontSize = 12;
+  chartOptions.dataLabelFontBold = true;
+  if (chartType === 'donut') chartOptions.holeSize = 55;
+}
 
         slide.addChart(pptChartType, chartDataFormatted, chartOptions);
 
@@ -432,8 +467,8 @@ async function generatePresentation({ title, theme = 'dark', slides, filename })
           slide.addText(String(idx+1), { x:cx+bw/2-0.38, y:1.2, w:0.76, h:0.76, fontSize:18, bold:true, color:col, align:'center', valign:'middle' });
           // step label
           const parts = step.split('|');
-          slide.addText(parts[0]||step, { x:cx+0.08, y:2.1, w:bw-0.16, h:0.6, fontSize:13, bold:true, color:T.text, fontFace:'Calibri', align:'center', valign:'middle' });
-          if (parts[1]) slide.addText(parts[1], { x:cx+0.08, y:2.75, w:bw-0.16, h:1.8, fontSize:11.5, color:T.subtext, fontFace:'Calibri', align:'center', valign:'top' });
+          slide.addText(parts[0]||step, { x:cx+0.08, y:2.05, w:bw-0.16, h:0.65, fontSize:Math.max(10,13-n3), bold:true, color:T.text, fontFace:'Calibri', align:'center', valign:'middle', wrap:true });
+if (parts[1]) slide.addText(parts[1], { x:cx+0.08, y:2.78, w:bw-0.16, h:1.75, fontSize:Math.max(9,11-n3), color:T.subtext, fontFace:'Calibri', align:'center', valign:'top', wrap:true });
           // arrow
           if (idx < n3-1) slide.addShape(pres.shapes.RIGHT_ARROW, { x:cx+bw+0.01, y:2.3, w:0.1, h:0.3, fill:{color:T.border}, line:{color:T.border} });
         });
@@ -1344,6 +1379,7 @@ const FAMILY_USERS = new Set([
   'rina_philipstein_com',
   'llevym1980_gmail_com',
   'lmink80_gmail_com',
+  'juliomoraes_live_com',
 ]);
 const FAMILY_DAILY_MSG_LIMIT = 25;
 const FREE_DAILY_COST_CAP = 0.75;
