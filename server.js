@@ -1381,6 +1381,9 @@ async function extractAndSaveEntities(userId, conversationText) {
   } catch (e) { console.log('[ENTITIES] Error:', e.message); }
 }
 
+
+
+
 async function semanticSearch(userId, query) {
   try {
     const rows = await memorySql`SELECT summary, created_at FROM conversation_summaries WHERE user_id = ${userId} AND summary ILIKE ${'%' + query.split(' ').join('%') + '%'} ORDER BY created_at DESC LIMIT 5`;
