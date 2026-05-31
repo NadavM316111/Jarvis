@@ -668,6 +668,7 @@ const [memoryData, setMemoryData] = useState<any>(null);
   const [subscribed, setSubscribed] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [checkingOut, setCheckingOut] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
 
   // ── Daily message usage ──────────────────────────────────
   const [dailyCost, setDailyCost] = useState(0);
@@ -1762,7 +1763,14 @@ style={!spokenUpdates ? { color: 'var(--jarvis-text-sub)', background: 'var(--ja
 
         
         {/* Messages area */}
-        <div className="flex-1 overflow-y-auto overscroll-contain" style={{ WebkitOverflowScrolling: 'touch' }} onDragOver={e => e.preventDefault()} onDrop={async e => { e.preventDefault(); const files = Array.from(e.dataTransfer.files); if (files.length) { const fakeEvent = { target: { files, value: '' } } as any; await handleFileAttach(fakeEvent); } }}>
+        <div className="flex-1 overflow-y-auto overscroll-contain" style={{ WebkitOverflowScrolling: 'touch', position: 'relative' }} onDragOver={e => { e.preventDefault(); setIsDragging(true); }} onDragLeave={e => { if (!e.currentTarget.contains(e.relatedTarget as Node)) setIsDragging(false); }} onDrop={async e => { e.preventDefault(); setIsDragging(false); const files = Array.from(e.dataTransfer.files); if (files.length) { const fakeEvent = { target: { files, value: '' } } as any; await handleFileAttach(fakeEvent); } }}>
+          {isDragging && (
+  <div style={{ position: 'absolute', inset: 0, zIndex: 50, background: 'rgba(4,4,6,0.85)', backdropFilter: 'blur(8px)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16, pointerEvents: 'none' }}>
+    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="rgba(96,165,250,0.8)" strokeWidth="1.5"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+    <div style={{ fontSize: 28, fontWeight: 700, color: 'rgba(255,255,255,0.9)', letterSpacing: '-0.02em' }}>Drop your file</div>
+    <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.35)' }}>Release to attach</div>
+  </div>
+)}
           <div className="px-3 py-4 flex flex-col gap-3">
             {voiceRunning && (
               <div className="flex flex-col items-center justify-center py-16">
@@ -1904,6 +1912,8 @@ className={`px-4 py-3 rounded-2xl text-sm leading-relaxed ${msg.role === "assist
     e.target.style.height = Math.min(e.target.scrollHeight, 200) + 'px';
   }}
   onKeyDown={e => e.key === "Enter" && !e.shiftKey && (e.preventDefault(), send())}
+  onDragOver={e => e.preventDefault()}
+  onDrop={async e => { e.preventDefault(); const files = Array.from(e.dataTransfer.files); if (files.length) { const fakeEvent = { target: { files, value: '' } } as any; await handleFileAttach(fakeEvent); } }}
   placeholder={!subscribed && limitReached ? "Daily limit reached — upgrade to Pro" : "Message JARVIS..."}
   disabled={loading || (!subscribed && limitReached)}
   autoComplete="off"
