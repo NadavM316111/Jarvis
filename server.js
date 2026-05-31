@@ -513,7 +513,13 @@ if (parts[1]) slide.addText(parts[1], { x:cx+0.08, y:2.78, w:bw-0.16, h:1.75, fo
   const safeFilename = filename.replace(/[^a-zA-Z0-9_-]/g, '_');
   const outPath = path.join(PUBLIC_DIR, `${safeFilename}.pptx`);
   await pres.writeFile({ fileName: outPath });
+try {
+  const pptxData = fs.readFileSync(outPath);
+  const blobUrl = await saveToBlob(`${safeFilename}.pptx`, pptxData, 'application/vnd.openxmlformats-officedocument.presentationml.presentation');
+  return `Presentation ready! Download: ${blobUrl}`;
+} catch {
   return `Presentation ready! Download: https://api.heyjarvis.me/view/${safeFilename}.pptx`;
+}
 }
 
 // ── Excel / Financial Statement Generator ─────────────────────────────────────
@@ -524,7 +530,14 @@ async function generateExcel({ title, type, filename, data, assumptions, periods
     console.log('[EXCEL] Error:', result);
     return `Excel generation failed: ${result.substring(0, 300)}`;
   }
+  try {
+  const safe = filename.replace(/[^a-zA-Z0-9_-]/g,'_');
+  const xlsxData = fs.readFileSync(path.join(PUBLIC_DIR, `${safe}.xlsx`));
+  const blobUrl = await saveToBlob(`${safe}.xlsx`, xlsxData, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+  return `Excel file ready! Download: ${blobUrl}`;
+} catch {
   return `Excel file ready! Download: https://api.heyjarvis.me/view/${filename.replace(/[^a-zA-Z0-9_-]/g,'_')}.xlsx`;
+}
 }
 
 function buildExcelCode({ title, type, filename, data, assumptions, periods, currency, units }) {
@@ -1389,6 +1402,25 @@ process.env.TWILIO_PHONE_NUMBER = '+15054776732';
 const PROACTIVE_LOG_FILE = path.join(__dirname, 'proactive_log.json');
 const MODEL_CACHE_DIR = path.join(__dirname, 'model_cache');
 const PUBLIC_DIR = path.join(__dirname, 'public');
+const { put } = require('@vercel/blob');
+
+async function saveToBlob(filename, data, contentType = 'application/octet-stream') {
+  try {
+    const { url } = await put(filename, data, {
+      access: 'public',
+      contentType,
+      token: process.env.BLOB_READ_WRITE_TOKEN,
+    });
+    console.log(`[BLOB] Saved: ${url}`);
+    // Also save locally as fallback
+    try { fs.writeFileSync(path.join(PUBLIC_DIR, filename), data); } catch {}
+    return url;
+  } catch (e) {
+    console.log('[BLOB] Failed, using local:', e.message);
+    fs.writeFileSync(path.join(PUBLIC_DIR, filename), data);
+    return `https://api.heyjarvis.me/view/${filename}`;
+  }
+}
 if (!fs.existsSync(MODEL_CACHE_DIR)) fs.mkdirSync(MODEL_CACHE_DIR);
 if (!fs.existsSync(PUBLIC_DIR)) fs.mkdirSync(PUBLIC_DIR);
 
@@ -1708,11 +1740,8 @@ async function generateImage(prompt) {
   const imageUrl = prediction.output[0];
   const filename = `img_${Date.now()}.webp`;
   const imgRes = await axios.get(imageUrl, { responseType: 'arraybuffer' });
-  fs.writeFileSync(path.join(PUBLIC_DIR, filename), imgRes.data);
-  const url = process.env.RAILWAY_ENVIRONMENT
-    ? `https://api.heyjarvis.me/view/${filename}`
-    : `http://localhost:3001/view/${filename}`;
-  return url;
+const url = await saveToBlob(filename, Buffer.from(imgRes.data), 'image/webp');
+return url;
 }
 
 async function generateImageWithFace(faceImageBase64, prompt) {
@@ -1747,8 +1776,7 @@ async function generateImageWithFace(faceImageBase64, prompt) {
   const imageUrl = Array.isArray(prediction.output) ? prediction.output[0] : prediction.output;
   const filename = `img_${Date.now()}.webp`;
   const imgRes = await axios.get(imageUrl, { responseType: 'arraybuffer' });
-  fs.writeFileSync(path.join(PUBLIC_DIR, filename), imgRes.data);
-  return `https://api.heyjarvis.me/view/${filename}`;
+return await saveToBlob(filename, Buffer.from(imgRes.data), 'image/webp');
 }
 async function generateVideo(prompt, durationSeconds = 5) {
   const { fal } = require('@fal-ai/client');
@@ -1774,8 +1802,7 @@ async function generateVideo(prompt, durationSeconds = 5) {
   const videoUrl = result.data.video.url;
   const filename = `vid_${Date.now()}.mp4`;
   const vidRes = await axios.get(videoUrl, { responseType: 'arraybuffer' });
-  fs.writeFileSync(path.join(PUBLIC_DIR, filename), vidRes.data);
-  return `https://api.heyjarvis.me/view/${filename}`;
+return await saveToBlob(filename, Buffer.from(vidRes.data), 'video/mp4');
 }
 
 async function generateVideoFromImage(imageBase64, imageType, prompt, durationSeconds = 5) {
@@ -1809,8 +1836,7 @@ async function generateVideoFromImage(imageBase64, imageType, prompt, durationSe
   const videoUrl = result.data.video.url;
   const filename = `vid_${Date.now()}.mp4`;
   const vidRes = await axios.get(videoUrl, { responseType: 'arraybuffer' });
-  fs.writeFileSync(path.join(PUBLIC_DIR, filename), vidRes.data);
-  return `https://api.heyjarvis.me/view/${filename}`;
+  return await saveToBlob(filename, Buffer.from(vidRes.data), 'video/mp4');
 }
 
 async function editVideo(instructions, videoFiles) {
@@ -1882,7 +1908,9 @@ async function editVideo(instructions, videoFiles) {
   }
 
   inputPaths.forEach(p => { try { fs.unlinkSync(p); } catch {} });
-  return `https://api.heyjarvis.me/view/${outputFilename}`;
+const editedData = fs.readFileSync(outputPath);
+const blobUrl = await saveToBlob(outputFilename, editedData, 'video/mp4');
+return blobUrl;
 }
 
 async function screenshotPage(url) {

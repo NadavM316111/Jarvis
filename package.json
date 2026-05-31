@@ -16,6 +16,7 @@
     "@tauri-apps/api": "^2.11.0",
     "@tauri-apps/plugin-autostart": "^2.5.1",
     "@tauri-apps/plugin-shell": "^2.3.5",
+    "@vercel/blob": "^2.4.0",
     "axios": "^1.14.0",
     "bcryptjs": "^3.0.3",
     "cheerio": "^1.2.0",
