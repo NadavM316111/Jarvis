@@ -60,11 +60,6 @@ function formatMessage(text: string) {
     .replace(/__IMG_(\d+)__/g, (_, idx) => images[parseInt(idx)]);
 }
 
-
-
-
-
-
 function renderMessageExtras(content: string, onContinue: (prompt: string) => void) {
   const extras: React.ReactNode[] = [];
 
