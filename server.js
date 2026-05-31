@@ -1342,7 +1342,7 @@ async function extractAndSaveEntities(userId, conversationText) {
   try {
     const response = await anthropic.messages.create({
       model: 'claude-haiku-4-5-20251001', max_tokens: 800,
-      messages: [{ role: 'user', content: `Extract entities from this conversation. Respond ONLY with raw JSON, no markdown.\n\nFormat: {"entities":[{"name":"John Smith","type":"person","facts":{"role":"investor","company":"Sequoia"}},{"name":"Clickflo","type":"project","facts":{"status":"live","platform":"App Store"}}],"mood":"stressed","project":"clickflo"}\n\nTypes: person, company, project, investor, product\nProject: clickflo, troy, jarvis, friendsly, sesami, sokr, bookly, or null\nMood: happy, stressed, excited, anxious, neutral, or null\n\nConversation:\n${conversationText.substring(0, 3000)}` }]
+      messages: [{ role: 'user', content: `Extract entities from this conversation. Respond ONLY with raw JSON, no markdown.\n\nFormat: {"entities":[{"name":"John Smith","type":"person","facts":{"role":"investor","company":"Sequoia"}}],"mood":"stressed","project":"clickflo","project_facts":{"key":"launch_date","value":"June 2025"},"preferences":[{"category":"design","key":"theme","value":"dark"}]}\n\nTypes: person, company, project, investor, product\nProject: clickflo, troy, jarvis, friendsly, sesami, sokr, bookly, or null\nMood: happy, stressed, excited, anxious, neutral, or null\nproject_facts: one key fact about the mentioned project (or null)\npreferences: array of learned preferences from the conversation (or [])\n\nConversation:\n${conversationText.substring(0, 3000)}` }]
     });
     let text = response.content[0].text.replace(/```json|```/g, '').trim();
     const match = text.match(/\{[\s\S]*\}/);
@@ -1368,6 +1368,15 @@ async function extractAndSaveEntities(userId, conversationText) {
       const key = 'last_discussed';
       const value = new Date().toISOString();
       await memorySql`INSERT INTO project_memories (user_id, project, key, value) VALUES (${userId}, ${data.project}, ${key}, ${value}) ON CONFLICT (user_id, project, key) DO UPDATE SET value = ${value}, updated_at = NOW()`;
+      
+      if (data.project_facts?.key && data.project_facts?.value) {
+        await memorySql`INSERT INTO project_memories (user_id, project, key, value) VALUES (${userId}, ${data.project}, ${data.project_facts.key}, ${data.project_facts.value}) ON CONFLICT (user_id, project, key) DO UPDATE SET value = ${data.project_facts.value}, updated_at = NOW()`;
+      }
+    }
+
+    for (const pref of (data.preferences || [])) {
+      if (!pref.category || !pref.key || !pref.value) continue;
+      await memorySql`INSERT INTO user_preferences (user_id, category, key, value) VALUES (${userId}, ${pref.category}, ${pref.key}, ${pref.value}) ON CONFLICT (user_id, category, key) DO UPDATE SET value = ${pref.value}, confidence = 1.0, updated_at = NOW()`;
     }
   } catch (e) { console.log('[ENTITIES] Error:', e.message); }
 }
