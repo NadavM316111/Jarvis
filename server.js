@@ -1337,6 +1337,59 @@ app.use('/chat', chatLimiter);
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 const { neon: memoryNeon } = require('@neondatabase/serverless');
 const memorySql = memoryNeon(process.env.DATABASE_URL);
+// ============ WEEK 2 MEMORY SYSTEM ============
+async function extractAndSaveEntities(userId, conversationText) {
+  try {
+    const response = await anthropic.messages.create({
+      model: 'claude-haiku-4-5-20251001', max_tokens: 800,
+      messages: [{ role: 'user', content: `Extract entities from this conversation. Respond ONLY with raw JSON, no markdown.\n\nFormat: {"entities":[{"name":"John Smith","type":"person","facts":{"role":"investor","company":"Sequoia"}},{"name":"Clickflo","type":"project","facts":{"status":"live","platform":"App Store"}}],"mood":"stressed","project":"clickflo"}\n\nTypes: person, company, project, investor, product\nProject: clickflo, troy, jarvis, friendsly, sesami, sokr, bookly, or null\nMood: happy, stressed, excited, anxious, neutral, or null\n\nConversation:\n${conversationText.substring(0, 3000)}` }]
+    });
+    let text = response.content[0].text.replace(/```json|```/g, '').trim();
+    const match = text.match(/\{[\s\S]*\}/);
+    if (!match) return;
+    const data = JSON.parse(match[0]);
+
+    for (const entity of (data.entities || [])) {
+      if (!entity.name || !entity.type) continue;
+      const existing = await memorySql`SELECT id, profile, mention_count FROM entities WHERE user_id = ${userId} AND LOWER(name) = LOWER(${entity.name}) LIMIT 1`;
+      if (existing.length > 0) {
+        const merged = { ...existing[0].profile, ...entity.facts };
+        await memorySql`UPDATE entities SET profile = ${JSON.stringify(merged)}, mention_count = ${existing[0].mention_count + 1}, last_mentioned = NOW() WHERE id = ${existing[0].id}`;
+      } else {
+        await memorySql`INSERT INTO entities (user_id, name, type, profile) VALUES (${userId}, ${entity.name}, ${entity.type}, ${JSON.stringify(entity.facts || {})})`;
+      }
+    }
+
+    if (data.mood) {
+      await memorySql`INSERT INTO emotional_log (user_id, mood, context) VALUES (${userId}, ${data.mood}, ${conversationText.substring(0, 500)})`;
+    }
+
+    if (data.project) {
+      const key = 'last_discussed';
+      const value = new Date().toISOString();
+      await memorySql`INSERT INTO project_memories (user_id, project, key, value) VALUES (${userId}, ${data.project}, ${key}, ${value}) ON CONFLICT (user_id, project, key) DO UPDATE SET value = ${value}, updated_at = NOW()`;
+    }
+  } catch (e) { console.log('[ENTITIES] Error:', e.message); }
+}
+
+async function semanticSearch(userId, query) {
+  try {
+    const rows = await memorySql`SELECT summary, created_at FROM conversation_summaries WHERE user_id = ${userId} AND summary ILIKE ${'%' + query.split(' ').join('%') + '%'} ORDER BY created_at DESC LIMIT 5`;
+    return rows.map(r => r.summary).join('\n\n');
+  } catch (e) { return ''; }
+}
+
+async function loadEnrichedMemory(userId) {
+  try {
+    const [entities, projects, moods, prefs] = await Promise.all([
+      memorySql`SELECT name, type, profile, mention_count, last_mentioned FROM entities WHERE user_id = ${userId} ORDER BY mention_count DESC LIMIT 20`,
+      memorySql`SELECT project, key, value FROM project_memories WHERE user_id = ${userId} ORDER BY updated_at DESC LIMIT 30`,
+      memorySql`SELECT mood, context, created_at FROM emotional_log WHERE user_id = ${userId} ORDER BY created_at DESC LIMIT 10`,
+      memorySql`SELECT category, key, value FROM user_preferences WHERE user_id = ${userId} ORDER BY updated_at DESC LIMIT 20`,
+    ]);
+    return { entities, projects, moods, prefs };
+  } catch (e) { return { entities: [], projects: [], moods: [], prefs: [] }; }
+}
 async function logApiUsage(userId, service, model, inputTokens, outputTokens, ttsChars, endpoint) {
   try {
     const pricing = {
@@ -2257,6 +2310,7 @@ async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame
 
   const latestCameraFrame = userCameraFrames[userId];
   const memorySummaries = await loadMemorySummaries(userId);
+const enrichedMemory = await loadEnrichedMemory(userId);
   const systemPrompt = [
     `You are JARVIS — a powerful autonomous AI assistant, modeled after Tony Stark's AI from Iron Man.`,
     `User: ${userName} | Email: ${userMemory.email || 'unknown'} | Location: ${userLocation} | Time: ${new Date().toLocaleString()}`,
@@ -2508,6 +2562,10 @@ async function runAgenticLoop(userMessage, screenshotBase64, userId, cameraFrame
     `USER_TOKEN: ${userMemory.token || ''} — use this as the Bearer token when calling /ai-proxy/generate-key from run_code`,
 `Memory: ${JSON.stringify(userMemory).substring(0, 1500)}`,
 memorySummaries ? `Long term memory from past conversations:\n${memorySummaries}` : '',
+enrichedMemory.entities.length > 0 ? `\nKNOWN ENTITIES:\n${enrichedMemory.entities.map(e => `- ${e.name} (${e.type}): ${JSON.stringify(e.profile)}, mentioned ${e.mention_count}x`).join('\n')}` : '',
+enrichedMemory.projects.length > 0 ? `\nPROJECT MEMORY:\n${enrichedMemory.projects.map(p => `- ${p.project}/${p.key}: ${p.value}`).join('\n')}` : '',
+enrichedMemory.moods.length > 0 ? `\nRECENT MOOD HISTORY:\n${enrichedMemory.moods.slice(0,3).map(m => `- ${m.mood} (${new Date(m.created_at).toLocaleDateString()})`).join('\n')}` : '',
+enrichedMemory.prefs.length > 0 ? `\nLEARNED PREFERENCES:\n${enrichedMemory.prefs.map(p => `- ${p.category}/${p.key}: ${p.value}`).join('\n')}` : '',
   ].filter(Boolean).join('\n');
 
   const messageContent = [];
@@ -2756,6 +2814,10 @@ else if (block.name === 'edit_video') {
   }
   if (conversationHistory.length >= 4) {
   saveConversationSummary(userId, conversationHistory).catch(() => {});
+  const recentText = conversationHistory.slice(-6).map(m =>
+    `${m.role}: ${typeof m.content === 'string' ? m.content : m.content.find?.(b => b.type === 'text')?.text || ''}`
+  ).join('\n');
+  extractAndSaveEntities(userId, recentText).catch(() => {});
 }
   return finalResponse || 'Done.';
 }
