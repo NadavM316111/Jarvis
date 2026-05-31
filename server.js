@@ -1850,6 +1850,9 @@ async function editVideo(instructions, videoFiles) {
     return p;
   });
 
+
+
+  
   const outputFilename = `vid_${Date.now()}.mp4`;
   const outputPath = path.join(PUBLIC_DIR, outputFilename);
   const lower = instructions.toLowerCase();
