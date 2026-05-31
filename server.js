@@ -1444,7 +1444,7 @@ async function loadMemorySummaries(userId) {
   } catch (e) { return ''; }
 }
 const NADAV_USER_ID = 'nadavminkowitz_gmail_com';
-const UNLIMITED_USERS = new Set(['nlmwtpu_gmail_com', 'nadavminkowitz_gmail_com']);
+const UNLIMITED_USERS = new Set(['nlmwtpu_gmail_com', 'nadavminkowitz_gmail_com', 'peter_garbuz_gmail_com']);
 const FAMILY_USERS = new Set([
   'cminkowitz32_posnackstudent_org',
   'gminkowitz31_posnackstudent_org',
