@@ -699,7 +699,19 @@ const [memoryData, setMemoryData] = useState<any>(null);
   const folderInputRef = useRef<HTMLInputElement>(null);
   const tokenRef = useRef<string | null>(null);
 const abortRef = useRef<AbortController | null>(null);
-
+useEffect(() => {
+  const handlePaste = async (e: ClipboardEvent) => {
+    const items = Array.from(e.clipboardData?.items || []);
+    const imageItem = items.find(i => i.type.startsWith('image/'));
+    if (!imageItem) return;
+    const file = imageItem.getAsFile();
+    if (!file) return;
+    const fakeEvent = { target: { files: [file], value: '' } } as any;
+    await handleFileAttach(fakeEvent);
+  };
+  window.addEventListener('paste', handlePaste);
+  return () => window.removeEventListener('paste', handlePaste);
+}, []);
   useEffect(() => { activeIdRef.current = activeId; }, [activeId]);
   useEffect(() => { tokenRef.current = token; }, [token]);
 
@@ -1750,7 +1762,7 @@ style={!spokenUpdates ? { color: 'var(--jarvis-text-sub)', background: 'var(--ja
 
         
         {/* Messages area */}
-        <div className="flex-1 overflow-y-auto overscroll-contain" style={{ WebkitOverflowScrolling: 'touch' }}>
+        <div className="flex-1 overflow-y-auto overscroll-contain" style={{ WebkitOverflowScrolling: 'touch' }} onDragOver={e => e.preventDefault()} onDrop={async e => { e.preventDefault(); const files = Array.from(e.dataTransfer.files); if (files.length) { const fakeEvent = { target: { files, value: '' } } as any; await handleFileAttach(fakeEvent); } }}>
           <div className="px-3 py-4 flex flex-col gap-3">
             {voiceRunning && (
               <div className="flex flex-col items-center justify-center py-16">
