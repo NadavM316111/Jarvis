@@ -60,11 +60,16 @@ function formatMessage(text: string) {
     .replace(/__IMG_(\d+)__/g, (_, idx) => images[parseInt(idx)]);
 }
 
+
+
+
+
+
 function renderMessageExtras(content: string, onContinue: (prompt: string) => void) {
   const extras: React.ReactNode[] = [];
 
   // ── Video download + share buttons ──
-  const videoMatch = content.match(/https?:\/\/api\.heyjarvis\.me\/view\/vid_[^\s)"]+\.mp4/);
+  const videoMatch = content.match(/(https?:\/\/[^\s)"]+\.mp4)/);
   if (videoMatch) {
     const url = videoMatch[0];
     const filename = url.split('/').pop() || 'video.mp4';
