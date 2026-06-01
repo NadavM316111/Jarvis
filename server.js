@@ -1336,6 +1336,7 @@ const chatLimiter = rateLimit({
 app.use('/chat', chatLimiter);
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 const { neon: memoryNeon } = require('@neondatabase/serverless');
+const { Octokit } = require('@octokit/rest');
 const memorySql = memoryNeon(process.env.DATABASE_URL);
 // ============ WEEK 2 MEMORY SYSTEM ============
 async function extractAndSaveEntities(userId, conversationText) {
@@ -2345,6 +2346,7 @@ const enrichedMemory = await loadEnrichedMemory(userId);
     'web_search: Search the web for any information.',
     'browse_url: Read full content of any webpage.',
     'run_code: Execute code to call APIs, process data, automate tasks.',
+    'GITHUB: Users can connect GitHub at https://api.heyjarvis.me/auth/github?token=USER_TOKEN. Once connected, use run_code with node to call GitHub functions:\nconst { createGithubRepo, pushFilesToGithub, listUserRepos, getGithubToken } = require("./server"); — NO, instead use run_code to call the GitHub API directly via Octokit:\nconst { Octokit } = require("@octokit/rest");\nconst rows = await require("@neondatabase/serverless").neon(process.env.DATABASE_URL)`SELECT access_token, github_username FROM github_tokens WHERE user_id = ${userId}`;\nconst octokit = new Octokit({ auth: rows[0].access_token });\nWhen the user asks to push code to GitHub or create a repo, ALWAYS:\n1. Check if GitHub is connected via the github_tokens table\n2. If not connected, tell them: "Connect GitHub at https://api.heyjarvis.me/auth/github?token=USER_TOKEN"\n3. If connected, create repo and push files\n4. After building any app or code file, ALWAYS ask: "Want me to push this to GitHub or create a new repo for hosting?"',
     'remember: Save information about the user for future sessions.',
     'proactive_update: Send the user a notification.',
     'search_3d_models: Search Thingiverse and Printables for 3D printable models.',
@@ -2416,7 +2418,7 @@ const enrichedMemory = await loadEnrichedMemory(userId);
 'When Nadav says "play [song]", always use execute_actions OPEN_URL to open YouTube directly.',
       '',
       'FILE CREATION: ALWAYS use run_code with node + fs.writeFileSync to create files. NEVER use bash heredocs — this is Windows, bash does not support heredocs. Template literals in Node work perfectly. Write the entire HTML in a JS template literal and save with fs.writeFileSync.',
-      'CODE OUTPUT: When writing code for the user, if it is MORE than 50 lines, ALWAYS save it as a downloadable file to PUBLIC_DIR and give them the link. Format: save to PUBLIC_DIR/code_TIMESTAMP.ext and return the link https://api.heyjarvis.me/view/code_TIMESTAMP.ext with a "Download [filename]" label. Never dump 100+ lines of code raw into chat — always save as file.',
+      'CODE OUTPUT: When writing code for the user, if it is MORE than 50 lines, ALWAYS save it as a downloadable file to PUBLIC_DIR and give them the link. Format: save to PUBLIC_DIR/code_TIMESTAMP.ext and return the link https://api.heyjarvis.me/view/code_TIMESTAMP.ext with a "Download [filename]" label. Never dump 100+ lines of code raw into chat — always save as file. After delivering ANY code file, ALWAYS follow up with: "Want me to push this to GitHub or create a new repo where it can be hosted?"',
       'FOLDER UPLOADS: When the user attaches a folder, files arrive with paths like "src/components/Button.tsx". Use the webkitRelativePath as the filename to understand folder structure. Summarize the codebase structure first, then answer the user\'s question.',
 'PDF CREATION: For any PDF request, use run_code with Python and reportlab. Make them beautiful:',
 '- Dark or clean white background with colored accent headers',
@@ -2488,7 +2490,7 @@ const enrichedMemory = await loadEnrichedMemory(userId);
   'NEVER use localhost URLs for users — always use https://api.heyjarvis.me/view/...',
   'web_search, browse_url, run_code, remember, proactive_update, search_3d_models all available.',
   'FILE CREATION: ALWAYS use run_code with node + fs.writeFileSync to create files. NEVER use bash heredocs — this is Windows, bash does not support heredocs. Template literals in Node work perfectly. Write the entire HTML in a JS template literal and save with fs.writeFileSync.',
-  'CODE OUTPUT: When writing code for the user, if it is MORE than 50 lines, ALWAYS save it as a downloadable file to PUBLIC_DIR and give them the link. Format: save to PUBLIC_DIR/code_TIMESTAMP.ext and return the link https://api.heyjarvis.me/view/code_TIMESTAMP.ext with a "Download [filename]" label. Never dump 100+ lines of code raw into chat — always save as file.',
+  'CODE OUTPUT: When writing code for the user, if it is MORE than 50 lines, ALWAYS save it as a downloadable file to PUBLIC_DIR and give them the link. Format: save to PUBLIC_DIR/code_TIMESTAMP.ext and return the link https://api.heyjarvis.me/view/code_TIMESTAMP.ext with a "Download [filename]" label. Never dump 100+ lines of code raw into chat — always save as file. After delivering ANY code file, ALWAYS follow up with: "Want me to push this to GitHub or create a new repo where it can be hosted?"',
   'FOLDER UPLOADS: When the user attaches a folder, files arrive with paths like "src/components/Button.tsx". Use the webkitRelativePath as the filename to understand folder structure. Summarize the codebase structure first, then answer the user\'s question.',
 'PDF CREATION: For any PDF request, use run_code with Python and reportlab. Make them beautiful:',
 '- Dark or clean white background with colored accent headers',
@@ -3545,9 +3547,130 @@ app.delete('/conversations/:id', authMiddleware, async (req, res) => {
 
 
 
+// ============ GITHUB OAUTH ============
+async function getGithubAuthUrl(userId) {
+  const params = new URLSearchParams({
+    client_id: process.env.GITHUB_CLIENT_ID,
+    redirect_uri: 'https://api.heyjarvis.me/auth/github/callback',
+    scope: 'repo user',
+    state: userId,
+  });
+  return `https://github.com/login/oauth/authorize?${params}`;
+}
 
+async function saveGithubToken(userId, accessToken) {
+  try {
+    const octokit = new Octokit({ auth: accessToken });
+    const { data: user } = await octokit.rest.users.getAuthenticated();
+    await memorySql`
+      INSERT INTO github_tokens (user_id, access_token, github_username)
+      VALUES (${userId}, ${accessToken}, ${user.login})
+      ON CONFLICT (user_id) DO UPDATE SET access_token = ${accessToken}, github_username = ${user.login}
+    `;
+    return user.login;
+  } catch (e) { console.log('[GITHUB] Save token error:', e.message); }
+}
+
+async function getGithubToken(userId) {
+  try {
+    const rows = await memorySql`SELECT access_token, github_username FROM github_tokens WHERE user_id = ${userId}`;
+    return rows[0] || null;
+  } catch (e) { return null; }
+}
+
+async function isGithubConnected(userId) {
+  const token = await getGithubToken(userId);
+  return !!token;
+}
+
+async function createGithubRepo(userId, repoName, description = '', isPrivate = false) {
+  const token = await getGithubToken(userId);
+  if (!token) return { error: 'GitHub not connected' };
+  const octokit = new Octokit({ auth: token.access_token });
+  const { data } = await octokit.rest.repos.createForAuthenticatedUser({
+    name: repoName,
+    description,
+    private: isPrivate,
+    auto_init: true,
+  });
+  return { url: data.html_url, cloneUrl: data.clone_url, name: data.full_name };
+}
+
+async function pushFilesToGithub(userId, repoFullName, files, commitMessage = 'Initial commit from JARVIS') {
+  const token = await getGithubToken(userId);
+  if (!token) return { error: 'GitHub not connected' };
+  const octokit = new Octokit({ auth: token.access_token });
+  const [owner, repo] = repoFullName.split('/');
+
+  // Get default branch SHA
+  const { data: repoData } = await octokit.rest.repos.get({ owner, repo });
+  const branch = repoData.default_branch;
+  const { data: refData } = await octokit.rest.git.getRef({ owner, repo, ref: `heads/${branch}` });
+  const latestSha = refData.object.sha;
+  const { data: commitData } = await octokit.rest.git.getCommit({ owner, repo, commit_sha: latestSha });
+  const treeSha = commitData.tree.sha;
+
+  // Create blobs for each file
+  const treeItems = await Promise.all(files.map(async (f) => {
+    const { data: blob } = await octokit.rest.git.createBlob({
+      owner, repo,
+      content: Buffer.from(f.content).toString('base64'),
+      encoding: 'base64',
+    });
+    return { path: f.path, mode: '100644', type: 'blob', sha: blob.sha };
+  }));
+
+  // Create tree and commit
+  const { data: newTree } = await octokit.rest.git.createTree({ owner, repo, base_tree: treeSha, tree: treeItems });
+  const { data: newCommit } = await octokit.rest.git.createCommit({ owner, repo, message: commitMessage, tree: newTree.sha, parents: [latestSha] });
+  await octokit.rest.git.updateRef({ owner, repo, ref: `heads/${branch}`, sha: newCommit.sha });
+
+  return { success: true, commitUrl: `https://github.com/${repoFullName}/commit/${newCommit.sha}` };
+}
+
+async function listUserRepos(userId) {
+  const token = await getGithubToken(userId);
+  if (!token) return [];
+  const octokit = new Octokit({ auth: token.access_token });
+  const { data } = await octokit.rest.repos.listForAuthenticatedUser({ per_page: 30, sort: 'updated' });
+  return data.map(r => ({ name: r.full_name, url: r.html_url, private: r.private, updatedAt: r.updated_at }));
+}
 // ============ GOOGLE OAUTH ============
 const { getAuthUrl, saveTokens, getRecentEmails: getEmailsMulti, sendEmail: sendEmailMulti, getCalendarEvents, createCalendarEvent, listDriveFiles, readDriveFile, createDriveDocument, isConnected, youtubeSearch, getVideoTranscript, getVideoDetails, getMySubscriptions, getChannelLatestVideos, uploadYouTubeVideo, postYouTubeComment } = require('./gmail_multi');
+// ============ GITHUB OAUTH ROUTES ============
+app.get('/auth/github', (req, res) => {
+  const token = req.query.token || req.headers.authorization?.replace('Bearer ', '');
+  if (!token) return res.status(401).json({ error: 'No token' });
+  const user = verifyToken(token);
+  if (!user) return res.status(401).json({ error: 'Invalid token' });
+  getGithubAuthUrl(user.userId).then(url => res.redirect(url));
+});
+
+app.get('/auth/github/callback', async (req, res) => {
+  const { code, state: userId } = req.query;
+  if (!code || !userId) return res.status(400).send('Missing code or state');
+  try {
+    const tokenRes = await axios.post('https://github.com/login/oauth/access_token', {
+      client_id: process.env.GITHUB_CLIENT_ID,
+      client_secret: process.env.GITHUB_CLIENT_SECRET,
+      code,
+      redirect_uri: 'https://api.heyjarvis.me/auth/github/callback',
+    }, { headers: { Accept: 'application/json' } });
+    const accessToken = tokenRes.data.access_token;
+    const username = await saveGithubToken(userId, accessToken);
+    res.send(`<html><body style="background:#060608;color:white;font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0"><div style="text-align:center"><div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(to bottom right,#60a5fa,#1d4ed8);margin:0 auto 16px"></div><h2>GitHub Connected!</h2><p style="color:rgba(255,255,255,0.4)">Connected as @${username}. You can close this tab.</p></div></body></html>`);
+  } catch (e) { res.status(500).send('Auth failed: ' + e.message); }
+});
+
+app.get('/auth/github/status', authMiddleware, async (req, res) => {
+  const token = await getGithubToken(req.user.userId);
+  res.json({ connected: !!token, username: token?.github_username || null });
+});
+
+app.get('/github/repos', authMiddleware, async (req, res) => {
+  const repos = await listUserRepos(req.user.userId);
+  res.json({ repos });
+});
 app.get('/auth/google', (req, res) => {
   const token = req.query.token || req.headers.authorization?.replace('Bearer ', '');
   if (!token) return res.status(401).json({ error: 'No token' });

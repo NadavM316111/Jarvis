@@ -12,6 +12,7 @@
     "@anthropic-ai/sdk": "^0.82.0",
     "@fal-ai/client": "^1.10.1",
     "@neondatabase/serverless": "^1.1.0",
+    "@octokit/rest": "^22.0.1",
     "@svrooij/sonos": "^2.5.0",
     "@tauri-apps/api": "^2.11.0",
     "@tauri-apps/plugin-autostart": "^2.5.1",
