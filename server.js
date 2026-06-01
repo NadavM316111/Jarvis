@@ -1444,7 +1444,7 @@ async function loadMemorySummaries(userId) {
   } catch (e) { return ''; }
 }
 const NADAV_USER_ID = 'nadavminkowitz_gmail_com';
-const UNLIMITED_USERS = new Set(['nlmwtpu_gmail_com', 'nadavminkowitz_gmail_com']);
+const UNLIMITED_USERS = new Set(['nlmwtpu_gmail_com', 'nadavminkowitz_gmail_com', 'peter_garbuz_gmail_com']);
 const FAMILY_USERS = new Set([
   'cminkowitz32_posnackstudent_org',
   'gminkowitz31_posnackstudent_org',
@@ -1458,9 +1458,11 @@ const FAMILY_USERS = new Set([
   'llevym1980_gmail_com',
   'lmink80_gmail_com',
   'juliomoraes_live_com',
+  'dbenmiami_gmail_com',
+  'talyalevy88_gmail_com',
 ]);
 const FAMILY_DAILY_MSG_LIMIT = 25;
-const FREE_DAILY_COST_CAP = 0.75;
+const FREE_DAILY_COST_CAP = 1.50;
 const FREE_LIMIT = 20; // kept for family message cap
 process.env.TWILIO_PHONE_NUMBER = '+15054776732';
 // ============ STATE ============
