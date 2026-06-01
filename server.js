@@ -1459,6 +1459,7 @@ const FAMILY_USERS = new Set([
   'lmink80_gmail_com',
   'juliomoraes_live_com',
   'dbenmiami_gmail_com',
+  'talyalevy88_gmail_com',
 ]);
 const FAMILY_DAILY_MSG_LIMIT = 25;
 const FREE_DAILY_COST_CAP = 1.50;
