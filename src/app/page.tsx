@@ -62,6 +62,26 @@ function formatMessage(text: string) {
 
 function renderMessageExtras(content: string, onContinue: (prompt: string) => void) {
   const extras: React.ReactNode[] = [];
+  // ── Code file download buttons ──
+  const codeFileMatch = content.match(/https?:\/\/api\.heyjarvis\.me\/view\/(code_[^\s)"]+\.(js|ts|tsx|jsx|py|html|css|json|sh|sql|md))/);
+  if (codeFileMatch) {
+    const url = codeFileMatch[0];
+    const filename = codeFileMatch[1];
+    extras.push(
+      <div key="code-download" style={{ display: 'flex', gap: '8px', marginTop: '10px' }}>
+        <a href={url} download={filename}
+          style={{ padding: '8px 16px', borderRadius: '10px', background: 'rgba(99,102,241,0.2)', border: '1px solid rgba(99,102,241,0.3)', color: '#a5b4fc', fontSize: '13px', fontWeight: 500, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="12" y2="18"/><line x1="15" y1="15" x2="12" y2="18"/></svg>
+          Download {filename}
+        </a>
+        <button
+          onClick={() => navigator.clipboard.writeText(url).then(() => alert('Link copied!'))}
+          style={{ padding: '8px 16px', borderRadius: '10px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.6)', fontSize: '13px', fontWeight: 500, cursor: 'pointer' }}>
+          Copy link
+        </button>
+      </div>
+    );
+  }
 
   // ── Video download + share buttons ──
   const videoMatch = content.match(/(https?:\/\/[^\s)"]+\.mp4)/);
